@@ -227,11 +227,13 @@ body.chart-zoom-open{overflow:hidden}
   opacity:1;
   transform:translateY(0);
   overflow:hidden;
-  transition:opacity .32s ease,transform .38s cubic-bezier(.2,.75,.25,1),max-height .42s ease,margin .38s ease,padding .38s ease,border-width .38s ease;
+  transition:opacity .32s ease,transform .38s cubic-bezier(.2,.75,.25,1),max-height .42s ease,min-height .42s ease,height .42s ease,margin .38s ease,padding .38s ease,border-width .38s ease;
   will-change:opacity,transform,max-height;
 }
 .welcome.hidden{
   display:block!important;
+  min-height:0!important;
+  height:0!important;
   max-height:0!important;
   opacity:0!important;
   transform:translateY(-14px);
@@ -241,6 +243,7 @@ body.chart-zoom-open{overflow:hidden}
   padding-bottom:0!important;
   border-top-width:0!important;
   border-bottom-width:0!important;
+  box-shadow:none!important;
   pointer-events:none;
 }
 @media(prefers-reduced-motion:reduce){.welcome{transition:none!important}}
