@@ -650,3 +650,11 @@ body.chart-zoom-open{overflow:hidden}
 /* Official BEP wordmark on the login screen */
 .auth-gate .auth-mark.auth-wordmark{width:min(230px,72vw);height:auto;aspect-ratio:420/110;border-radius:0;background:transparent;overflow:visible;display:block;margin:0 auto 18px}
 .auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;height:auto;object-fit:contain}
+
+.topbar .brand-green{background:var(--forest);padding:8px 12px;border-radius:15px;box-shadow:0 5px 16px #062d2826;gap:3px}
+.topbar .brand-green .logo{width:178px;height:46px;object-fit:contain;border-radius:0;box-shadow:none}
+.topbar .brand-green .brand-tagline{color:#c7ded3;font-size:8px;letter-spacing:1.7px;margin-left:4px}
+.ai-connection-card .eyebrow{margin:0 0 4px}
+.ai-connection-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ai-connection-actions button{min-width:0}
+@media(max-width:390px){.ai-connection-actions{grid-template-columns:1fr}.topbar .brand-green .logo{width:155px;height:40px}}
