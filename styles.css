@@ -658,3 +658,14 @@ body.chart-zoom-open{overflow:hidden}
 .ai-connection-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .ai-connection-actions button{min-width:0}
 @media(max-width:390px){.ai-connection-actions{grid-template-columns:1fr}.topbar .brand-green .logo{width:155px;height:40px}}
+
+/* Shared BEP green wordmark and compact top navigation */
+.topbar{gap:12px;min-width:0}
+.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:var(--forest);padding:7px 9px;border-radius:13px;box-shadow:0 5px 16px #062d2826}
+.topbar .brand-green .logo{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}
+.topbar .head-actions{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;margin-left:auto}
+.topbar .settings-icon-btn{display:grid;place-items:center;width:42px;height:42px;padding:10px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--forest);font-size:0;flex:none}
+.topbar .settings-icon-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:13px;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
+.auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center}
+@media(max-width:390px){.topbar .brand-green{flex-basis:145px;max-width:145px}.topbar .brand-green .logo{max-width:127px}}
