@@ -176,3 +176,21 @@ body.chart-zoom-open{overflow:hidden}
 .recording-indicator i{width:8px;height:8px;border-radius:50%;background:#d94b3e;box-shadow:0 0 0 0 #d94b3e66;animation:recordPulse 1s infinite}
 @keyframes recordPulse{0%{box-shadow:0 0 0 0 #d94b3e66}70%{box-shadow:0 0 0 7px #d94b3e00}100%{box-shadow:0 0 0 0 #d94b3e00}}
 @keyframes micPulse{50%{transform:scale(.96);box-shadow:0 0 0 4px #d94b3e20}}
+
+
+/* Suggestions de commerces : liste tactile lisible */
+.merchant-suggest-wrap{position:relative}
+.merchant-suggestions{position:absolute;z-index:40;left:0;right:0;top:calc(100% + 6px);max-height:260px;overflow:auto;background:#fff;border:1px solid #dce8e1;border-radius:14px;box-shadow:0 12px 30px #173c2920;padding:5px}
+.merchant-suggestions.hidden{display:none}
+.merchant-suggestion{display:flex;width:100%;flex-direction:column;align-items:flex-start;gap:3px;padding:11px 12px;border:0;border-bottom:1px solid #edf2ef;background:#fff;color:var(--ink);text-align:left;cursor:pointer}
+.merchant-suggestion:last-child{border-bottom:0}
+.merchant-suggestion:active{background:#eff7f2}
+.merchant-suggestion strong{font-size:14px;font-weight:700}
+.merchant-suggestion small,.merchant-suggestion-empty{font-size:11px;color:#718078;line-height:1.4}
+.merchant-suggestion-empty{padding:12px}
+/* Bouton vocal minimal : point central, rouge pulsant pendant l'enregistrement */
+.field-mic{position:relative;font-size:0;display:inline-flex;align-items:center;justify-content:center}
+.field-mic::before{content:"";display:block;width:12px;height:12px;border-radius:50%;background:#6d9b84;box-shadow:0 0 0 5px #6d9b841c;transition:background .2s,box-shadow .2s}
+.field-mic.recording{animation:none;background:#fff7f5;border-color:#e8b0a7}
+.field-mic.recording::before{background:#d94b3e;box-shadow:0 0 0 0 #d94b3e55;animation:recordDot 1.15s ease-out infinite}
+@keyframes recordDot{0%{box-shadow:0 0 0 0 #d94b3e55}75%{box-shadow:0 0 0 9px #d94b3e00}100%{box-shadow:0 0 0 0 #d94b3e00}}
