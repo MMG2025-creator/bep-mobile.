@@ -194,3 +194,6 @@ body.chart-zoom-open{overflow:hidden}
 .field-mic.recording{animation:none;background:#fff7f5;border-color:#e8b0a7}
 .field-mic.recording::before{background:#d94b3e;box-shadow:0 0 0 0 #d94b3e55;animation:recordDot 1.15s ease-out infinite}
 @keyframes recordDot{0%{box-shadow:0 0 0 0 #d94b3e55}75%{box-shadow:0 0 0 9px #d94b3e00}100%{box-shadow:0 0 0 0 #d94b3e00}}
+
+.field-mic.recording{font-size:10px;font-weight:800;letter-spacing:.04em;color:#b42318;min-width:52px;background:#fff3f1;border-color:#e7aaa2}.field-mic.recording::before{display:none}
+#purchaseNotes{min-height:88px;resize:vertical;font:inherit}
