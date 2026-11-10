@@ -62,10 +62,44 @@ function renderCharts(){
  $("chartCounter").textContent=(chartIndex+1)+" / "+views.length;
  if(!$("chartZoom").hidden)syncChartZoom();
 }
+let chartZoomScale=1,chartZoomX=0,chartZoomY=0,chartZoomPointers=new Map(),chartZoomGesture=null,lastChartTap=0;
+function paintChartZoom(){
+ const canvas=$("chartZoomBody").querySelector(".chart-zoom-canvas");if(!canvas)return;
+ canvas.style.transform="translate("+chartZoomX+"px,"+chartZoomY+"px) scale("+chartZoomScale+")";
+}
+function resetChartZoom(){chartZoomScale=1;chartZoomX=0;chartZoomY=0;paintChartZoom()}
 function syncChartZoom(){
  const modal=$("chartZoom"),body=$("chartZoomBody");if(!modal||modal.hidden)return;
  $("chartZoomTitle").textContent=$("chartTitle").textContent;$("chartZoomPeriod").textContent=$("chartPeriod").textContent;
- body.innerHTML=$("activeChart").innerHTML;bindZoomPoints();
+ body.innerHTML='<div class="chart-zoom-viewport"><div class="chart-zoom-canvas">'+$("activeChart").innerHTML+'</div></div>';
+ chartZoomScale=1;chartZoomX=0;chartZoomY=0;bindZoomPoints();bindChartZoomGestures();paintChartZoom();
+}
+function bindChartZoomGestures(){
+ const viewport=$("chartZoomBody").querySelector(".chart-zoom-viewport");if(!viewport)return;
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),midpoint=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+ viewport.addEventListener("touchstart",e=>{
+  if(e.touches.length===2){e.preventDefault();const a=e.touches[0],b=e.touches[1],m=midpoint(a,b);chartZoomGesture={mode:"pinch",distance:distance({x:a.clientX,y:a.clientY},{x:b.clientX,y:b.clientY}),scale:chartZoomScale,mid:m,x:chartZoomX,y:chartZoomY};}
+  else if(e.touches.length===1&&chartZoomScale>1){const t=e.touches[0];chartZoomGesture={mode:"pan",x:t.clientX,y:t.clientY,baseX:chartZoomX,baseY:chartZoomY};}
+ },{passive:false});
+ viewport.addEventListener("touchmove",e=>{
+  if(!chartZoomGesture)return;
+  if(chartZoomGesture.mode==="pinch"&&e.touches.length===2){
+   e.preventDefault();const a=e.touches[0],b=e.touches[1],m=midpoint(a,b),d=distance({x:a.clientX,y:a.clientY},{x:b.clientX,y:b.clientY}),next=Math.max(1,Math.min(4,chartZoomGesture.scale*d/Math.max(1,chartZoomGesture.distance)));
+   const rect=viewport.getBoundingClientRect(),px=chartZoomGesture.mid.x-rect.left,py=chartZoomGesture.mid.y-rect.top,ratio=next/chartZoomScale;
+   chartZoomX=(m.x-rect.left)-(px-chartZoomX)*ratio;chartZoomY=(m.y-rect.top)-(py-chartZoomY)*ratio;chartZoomScale=next;paintChartZoom();
+  }else if(chartZoomGesture.mode==="pan"&&e.touches.length===1){
+   e.preventDefault();const t=e.touches[0];chartZoomX=chartZoomGesture.baseX+t.clientX-chartZoomGesture.x;chartZoomY=chartZoomGesture.baseY+t.clientY-chartZoomGesture.y;paintChartZoom();
+  }
+ },{passive:false});
+ viewport.addEventListener("touchend",e=>{
+  if(e.changedTouches.length===1&&e.touches.length===0&&!chartZoomGesture){
+   const now=Date.now();if(now-lastChartTap<320)resetChartZoom();lastChartTap=now;
+  }
+  if(e.touches.length===0)chartZoomGesture=null;
+  else if(e.touches.length===1&&chartZoomScale>1){const t=e.touches[0];chartZoomGesture={mode:"pan",x:t.clientX,y:t.clientY,baseX:chartZoomX,baseY:chartZoomY};}
+ },{passive:true});
+ viewport.addEventListener("dblclick",e=>{e.preventDefault();resetChartZoom()});
+ viewport.addEventListener("wheel",e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();chartZoomScale=Math.max(1,Math.min(4,chartZoomScale*(e.deltaY<0?1.15:.87)));paintChartZoom()},{passive:false});
 }
 function bindZoomPoints(){
  const body=$("chartZoomBody"),detail=$("chartZoomDetail");if(!body)return;
@@ -86,7 +120,7 @@ function openChartZoom(){
  $("chartZoomClose").focus();
 }
 function closeChartZoom(){
- const modal=$("chartZoom");if(!modal)return;modal.hidden=true;document.body.classList.remove("chart-zoom-open");
+ const modal=$("chartZoom");if(!modal)return;modal.hidden=true;document.body.classList.remove("chart-zoom-open");chartZoomPointers.clear();chartZoomGesture=null;
 }
 $("activeChart").addEventListener("click",e=>{if(e.target.closest(".chart-empty"))return;openChartZoom()});
 $("chartZoomClose").addEventListener("click",closeChartZoom);
