@@ -669,3 +669,14 @@ body.chart-zoom-open{overflow:hidden}
 .auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:0;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
 .auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center}
 @media(max-width:390px){.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}}
+
+/* Compact, left-anchored brand header */
+.topbar{height:64px!important;min-height:64px!important;padding:0 18px!important;gap:10px!important;align-items:center!important}
+.topbar .brand-green{flex:0 0 116px!important;width:116px!important;max-width:116px!important;min-width:116px!important;align-items:center!important;justify-content:flex-start!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+.topbar .brand-green .logo{display:block!important;width:116px!important;max-width:116px!important;height:40px!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:left center!important}
+.topbar .head-actions{margin-left:auto!important;flex:0 0 auto!important;align-items:center!important}
+.topbar .settings-icon-btn{width:44px!important;height:44px!important;padding:10px!important;border:1px solid #dbe7e2!important;border-radius:13px!important;background:#fff!important;color:#0b493d!important;box-shadow:0 2px 7px #002f2512!important}
+.topbar .settings-icon-btn svg{display:block;width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.auth-gate .auth-mark.auth-wordmark{width:116px!important;max-width:116px!important;height:40px!important;aspect-ratio:auto!important;padding:0!important;margin:0 0 18px!important;background:transparent!important;border:0!important;border-radius:0!important;overflow:visible!important;justify-content:flex-start!important}
+.auth-gate .auth-mark.auth-wordmark img{width:116px!important;max-width:116px!important;height:40px!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:left center!important}
+@media(max-width:390px){.topbar{padding:0 16px!important}.topbar .brand-green,.topbar .brand-green .logo{width:108px!important;max-width:108px!important;min-width:108px!important}.topbar .brand-green .logo{height:38px!important}}
