@@ -60,8 +60,8 @@
  $("showLogin").addEventListener("click",()=>mode(false));
  $("showRegister").addEventListener("click",()=>mode(true));
  $("googleLogin").addEventListener("click",()=>location.href="/api/auth/google");
- register.addEventListener("submit",async e=>{e.preventDefault();msg.textContent="Création du compte…";try{const r=await fetch("/api/auth/register",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email:$("registerEmail").value,password:$("registerPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Création impossible.");location.reload()}catch(err){msg.textContent=err.message}});
- login.addEventListener("submit",async e=>{e.preventDefault();msg.textContent="Connexion…";try{const r=await fetch("/api/auth/login",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value,password:$("loginPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Connexion impossible.");location.reload()}catch(err){msg.textContent=err.message}});
+ register.onsubmit=async e=>{e.preventDefault();msg.textContent="Création du compte…";try{const r=await fetch("/api/auth/register",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email:$("registerEmail").value,password:$("registerPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Création impossible.");location.reload()}catch(err){msg.textContent=err.message}};
+ login.onsubmit=async e=>{e.preventDefault();msg.textContent="Connexion…";try{const r=await fetch("/api/auth/login",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value,password:$("loginPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Connexion impossible.");location.reload()}catch(err){msg.textContent=err.message}});
 })();
 </script>
 <script src="./pwa.js"></script>
