@@ -47,3 +47,27 @@
 .chart-carousel .chart-body:has(.monthly-chart-svg){display:block;min-height:0;padding:4px 0}
 .chart-carousel .chart-body:has(.monthly-chart-svg) .chart-note{margin-top:0}
 @media(prefers-reduced-motion:reduce){.chart-enter{animation:none}}
+
+/* Full-screen chart inspection */
+.chart-zoom[hidden]{display:none}
+.chart-zoom{position:fixed;inset:0;z-index:120;background:rgba(8,25,20,.72);display:grid;place-items:center;padding:14px;backdrop-filter:blur(5px)}
+.chart-zoom-panel{width:min(100%,680px);max-height:min(92dvh,900px);overflow:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 24px 70px #061a1290;animation:chartZoomIn .25s ease-out both}
+.chart-zoom-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:14px}
+.chart-zoom-head h2{font:800 20px Manrope;margin:5px 0}
+.chart-zoom-close{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--line);border-radius:50%;background:#f5f8f6;color:var(--forest);font-size:27px;line-height:1;cursor:pointer}
+.chart-zoom-body{padding:20px 2px;min-height:180px}
+.chart-zoom-body .donut-layout{grid-template-columns:minmax(180px,.9fr) minmax(0,1.1fr);gap:18px}
+.chart-zoom-body .donut-svg{max-width:300px;margin:auto}
+.chart-zoom-body .donut-svg circle.chart-data-point{stroke-width:28;cursor:pointer;transition:stroke-width .15s,opacity .15s}
+.chart-zoom-body .donut-svg circle.chart-data-point.selected{stroke-width:36}
+.chart-zoom-body .monthly-chart-svg{max-height:420px}
+.chart-zoom-body .chart-legend{gap:13px}
+.chart-zoom-body .chart-legend-item{font-size:13px;grid-template-columns:11px minmax(0,1fr) auto;gap:9px}
+.chart-zoom-body .chart-legend-item b{font-size:13px}
+.chart-zoom-body .chart-data-point.selected rect{stroke:#d6a85f;stroke-width:3}
+.chart-zoom-detail{margin:0;background:var(--mint);color:#245c47;border-radius:12px;padding:13px;font-size:13px;line-height:1.5}
+body.chart-zoom-open{overflow:hidden}
+.chart-carousel .chart-body{cursor:zoom-in}
+@keyframes chartZoomIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:520px){.chart-zoom{padding:8px}.chart-zoom-panel{padding:16px;border-radius:18px;max-height:94dvh}.chart-zoom-body .donut-layout{grid-template-columns:1fr;gap:14px}.chart-zoom-body .donut-svg{max-width:240px}.chart-zoom-body .chart-legend{grid-template-columns:1fr 1fr;gap:10px}.chart-zoom-body .chart-legend-item{font-size:11px}.chart-zoom-body .chart-legend-item b{font-size:11px}.chart-zoom-body{padding:14px 0}}
+@media(prefers-reduced-motion:reduce){.chart-zoom-panel{animation:none}}
