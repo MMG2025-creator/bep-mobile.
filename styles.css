@@ -122,3 +122,9 @@ body.chart-zoom-open{overflow:hidden}
 .metric-card span{min-height:0;line-height:1.3;color:#64776f}
 .metric-card strong{margin-top:7px;line-height:1.15;color:#176b50}
 @media(max-width:370px){.metric-card{height:88px;padding:10px 7px 8px}}
+
+/* Hauteur au plus près du contenu des indicateurs */
+.metric-card{height:76px;min-height:76px;padding:10px 10px 7px;gap:0}
+.metric-card span{min-height:0;line-height:1.2}
+.metric-card strong{margin-top:5px;line-height:1.05}
+@media(max-width:370px){.metric-card{height:72px;min-height:72px;padding:9px 7px 6px}}
