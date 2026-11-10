@@ -144,3 +144,17 @@ body.chart-zoom-open{overflow:hidden}
 .purchase-mode{min-width:0;min-height:78px;border:1px solid var(--line);border-radius:13px;background:#f7faf8;color:var(--forest);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12px}
 .purchase-mode span{font-size:22px;line-height:1}.purchase-mode.active{border-color:#176b50;background:#e9f4ef;box-shadow:inset 0 0 0 1px #176b50;color:#176b50}
 .purchase-tool{padding:14px;background:#f7faf8;border:1px solid var(--line);border-radius:13px;margin:0 0 14px}.purchase-tool.hidden{display:none}.purchase-row{align-items:center;gap:8px}.purchase-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}.purchase-row-actions b{white-space:nowrap}.purchase-row-actions button{font-size:10px;padding:4px}.purchase-delete{color:var(--red)}
+
+
+/* Actions d'édition et suppression des enregistrements */
+.record-actions,.goal-row-actions,.record-form-actions{display:flex;align-items:center;gap:8px}
+.goal-row-actions{gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.record-form-actions{gap:8px}
+.record-form-actions .primary{flex:1}
+.record-action{width:32px;height:32px;min-width:32px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0;font:600 19px/1 'DM Sans',sans-serif;cursor:pointer;touch-action:manipulation}
+.record-action:focus-visible{outline:2px solid #9bcbb6;outline-offset:2px}
+.record-action.edit-action{color:var(--green);font-size:18px}
+.record-action.delete-action{color:var(--red);font-size:22px}
+.record-action:active{transform:scale(.94)}
+.purchase-row-actions{gap:7px}
+@media(max-width:390px){.rowitem{gap:7px}.record-actions,.goal-row-actions{gap:5px}.record-action{width:30px;height:30px;min-width:30px}}
