@@ -222,3 +222,6 @@ body.chart-zoom-open{overflow:hidden}
 .welcome.hidden{display:none}
 
 .home-tab{width:48px;min-width:48px;height:42px;padding:9px;display:inline-flex;align-items:center;justify-content:center}.home-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Mobile-first navigation: all five destinations visible without horizontal swiping */
+@media(max-width:520px){.tabs{display:grid;grid-template-columns:44px repeat(4,minmax(0,1fr));gap:6px;overflow:visible;padding:2px 0 13px}.tab{min-width:0;width:100%;padding:10px 3px;font-size:clamp(9px,2.75vw,12px);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}.home-tab{width:44px;min-width:44px;height:auto;padding:9px}.coach-tab svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.coach-tab span{white-space:nowrap}}
