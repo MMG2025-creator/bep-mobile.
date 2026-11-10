@@ -218,3 +218,5 @@ body.chart-zoom-open{overflow:hidden}
 .purchase-actions{display:grid;gap:10px;margin-top:8px}.purchase-actions button{width:100%;min-height:54px}.save-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:5px;border:1.7px solid currentColor;border-radius:4px;font-size:15px;line-height:1;vertical-align:middle}.purchase-actions #purchaseNew{background:#e9f4ee;color:#176b53;border:1px solid #cfe4d8}
 
 .purchase-actions .save-icon-svg,.purchase-actions .new-icon-svg{width:19px;height:19px;display:inline-block;vertical-align:-4px;margin-right:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}.purchase-actions #purchaseNew{display:flex;align-items:center;justify-content:center;gap:2px}
+
+.welcome.hidden{display:none}
