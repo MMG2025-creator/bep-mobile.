@@ -197,3 +197,14 @@ body.chart-zoom-open{overflow:hidden}
 
 .field-mic.recording{font-size:10px;font-weight:800;letter-spacing:.04em;color:#b42318;min-width:52px;background:#fff3f1;border-color:#e7aaa2}.field-mic.recording::before{display:none}
 #purchaseNotes{min-height:88px;resize:vertical;font:inherit}
+
+/* Responsive purchase form: prevent voice controls and two-column fields from overflowing */
+*,*::before,*::after{box-sizing:border-box}
+#purchaseForm{width:100%;min-width:0}
+#purchaseForm .field,#purchaseForm .two,#purchaseForm .two>.field{min-width:0;width:100%}
+#purchaseForm .two{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#purchaseForm .voice-field-wrap{width:100%;min-width:0;gap:6px}
+#purchaseForm .voice-field-wrap>input,#purchaseForm .voice-field-wrap>textarea{width:0;min-width:0;flex:1 1 0}
+#purchaseForm input,#purchaseForm textarea,#purchaseForm select{max-width:100%;min-width:0}
+#purchaseNotes{width:100%;min-height:88px;resize:vertical}
+@media(max-width:420px){#purchaseForm .two{grid-template-columns:minmax(0,1fr)} }
