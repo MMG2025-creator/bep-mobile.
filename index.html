@@ -75,7 +75,8 @@
     <div class="coach-icon">✦</div>
     <div><h2>Coach BEP</h2><p class="muted">Un accompagnement financier fondé sur tes données BEP.</p></div>
   </div>
-  <div class="coach-privacy"><span>●</span> Moteur BEP local · Tes données restent dans ton espace BEP</div>
+  <div class="coach-privacy" id="coachAiMode"><span>●</span> Coach BEP · Mode local</div>
+  <div class="coach-ai-activation"><p id="coachAiDescription" class="hint">Tu peux activer le Coach IA gratuit, sans créer de compte externe ni saisir de clé.</p><button type="button" class="primary full" id="coachActivateBtn">Activer le Coach IA gratuit</button><p class="hint" id="coachAiStatus" role="status">Quota gratuit mensuel proposé par BEP.</p></div>
   <div class="coach-focus">
     <h3>Que souhaites-tu travailler ?</h3>
     <div class="coach-quick-actions">
@@ -94,7 +95,7 @@
     <textarea id="coachPromptInput" rows="2" maxlength="1200" placeholder="Écris ta question ou décris ta situation…" required></textarea>
     <button class="primary" type="submit" aria-label="Envoyer au coach BEP">Envoyer</button>
   </form>
-  <p class="coach-disclaimer">Le coach BEP v1 applique des règles d'analyse locales. Il ne s'agit pas encore d'un modèle conversationnel externe. Les conseils ne remplacent pas un avis financier professionnel.</p>
+  <p class="coach-disclaimer">Le Coach BEP peut utiliser le moteur local ou le moteur IA mutualisé selon sa disponibilité. Les conseils ne remplacent pas un avis financier professionnel.</p>
 </article>
 </section>
 <section id="settings" class="panel">
@@ -110,6 +111,6 @@
 <div id="toast" class="toast" role="status"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="./app.js?v=67"></script>
+<script src="./app.js?v=68"></script>
 <script src="./pwa.js?v=8"></script>
 </body></html>
