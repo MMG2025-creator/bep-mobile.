@@ -27,3 +27,18 @@
 .chart-carousel-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;margin-top:8px;color:var(--muted);font-size:10px}
 .chart-carousel-footer span:first-child{font-weight:700;color:var(--green)}
 @media(min-width:620px){.chart-carousel{padding:22px}.chart-carousel .donut-layout{grid-template-columns:minmax(160px,.9fr) minmax(0,1.1fr)}.chart-carousel .donut-svg{max-width:190px}.chart-carousel .chart-legend{gap:9px}}
+
+/* Smooth, arrow-free chart carousel and responsive chart readability */
+.chart-stage{padding:0 2px;overflow:hidden}
+.chart-carousel .chart-body{touch-action:pan-y;overscroll-behavior-x:contain}
+.chart-enter{animation:chartSlideFade .42s cubic-bezier(.22,.7,.25,1) both}
+@keyframes chartSlideFade{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.chart-carousel-footer{justify-content:center}
+.chart-carousel-footer span:last-child{text-align:center}
+.donut-total{font-size:13px}
+.chart-legend-item{grid-template-columns:9px minmax(0,1fr) auto;gap:7px}
+.chart-legend-item b{font-variant-numeric:tabular-nums}
+.bar-chart{gap:clamp(4px,2vw,10px);height:205px}
+.bar-column>b{font-size:clamp(8px,2.3vw,10px);font-variant-numeric:tabular-nums}
+.bar-track{min-height:0}
+@media(prefers-reduced-motion:reduce){.chart-enter{animation:none}}
