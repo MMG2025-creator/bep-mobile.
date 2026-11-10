@@ -71,3 +71,41 @@ body.chart-zoom-open{overflow:hidden}
 @keyframes chartZoomIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:520px){.chart-zoom{padding:8px}.chart-zoom-panel{padding:16px;border-radius:18px;max-height:94dvh}.chart-zoom-body .donut-layout{grid-template-columns:1fr;gap:14px}.chart-zoom-body .donut-svg{max-width:240px}.chart-zoom-body .chart-legend{grid-template-columns:1fr 1fr;gap:10px}.chart-zoom-body .chart-legend-item{font-size:11px}.chart-zoom-body .chart-legend-item b{font-size:11px}.chart-zoom-body{padding:14px 0}}
 @media(prefers-reduced-motion:reduce){.chart-zoom-panel{animation:none}}
+
+/* Fourth chart: savings capacity, designed for a wide reading area */
+.capacity-chart{width:100%;padding:10px 4px 2px}
+.capacity-chart-plot{display:grid;gap:20px}
+.capacity-row{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(120px,3fr) minmax(90px,.9fr);align-items:center;gap:14px;color:var(--forest);font-size:13px}
+.capacity-row>span{font-weight:650}
+.capacity-row>b{text-align:right;font-variant-numeric:tabular-nums}
+.capacity-track{height:17px;border-radius:99px;background:#edf2ef;overflow:hidden}
+.capacity-track i{display:block;height:100%;border-radius:99px;min-width:0;transition:width .35s ease}
+.chart-zoom-wide .chart-zoom-panel{width:min(96vw,1120px);max-height:94dvh;padding:24px}
+.chart-zoom-wide .chart-zoom-body{padding:26px 8px 18px;min-height:260px}
+.chart-zoom-wide .chart-zoom-viewport{min-height:260px}
+.chart-zoom-wide .capacity-chart-plot{gap:26px}
+.chart-zoom-wide .capacity-row{grid-template-columns:minmax(210px,1.1fr) minmax(240px,3fr) minmax(120px,.9fr);gap:20px;font-size:15px}
+.chart-zoom-wide .capacity-track{height:24px}
+.chart-zoom-wide .chart-zoom-detail{margin-top:8px}
+@media(max-width:620px){
+ .capacity-row{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+ .capacity-row .capacity-track{grid-column:1/-1;grid-row:2}
+ .capacity-row>b{grid-column:2;grid-row:1}
+ .chart-zoom-wide{padding:4px}
+ .chart-zoom-wide .chart-zoom-panel{width:100%;max-height:98dvh;height:96dvh;border-radius:14px;padding:14px}
+ .chart-zoom-wide .chart-zoom-head h2{font-size:18px}
+ .chart-zoom-wide .chart-zoom-body{overflow-x:auto;padding:18px 0}
+ .chart-zoom-wide .chart-zoom-viewport{min-width:620px;min-height:300px}
+ .chart-zoom-wide .capacity-chart{padding:14px 10px}
+ .chart-zoom-wide .capacity-row{grid-template-columns:180px minmax(240px,1fr) 120px;gap:14px;font-size:13px}
+ .chart-zoom-wide .capacity-row .capacity-track{grid-column:auto;grid-row:auto}
+ .chart-zoom-wide .capacity-row>b{grid-column:auto;grid-row:auto}
+ .chart-zoom-wide .chart-zoom-detail{position:sticky;bottom:0}
+}
+@media(orientation:landscape) and (max-height:600px){
+ .chart-zoom-wide .chart-zoom-panel{width:98vw;height:96dvh;max-height:96dvh;overflow:auto}
+ .chart-zoom-wide .chart-zoom-head{padding-bottom:8px}
+ .chart-zoom-wide .chart-zoom-body{padding:10px 4px}
+ .chart-zoom-wide .chart-zoom-viewport{min-height:220px}
+ .chart-zoom-wide .capacity-chart-plot{gap:14px}
+}
