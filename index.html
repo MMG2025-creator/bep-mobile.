@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg">
-<link rel="apple-touch-icon" href="./icons/icon.svg"><link rel="stylesheet" href="./styles.css?v=20">
+<link rel="apple-touch-icon" href="./icons/icon.svg"><link rel="stylesheet" href="./styles.css?v=21">
 <title>BEP — Build, Earn & Preserve</title>
 </head>
 <body>
@@ -56,6 +56,24 @@
 <article class="card ai-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiPurchases" class="ai-advice">Conseil avant dépense en cours…</p></article>
 
 <article class="card"><h2>Avant de dépenser</h2><p class="muted">L'objectif n'est pas d'interdire l'achat, mais de décider en conscience.</p>
+<div class="purchase-modes" role="group" aria-label="Mode de saisie des achats">
+<button type="button" class="purchase-mode active" data-mode="manual"><span>✎</span><b>Saisie manuelle</b></button>
+<button type="button" class="purchase-mode" data-mode="voice"><span>🎙</span><b>Dictée vocale</b></button>
+<button type="button" class="purchase-mode" data-mode="receipt"><span>▤</span><b>Photo du ticket</b></button>
+</div>
+<div id="voicePanel" class="purchase-tool hidden">
+<h3>Décrire ton achat</h3><p class="hint">Exemple : « J’ai acheté des courses chez Carrefour à Bois-Colombes pour 42,50 euros. »</p>
+<button type="button" class="secondary" id="startVoice">Démarrer la dictée</button>
+<div class="field"><label for="voiceTranscript">Transcription modifiable</label><textarea id="voiceTranscript" rows="3" placeholder="La transcription apparaîtra ici. Tu peux aussi saisir le texte."></textarea></div>
+<p id="voiceStatus" class="hint" aria-live="polite"></p><button type="button" class="primary" id="applyVoice">Analyser et transférer au formulaire</button>
+</div>
+<div id="receiptPanel" class="purchase-tool hidden">
+<h3>Photographier un ticket</h3><p class="hint">Choisis une photo depuis ton téléphone. Le texte sera extrait localement dans le navigateur ; vérifie le montant avant l’enregistrement.</p>
+<div class="field"><label for="receiptFile">Photo du ticket</label><input id="receiptFile" type="file" accept="image/*" capture="environment"></div>
+<p id="receiptStatus" class="hint" aria-live="polite"></p>
+<div class="field"><label for="receiptText">Texte reconnu (modifiable)</label><textarea id="receiptText" rows="5" placeholder="Le texte du ticket apparaîtra ici."></textarea></div>
+<button type="button" class="primary" id="applyReceipt">Analyser et transférer au formulaire</button>
+</div>
 <form id="purchaseForm"><div class="field"><label>Enseigne ou libellé</label><input id="merchant" required maxlength="70" placeholder="Ex. Courses, magasin..."></div><div class="two"><div class="field"><label>Ville (facultatif)</label><input id="city" maxlength="60" placeholder="Ville"></div><div class="field"><label>Montant (€)</label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0"></div></div><div class="field"><label>Catégorie</label><select id="purchaseCategory"><option>Alimentation</option><option>Mode</option><option>Technologie</option><option>Maison</option><option>Loisirs</option><option>Transport</option><option>Beauté</option><option>Autre</option></select></div><div class="field"><label>Comment décris-tu ton état actuel ?</label><select id="psychology"><option value="reflective">Réfléchi et calme</option><option value="spontaneous">Envie spontanée</option><option value="impulsive">Impulsif / difficile à différer</option><option value="pressure">Sous pression / FOMO</option></select></div><div class="field"><label>Est-ce un besoin réel ?</label><select id="need"><option value="yes">Oui</option><option value="uncertain">Je ne suis pas sûr</option><option value="no">Non, c'est une envie</option></select></div><div class="field"><label>Quand envisages-tu l'achat ?</label><select id="delay"><option value="now">Maintenant</option><option value="24h">Après 24 heures</option><option value="7d">Après 7 jours</option></select></div><button class="primary">Analyser et enregistrer</button></form><div id="purchaseAdvice" class="advice hidden" aria-live="polite"></div></article>
 <article class="card"><h2>Historique des achats</h2><div id="purchaseRows" class="rows empty">Aucun achat enregistré.</div></article>
 </section>
@@ -72,6 +90,6 @@
 </div>
 <div id="chartZoom" class="chart-zoom" hidden role="dialog" aria-modal="true" aria-labelledby="chartZoomTitle"><div class="chart-zoom-panel"><div class="chart-zoom-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartZoomTitle">Graphique</h2><span id="chartZoomPeriod" class="chart-period"></span></div><button type="button" id="chartZoomClose" class="chart-zoom-close" aria-label="Fermer le graphique agrandi">×</button></div><div id="chartZoomBody" class="chart-zoom-body"></div><p id="chartZoomDetail" class="chart-zoom-detail" aria-live="polite">Sélectionne une part ou une barre pour voir le détail.</p></div></div>
 <div id="toast" class="toast" role="status"></div>
-<script src="./app.js?v=19"></script>
+<script src="./app.js?v=20"></script>
 <script src="./pwa.js?v=7"></script>
 </body></html>
