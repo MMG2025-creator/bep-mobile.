@@ -158,3 +158,9 @@ body.chart-zoom-open{overflow:hidden}
 .record-action:active{transform:scale(.94)}
 .purchase-row-actions{gap:7px}
 @media(max-width:390px){.rowitem{gap:7px}.record-actions,.goal-row-actions{gap:5px}.record-action{width:30px;height:30px;min-width:30px}}
+
+.purchase-tool h3{margin:2px 0 6px;font:700 15px Manrope;color:var(--forest)}
+.purchase-tool textarea{width:100%;min-width:0;resize:vertical;border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px;color:var(--ink);font:inherit;font-size:14px;line-height:1.5}
+.purchase-tool textarea:focus{outline:2px solid #9bcbb6;border-color:var(--green)}
+.purchase-tool .primary,.purchase-tool .secondary{margin-top:4px}
+.purchase-mode b{font-size:11px}
