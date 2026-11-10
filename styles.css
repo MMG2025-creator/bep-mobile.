@@ -591,3 +591,6 @@ body.chart-zoom-open{overflow:hidden}
     flex:0 0 auto!important;
   }
 }
+
+/* Secure text entries: visually masked without exposing password-type fields to credential managers */
+.secure-entry{-webkit-text-security:disc!important;text-security:disc!important;}
