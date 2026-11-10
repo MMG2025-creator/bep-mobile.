@@ -228,3 +228,26 @@ body.chart-zoom-open{overflow:hidden}
 
 /* Mobile-first navigation: all five destinations visible without horizontal swiping */
 @media(max-width:520px){.tabs{display:grid;grid-template-columns:44px repeat(4,minmax(0,1fr));gap:6px;overflow:visible;padding:2px 0 13px}.tab{min-width:0;width:100%;padding:10px 3px;font-size:clamp(9px,2.75vw,12px);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}.home-tab{width:44px;min-width:44px;height:auto;padding:9px}.coach-tab svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.coach-tab span{white-space:nowrap}}
+
+/* Import PDF — budget */
+.pdf-import-card .field input[type=file]{font-size:12px;padding:10px}
+.pdf-import-card .full{width:100%}
+.pdf-review{margin-top:16px;border-top:1px solid var(--line);padding-top:16px}
+.pdf-review-head h3{margin:0 0 5px}
+.pdf-review-summary{display:flex;flex-wrap:wrap;gap:7px 12px;padding:11px;background:var(--mint);border-radius:11px;color:#245c47;font-size:11px;margin:12px 0}
+.pdf-review-summary span{white-space:nowrap}
+.pdf-transaction{border:1px solid var(--line);border-radius:12px;padding:12px;margin:9px 0;background:#fff}
+.pdf-transaction.is-duplicate{background:#f8f8f8;opacity:.8}
+.pdf-transaction-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pdf-check{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700}
+.pdf-check input{accent-color:var(--green);width:17px;height:17px}
+.pdf-date{font-size:10px;color:var(--muted)}
+.pdf-description{display:block;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.pdf-row-warning{font-size:10px;color:#89521c;margin:5px 0}
+.pdf-row-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pdf-row-fields label{display:grid;gap:5px;font-size:10px;font-weight:700}
+.pdf-row-fields label:last-child{grid-column:1/-1}
+.pdf-row-fields input,.pdf-row-fields select{width:100%;min-width:0;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px;color:var(--ink);font:inherit;font-size:12px}
+.pdf-review-actions{display:grid;gap:8px;margin-top:14px}
+.pdf-review-actions button:disabled{opacity:.45;cursor:not-allowed}
+@media(min-width:560px){.pdf-review-actions{grid-template-columns:1fr 1fr}.pdf-row-fields{grid-template-columns:1fr 1fr 1fr}.pdf-row-fields label:last-child{grid-column:auto}}
