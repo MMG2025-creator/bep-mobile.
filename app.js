@@ -29,7 +29,13 @@ $("chatgptBtn").onclick=async()=>{let prompt="Coach BEP : analyse ces données a
 const CHART_COLORS=["#176b50","#79b99b","#b9e8d0","#d6a85f","#7b91ad","#c78e86","#9a83b7","#8b9a92"];
 function chartEmpty(message){return '<div class="chart-empty">'+message+'</div>'}
 function compactMoney(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",notation:"compact",maximumFractionDigits:1}).format(Number(n)||0)}
-function donutChart(items,total){if(!items.length||total<=0)return chartEmpty("Ajoute des données pour afficher ce graphique.");const circumference=2*Math.PI*70;let offset=0;const circles=items.map((item,i)=>{const value=Math.max(0,Number(item.value)||0);const length=value/total*circumference;const c='<circle cx="100" cy="100" r="70" fill="none" stroke="'+CHART_COLORS[i%CHART_COLORS.length]+'" stroke-width="25" stroke-dasharray="'+length+' '+(circumference-length)+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 100 100)"/>';offset+=length;return c}).join("");const legend=items.map((item,i)=>'<div class="chart-legend-item"><i style="background:'+CHART_COLORS[i%CHART_COLORS.length]+'"></i><span>'+esc(item.label)+'</span><b>'+money(item.value)+'</b></div>').join("");return '<div class="donut-layout"><svg class="donut-svg" viewBox="0 0 200 200" role="img" aria-label="Graphique de répartition"><circle cx="100" cy="100" r="70" fill="none" stroke="#edf2ef" stroke-width="25"/>'+circles+'<text x="100" y="96" text-anchor="middle" class="donut-total">'+compactMoney(total)+'</text><text x="100" y="116" text-anchor="middle" class="donut-caption">Total</text></svg><div class="chart-legend">'+legend+'</div></div>'}
+function donutChart(items,total){
+ if(!items.length||total<=0)return chartEmpty("Ajoute des données pour afficher ce graphique.");
+ const circumference=2*Math.PI*70;let offset=0;
+ const circles=items.map((item,i)=>{const value=Math.max(0,Number(item.value)||0);const length=value/total*circumference;const c='<circle class="chart-data-point" data-label="'+esc(item.label)+'" data-value="'+value+'" cx="100" cy="100" r="70" fill="none" stroke="'+CHART_COLORS[i%CHART_COLORS.length]+'" stroke-width="25" stroke-dasharray="'+length+' '+(circumference-length)+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 100 100)"/>';offset+=length;return c}).join("");
+ const legend=items.map((item,i)=>'<div class="chart-legend-item"><i style="background:'+CHART_COLORS[i%CHART_COLORS.length]+'"></i><span>'+esc(item.label)+'</span><b>'+money(item.value)+'</b></div>').join("");
+ return '<div class="donut-layout"><svg class="donut-svg" viewBox="0 0 200 200" role="img" aria-label="Graphique de répartition"><circle cx="100" cy="100" r="70" fill="none" stroke="#edf2ef" stroke-width="25"/>'+circles+'<text x="100" y="96" text-anchor="middle" class="donut-total">'+compactMoney(total)+'</text><text x="100" y="116" text-anchor="middle" class="donut-caption">Total</text></svg><div class="chart-legend">'+legend+'</div></div>'
+}
 let chartIndex=0;
 const chartViews=["budget","expenses","monthly"];
 function renderCharts(){
@@ -43,7 +49,7 @@ function renderCharts(){
  (state.expenses||[]).forEach(p=>{const d=new Date(p.at);if(Number.isNaN(d.getTime()))return;const m=months.find(x=>x.key===d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"));if(m)m.value+=Math.max(0,Number(p.amount)||0)});
  const max=Math.max(1,...months.map(x=>x.value));
  const grid=[0,1,2,3].map(i=>{const y=35+i*48;return '<line x1="35" y1="'+y+'" x2="565" y2="'+y+'" stroke="#e8efeb" stroke-width="1"/>'}).join("");
- const bars=months.map((m,i)=>{const x=57+i*88,h=m.value>0?Math.max(3,m.value/max*135):0,y=190-h;return '<g><title>'+esc(m.label)+' : '+money(m.value)+'</title><rect x="'+x+'" y="'+y+'" width="42" height="'+h+'" rx="7" fill="#176b50"/><text x="'+(x+21)+'" y="'+Math.max(22,y-9)+'" text-anchor="middle" fill="#52665d" font-size="11">'+esc(compactMoney(m.value))+'</text><text x="'+(x+21)+'" y="215" text-anchor="middle" fill="#71817b" font-size="12">'+esc(m.label)+'</text></g>'}).join("");
+ const bars=months.map((m,i)=>{const x=57+i*88,h=m.value>0?Math.max(3,m.value/max*135):0,y=190-h;return '<g class="chart-data-point" data-label="'+esc(m.label)+'" data-value="'+m.value+'"><title>'+esc(m.label)+' : '+money(m.value)+'</title><rect x="'+x+'" y="'+y+'" width="42" height="'+h+'" rx="7" fill="#176b50"/><text x="'+(x+21)+'" y="'+Math.max(22,y-9)+'" text-anchor="middle" fill="#52665d" font-size="11">'+esc(compactMoney(m.value))+'</text><text x="'+(x+21)+'" y="215" text-anchor="middle" fill="#71817b" font-size="12">'+esc(m.label)+'</text></g>'}).join("");
  const monthlyHtml=months.some(m=>m.value>0)?'<svg class="monthly-chart-svg" viewBox="0 0 600 235" role="img" aria-label="Évolution des dépenses sur les six derniers mois">'+grid+bars+'</svg><p class="chart-note">Montants dépensés par mois · les mois sans dépense restent à zéro.</p>':chartEmpty("Enregistre des achats pour afficher leur évolution mensuelle.");
  const views=[
   {title:"Répartition du budget",period:"Mensuel",html:donutChart(budgetItems,budgetItems.reduce((n,x)=>n+x.value,0))},
@@ -54,7 +60,39 @@ function renderCharts(){
  $("chartTitle").textContent=view.title;$("chartPeriod").textContent=view.period;
  const stage=$("activeChart");stage.classList.remove("chart-enter");stage.innerHTML=view.html;void stage.offsetWidth;stage.classList.add("chart-enter");
  $("chartCounter").textContent=(chartIndex+1)+" / "+views.length;
+ if(!$("chartZoom").hidden)syncChartZoom();
 }
+function syncChartZoom(){
+ const modal=$("chartZoom"),body=$("chartZoomBody");if(!modal||modal.hidden)return;
+ $("chartZoomTitle").textContent=$("chartTitle").textContent;$("chartZoomPeriod").textContent=$("chartPeriod").textContent;
+ body.innerHTML=$("activeChart").innerHTML;bindZoomPoints();
+}
+function bindZoomPoints(){
+ const body=$("chartZoomBody"),detail=$("chartZoomDetail");if(!body)return;
+ body.querySelectorAll(".chart-data-point").forEach(point=>{
+  point.style.cursor="pointer";
+  point.addEventListener("click",()=>{
+   const label=point.dataset.label||"Valeur",value=Number(point.dataset.value)||0;
+   detail.textContent=label+" : "+money(value);
+   body.querySelectorAll(".chart-data-point").forEach(p=>p.classList.remove("selected"));
+   point.classList.add("selected");
+  });
+ });
+}
+function openChartZoom(){
+ const modal=$("chartZoom");if(!modal)return;
+ modal.hidden=false;document.body.classList.add("chart-zoom-open");syncChartZoom();
+ $("chartZoomDetail").textContent="Sélectionne une part ou une barre pour voir le détail.";
+ $("chartZoomClose").focus();
+}
+function closeChartZoom(){
+ const modal=$("chartZoom");if(!modal)return;modal.hidden=true;document.body.classList.remove("chart-zoom-open");
+}
+$("activeChart").addEventListener("click",e=>{if(e.target.closest(".chart-empty"))return;openChartZoom()});
+$("chartZoomClose").addEventListener("click",closeChartZoom);
+$("chartZoom").addEventListener("click",e=>{if(e.target===$("chartZoom"))closeChartZoom()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("chartZoom").hidden)closeChartZoom()});
+
 function moveChart(direction){chartIndex=(chartIndex+direction+chartViews.length)%chartViews.length;renderCharts()}
 let chartTouchStart=null;
 $("chartCarousel").addEventListener("touchstart",e=>{const t=e.changedTouches[0];chartTouchStart={x:t.clientX,y:t.clientY}},{passive:true});
