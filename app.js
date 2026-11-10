@@ -82,8 +82,48 @@ function cancelPurchaseEdit(){editingPurchaseId=null;$("purchaseForm").reset();$
 if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"))$("purchaseNew").onclick=()=>{editingPurchaseId=null;$("purchaseForm").reset();$("purchaseId").value="";$("purchaseSubmit").classList.remove("hidden");$("purchaseNew").classList.add("hidden");$("cancelEdit").classList.add("hidden");$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("merchant")?.focus()};
 $("purchaseForm").onsubmit=e=>{e.preventDefault();let amount=+$("purchaseAmount").value;if(!$("purchaseCategory").value)return notify("Le type d’achat est obligatoire.");if(!Number.isFinite(amount)||amount<=0)return notify("Le montant est obligatoire et doit être supérieur à zéro.");const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(voiceCaptureText?"voice":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(voiceCaptureText||receiptCaptureText||$("purchaseDescription")?.value||""),label:$("merchant").value.trim(),notes:$("purchaseNotes")?.value.trim()||"",city:$("city").value.trim(),amount,category:$("purchaseCategory").value,psychology:$("psychology").value,moodAfter:$("moodAfter")?.value||"",need:$("need").value,delay:$("delay").value,at:editingPurchaseId?(state.expenses.find(x=>x.id===editingPurchaseId)?.at||new Date().toISOString()):new Date().toISOString()};const wasEditing=Boolean(editingPurchaseId);if(wasEditing){state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x)}else state.expenses.unshift(p);save();let a=advice(p);$("purchaseAdvice").classList.remove("hidden");$("purchaseAdvice").innerHTML="<strong>"+a[0]+"</strong>"+a[1]+"<br><br><b>Question BEP :</b> "+a[2];cancelPurchaseEdit();$("purchaseSubmit").classList.add("hidden");$("purchaseNew")?.classList.remove("hidden");notify(wasEditing?"Achat modifié":"Achat enregistré")};
 
-$("localCoach").onclick=()=>{let t=$("coachTopic").value,msg=t==="purchase"?"Avant une dépense, vérifie le besoin, le budget disponible et le délai.":t==="savings"?"Un montant modeste et soutenable vaut mieux qu'un engagement impossible.":t==="stress"?"Ne décide pas sous pression. Fais une pause et reviens aux faits.":"Choisis une seule habitude budgétaire à suivre cette semaine.";recordAdvice("coach");msg=addressAdvice(msg);let a=$("coachAnswer");a.classList.remove("hidden");a.innerHTML="<strong>"+(coachFirstName?esc(coachFirstName)+", voici ton conseil BEP":"Ton conseil BEP")+"</strong>"+msg+"<br><br><b>Reste disponible estimé :</b> "+money(available())};
-$("chatgptBtn").onclick=async()=>{let prompt="Coach BEP : analyse ces données avec une action concrète, sans jugement ni promesse de rendement. "+JSON.stringify({revenu:state.income,charges:state.budgets,depenses:state.expenses.slice(0,10),objectifs:state.goals,reste:available()});try{await navigator.clipboard.writeText(prompt);$("chatgptStatus").textContent="Contexte copié. Colle-le dans ChatGPT.";window.open("https://chatgpt.com/","_blank","noopener")}catch{$("chatgptStatus").textContent="Copie impossible : vérifie les autorisations du navigateur."}};
+
+function coachReply(question){
+ const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+ const income=Number(state.income)||0,spent=charges(),left=available(),budgets=state.budgets||[],goals=state.goals||[],expenses=state.expenses||[];
+ const now=new Date(),month=expenses.filter(p=>{const d=new Date(p.at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
+ const spentThisMonth=month.reduce((n,p)=>n+Number(p.amount||0),0);
+ const impulsive=month.filter(p=>p.psychology==="impulsive"||p.psychology==="pressure").length;
+ const monthlyGoals=goals.reduce((n,g)=>n+Number(g.monthly||0),0);
+ const hi=coachFirstName?coachFirstName+", ":"";
+ if(!income)return hi+"je peux t'accompagner, mais il me manque ton revenu mensuel. Renseigne-le dans l'onglet Budget pour que mes recommandations reposent sur des chiffres fiables. En attendant, évite de fixer un objectif d'épargne sans connaître ta marge réelle.";
+ if(/stress|pression|peur|angoiss|difficile|panique|culpabil/.test(q)){
+  return hi+"commençons par ralentir la décision. Ne prends aucun engagement financier sous le coup de la pression. Note le fait concret qui t'inquiète, distingue-le de ce que tu imagines, puis reporte toute dépense non essentielle de 24 heures. Ton reste disponible estimé est de "+money(left)+".";
+ }
+ if(/achat|acheter|envie|impuls|craquer|commander/.test(q)){
+  const guard=left<=0?"Ton budget ne dégage actuellement aucune marge positive : je te recommande de différer tout achat non essentiel.": "Vérifie que le montant entre dans ton reste disponible de "+money(left)+".";
+  return hi+"avant de décider, vérifie trois points : est-ce un besoin concret, l'achat était-il prévu, et peux-tu attendre 24 heures ? "+guard+(impulsive?" Tu as enregistré "+impulsive+" achat(s) sous impulsion ou pression ce mois-ci : prends ce signal comme une invitation à ralentir, pas comme un jugement.":"");
+ }
+ if(/epargne|economis|objectif|mettre de cote|mettre de cote/.test(q)){
+  if(left<=0)return hi+"la priorité est de retrouver une marge budgétaire avant de programmer une épargne. Tes charges atteignent "+money(spent)+" pour "+money(income)+" de revenus.";
+  return hi+"ton reste disponible estimé est de "+money(left)+". Tes objectifs actuels représentent "+money(monthlyGoals)+" par mois. Une cible prudente doit rester inférieure à ta marge réelle et laisser une réserve pour les imprévus. "+(goals.length?"Revois chaque engagement avant d'en ajouter un nouveau.":"Commence par un objectif modeste et mesurable.");
+ }
+ if(/budget|charge|revenu|reste|depense|depens/.test(q)){
+  const ratio=income?Math.round(spent/income*100):0;
+  const largest=[...budgets].sort((a,b)=>Number(b.amount)-Number(a.amount))[0];
+  return hi+"voici ta situation : revenus "+money(income)+", charges enregistrées "+money(spent)+", reste estimé "+money(left)+". Tes charges représentent "+ratio+" % de tes revenus. "+(left<0?"Il existe un déficit : identifie d'abord un poste ajustable sans toucher aux dépenses essentielles.":left/income<.1?"Ta marge est inférieure à 10 % : protège ta trésorerie et évite les nouveaux engagements.":"Ta marge est positive. Conserve une réserve avant d'augmenter tes dépenses ou ton épargne.")+(largest?" Ton poste le plus important est "+largest.category+" ("+money(largest.amount)+").":"");
+ }
+ if(/objectif|progres|plan|priorite/.test(q))return hi+"choisissons une seule priorité pour les 7 prochains jours. Ton reste disponible est de "+money(left)+" et tes dépenses enregistrées ce mois-ci totalisent "+money(spentThisMonth)+". Une action simple et vérifiable sera plus utile qu'un objectif trop ambitieux.";
+ return hi+"je peux t'aider à analyser ton budget, tes dépenses, ton épargne ou une décision d'achat. Pour te répondre précisément, indique-moi ce qui te préoccupe et je croiserai ta question avec les données déjà enregistrées dans BEP.";
+}
+function addCoachMessage(role,message){
+ const log=$("coachChatLog");if(!log)return;
+ const item=document.createElement("div");item.className="coach-message "+(role==="user"?"coach-message-user":"coach-message-bot");
+ if(role!=="user"){const title=document.createElement("strong");title.textContent="Coach BEP";item.appendChild(title)}
+ const p=document.createElement("p");p.textContent=message;item.appendChild(p);log.appendChild(item);log.scrollTop=log.scrollHeight;
+}
+function submitCoachQuestion(question){
+ const value=String(question||"").trim();if(!value)return;
+ addCoachMessage("user",value);
+ addCoachMessage("coach",coachReply(value));
+}
+$("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;submitCoachQuestion(value);input.value="";input.focus()};
+document.querySelectorAll("[data-coach-prompt]").forEach(button=>button.addEventListener("click",()=>{const input=$("coachPromptInput");input.value=button.dataset.coachPrompt||"";input.focus()}));
 const CHART_COLORS=["#176b50","#79b99b","#b9e8d0","#d6a85f","#7b91ad","#c78e86","#9a83b7","#8b9a92"];
 function chartEmpty(message){return '<div class="chart-empty">'+message+'</div>'}
 function compactMoney(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",notation:"compact",maximumFractionDigits:1}).format(Number(n)||0)}
