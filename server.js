@@ -1,6 +1,7 @@
 "use strict";
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),bcrypt=require("bcryptjs");
-const app=express(),port=process.env.PORT||3000,pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;\nlet dbReady=false,dbInitError=null;
+const app=express(),port=process.env.PORT||3000,pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
+let dbReady=false,dbInitError=null;
 const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.GOOGLE_REDIRECT_URI&&process.env.SESSION_SECRET);
 app.set("trust proxy",1);app.use(helmet({contentSecurityPolicy:false}));app.use(express.json({limit:"1mb"}));
 if(pool&&process.env.SESSION_SECRET)app.use(session({store:new PgSession({pool,tableName:"user_sessions",createTableIfMissing:true}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:true,sameSite:"lax",maxAge:604800000}}));
