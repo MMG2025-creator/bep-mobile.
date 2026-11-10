@@ -55,7 +55,7 @@
 .chart-zoom-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:14px}
 .chart-zoom-head h2{font:800 20px Manrope;margin:5px 0}
 .chart-zoom-close{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--line);border-radius:50%;background:#f5f8f6;color:var(--forest);font-size:27px;line-height:1;cursor:pointer}
-.chart-zoom-body{padding:20px 2px;min-height:180px}
+.chart-zoom-body{padding:20px 2px;min-height:180px}.chart-zoom-viewport{width:100%;overflow:hidden;position:relative;touch-action:none;overscroll-behavior:contain;min-height:180px}.chart-zoom-canvas{width:100%;transform-origin:0 0;will-change:transform;user-select:none}.chart-zoom-viewport svg{max-width:100%}
 .chart-zoom-body .donut-layout{grid-template-columns:minmax(180px,.9fr) minmax(0,1.1fr);gap:18px}
 .chart-zoom-body .donut-svg{max-width:300px;margin:auto}
 .chart-zoom-body .donut-svg circle.chart-data-point{stroke-width:28;cursor:pointer;transition:stroke-width .15s,opacity .15s}
