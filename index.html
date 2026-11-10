@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102e29"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg">
+<link rel="apple-touch-icon" href="./icons/icon.svg"><link rel="stylesheet" href="./styles.css">
+<title>BEP — Build, Earn & Preserve</title>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="brand"><div class="logo">B</div><div><b>BEP</b><small>BUILD • EARN • PRESERVE</small></div></div><button class="icon-btn" id="settingsBtn" aria-label="Paramètres">⚙</button></header>
+<main>
+<section class="welcome"><p class="eyebrow">CONSTRUIRE • FAIRE FRUCTIFIER • PRÉSERVER</p><h1>La maîtrise précède<br>la croissance.</h1><p class="sub">Chaque décision compte. Ton capital mérite une stratégie.</p></section>
+<nav class="tabs" aria-label="Navigation">
+<button class="tab active" data-tab="home">Vue d'ensemble</button><button class="tab" data-tab="budget">Budget</button><button class="tab" data-tab="savings">Épargne</button><button class="tab" data-tab="purchases">Achats</button><button class="tab" data-tab="coach">Coach</button>
+</nav>
+<section id="home" class="panel active">
+<div class="metric-grid">
+<article class="metric-card"><span>Revenu mensuel net</span><strong id="mIncome">0 €</strong></article>
+<article class="metric-card"><span>Reste disponible</span><strong id="mAvailable">0 €</strong></article>
+<article class="metric-card"><span>Épargne programmée</span><strong id="mSavings">0 €</strong></article>
+</div>
+<article class="card"><div class="card-head"><h2>Répartition du budget</h2><button class="text-btn" data-goto="budget">Modifier</button></div><div id="budgetSummary" class="empty">Renseigne ton revenu et tes charges dans Budget.</div></article>
+<article class="card"><div class="card-head"><h2>Dernières dépenses</h2><button class="text-btn" data-goto="purchases">Voir tout</button></div><div id="recentExpenses" class="empty">Aucune dépense enregistrée.</div></article>
+<div class="privacy-note">🔒 Tes données restent sur cet appareil. BEP ne crée pas de compte et ne synchronise rien.</div>
+</section>
+<section id="budget" class="panel">
+<article class="card"><h2>Ton revenu mensuel</h2><div class="field"><label for="income">Revenu net après impôts (€)</label><input id="income" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex. 3000"></div><button class="primary" id="saveIncome">Enregistrer le revenu</button></article>
+<article class="card"><div class="card-head"><h2>Charges et enveloppes</h2><span class="tag">Mensuel</span></div><form id="budgetForm"><div class="field"><label>Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label>Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter / remplacer ce poste</button></form><div id="budgetRows" class="rows"></div></article>
+<div id="budgetWarning"></div>
+</section>
+<section id="savings" class="panel">
+<article class="card"><h2>Programmer ton épargne</h2><p class="muted">Un engagement réaliste, compatible avec ton reste disponible. BEP ne bloque pas ton argent.</p>
+<form id="savingsForm"><div class="field"><label>Nom du projet (facultatif)</label><input id="goalName" maxlength="50" placeholder="Ex. Fonds de sécurité"></div><div class="field"><label>Taux d'épargne</label><select id="savingsRate"><option value="suggested">Suggestion BEP</option><option value="5">5 %</option><option value="10">10 %</option><option value="15">15 %</option><option value="20">20 %</option></select><small id="suggestion" class="hint"></small></div><div class="field"><label>Durée</label><select id="duration"><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select></div><div class="calculation" id="savingsPreview">Renseigne d'abord ton budget.</div><button class="primary">Enregistrer mon engagement</button></form></article>
+<article class="card"><h2>Mes engagements</h2><div id="goalsList" class="empty">Aucun objectif enregistré.</div></article>
+</section>
+<section id="purchases" class="panel">
+<article class="card"><h2>Avant de dépenser</h2><p class="muted">L'objectif n'est pas d'interdire l'achat, mais de décider en conscience.</p>
+<form id="purchaseForm"><div class="field"><label>Enseigne ou libellé</label><input id="merchant" required maxlength="70" placeholder="Ex. Courses, magasin..."></div><div class="two"><div class="field"><label>Ville (facultatif)</label><input id="city" maxlength="60" placeholder="Ville"></div><div class="field"><label>Montant (€)</label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0"></div></div><div class="field"><label>Catégorie</label><select id="purchaseCategory"><option>Alimentation</option><option>Mode</option><option>Technologie</option><option>Maison</option><option>Loisirs</option><option>Transport</option><option>Beauté</option><option>Autre</option></select></div><div class="field"><label>Comment décris-tu ton état actuel ?</label><select id="psychology"><option value="reflective">Réfléchi et calme</option><option value="spontaneous">Envie spontanée</option><option value="impulsive">Impulsif / difficile à différer</option><option value="pressure">Sous pression / FOMO</option></select></div><div class="field"><label>Est-ce un besoin réel ?</label><select id="need"><option value="yes">Oui</option><option value="uncertain">Je ne suis pas sûr</option><option value="no">Non, c'est une envie</option></select></div><div class="field"><label>Quand envisages-tu l'achat ?</label><select id="delay"><option value="now">Maintenant</option><option value="24h">Après 24 heures</option><option value="7d">Après 7 jours</option></select></div><button class="primary">Analyser et enregistrer</button></form><div id="purchaseAdvice" class="advice hidden" aria-live="polite"></div></article>
+<article class="card"><h2>Historique des achats</h2><div id="purchaseRows" class="rows empty">Aucun achat enregistré.</div></article>
+</section>
+<section id="coach" class="panel">
+<article class="card coach-card"><div class="coach-icon">✦</div><h2>Coach BEP</h2><p class="muted">Un accompagnement de discipline financière. Le coach local fonctionne sans connexion. Tu peux aussi préparer un échange avec ChatGPT en partageant uniquement le contexte que tu choisis.</p><div class="field"><label>Qu'est-ce que tu veux travailler ?</label><select id="coachTopic"><option value="discipline">Ma discipline budgétaire</option><option value="purchase">Une envie d'achat</option><option value="savings">Ma régularité d'épargne</option><option value="stress">Une décision prise sous pression</option></select></div><button class="primary" id="localCoach">Obtenir mon conseil BEP</button><div id="coachAnswer" class="advice hidden"></div><div class="divider"></div><h3>Approfondir avec ChatGPT</h3><p class="hint">BEP prépare un texte de contexte. Tu choisis de le copier et de l'envoyer à ChatGPT. Aucun accès à ton compte ni partage automatique.</p><button class="secondary" id="chatgptBtn">Préparer une discussion ChatGPT</button><p id="chatgptStatus" class="hint"></p></article>
+</section>
+<section id="settings" class="panel">
+<article class="card"><h2>Mes données et ma confidentialité</h2><div class="privacy-note">Les informations financières sont conservées dans le stockage privé de ce navigateur sur ce téléphone. Effacer les données du navigateur ou désinstaller le navigateur peut les supprimer.</div><div class="field"><label>Mot de passe de sauvegarde</label><input id="backupPassword" type="password" minlength="10" autocomplete="new-password" placeholder="10 caractères minimum"></div><button class="primary full" id="exportBtn">Exporter une sauvegarde chiffrée</button><div class="field"><label>Restaurer une sauvegarde BEP (.bep)</label><input id="importFile" type="file" accept=".bep,application/json"></div><button class="secondary full" id="importBtn">Restaurer sur cet appareil</button><div class="divider"></div><button class="danger full" id="deleteBtn">Effacer toutes mes données BEP</button><p class="hint">L'export est chiffré avec AES-GCM et une dérivation de clé PBKDF2. Conserve ton mot de passe séparément : sans lui, la sauvegarde ne pourra pas être restaurée.</p></article>
+<article class="card"><h2>À propos de BEP</h2><p class="muted">Version mobile locale — prototype fonctionnel. Aucun compte utilisateur, aucune synchronisation cloud, aucune connexion bancaire.</p><p class="hint">Build • Earn • Preserve</p></article>
+</section>
+</main>
+<footer> B E P <span>•</span> Construire · Faire fructifier · Préserver </footer>
+</div>
+<div id="toast" class="toast" role="status"></div>
+<script src="./app.js"></script>
+</body></html>
