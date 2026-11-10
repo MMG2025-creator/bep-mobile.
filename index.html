@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=1">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=1"><link rel="stylesheet" href="./styles.css?v=47">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=1"><link rel="stylesheet" href="./styles.css?v=48">
 <title>BEP — Build, Earn & Preserve</title>
 
 </head>
@@ -38,6 +38,22 @@
 
 <article class="card"><h2>Ton revenu mensuel</h2><div class="field"><label for="income">Revenu net après impôts (€)</label><input id="income" name="transaction-amount" type="number" min="0" step="0.01" inputmode="decimal" autocomplete="transaction-amount" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" aria-label="Revenu net mensuel après impôts en euros" placeholder="Ex. 3000"></div><div class="record-form-actions"><button class="primary" id="saveIncome">Enregistrer le revenu</button><button type="button" class="record-action delete-action" id="deleteIncome" aria-label="Supprimer le revenu" title="Supprimer le revenu">×</button></div></article>
 <article class="card"><div class="card-head"><h2>Charges et enveloppes</h2><span class="tag">Mensuel</span></div><form id="budgetForm"><div class="field"><label>Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label>Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter / remplacer ce poste</button></form><div id="budgetRows" class="rows"></div></article>
+
+<article class="card pdf-import-card" id="pdfImportCard">
+  <div class="card-head"><h2>Importer un relevé PDF</h2><span class="tag">Optionnel</span></div>
+  <p class="muted">Ajoute tes opérations réelles à ton analyse budgétaire. Le relevé est lu directement sur cet appareil : le fichier PDF n'est pas envoyé au serveur.</p>
+  <div class="field"><label for="statementPdf">Relevé bancaire au format PDF</label><input id="statementPdf" type="file" accept=".pdf,application/pdf"></div>
+  <div class="field"><label for="statementPeriod">Période à analyser</label><select id="statementPeriod"><option value="all">Tout le relevé</option><option value="current_month">Mois en cours</option><option value="last_7_days">7 derniers jours</option><option value="previous_month">Mois précédent</option><option value="custom">Période personnalisée</option></select></div>
+  <div class="two hidden" id="statementCustomPeriod"><div class="field"><label for="statementStart">Du</label><input id="statementStart" type="date"></div><div class="field"><label for="statementEnd">Au</label><input id="statementEnd" type="date"></div></div>
+  <button class="primary full" type="button" id="analyzePdf">Analyser mon relevé</button>
+  <p class="hint">PDF avec texte sélectionnable requis dans cette première version. Les PDF scannés ou protégés seront signalés. Aucune connexion bancaire n'est nécessaire.</p>
+  <div id="pdfImportStatus" class="notice hidden" role="status" aria-live="polite"></div>
+  <section id="pdfReview" class="pdf-review hidden">
+    <div class="pdf-review-head"><h3>Vérifier les opérations détectées</h3><p class="hint">Corrige les montants, le type ou la catégorie avant de confirmer. Les doublons sont décochés.</p></div>
+    <div id="pdfReviewSummary" class="pdf-review-summary"></div><div id="pdfReviewRows" class="pdf-review-rows"></div>
+    <div class="pdf-review-actions"><button type="button" class="primary" id="confirmPdfImport">Confirmer les opérations sélectionnées</button><button type="button" class="secondary" id="cancelPdfImport">Annuler l'import</button></div>
+  </section>
+</article>
 <div id="budgetWarning"></div>
 </section>
 <section id="savings" class="panel">
@@ -88,6 +104,7 @@
 </div>
 <div id="chartZoom" class="chart-zoom" hidden role="dialog" aria-modal="true" aria-labelledby="chartZoomTitle"><div class="chart-zoom-panel"><div class="chart-zoom-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartZoomTitle">Graphique</h2><span id="chartZoomPeriod" class="chart-period"></span></div><button type="button" id="chartZoomClose" class="chart-zoom-close" aria-label="Fermer le graphique agrandi">×</button></div><div id="chartZoomBody" class="chart-zoom-body"></div><p id="chartZoomDetail" class="chart-zoom-detail" aria-live="polite">Sélectionne une part ou une barre pour voir le détail.</p></div></div>
 <div id="toast" class="toast" role="status"></div>
-<script src="./app.js?v=46"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="./app.js?v=48"></script>
 <script src="./pwa.js?v=8"></script>
 </body></html>
