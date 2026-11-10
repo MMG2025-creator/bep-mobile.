@@ -648,24 +648,24 @@ body.chart-zoom-open{overflow:hidden}
 @media(max-width:360px){.budget-metric strong,.budget-available strong{font-size:17px}.budget-available{align-items:flex-start;flex-direction:column}}
 
 /* Official BEP wordmark on the login screen */
-.auth-gate .auth-mark.auth-wordmark{width:min(230px,72vw);height:auto;aspect-ratio:420/110;border-radius:0;background:transparent;overflow:visible;display:block;margin:0 auto 18px}
+.auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:0;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
 .auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;height:auto;object-fit:contain}
 
-.topbar .brand-green{background:var(--forest);padding:8px 12px;border-radius:15px;box-shadow:0 5px 16px #062d2826;gap:3px}
-.topbar .brand-green .logo{width:178px;height:46px;object-fit:contain;border-radius:0;box-shadow:none}
+.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}
+.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}
 .topbar .brand-green .brand-tagline{color:#c7ded3;font-size:8px;letter-spacing:1.7px;margin-left:4px}
 .ai-connection-card .eyebrow{margin:0 0 4px}
 .ai-connection-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .ai-connection-actions button{min-width:0}
-@media(max-width:390px){.ai-connection-actions{grid-template-columns:1fr}.topbar .brand-green .logo{width:155px;height:40px}}
+@media(max-width:390px){.ai-connection-actions{grid-template-columns:1fr}.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}}
 
 /* Shared BEP green wordmark and compact top navigation */
-.topbar{gap:12px;min-width:0}
-.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:var(--forest);padding:7px 9px;border-radius:13px;box-shadow:0 5px 16px #062d2826}
-.topbar .brand-green .logo{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}
+.topbar{gap:12px;min-width:0;background:var(--forest);margin:0 -16px;padding:0 16px;height:78px;border-bottom:1px solid #b9963b}
+.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}
+.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}
 .topbar .head-actions{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;margin-left:auto}
 .topbar .settings-icon-btn{display:grid;place-items:center;width:42px;height:42px;padding:10px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--forest);font-size:0;flex:none}
 .topbar .settings-icon-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:13px;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
+.auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:0;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
 .auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center}
-@media(max-width:390px){.topbar .brand-green{flex-basis:145px;max-width:145px}.topbar .brand-green .logo{max-width:127px}}
+@media(max-width:390px){.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}}
