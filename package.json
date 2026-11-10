@@ -1,0 +1,19 @@
+{
+  "name": "bep-mobile-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "BEP PWA with Google authentication and private user data",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "connect-pg-simple": "^10.0.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "pg": "^8.16.3"
+  }
+}
