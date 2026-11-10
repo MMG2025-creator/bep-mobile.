@@ -1,12 +1,17 @@
 {
+  "id": "./",
   "name": "BEP — Build, Earn & Preserve",
   "short_name": "BEP",
   "description": "Construire • Faire fructifier • Préserver",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#f5f8f6",
   "theme_color": "#102e29",
   "orientation": "portrait",
-  "icons": [{"src":"./icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]
+  "categories": ["finance", "lifestyle", "productivity"],
+  "icons": [
+    {"src":"./icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+  ]
 }
