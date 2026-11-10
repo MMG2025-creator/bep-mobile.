@@ -42,3 +42,8 @@
 .bar-column>b{font-size:clamp(8px,2.3vw,10px);font-variant-numeric:tabular-nums}
 .bar-track{min-height:0}
 @media(prefers-reduced-motion:reduce){.chart-enter{animation:none}}
+
+.monthly-chart-svg{display:block;width:100%;height:auto;max-height:235px;overflow:visible}
+.chart-carousel .chart-body:has(.monthly-chart-svg){display:block;min-height:0;padding:4px 0}
+.chart-carousel .chart-body:has(.monthly-chart-svg) .chart-note{margin-top:0}
+@media(prefers-reduced-motion:reduce){.chart-enter{animation:none}}
