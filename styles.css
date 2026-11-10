@@ -77,6 +77,9 @@ body.chart-zoom-open{overflow:hidden}
 .capacity-chart-plot{display:grid;gap:20px}
 .capacity-row{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(120px,3fr) minmax(90px,.9fr);align-items:center;gap:14px;color:var(--forest);font-size:13px}
 .capacity-row>span{font-weight:650}
+.capacity-row>span{display:flex;align-items:center;gap:9px}
+.capacity-icon{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;flex:0 0 25px;border-radius:8px;background:#eef5f1;font-style:normal;font-size:16px}
+
 .capacity-row>b{text-align:right;font-variant-numeric:tabular-nums}
 .capacity-track{height:17px;border-radius:99px;background:#edf2ef;overflow:hidden}
 .capacity-track i{display:block;height:100%;border-radius:99px;min-width:0;transition:width .35s ease}
