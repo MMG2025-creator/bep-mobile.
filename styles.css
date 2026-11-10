@@ -635,3 +635,14 @@ body.chart-zoom-open{overflow:hidden}
 .income-card .rows:empty{display:none}
 .income-card .rowitem small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
 .income-card .rowitem>span:first-child{min-width:0;overflow-wrap:anywhere}
+
+.budget-overview .eyebrow{margin:0 0 4px;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:1.4px}
+.budget-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.budget-metric{display:flex;flex-direction:column;gap:7px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfdfb}
+.budget-metric span,.budget-available span{font-size:12px;color:var(--muted)}
+.budget-metric strong{font:800 20px Manrope,sans-serif;overflow-wrap:anywhere}
+.budget-metric:first-child strong{color:var(--green)}
+.budget-available{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px;border-radius:12px;background:var(--mint);color:#245c49}
+.budget-available strong{font:800 21px Manrope,sans-serif;white-space:nowrap}
+.budget-available.negative{background:#fff2e8;color:#89521c}
+@media(max-width:360px){.budget-metric strong,.budget-available strong{font-size:17px}.budget-available{align-items:flex-start;flex-direction:column}}
