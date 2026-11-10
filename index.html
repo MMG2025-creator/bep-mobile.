@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg">
-<link rel="apple-touch-icon" href="./icons/icon.svg"><link rel="stylesheet" href="./styles.css?v=9">
+<link rel="apple-touch-icon" href="./icons/icon.svg"><link rel="stylesheet" href="./styles.css?v=10">
 <title>BEP — Build, Earn & Preserve</title>
 </head>
 <body>
@@ -25,9 +25,12 @@
 </div>
 <section class="chart-grid" aria-label="Visualisations financières">
 <article class="card chart-card chart-carousel">
-<div class="chart-carousel-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartTitle">Répartition du budget</h2><span id="chartPeriod" class="chart-period">Mensuel</span></div>
-<div class="chart-arrows"><button type="button" id="chartPrev" class="chart-arrow" aria-label="Graphique précédent">‹</button><button type="button" id="chartNext" class="chart-arrow" aria-label="Graphique suivant">›</button></div></div>
+<div class="chart-carousel-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartTitle">Répartition du budget</h2><span id="chartPeriod" class="chart-period">Mensuel</span></div></div>
+<div class="chart-stage">
+<button type="button" id="chartPrev" class="chart-arrow chart-arrow-left" aria-label="Graphique précédent"></button>
 <div id="activeChart" class="chart-body" aria-live="polite"></div>
+<button type="button" id="chartNext" class="chart-arrow chart-arrow-right" aria-label="Graphique suivant"></button>
+</div>
 <div class="chart-carousel-footer"><span id="chartCounter">1 / 3</span><span>Utilise les flèches pour naviguer</span></div>
 </article>
 </section>
@@ -68,6 +71,6 @@
 <footer> B E P <span>•</span> Construire · Faire fructifier · Préserver </footer>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script src="./app.js?v=9"></script>
+<script src="./app.js?v=10"></script>
 <script src="./pwa.js?v=6"></script>
 </body></html>
