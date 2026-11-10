@@ -128,3 +128,13 @@ body.chart-zoom-open{overflow:hidden}
 .metric-card span{min-height:0;line-height:1.2}
 .metric-card strong{margin-top:5px;line-height:1.05}
 @media(max-width:370px){.metric-card{height:72px;min-height:72px;padding:9px 7px 6px}}
+
+/* Indicateurs BEP : pictogrammes et contenu centré */
+.metric-card{height:86px;min-height:86px;padding:7px 6px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px}
+.metric-card::before{display:block;font-size:16px;line-height:1;margin-bottom:1px}
+.metric-card:nth-child(1)::before{content:"💶"}
+.metric-card:nth-child(2)::before{content:"👛"}
+.metric-card:nth-child(3)::before{content:"🐷"}
+.metric-card span{min-height:0;white-space:nowrap;text-align:center;font-size:clamp(8px,2.1vw,10px);line-height:1.15}
+.metric-card strong{margin:0;line-height:1.1;text-align:center;font-size:clamp(13px,4.1vw,21px)}
+@media(max-width:370px){.metric-card{height:82px;min-height:82px;padding:6px 4px}.metric-card::before{font-size:15px}.metric-card span{font-size:8px}.metric-card strong{font-size:clamp(12px,3.8vw,15px)}}
