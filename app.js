@@ -31,5 +31,5 @@ loginForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Connexi
 registerForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Création du compte…";try{const r=await fetch("/api/auth/register",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email:$("registerEmail").value,password:$("registerPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Création impossible.");await finishAuth(true)}catch(x){authMessage.textContent=x.message}};
 (async()=>{try{const r=await fetch("/api/auth/status",{credentials:"same-origin"});const d=await r.json();if(d.user){window.bepSignedIn=true;const q=await fetch("/api/data",{credentials:"same-origin"});if(q.ok){const payload=await q.json();state={...defaults,...(payload.payload||{})};localStorage.setItem(DB,JSON.stringify(state));gate.hidden=true}}else gate.hidden=false}catch(e){gate.hidden=false;authMessage.textContent="Connexion au serveur impossible. Réessaie dans quelques instants."}render()})();
 
-render();if("serviceWorker"in navigator&&location.protocol!=="file:")addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+render();// Service worker disabled: always load the current published app and assets.
 })();
