@@ -212,3 +212,5 @@ body.chart-zoom-open{overflow:hidden}
 /* Purchase capture: compact open autocomplete fields */
 #purchaseForm #purchaseCategory{width:100%;min-width:0}
 #purchaseForm #merchant,#purchaseForm #city{width:100%;min-width:0}
+
+.nature-suggestions{position:relative;z-index:30;display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;padding:8px;background:#fff;border:1px solid #dce8e1;border-radius:14px;box-shadow:0 8px 22px #173c2914}.nature-suggestions.hidden{display:none}.nature-suggestion{border:1px solid #dce8e1;border-radius:20px;background:#f5faf7;color:#245c49;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer}.nature-suggestion:active{background:#e6f2eb}
