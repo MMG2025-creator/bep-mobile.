@@ -37,7 +37,7 @@ function donutChart(items,total){
  return '<div class="donut-layout"><svg class="donut-svg" viewBox="0 0 200 200" role="img" aria-label="Graphique de répartition"><circle cx="100" cy="100" r="70" fill="none" stroke="#edf2ef" stroke-width="25"/>'+circles+'<text x="100" y="96" text-anchor="middle" class="donut-total">'+compactMoney(total)+'</text><text x="100" y="116" text-anchor="middle" class="donut-caption">Total</text></svg><div class="chart-legend">'+legend+'</div></div>'
 }
 let chartIndex=0;
-const chartViews=["budget","expenses","monthly"];
+const chartViews=["budget","expenses","monthly","capacity"];
 function renderCharts(){
  const budgetItems=(state.budgets||[]).filter(x=>Number(x.amount)>0).map(x=>({label:x.category||"Autres",value:Number(x.amount)}));
  const byCategory={};
@@ -51,13 +51,18 @@ function renderCharts(){
  const grid=[0,1,2,3].map(i=>{const y=35+i*48;return '<line x1="35" y1="'+y+'" x2="565" y2="'+y+'" stroke="#e8efeb" stroke-width="1"/>'}).join("");
  const bars=months.map((m,i)=>{const x=57+i*88,h=m.value>0?Math.max(3,m.value/max*135):0,y=190-h;return '<g class="chart-data-point" data-label="'+esc(m.label)+'" data-value="'+m.value+'"><title>'+esc(m.label)+' : '+money(m.value)+'</title><rect x="'+x+'" y="'+y+'" width="42" height="'+h+'" rx="7" fill="#176b50"/><text x="'+(x+21)+'" y="'+Math.max(22,y-9)+'" text-anchor="middle" fill="#52665d" font-size="11">'+esc(compactMoney(m.value))+'</text><text x="'+(x+21)+'" y="215" text-anchor="middle" fill="#71817b" font-size="12">'+esc(m.label)+'</text></g>'}).join("");
  const monthlyHtml=months.some(m=>m.value>0)?'<svg class="monthly-chart-svg" viewBox="0 0 600 235" role="img" aria-label="Évolution des dépenses sur les six derniers mois">'+grid+bars+'</svg><p class="chart-note">Montants dépensés par mois · les mois sans dépense restent à zéro.</p>':chartEmpty("Enregistre des achats pour afficher leur évolution mensuelle.");
+ const plannedSavings=(state.goals||[]).reduce((n,g)=>n+Math.max(0,Number(g.monthly)||0),0);
+ const income=Math.max(0,Number(state.income)||0),fixedCharges=budgetItems.reduce((n,x)=>n+x.value,0),afterCharges=Math.max(0,income-fixedCharges),afterSavings=afterCharges-plannedSavings;
+ const capacityRows=[{label:"Revenu mensuel",value:income,color:"#176b50"},{label:"Charges prévues",value:fixedCharges,color:"#7b91ad"},{label:"Épargne programmée",value:plannedSavings,color:"#d6a85f"},{label:"Reste après charges et épargne",value:afterSavings,color:afterSavings<0?"#c76f68":"#79b99b"}];
+ const capacityHtml=income>0?'<div class="capacity-chart"><div class="capacity-chart-plot">'+capacityRows.map((r,i)=>'<div class="capacity-row chart-data-point" data-label="'+esc(r.label)+'" data-value="'+r.value+'"><span>'+esc(r.label)+'</span><div class="capacity-track"><i style="width:'+Math.min(100,Math.max(0,r.value)/income*100)+'%;background:'+r.color+'"></i></div><b>'+money(r.value)+'</b></div>').join("")+'</div><p class="chart-note">Calcul à partir du revenu, des charges et des engagements d’épargne actuellement enregistrés. Le reste peut être négatif si les engagements dépassent la marge disponible.</p></div>':chartEmpty("Renseigne ton revenu mensuel pour calculer ta capacité d’épargne.");
  const views=[
   {title:"Répartition du budget",period:"Mensuel",html:donutChart(budgetItems,budgetItems.reduce((n,x)=>n+x.value,0))},
   {title:"Répartition des dépenses",period:"Historique",html:donutChart(expenseItems,expenseItems.reduce((n,x)=>n+x.value,0))},
-  {title:"Évolution des dépenses",period:"6 derniers mois",html:monthlyHtml}
+  {title:"Évolution des dépenses",period:"6 derniers mois",html:monthlyHtml},
+  {title:"Capacité d’épargne",period:"Situation mensuelle actuelle",html:capacityHtml,wide:true}
  ];
  const view=views[chartIndex]||views[0];
- $("chartTitle").textContent=view.title;$("chartPeriod").textContent=view.period;
+ $("chartTitle").textContent=view.title;$("chartPeriod").textContent=view.period;$("chartZoom").classList.toggle("chart-zoom-wide",!!view.wide);
  const stage=$("activeChart");stage.classList.remove("chart-enter");stage.innerHTML=view.html;void stage.offsetWidth;stage.classList.add("chart-enter");
  $("chartCounter").textContent=(chartIndex+1)+" / "+views.length;
  if(!$("chartZoom").hidden)syncChartZoom();
@@ -71,7 +76,7 @@ function resetChartZoom(){chartZoomScale=1;chartZoomX=0;chartZoomY=0;paintChartZ
 function syncChartZoom(){
  const modal=$("chartZoom"),body=$("chartZoomBody");if(!modal||modal.hidden)return;
  $("chartZoomTitle").textContent=$("chartTitle").textContent;$("chartZoomPeriod").textContent=$("chartPeriod").textContent;
- body.innerHTML='<div class="chart-zoom-viewport"><div class="chart-zoom-canvas">'+$("activeChart").innerHTML+'</div></div>';
+ body.innerHTML='<div class="chart-zoom-viewport"><div class="chart-zoom-canvas">'+$("activeChart").innerHTML+'</div></div>';modal.classList.toggle("chart-zoom-wide",chartIndex===3);
  chartZoomScale=1;chartZoomX=0;chartZoomY=0;bindZoomPoints();bindChartZoomGestures();paintChartZoom();
 }
 function bindChartZoomGestures(){
