@@ -280,3 +280,47 @@ body.chart-zoom-open{overflow:hidden}
   .topbar{min-height:72px}
   .logo{width:176px;height:46px}
 }
+
+/* Ergonomie achats : suggestions défilantes et historique aligné */
+#purchaseNaturePanel.nature-suggestions{
+  display:flex;
+  flex-wrap:wrap;
+  align-content:flex-start;
+  gap:8px;
+  max-height:230px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  padding:10px;
+  scrollbar-width:thin;
+}
+#purchaseNaturePanel.nature-suggestions.hidden{display:none}
+#purchaseNaturePanel .nature-suggestion{flex:0 0 auto;max-width:100%;text-align:left}
+#purchaseRows .purchase-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  padding:16px 0;
+}
+#purchaseRows .purchase-row>span:first-child{min-width:0;overflow-wrap:anywhere}
+#purchaseRows .purchase-row>span:first-child>b{display:block;line-height:1.35}
+#purchaseRows .purchase-row>span:first-child>small{line-height:1.45}
+#purchaseRows .purchase-row-actions{
+  display:grid;
+  grid-template-columns:auto 32px 32px;
+  align-items:center;
+  justify-items:center;
+  gap:7px;
+  flex-wrap:nowrap;
+}
+#purchaseRows .purchase-row-actions>b{white-space:nowrap;font-size:13px}
+#purchaseRows .purchase-row-actions button{width:32px;height:32px;min-width:32px;padding:0;font-size:17px}
+@media(max-width:390px){
+  #purchaseRows .purchase-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+  #purchaseRows .purchase-row-actions{grid-template-columns:auto 28px 28px;gap:4px}
+  #purchaseRows .purchase-row-actions button{width:28px;height:28px;min-width:28px}
+  #purchaseRows .purchase-row-actions>b{font-size:12px}
+}
