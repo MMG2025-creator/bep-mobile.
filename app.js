@@ -84,7 +84,7 @@ $("purchaseForm").onsubmit=e=>{e.preventDefault();let amount=+$("purchaseAmount"
 
 
 function coachReply(question){
- const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+ const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
  const income=Number(state.income)||0,spent=charges(),left=available(),budgets=state.budgets||[],goals=state.goals||[],expenses=state.expenses||[];
  const now=new Date(),month=expenses.filter(p=>{const d=new Date(p.at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});
  const spentThisMonth=month.reduce((n,p)=>n+Number(p.amount||0),0);
