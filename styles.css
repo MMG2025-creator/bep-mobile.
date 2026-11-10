@@ -208,3 +208,7 @@ body.chart-zoom-open{overflow:hidden}
 #purchaseForm input,#purchaseForm textarea,#purchaseForm select{max-width:100%;min-width:0}
 #purchaseNotes{width:100%;min-height:88px;resize:vertical}
 @media(max-width:420px){#purchaseForm .two{grid-template-columns:minmax(0,1fr)} }
+
+/* Purchase capture: compact open autocomplete fields */
+#purchaseForm #purchaseCategory{width:100%;min-width:0}
+#purchaseForm #merchant,#purchaseForm #city{width:100%;min-width:0}
