@@ -222,7 +222,28 @@ body.chart-zoom-open{overflow:hidden}
 
 .purchase-actions .save-icon-svg,.purchase-actions .new-icon-svg{width:19px;height:19px;display:inline-block;vertical-align:-4px;margin-right:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}.purchase-actions #purchaseNew{display:flex;align-items:center;justify-content:center;gap:2px}
 
-.welcome.hidden{display:none}
+.welcome{
+  max-height:360px;
+  opacity:1;
+  transform:translateY(0);
+  overflow:hidden;
+  transition:opacity .32s ease,transform .38s cubic-bezier(.2,.75,.25,1),max-height .42s ease,margin .38s ease,padding .38s ease,border-width .38s ease;
+  will-change:opacity,transform,max-height;
+}
+.welcome.hidden{
+  display:block!important;
+  max-height:0!important;
+  opacity:0!important;
+  transform:translateY(-14px);
+  margin-top:0!important;
+  margin-bottom:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  border-top-width:0!important;
+  border-bottom-width:0!important;
+  pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){.welcome{transition:none!important}}
 
 .home-tab{width:48px;min-width:48px;height:42px;padding:9px;display:inline-flex;align-items:center;justify-content:center}.home-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
