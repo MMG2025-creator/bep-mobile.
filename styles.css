@@ -164,3 +164,15 @@ body.chart-zoom-open{overflow:hidden}
 .purchase-tool textarea:focus{outline:2px solid #9bcbb6;border-color:var(--green)}
 .purchase-tool .primary,.purchase-tool .secondary{margin-top:4px}
 .purchase-mode b{font-size:11px}
+
+/* Micro intégré aux champs de saisie libre */
+.voice-field-wrap{position:relative;display:flex;align-items:stretch;gap:7px;width:100%}
+.voice-field-wrap>input,.voice-field-wrap>textarea{flex:1;min-width:0}
+.voice-field-wrap>textarea{resize:vertical}
+.field-mic{flex:0 0 42px;width:42px;min-height:42px;border:1px solid var(--line);border-radius:11px;background:#f1f7f3;color:var(--green);font-size:18px;cursor:pointer;touch-action:manipulation}
+.field-mic.recording{background:#fff0ed;border-color:#d97968;color:#a33d30;animation:micPulse 1.15s ease-in-out infinite}
+.recording-indicator{display:flex;align-items:center;gap:7px;color:#a33d30;font-size:10px;font-weight:700;margin-top:5px;min-height:16px}
+.recording-indicator.hidden{display:none}
+.recording-indicator i{width:8px;height:8px;border-radius:50%;background:#d94b3e;box-shadow:0 0 0 0 #d94b3e66;animation:recordPulse 1s infinite}
+@keyframes recordPulse{0%{box-shadow:0 0 0 0 #d94b3e66}70%{box-shadow:0 0 0 7px #d94b3e00}100%{box-shadow:0 0 0 0 #d94b3e00}}
+@keyframes micPulse{50%{transform:scale(.96);box-shadow:0 0 0 4px #d94b3e20}}
