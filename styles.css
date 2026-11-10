@@ -617,3 +617,12 @@ body.chart-zoom-open{overflow:hidden}
 .pdf-review-actions{display:grid;gap:8px;margin-top:14px}
 .pdf-review-actions button:disabled{opacity:.45;cursor:not-allowed}
 @media(min-width:560px){.pdf-review-actions{grid-template-columns:1fr 1fr}.pdf-row-fields{grid-template-columns:1fr 1fr 1fr}.pdf-row-fields label:last-child{grid-column:auto}}
+
+/* Onboarding budget par captures bancaires — OCR local */
+.image-import-card .field input[type=file]{font-size:12px;padding:10px}.image-import-card .full{width:100%}
+.image-review{margin-top:16px;border-top:1px solid var(--line);padding-top:15px}
+.image-review-progress{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted)}
+.image-progress-track{height:5px;background:#e8efeb;border-radius:10px;margin:9px 0 15px;overflow:hidden}
+.image-progress-track i{display:block;height:100%;width:0;background:var(--green);transition:width .2s}
+.image-candidate{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff}.image-candidate h3{margin:5px 0 8px}.image-candidate .eyebrow{color:var(--green);margin:0;font-size:9px}
+.image-review-actions{display:grid;gap:8px;margin-top:12px}@media(min-width:560px){.image-review-actions{grid-template-columns:1fr 1fr}}
