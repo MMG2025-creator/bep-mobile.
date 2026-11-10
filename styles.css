@@ -532,3 +532,62 @@ body.chart-zoom-open{overflow:hidden}
 .coach-prompt-form button{min-height:50px;padding:0 17px;flex:none}
 .coach-disclaimer{margin:0;color:#87948d;font-size:11px;line-height:1.5}
 @media(max-width:420px){.coach-workspace{padding:20px 16px}.coach-message{max-width:96%}.coach-prompt-form{align-items:stretch}.coach-prompt-form button{padding:0 13px}}
+
+
+/* Coach BEP — correction ergonomique du champ de message */
+.coach-workspace .coach-prompt-form{
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  gap:10px;
+  width:100%;
+  min-width:0;
+}
+.coach-workspace .coach-prompt-form textarea{
+  display:block;
+  box-sizing:border-box;
+  width:0;
+  min-width:0;
+  max-width:100%;
+  min-height:54px;
+  max-height:180px;
+  flex:1 1 0;
+  padding:13px 14px;
+  border:1px solid #d9e5df;
+  border-radius:13px;
+  font-size:14px;
+  line-height:1.45;
+}
+.coach-workspace .coach-prompt-form button,
+.coach-workspace .coach-prompt-form button.primary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:auto!important;
+  min-width:112px;
+  max-width:none;
+  min-height:54px;
+  flex:0 0 auto!important;
+  padding:0 20px;
+  white-space:nowrap;
+}
+@media(max-width:600px){
+  .coach-workspace .coach-prompt-form{
+    flex-direction:column;
+    align-items:stretch;
+    gap:9px;
+  }
+  .coach-workspace .coach-prompt-form textarea{
+    width:100%;
+    min-height:88px;
+    flex:0 0 auto;
+    resize:vertical;
+  }
+  .coach-workspace .coach-prompt-form button,
+  .coach-workspace .coach-prompt-form button.primary{
+    width:100%!important;
+    min-width:0;
+    min-height:50px;
+    flex:0 0 auto!important;
+  }
+}
