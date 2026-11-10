@@ -10,6 +10,9 @@ const isAndroid=/android/i.test(navigator.userAgent);
 const msg=isIOS?"Sur iPhone : touche Partager, puis « Sur l’écran d’accueil ».":"Dans Chrome : ouvre le menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».";
 if(isAndroid||isIOS)alert(msg);else alert("Ouvre BEP depuis Chrome ou Edge, puis choisis Installer l’application dans le menu du navigateur.");
 });
-if("serviceWorker"in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("./sw.js").then(reg=>reg.update()).catch(()=>{});}
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(registrations.map(registration => registration.unregister()))).catch(() => {});
+  if ("caches" in window) caches.keys().then(names => Promise.all(names.map(name => caches.delete(name)))).catch(() => {});
+}
 refresh();
 })();
