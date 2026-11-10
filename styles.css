@@ -626,3 +626,12 @@ body.chart-zoom-open{overflow:hidden}
 .image-progress-track i{display:block;height:100%;width:0;background:var(--green);transition:width .2s}
 .image-candidate{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff}.image-candidate h3{margin:5px 0 8px}.image-candidate .eyebrow{color:var(--green);margin:0;font-size:9px}
 .image-review-actions{display:grid;gap:8px;margin-top:12px}@media(min-width:560px){.image-review-actions{grid-template-columns:1fr 1fr}}
+
+/* Budget: income register and monthly overview */
+.income-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;margin:12px 0;background:var(--mint);border:1px solid #dcece3;border-radius:13px;color:#245c49;font-size:13px;font-weight:600}
+.income-total strong{font:800 23px Manrope,sans-serif;color:var(--green);white-space:nowrap}
+.income-form{margin-top:18px;padding-top:17px;border-top:1px solid var(--line)}
+.income-form h3{font:700 15px Manrope,sans-serif;margin:0 0 13px;color:var(--forest)}
+.income-card .rows:empty{display:none}
+.income-card .rowitem small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.income-card .rowitem>span:first-child{min-width:0;overflow-wrap:anywhere}
