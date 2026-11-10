@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const API="https://bep-v2-api.onrender.com";
-const DB="bep-mobile-v1",defaults={income:0,budgets:[],expenses:[],goals:[]};
+const DB="bep-mobile-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[]};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2300)}
@@ -188,6 +188,105 @@ let chartTouchStart=null;
 $("chartCarousel").addEventListener("touchstart",e=>{const t=e.changedTouches[0];chartTouchStart={x:t.clientX,y:t.clientY}},{passive:true});
 $("chartCarousel").addEventListener("touchend",e=>{if(!chartTouchStart)return;const t=e.changedTouches[0],dx=t.clientX-chartTouchStart.x,dy=t.clientY-chartTouchStart.y;chartTouchStart=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.25)moveChart(dx<0?1:-1)},{passive:true});
 function render(){let spent=charges(),remain=available();$("income").value=state.income||"";$("budgetRows").innerHTML=state.budgets.length?state.budgets.map(b=>'<div class="rowitem"><span>'+esc(b.category)+'</span><b>'+money(b.amount)+'</b><span class="record-actions"><button type="button" class="record-action edit-action" data-edit-budget="'+esc(b.id)+'" aria-label="Modifier" title="Modifier">✎</button><button type="button" class="record-action delete-action" data-delete-budget="'+esc(b.id)+'" aria-label="Supprimer" title="Supprimer">×</button></span></div>').join(""):"<p class='empty'>Aucune enveloppe.</p>";$("budgetRows").querySelectorAll("[data-edit-budget]").forEach(b=>b.onclick=()=>editBudget(b.dataset.editBudget));$("budgetRows").querySelectorAll("[data-delete-budget]").forEach(b=>b.onclick=()=>deleteBudget(b.dataset.deleteBudget));$("budgetWarning").innerHTML=remain<0?'<div class="notice warning">Tes charges dépassent ton revenu de '+money(-remain)+'.</div>':"";$("goalsList").innerHTML=state.goals.length?state.goals.map(g=>'<div class="rowitem"><span><b>'+esc(g.name)+'</b><small>'+g.rate+' % · '+g.duration+' mois</small></span><span class="goal-row-actions"><b>'+money(g.monthly)+'/mois</b><span class="record-actions"><button type="button" class="record-action edit-action" data-edit-goal="'+esc(g.id)+'" aria-label="Modifier" title="Modifier">✎</button><button type="button" class="record-action delete-action" data-delete-goal="'+esc(g.id)+'" aria-label="Supprimer" title="Supprimer">×</button></span></span></div>').join(""):"<p class='empty'>Aucun objectif enregistré.</p>";$("goalsList").querySelectorAll("[data-edit-goal]").forEach(b=>b.onclick=()=>editGoal(b.dataset.editGoal));$("goalsList").querySelectorAll("[data-delete-goal]").forEach(b=>b.onclick=()=>deleteGoal(b.dataset.deleteGoal));let rows=state.expenses.slice(0,30).map(p=>'<div class="rowitem purchase-row"><span><b>'+esc(p.label)+'</b><small>'+esc(p.category)+' · '+new Date(p.at).toLocaleDateString("fr-FR")+(p.city?' · '+esc(p.city):'')+'</small></span><span class="purchase-row-actions"><b>'+money(p.amount)+'</b><button type="button" class="record-action edit-action" data-edit-purchase="'+esc(p.id)+'" aria-label="Modifier" title="Modifier">✎</button><button type="button" class="record-action delete-action" data-delete-purchase="'+esc(p.id)+'" aria-label="Supprimer" title="Supprimer">×</button></span></div>').join("");$("purchaseRows").innerHTML=rows||"Aucun achat enregistré.";$("purchaseRows").querySelectorAll("[data-edit-purchase]").forEach(b=>b.onclick=()=>editPurchase(b.dataset.editPurchase));$("purchaseRows").querySelectorAll("[data-delete-purchase]").forEach(b=>b.onclick=()=>{const id=b.dataset.deletePurchase;if(!confirm("Supprimer définitivement cet achat ?"))return;state.expenses=state.expenses.filter(x=>x.id!==id);if(editingPurchaseId===id)cancelPurchaseEdit();save();notify("Achat supprimé")});preview();renderAI();renderAIUsage();renderCharts()}
+
+
+let pdfPreviewRows=[];
+const pdfCategories=["Logement","Factures","Alimentation","Transport","Crédits","Famille","Loisirs","Autres dépenses"];
+function pdfCleanText(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim()}
+function pdfDateValue(raw){const p=raw.split(/[/.]/).map(Number);if(p.length!==3)return null;let y=p[2];if(y<100)y+=2000;if(p[0]<1||p[0]>31||p[1]<1||p[1]>12||y<2000||y>2100)return null;return String(y)+"-"+String(p[1]).padStart(2,"0")+"-"+String(p[0]).padStart(2,"0")}
+function pdfMoneyValue(raw){const n=Number(String(raw).replace(/\s/g,"").replace(/\./g,"").replace(",",".").replace(/[^\d.+-]/g,""));return Number.isFinite(n)?Math.abs(n):NaN}
+function pdfCategory(description){const s=pdfCleanText(description);if(/loyer|bail|agence immobiliere|syndic/.test(s))return "Logement";if(/edf|engie|electricite|gaz|veolia|eau |internet|orange|sfr|bouygues|free mobile|assurance/.test(s))return "Factures";if(/carrefour|leclerc|lidl|auchan|monoprix|intermarche|super u|franprix|boulangerie|primeur|epicerie/.test(s))return "Alimentation";if(/ratp|sncf|uber|bolt|total|shell|esso|station service|essence|parking|navigo/.test(s))return "Transport";if(/credit|pret|echeance|cofidis|cetelem|sofinco/.test(s))return "Crédits";if(/cantine|ecole|creche|pension|famille|enfant/.test(s))return "Famille";if(/netflix|spotify|cinema|theatre|concert|restaurant|loisir|decathlon|club sportif/.test(s))return "Loisirs";return "Autres dépenses"}
+function pdfFingerprint(row){return row.date+"|"+(Number(row.amount)||0).toFixed(2)+"|"+pdfCleanText(row.description).slice(0,180)}
+function pdfDateFilter(){
+ const mode=$("statementPeriod").value,now=new Date();let start="",end="";
+ const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+ if(mode==="current_month"){start=key(new Date(now.getFullYear(),now.getMonth(),1));end=key(now)}
+ if(mode==="last_7_days"){const d=new Date(now);d.setDate(d.getDate()-6);start=key(d);end=key(now)}
+ if(mode==="previous_month"){start=key(new Date(now.getFullYear(),now.getMonth()-1,1));end=key(new Date(now.getFullYear(),now.getMonth(),0))}
+ if(mode==="custom"){start=$("statementStart").value;end=$("statementEnd").value;if(!start||!end||start>end)throw Error("Renseigne une période personnalisée valide.")}
+ return {start,end};
+}
+function pdfSetStatus(message,isError){const el=$("pdfImportStatus");el.textContent=message;el.classList.remove("hidden","warning");if(isError)el.classList.add("warning")}
+function pdfRenderSummary(){
+ const selected=pdfPreviewRows.filter(x=>x.selected&&!x.duplicate),debits=selected.filter(x=>x.type==="debit").reduce((n,x)=>n+Math.abs(x.amount),0),credits=selected.filter(x=>x.type==="credit").reduce((n,x)=>n+Math.abs(x.amount),0),duplicates=pdfPreviewRows.filter(x=>x.duplicate).length,review=pdfPreviewRows.filter(x=>x.ambiguous).length;
+ $("pdfReviewSummary").innerHTML="<b>"+selected.length+" sélectionnée(s)</b><span>Dépenses : "+money(debits)+"</span><span>Crédits : "+money(credits)+"</span><span>"+duplicates+" doublon(s) · "+review+" à vérifier</span>";
+ $("confirmPdfImport").disabled=selected.length===0;
+}
+function pdfRenderRows(){
+ const options=pdfCategories.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
+ $("pdfReviewRows").innerHTML=pdfPreviewRows.map((r,i)=>{
+  const warning=r.duplicate?"Doublon potentiel — déjà importé":(r.ambiguous?"Plusieurs montants détectés — vérifie le montant":"");
+  return '<article class="pdf-transaction '+(r.duplicate?"is-duplicate":"")+'"><div class="pdf-transaction-top"><label class="pdf-check"><input type="checkbox" data-pdf-selected="'+i+'" '+(r.selected?"checked":"")+(r.duplicate?" disabled":"")+'><span>Importer</span></label><span class="pdf-date">'+esc(new Date(r.date+"T12:00:00").toLocaleDateString("fr-FR"))+'</span></div><b class="pdf-description">'+esc(r.description)+'</b>'+(warning?'<p class="pdf-row-warning">'+esc(warning)+'</p>':"")+'<div class="pdf-row-fields"><label>Montant (€)<input type="number" min="0" step="0.01" value="'+Math.abs(r.amount).toFixed(2)+'" data-pdf-amount="'+i+'"></label><label>Type<select data-pdf-type="'+i+'"><option value="debit" '+(r.type==="debit"?"selected":"")+'>Dépense</option><option value="credit" '+(r.type==="credit"?"selected":"")+'>Revenu / crédit</option></select></label><label>Catégorie<select data-pdf-category="'+i+'">'+options.replace('value="'+esc(r.category)+'"','value="'+esc(r.category)+'" selected')+'</select></label></div></article>';
+ }).join("");
+ pdfRenderSummary();
+}
+async function pdfExtractTransactions(file){
+ if(!window.pdfjsLib)throw Error("Le lecteur PDF n'est pas disponible. Vérifie ta connexion puis réessaie.");
+ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+ const data=new Uint8Array(await file.arrayBuffer()),doc=await window.pdfjsLib.getDocument({data}).promise,found=[];
+ for(let pageNo=1;pageNo<=doc.numPages;pageNo++){
+  const page=await doc.getPage(pageNo),content=await page.getTextContent(),groups=[];
+  content.items.filter(x=>x.str&&x.str.trim()).forEach(item=>{const y=Number(item.transform&&item.transform[5])||0;let group=groups.find(g=>Math.abs(g.y-y)<=2);if(!group){group={y,items:[]};groups.push(group)}group.items.push(item)});
+  const lines=groups.sort((a,b)=>b.y-a.y).map(g=>g.items.sort((a,b)=>(Number(a.transform&&a.transform[4])||0)-(Number(b.transform&&b.transform[4])||0)).map(x=>x.str).join(" ").replace(/\s+/g," ").trim());
+  for(const line of lines){
+   const dateMatch=line.match(/\b\d{2}[/.]\d{2}[/.]\d{2,4}\b/),amountMatches=line.match(/[+-]?\s*\d{1,3}(?:[ .]\d{3})*,\d{2}|[+-]?\s*\d+,\d{2}/g);
+   if(!dateMatch||!amountMatches||!amountMatches.length)continue;
+   const date=pdfDateValue(dateMatch[0]);if(!date)continue;
+   const description=line.replace(dateMatch[0]," ").replace(/[+-]?\s*\d{1,3}(?:[ .]\d{3})*,\d{2}|[+-]?\s*\d+,\d{2}/g," ").replace(/€/g," ").replace(/\s+/g," ").trim();
+   if(!description||/\b(solde|total des operations|ancien solde|nouveau solde)\b/i.test(description))continue;
+   const amount=pdfMoneyValue(amountMatches[0]);if(!Number.isFinite(amount)||amount<=0)continue;
+   const credit=/virement recu|virement en votre faveur|salaire|remboursement|versement|depot|interets crediteurs|avoir|prestation|allocations/i.test(description);
+   found.push({date,description:description.slice(0,180),amount:credit?amount:-amount,type:credit?"credit":"debit",category:pdfCategory(description),ambiguous:amountMatches.length>1,page:pageNo});
+  }
+ }
+ if(!found.length)throw Error("Aucune opération lisible détectée. Le PDF est peut-être scanné, protégé ou dans un format bancaire non reconnu.");
+ return found;
+}
+$("statementPeriod").addEventListener("change",()=>{$("statementCustomPeriod").classList.toggle("hidden",$("statementPeriod").value!=="custom")});
+$("analyzePdf").addEventListener("click",async()=>{
+ const file=$("statementPdf").files&&$("statementPdf").files[0];if(!file)return pdfSetStatus("Sélectionne d'abord un relevé PDF.",true);
+ if(!/\.pdf$/i.test(file.name)&&file.type!=="application/pdf")return pdfSetStatus("Le fichier doit être au format PDF.",true);
+ if(file.size>15*1024*1024)return pdfSetStatus("Le fichier dépasse la limite de 15 Mo.",true);
+ $("analyzePdf").disabled=true;$("pdfReview").classList.add("hidden");pdfSetStatus("Lecture du relevé sur cet appareil…");
+ try{
+  const range=pdfDateFilter(),all=await pdfExtractTransactions(file),filtered=all.filter(r=>(!range.start||r.date>=range.start)&&(!range.end||r.date<=range.end));
+  if(!filtered.length)throw Error("Aucune opération ne correspond à la période choisie.");
+  const existing=new Set([...(state.transactions||[]).map(x=>x.fingerprint),...(state.expenses||[]).map(x=>x.sourceHash)].filter(Boolean));
+  pdfPreviewRows=filtered.map(r=>{const fingerprint=pdfFingerprint(r),duplicate=existing.has(fingerprint);existing.add(fingerprint);return {...r,fingerprint,duplicate,selected:!duplicate&&!r.ambiguous}});
+  pdfRenderRows();$("pdfReview").classList.remove("hidden");
+  pdfSetStatus(filtered.length+" opération(s) détectée(s) sur "+all.length+". Vérifie la sélection avant enregistrement.");
+ }catch(e){pdfSetStatus(e.message||"Impossible de lire ce PDF.",true)}
+ finally{$("analyzePdf").disabled=false}
+});
+$("pdfReviewRows").addEventListener("change",e=>{
+ const el=e.target,idx=Number(el.dataset.pdfSelected??el.dataset.pdfType??el.dataset.pdfCategory);
+ if(!Number.isInteger(idx)||!pdfPreviewRows[idx])return;
+ const row=pdfPreviewRows[idx];
+ if(el.dataset.pdfSelected!==undefined)row.selected=el.checked;
+ if(el.dataset.pdfType!==undefined){row.type=el.value;row.amount=Math.abs(row.amount)*(row.type==="credit"?1:-1)}
+ if(el.dataset.pdfCategory!==undefined)row.category=el.value;
+ pdfRenderSummary();
+});
+$("pdfReviewRows").addEventListener("input",e=>{
+ const el=e.target;if(el.dataset.pdfAmount===undefined)return;const idx=Number(el.dataset.pdfAmount),row=pdfPreviewRows[idx];if(!row)return;
+ const n=Number(el.value);if(Number.isFinite(n)&&n>=0)row.amount=n*(row.type==="credit"?1:-1);pdfRenderSummary();
+});
+$("confirmPdfImport").addEventListener("click",()=>{
+ const selected=pdfPreviewRows.filter(r=>r.selected&&!r.duplicate);if(!selected.length)return notify("Sélectionne au moins une opération.");
+ const known=new Set([...(state.transactions||[]).map(x=>x.fingerprint),...(state.expenses||[]).map(x=>x.sourceHash)].filter(Boolean)),transactions=[],expenses=[];
+ selected.forEach(r=>{
+  const amount=Math.abs(Number(r.amount))*(r.type==="credit"?1:-1),fingerprint=pdfFingerprint({...r,amount});if(known.has(fingerprint))return;known.add(fingerprint);
+  const at=new Date(r.date+"T12:00:00").toISOString(),id=crypto.randomUUID();
+  transactions.push({id,date:r.date,description:r.description,amount,currency:"EUR",type:r.type,category:r.category,fingerprint,source:"pdf_import",importedAt:new Date().toISOString()});
+  if(r.type==="debit")expenses.push({id,label:r.description,notes:"Import relevé PDF",city:"",amount:Math.abs(amount),category:r.category,psychology:"reflective",moodAfter:"",need:"yes",delay:"already_done",at,captureMode:"pdf_import",source:"pdf_import",sourceHash:fingerprint});
+ });
+ state.transactions=[...(state.transactions||[]),...transactions].slice(-2000);
+ state.expenses=[...expenses,...(state.expenses||[])].sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,3000);
+ save();$("pdfReview").classList.add("hidden");$("statementPdf").value="";
+ pdfSetStatus(transactions.length+" opération(s) enregistrée(s), dont "+expenses.length+" dépense(s) intégrée(s) à ton historique budgétaire. Les crédits sont conservés séparément et ne modifient pas automatiquement ton revenu mensuel.");
+ notify("Import PDF enregistré");
+});
+$("cancelPdfImport").addEventListener("click",()=>{$("pdfReview").classList.add("hidden");pdfPreviewRows=[];$("statementPdf").value="";pdfSetStatus("Import annulé. Aucune opération n'a été enregistrée.")});
 
 window.bepSignedIn=false;
 const gate=$("authGate"),loginForm=$("loginForm"),registerForm=$("registerForm"),authMessage=$("authMessage");
