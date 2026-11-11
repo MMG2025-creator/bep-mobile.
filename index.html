@@ -3,81 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<style id="bep-startup-critical">
-/* BEP startup loader — playful euro notes flying into the wallet. */
-.bep-startup-loader{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#f5f8f6;opacity:1;visibility:visible;transition:opacity .32s ease,visibility .32s ease}
-.bep-startup-loader[hidden]{display:none}
-.bep-startup-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.bep-loader-content{width:min(100%,360px);display:flex;flex-direction:column;align-items:center;text-align:center}
-.bep-loader-mark{width:200px;max-width:72%;padding:13px 16px 11px;border-radius:19px;background:linear-gradient(135deg,#103b32,#176b50);box-shadow:0 14px 34px rgba(16,46,41,.13);animation:bep-loader-float 2.8s ease-in-out infinite}
-.bep-loader-mark svg{display:block;width:100%;height:auto}
-.bep-money-scene{position:relative;width:290px;height:205px;margin:9px auto 0}
-.bep-banknote{position:absolute;z-index:2;width:88px;height:51px;border:2px solid rgba(255,255,255,.7);border-radius:7px;display:flex;flex-direction:column;justify-content:center;padding:5px 8px;text-align:left;box-shadow:0 7px 15px rgba(16,46,41,.16);overflow:hidden}
-.bep-banknote:before,.bep-banknote:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.55);border-radius:50%;width:35px;height:35px;right:6px;top:6px}
-.bep-banknote:after{width:22px;height:22px;right:12px;top:12px}
-.bep-banknote span{font:800 22px/20px Manrope,sans-serif;color:#fff}
-.bep-banknote small{font:700 7px/10px 'DM Sans',sans-serif;letter-spacing:1.2px;color:rgba(255,255,255,.9)}
-.bep-banknote i{position:absolute;right:12px;top:10px;font:700 22px Manrope,sans-serif;color:rgba(255,255,255,.85);font-style:normal}
-.bep-note-10{left:29px;top:43px;background:linear-gradient(135deg,#e88a43,#c95a31);animation:bep-note-fly-one 3.1s ease-in-out infinite}
-.bep-note-20{left:103px;top:20px;background:linear-gradient(135deg,#54a78b,#23745e);animation:bep-note-fly-two 3.4s ease-in-out infinite .25s}
-.bep-note-50{right:24px;top:53px;background:linear-gradient(135deg,#d9a64a,#aa762b);animation:bep-note-fly-three 3.25s ease-in-out infinite .55s}
-.bep-wallet{position:absolute;z-index:3;left:50%;bottom:9px;width:142px;height:83px;transform:translateX(-50%);border-radius:13px 13px 17px 17px;background:linear-gradient(145deg,#1b5947,#0c3028);box-shadow:0 13px 22px rgba(16,46,41,.2);border:2px solid #c7a35c}
-.bep-wallet:before{content:"";position:absolute;left:0;right:0;top:11px;height:5px;background:rgba(255,255,255,.08)}
-.bep-wallet-pocket{position:absolute;left:0;right:0;bottom:0;height:43px;border-radius:0 0 14px 14px;background:linear-gradient(160deg,#236d55,#124233);border-top:1px solid rgba(232,198,111,.55)}
-.bep-wallet-flap{position:absolute;z-index:2;left:0;right:0;top:19px;height:33px;border-radius:7px;background:linear-gradient(135deg,#24654f,#164735);border:1px solid rgba(232,198,111,.6);display:grid;place-items:center}
-.bep-wallet-flap span{color:#f1d78f;font:800 18px Manrope,sans-serif}
-.bep-wallet-clasp{position:absolute;z-index:3;right:12px;top:28px;width:13px;height:13px;border-radius:50%;background:#e8c66f;box-shadow:inset 0 0 0 3px #9a7436}
-.bep-coin{position:absolute;z-index:1;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe9a2,#c18d35);border:2px solid #d2a64f;color:#8d682d;font:800 14px Manrope,sans-serif;box-shadow:0 4px 8px rgba(16,46,41,.15)}
-.bep-coin-one{left:18px;bottom:25px;animation:bep-coin-hop 1.9s ease-in-out infinite}
-.bep-coin-two{right:18px;bottom:34px;width:22px;height:22px;font-size:11px;animation:bep-coin-hop 1.9s ease-in-out infinite .45s}
-.bep-money-spark{position:absolute;color:#c3943e;font-size:22px;animation:bep-spark 1.8s ease-in-out infinite}
-.bep-spark-one{left:8px;top:8px}.bep-spark-two{right:6px;top:16px;animation-delay:.7s}
-.bep-loader-message{margin:5px 0 5px;color:#102e29;font:800 19px Manrope,'DM Sans',sans-serif;letter-spacing:-.35px}
-.bep-loader-subtitle{margin:0;color:#71817b;font-size:13px}
-@keyframes bep-loader-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes bep-note-fly-one{0%,100%{transform:translate(0,0) rotate(-13deg)}48%{transform:translate(47px,75px) rotate(12deg) scale(.72);opacity:.18}55%{opacity:0}65%{transform:translate(-7px,-6px) rotate(-13deg) scale(1);opacity:0}}
-@keyframes bep-note-fly-two{0%,100%{transform:translate(0,0) rotate(5deg)}45%{transform:translate(0,79px) rotate(-7deg) scale(.7);opacity:.15}53%{opacity:0}64%{transform:translate(0,-4px) rotate(5deg) scale(1);opacity:0}}
-@keyframes bep-note-fly-three{0%,100%{transform:translate(0,0) rotate(13deg)}47%{transform:translate(-48px,70px) rotate(-12deg) scale(.72);opacity:.15}55%{opacity:0}66%{transform:translate(6px,-5px) rotate(13deg) scale(1);opacity:0}}
-@keyframes bep-coin-hop{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-13px) rotate(18deg)}}
-@keyframes bep-spark{0%,100%{opacity:.35;transform:scale(.7) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(25deg)}}
-@media(prefers-reduced-motion:reduce){.bep-loader-mark,.bep-banknote,.bep-coin,.bep-money-spark{animation:none}.bep-startup-loader{transition:none}}
-</style>
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=69"><link rel="stylesheet" href="./ui-polish.css?v=1">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=70"><link rel="stylesheet" href="./ui-polish.css?v=1">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./coach-exchange.css?v=1">
 <link rel="stylesheet" href="./auth-recovery.css?v=3">
 </head>
 <body>
-<div id="bepStartupLoader" class="bep-startup-loader" role="status" aria-live="polite" aria-label="Chargement de BEP">
-  <div class="bep-loader-content">
-    <div class="bep-loader-mark" aria-hidden="true">
-      <svg viewBox="0 0 250 72" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/>
-          <path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/>
-        </g>
-        <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
-        <text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text>
-      </svg>
-    </div>
-    <div class="bep-money-scene" aria-hidden="true">
-      <div class="bep-banknote bep-note-10"><span>10</span><small>EURO</small><i>€</i></div>
-      <div class="bep-banknote bep-note-20"><span>20</span><small>EURO</small><i>€</i></div>
-      <div class="bep-banknote bep-note-50"><span>50</span><small>EURO</small><i>€</i></div>
-      <div class="bep-coin bep-coin-one">€</div>
-      <div class="bep-coin bep-coin-two">€</div>
-      <div class="bep-wallet"><div class="bep-wallet-flap"><span>€</span></div><div class="bep-wallet-pocket"></div><div class="bep-wallet-clasp"></div></div>
-      <span class="bep-money-spark bep-spark-one">✦</span><span class="bep-money-spark bep-spark-two">✧</span>
-    </div>
-    <p class="bep-loader-message">On fait travailler tes euros…</p>
-    <p class="bep-loader-subtitle">BEP prépare ton espace personnel</p>
-  </div>
-</div>
 <div id="authGate" class="auth-gate"><div class="auth-card"><div class="auth-brand-banner" role="img" aria-label="BEP — Build, Earn & Preserve"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><linearGradient id="authBannerBg" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#103b32"/><stop offset=".58" stop-color="#145b46"/><stop offset="1" stop-color="#176b50"/></linearGradient></defs><rect width="1000" height="250" fill="url(#authBannerBg)"/><g transform="translate(155 24) scale(2.75)"><g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round"><path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/><path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/></g><text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text><text x="107" y="65" fill="#f5f5ed" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></g></svg></div><h1 class="auth-title">Ton espace financier</h1><p class="muted">Connecte-toi pour retrouver ton budget, tes objectifs et tes repères financiers.</p><div class="auth-switch"><button type="button" id="showLogin" class="active">Connexion</button><button type="button" id="showRegister">Créer un compte</button></div><button type="button" id="googleLogin" class="google-login full"><svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.9c-.58 2.96-2.26 5.48-4.73 7.18l7.65 5.94c4.47-4.13 7.16-10.2 7.16-17.59Z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.54 2.56 10.78l7.97-6.19Z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.86l-7.65-5.94c-2.13 1.43-4.86 2.28-8.25 2.28-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg><span>Continuer avec Google</span></button><div class="auth-divider"><span>OU AVEC TON E-MAIL</span></div><form id="loginForm"><label>Adresse e-mail<input id="loginEmail" type="email" autocomplete="email" required></label><label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label><button class="primary full">Se connecter</button></form>
 <a href="#" id="forgotPasswordLink" class="auth-forgot-link">Mot de passe oublié ?</a>
 <form id="forgotPasswordForm" hidden>
@@ -213,7 +146,7 @@
 <div id="toast" class="toast" role="status"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="./app.js?v=80"></script>
+<script src="./app.js?v=81"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./coach-exchange.js?v=1" defer></script>
 <script src="./pwa.js?v=9"></script>
