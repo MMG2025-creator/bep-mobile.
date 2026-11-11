@@ -922,3 +922,8 @@ body.chart-zoom-open{overflow:hidden}
 .monthly-budget-actual-row span{display:flex;flex-direction:column;gap:3px}
 .monthly-budget-actual-row small{font-size:10px;color:var(--muted)}
 .monthly-budget-actual-row b{white-space:nowrap;color:var(--forest)}
+
+
+.monthly-budget-row-actions{display:flex;align-items:center;gap:5px}
+.monthly-budget-row-actions button:first-child{width:auto;padding:0 8px;font-size:10px}
+.monthly-budget-row-actions button:last-child{flex:0 0 30px}
