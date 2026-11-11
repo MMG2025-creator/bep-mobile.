@@ -17,10 +17,13 @@ function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){noti
 window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const d=new Date(),localMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
   if(monthKey!==localMonth||!Array.isArray(monthlyItems))return false;
-  const archived=(state.goals||[]).filter(g=>g&&g.archivedAt);
+  const previousGoals=Array.isArray(state.goals)?state.goals:[];
+  const savingsRows=monthlyItems.filter(x=>x.itemType==="savings");
+  const activeIds=new Set(savingsRows.map(x=>x.sourceItemId||x.id).filter(Boolean));
+  const archived=previousGoals.filter(g=>g&&g.archivedAt||g&&!activeIds.has(g.id)).map(g=>g.archivedAt?g:{...g,archivedAt:new Date().toISOString()});
   state.incomes=monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"}));
   state.budgets=monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0}));
-  state.goals=[...archived,...monthlyItems.filter(x=>x.itemType==="savings").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||0,duration:Number(x.metadata?.duration)||3}))];
+  state.goals=[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(totalIncome()?Number(x.plannedAmount)/totalIncome()*100:0),duration:Number(x.metadata?.duration)||3}))];
   syncIncomeTotal();
   try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){throw Error("Impossible de synchroniser le budget local.")};
   render();
