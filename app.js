@@ -272,7 +272,7 @@ $("disconnectAiBtn").onclick=async()=>{if(!confirm("Déconnecter ton IA ? Le mot
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
  if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();
- if(window.bepSignedIn&&(aiConnection?.mode==="bep"||(aiCoachEnabled&&aiConnection?.personal)){
+ if(window.bepSignedIn&&(aiConnection?.mode==="bep"||(aiCoachEnabled&&aiConnection?.personal))){
   addCoachMessage("coach","Le Coach IA BEP prépare sa réponse…");const log=$("coachChatLog"),last=log?.lastElementChild;
   try{const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext()})}),d=await r.json();if(!r.ok)throw Error(d.message||"IA indisponible.");const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
    const tokens=Number(d.usage?.total_tokens)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
