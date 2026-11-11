@@ -1,7 +1,8 @@
 (()=>{"use strict";
 const API="https://bep-v2-api.onrender.com";
-const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[]};
+const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
+if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
 if(!Array.isArray(state.incomes))state.incomes=Number(state.income)>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:Number(state.income),source:"migration"}]:[];
 function totalIncome(){return (state.incomes||[]).reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0)}
 function syncIncomeTotal(){state.income=totalIncome()}
