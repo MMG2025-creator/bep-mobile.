@@ -94,7 +94,8 @@
       <div class="field"><label for="monthlyBudgetItemLabel">Libellé</label><input id="monthlyBudgetItemLabel" maxlength="160" required></div>
       <div class="field"><label for="monthlyBudgetItemCategory">Catégorie (facultatif)</label><input id="monthlyBudgetItemCategory" maxlength="80"></div>
       <div class="field"><label for="monthlyBudgetItemAmount">Montant mensuel (€)</label><input id="monthlyBudgetItemAmount" type="number" min="0" max="999999999999.99" step="0.01" required></div>
-      <button class="secondary full" type="submit">Ajouter la ligne</button>
+      <button id="monthlyBudgetItemSubmit" class="secondary full" type="submit">Ajouter la ligne</button>
+      <button id="monthlyBudgetItemCancel" class="secondary full" type="button" hidden>Annuler la modification</button>
     </form>
     <button id="monthlyBudgetSave" class="primary full" type="button">Enregistrer ce mois</button>
     <div class="monthly-budget-close-actions">
