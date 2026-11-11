@@ -22,7 +22,7 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
  const key=crypto.createHash("sha256").update(scope+":"+ip).digest("hex");
  try{
   const result=await pool.query(
-   "INSERT INTO bep_rate_limits(bucket_key,window_start_ms,request_count,expires_at) VALUES($1,$2,1,to_timestamp(($2+$3)/1000.0)) ON CONFLICT(bucket_key) DO UPDATE SET request_count=CASE WHEN bep_rate_limits.window_start_ms=EXCLUDED.window_start_ms THEN bep_rate_limits.request_count+1 ELSE 1 END,window_start_ms=EXCLUDED.window_start_ms,expires_at=EXCLUDED.expires_at RETURNING request_count",
+   "INSERT INTO bep_rate_limits(bucket_key,window_start_ms,request_count,expires_at) VALUES($1,$2,1,to_timestamp(($2::bigint+$3::bigint)/1000.0)) ON CONFLICT(bucket_key) DO UPDATE SET request_count=CASE WHEN bep_rate_limits.window_start_ms=EXCLUDED.window_start_ms THEN bep_rate_limits.request_count+1 ELSE 1 END,window_start_ms=EXCLUDED.window_start_ms,expires_at=EXCLUDED.expires_at RETURNING request_count",
    [scope+":"+key,windowStart,windowMs]
   );
   const count=Number(result.rows[0].request_count),remaining=Math.max(0,max-count),retryAfter=Math.max(1,Math.ceil((resetAt-now)/1000));
