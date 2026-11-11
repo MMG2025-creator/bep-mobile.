@@ -138,7 +138,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const goalIds=new Set(goals.filter(g=>g&&typeof g.id==="string"&&g.id.trim()).map(g=>g.id));
   const ids=new Set(),reversals=new Map(),ops=[];
   for(const o of incomingOps){
-   if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||o.id.length>128||ids.has(o.id)||!["deposit","withdrawal"].includes(o.type)||typeof o.goalId!=="string"||!goalIds.has(o.goalId)||!Number.isFinite(Number(o.amount))||Number(o.amount)<=0||Number(o.amount)>10000000||Math.abs(Number(o.amount)*100-Math.round(Number(o.amount)*100))>1e-7||typeof o.date!=="string"||!/^\\d{4}-\\d{2}-\\d{2}$/.test(o.date)||Number.isNaN(Date.parse(o.date+"T00:00:00Z"))||new Date(o.date+"T00:00:00Z").toISOString().slice(0,10)!==o.date){
+   if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||o.id.length>128||ids.has(o.id)||!["deposit","withdrawal"].includes(o.type)||typeof o.goalId!=="string"||!goalIds.has(o.goalId)||!Number.isFinite(Number(o.amount))||Number(o.amount)<=0||Number(o.amount)>10000000||Math.abs(Number(o.amount)*100-Math.round(Number(o.amount)*100))>1e-7||typeof o.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(o.date)||Number.isNaN(Date.parse(o.date+"T00:00:00Z"))||new Date(o.date+"T00:00:00Z").toISOString().slice(0,10)!==o.date){
     await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
    }
    ids.add(o.id);ops.push(o);
