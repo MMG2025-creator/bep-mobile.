@@ -232,3 +232,26 @@ Workflow GitHub Actions `Monthly budget history checks`, run #65, commit `68ffc1
 - Le scénario PostgreSQL a exécuté la migration dans un schéma isolé et vérifié l'authentification, l'isolation entre utilisateurs, les dépenses réelles, la copie indépendante, le verrouillage de version, la clôture/réouverture, l'idempotence et le journal d'audit.
 
 Cette réussite valide le backend et les règles testées sur PostgreSQL 16 en environnement CI. Elle ne remplace pas la recette navigateur authentifiée ni le test sur un environnement Render de staging.
+
+
+### Intégration avec le module Épargne BEP — 12 novembre 2026
+
+Le redesign Épargne de la branche `feature/savings-redesign-v1-pr` a été intégré au lot mensuel :
+- Nouvel écran Épargne : coffres, capital net, progression, objectifs, versements/retraits, projection et récompenses.
+- Taux de suggestion recalculé après prise en compte des engagements actifs ; objectifs archivés exclus des nouveaux engagements.
+- Historique des mouvements append-only : une annulation crée un mouvement compensatoire, elle ne supprime pas l'opération d'origine.
+- Route `PUT /api/data` renforcée : validation des identifiants, types, montants, dates, références d'objectifs, opérations compensatoires et solde non négatif. Les opérations existantes sont conservées même si le client omet des lignes.
+- Les snapshots du mois courant et les modules Revenus/Charges/Épargne sont synchronisés dans les deux sens. Les mois historiques ne réécrivent pas l'état courant. Les objectifs retirés du mois courant sont archivés afin de préserver les références des mouvements d'épargne.
+- L'application utilise `runtime-config.js` pour cibler l'API de l'environnement courant ; la configuration de staging ne doit pas pointer vers l'API de production.
+
+### CI intégrée — run #106
+
+Commit testé : `3854d5d8e6fff7ef81e438f7b666b04dfde3a1b1`.
+- Installation npm : succès.
+- Audit dépendances de production : 0 vulnérabilité.
+- Syntaxe Node 20 : serveur, routes, UI mensuelle et bundles app root/dist validés.
+- Tests : 14 réussis, 0 échec, 0 ignoré.
+- PostgreSQL 16 : migration et tests API mensuelle exécutés sur un schéma isolé.
+- Frontend : vérification des identifiants HTML, cohérence des assets root/dist, chargement de la runtime config et présence du pont entre les modules.
+
+Limites restantes : aucun test navigateur authentifié sur Render staging n'a encore été effectué ; la migration n'a pas été appliquée sur la base Render de préproduction ou de production. Le CI valide l'intégration applicative et le modèle SQL dans un environnement PostgreSQL éphémère, pas la configuration réelle des services Render.
