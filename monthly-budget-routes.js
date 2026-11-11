@@ -274,7 +274,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   async function changeStatus(req, res, status) {
     const monthKey = req.params.monthKey;
     const expectedVersion = req.body?.expectedVersion;
-    const reason = req.body?.reason == null ? null : String(req.body.reason).trim();
+    const reason = req.body?.reason == null ? null : (typeof req.body.reason === "string" ? req.body.reason.trim() : "__INVALID__");
     if (!validMonth(monthKey) || !Number.isInteger(expectedVersion) || expectedVersion < 1 ||
         (status === "open" && (!reason || reason.length > 500)))
       return res.status(400).json({ error: "MONTHLY_BUDGET_STATUS_INVALID" });
