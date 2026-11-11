@@ -149,10 +149,10 @@ app.put("/api/data",auth,async(req,res)=>{
   }
   for(const [targetId,reversal] of reversals){
    const target=ops.find(o=>o.id===targetId);
-   if(!target||target.reversalOf||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
+   if(!target||target.reversalOf||reversal.date<target.date||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
   }
   const balances=new Map();
-  const ordered=ops.map((o,index)=>({o,index})).sort((a,b)=>a.o.date.localeCompare(b.o.date)||String(a.o.createdAt||"").localeCompare(String(b.o.createdAt||""))||a.index-b.index);
+  const ordered=ops.map((o,index)=>({o,index})).sort((a,b)=>a.o.date.localeCompare(b.o.date)||a.index-b.index);
   for(const {o} of ordered){
    const next=(balances.get(o.goalId)||0)+(o.type==="deposit"?1:-1)*Number(o.amount);
    if(next < -0.005){await client.query("ROLLBACK");return res.status(400).json({error:"SAVINGS_BALANCE_NEGATIVE"})}
