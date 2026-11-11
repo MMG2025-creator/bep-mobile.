@@ -866,3 +866,24 @@ body.chart-zoom-open{overflow:hidden}
 .budget-module[hidden]{display:none!important}
 .budget-module .card{margin-bottom:0}
 @media(max-width:380px){.budget-module-nav{gap:5px}.budget-module-tab{font-size:10px;padding:8px 4px;min-height:48px}.home-budget-metrics{gap:6px}.home-budget-metric{padding:10px 7px}.home-budget-metric span{font-size:10px}}
+
+
+/* Guided budget completeness checkup */
+.budget-checkup{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fff)}
+.budget-checkup-head h3{margin:10px 0 5px;font-size:17px;color:var(--forest)}
+.budget-checkup-head .hint,.budget-checkup-note{font-size:12px;line-height:1.5;color:var(--muted)}
+.budget-checkup-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;margin-top:12px;border-radius:10px;background:var(--mint);color:var(--green);font-weight:800;font-size:13px;cursor:pointer;list-style:none}
+.budget-checkup-summary::-webkit-details-marker{display:none}
+.budget-checkup-summary:after{content:"+";font-size:20px}
+#budgetCheckupDetails[open] .budget-checkup-summary:after{content:"−"}
+#budgetCheckupForm{padding-top:12px}
+.budget-checkup-note{padding:10px 12px;background:var(--surface-soft,#f5f8f6);border-radius:9px}
+.budget-checkup-group{margin:16px 0}
+.budget-checkup-group h4{margin:0 0 8px;font-size:13px;color:var(--forest)}
+.budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(88px,112px);align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.budget-checkup-row>input[type=checkbox]{width:16px;height:16px;accent-color:var(--green)}
+.budget-checkup-row span{min-width:0;line-height:1.35}
+.budget-checkup-row small{display:block;color:var(--muted);font-size:10px}
+.budget-checkup-row input[type=number]{width:100%;min-width:0;padding:8px 7px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:11px}
+.budget-checkup-status{min-height:18px;margin:8px 0;color:var(--green);font-size:12px}
+@media(max-width:380px){.budget-checkup-row{grid-template-columns:17px minmax(0,1fr) 88px;gap:6px}.budget-checkup-row{font-size:11px}}
