@@ -45,12 +45,13 @@ CREATE INDEX IF NOT EXISTS bep_monthly_budget_items_budget_type_idx
 CREATE TABLE IF NOT EXISTS bep_budget_audit_log (
   id BIGSERIAL PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,
-  budget_id UUID NOT NULL REFERENCES bep_monthly_budgets(id),
+  budget_id UUID NOT NULL,
   action TEXT NOT NULL CHECK (action IN ('created', 'updated', 'closed', 'reopened', 'imported')),
   before_state JSONB,
   after_state JSONB,
   reason TEXT CHECK (reason IS NULL OR length(reason) <= 500),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (budget_id, user_id) REFERENCES bep_monthly_budgets(id, user_id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS bep_budget_audit_log_budget_created_idx
