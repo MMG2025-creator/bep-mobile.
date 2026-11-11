@@ -23,7 +23,7 @@ const adviceRequestIds={},adviceFingerprints={};
 function currentFinancialContext(){return {income:totalIncome(),charges:charges(),available:available(),budgets:(state.budgets||[]).slice(0,40),goals:(state.goals||[]).slice(0,20),expenses:(state.expenses||[]).slice(0,40),transactions:(state.transactions||[]).slice(-80)}}
 async function recordAdvice(id){
  const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
- if(!(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.configured)){target.textContent=makeAdvice(id);return}
+ if(!(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.personal)){target.textContent=makeAdvice(id);return}
  const context=currentFinancialContext(),fingerprint=JSON.stringify({zone:id,context,provider:aiConnection.provider,model:aiConnection.model});
  if(adviceFingerprints[id]===fingerprint&&target.textContent!=="Ton IA analyse ta situation financière…")return;
  adviceFingerprints[id]=fingerprint;
@@ -254,7 +254,7 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  $("aiConnectionStatus").textContent=aiConnection.mode==="bep"?"Ton Coach IA BEP est actif. Aucun compte IA ni aucune clé à fournir.":aiConnection.personal?"Coach connecté à "+aiConnection.provider+" · "+aiConnection.model:"Le Coach IA mutualisé sera disponible dès son activation par BEP. En attendant, le moteur local reste actif.";
  $("aiQuotaStatus").textContent=aiConnection.mode==="bep"?"Quota gratuit : "+aiConnection.used+" / "+aiConnection.limit+" requêtes utilisées ce mois-ci.":aiConnection.personal?"Ton fournisseur personnel est utilisé. Sa facturation dépend de son offre.":"Le Coach local reste gratuit.";
  $("disconnectAiBtn").classList.toggle("hidden",!aiConnection.personal);
- $("aiAdvancedSettings").classList.toggle("hidden",!aiConnection.personal);
+ $("aiAdvancedSettings").classList.remove("hidden");
  if(aiConnection.personal){$("aiProvider").value=personal.provider;$("aiModel").value=personal.model;$("aiEndpoint").value=personal.endpoint||"";$("aiApiKey").placeholder="Clé enregistrée (saisis-en une nouvelle pour la remplacer)"}
  renderAiCoachControls();
  const coachBtn=$("coachActivateBtn");if(coachBtn){coachBtn.textContent=aiConnection.mode==="bep"?"Coach IA activé":"Activer le Coach IA gratuit";coachBtn.disabled=false}
@@ -295,7 +295,7 @@ $("testAiBtn").onclick=async()=>{const b=$("testAiBtn"),st=$("aiConnectionStatus
 $("disconnectAiBtn").onclick=async()=>{if(!confirm("Déconnecter ton IA ? Le moteur local sera réactivé."))return;const r=await fetch(API+"/api/ai/config",{method:"DELETE",credentials:"include"});if(r.ok){aiConnection={configured:false};await loadAiConnection();notify("IA déconnectée.")}};
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
- if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.configured){
+ if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.personal){
   addCoachMessage("coach","Le Coach IA BEP prépare sa réponse…");const log=$("coachChatLog"),last=log?.lastElementChild;
   try{const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext()})}),d=await r.json();if(!r.ok)throw Error(d.message||"IA indisponible.");const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
    const tokens=Number(d.usage?.total_tokens)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
