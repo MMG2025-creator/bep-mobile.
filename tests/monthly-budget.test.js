@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { validMonth, validateItems, totals } = require("../monthly-budget-routes");
+const { validMonth, validateItems, totals, monthKeyAt } = require("../monthly-budget-routes");
 
 test("validMonth accepts only supported YYYY-MM civil months", () => {
   assert.equal(validMonth("2026-11"), true);
@@ -42,4 +42,11 @@ test("totals remain separated by income, charges and savings", () => {
     { itemType: "savings", amount: "200.00" }
   ];
   assert.deepEqual(totals(rows), { income: "2500.00", charge: "1050.50", savings: "200.00" });
+});
+
+test("monthKeyAt uses the user's local timezone at month boundaries", () => {
+  assert.equal(monthKeyAt("2026-10-31T23:30:00.000Z", "Europe/Paris"), "2026-11");
+  assert.equal(monthKeyAt("2026-11-01T00:30:00.000Z", "America/Los_Angeles"), "2026-10");
+  assert.equal(monthKeyAt("not-a-date", "Europe/Paris"), null);
+  assert.throws(() => monthKeyAt("2026-11-01T00:00:00.000Z", "Not/AZone"), RangeError);
 });
