@@ -52,16 +52,18 @@
       });
     });
     (Array.isArray(state.budgets) ? state.budgets : []).forEach(x => {
+      if (!x || typeof x !== "object") return;
       const amount = Number(x.amount);
-      if (x && (x.label || x.category) && Number.isFinite(amount) && amount >= 0) result.push({
-        itemType: "charge", sourceItemId: x.id || null, label: String(x.label || x.category).slice(0, 160),
-        category: x.category || null, nature: x.nature || null, plannedAmount: amount, metadata: { source: "legacy-budget" }
+      if ((x.label || x.category) && Number.isFinite(amount) && amount >= 0) result.push({
+        itemType: "charge", sourceItemId: x.id == null ? null : String(x.id), label: String(x.label || x.category).slice(0, 160),
+        category: typeof x.category === "string" ? x.category : null, nature: typeof x.nature === "string" ? x.nature : null, plannedAmount: amount, metadata: { source: "legacy-budget" }
       });
     });
     (Array.isArray(state.goals) ? state.goals : []).forEach(x => {
+      if (!x || typeof x !== "object") return;
       const amount = Number(x.monthly);
-      if (x && (x.name || x.id) && Number.isFinite(amount) && amount >= 0) result.push({
-        itemType: "savings", sourceItemId: x.id || null, label: String(x.name || "Épargne programmée").slice(0, 160),
+      if ((x.name || x.id) && Number.isFinite(amount) && amount >= 0) result.push({
+        itemType: "savings", sourceItemId: x.id == null ? null : String(x.id), label: String(x.name || "Épargne programmée").slice(0, 160),
         plannedAmount: amount, metadata: { source: "legacy-savings-goal" }
       });
     });
@@ -113,6 +115,10 @@
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
       button.onclick = () => {
         items.splice(Number(button.dataset.removeMonthItem), 1);
+        editingItemIndex = null;
+        $("monthlyBudgetItemForm").reset();
+        $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
+        $("monthlyBudgetItemCancel").hidden = true;
         renderItems();
       };
     });
