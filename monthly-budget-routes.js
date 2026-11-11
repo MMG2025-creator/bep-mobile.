@@ -216,9 +216,9 @@ function createMonthlyBudgetRouter({ pool, auth }) {
         if (expense.amount == null || !["number", "string"].includes(typeof expense.amount) || (typeof expense.amount === "string" && !expense.amount.trim())) continue;
         const amount = Number(expense.amount);
         if (!Number.isFinite(amount) || amount < 0 || amount > MAX_AMOUNT) continue;
-        const id = typeof expense.id === "string" && expense.id ? expense.id : [at, expense.merchant || "", expense.category || "", amount].join("|");
-        if (seen.has(id)) continue;
-        seen.add(id);
+        const id = typeof expense.id === "string" && expense.id ? expense.id : null;
+        if (id && seen.has(id)) continue;
+        if (id) seen.add(id);
         rows.push({
           id: typeof expense.id === "string" ? expense.id : null,
           at,
