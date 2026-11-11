@@ -174,7 +174,9 @@ Migration additive uniquement :
 - [x] Routes API isolées préparées dans `monthly-budget-routes.js` et montées sous `/api/budgets` (non activées en production; tables requises).
 - [x] Tests unitaires de validation et calcul ajoutés avec `node:test`.
 - [ ] Exécution CI des tests et tests d’intégration PostgreSQL.
-- [ ] Implémentation interface et adaptation de `dist`.
+- [x] Interface dédiée de consultation/création/édition mensuelle préparée et synchronisée dans `dist/`.
+- [ ] Raccordement des formulaires historiques revenus/charges au mois sélectionné.
+- [ ] Intégration des dépenses réelles datées et dédoublonnage.
 - [ ] Tests automatisés et E2E.
 - [ ] Revue de sécurité et contrôle de non-régression.
 - [ ] Publication (validation distincte avant déploiement).
@@ -189,5 +191,5 @@ Migration additive uniquement :
 - Contrôles d'entrée : format de mois, types, libellés, montants, métadonnées, nombre de lignes et plafonds d'agrégats.
 - Tests unitaires Node intégrés et workflow GitHub Actions préparé.
 - Le backend ne lance volontairement pas la migration au démarrage. Tant que la migration n'est pas appliquée explicitement, les nouvelles routes ne peuvent pas être utilisées; cela évite tout DDL implicite en production.
-- L'interface utilisateur, la migration contrôlée de la photographie budgétaire actuelle et les tests PostgreSQL/E2E restent à réaliser.
+- L’interface dédiée existe, mais les formulaires historiques revenus/charges ne sont pas encore raccordés au mois sélectionné. L’intégration des dépenses réelles datées, la migration contrôlée de la photographie budgétaire et les tests PostgreSQL/E2E restent à réaliser.
 - Aucun déploiement, aucune migration de base, aucune modification de données et aucune activation côté utilisateur n'ont été effectués.
