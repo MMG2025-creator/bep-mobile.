@@ -22,6 +22,7 @@ function validateItems(value) {
     if (!item || typeof item !== "object" || Array.isArray(item)) return null;
     const itemType = String(item.itemType || "");
     const label = typeof item.label === "string" ? item.label.trim() : "";
+    if (item.plannedAmount == null || (typeof item.plannedAmount === "string" && !item.plannedAmount.trim())) return null;
     const amount = Number(item.plannedAmount);
     if (!TYPES.has(itemType) || !label || label.length > 160 ||
         !Number.isFinite(amount) || amount < 0 || amount > MAX_AMOUNT) return null;
@@ -235,12 +236,12 @@ function createMonthlyBudgetRouter({ pool, auth }) {
         [req.session.user.id, monthKey + "-01"]
       );
       if (!before.rowCount) { await client.query("ROLLBACK"); return res.status(404).json({ error: "MONTH_NOT_FOUND" }); }
-      if (Number(before.rows[0].version) !== expectedVersion) { await client.query("ROLLBACK"); return res.status(409).json({ error: "VERSION_CONFLICT" }); }
       const desired = status === "closed" ? "closed" : "open";
       if (before.rows[0].status === desired) {
         await client.query("COMMIT");
-        return res.json({ ok: true, changed: false, status: desired, version: expectedVersion });
+        return res.json({ ok: true, changed: false, status: desired, version: Number(before.rows[0].version) });
       }
+      if (Number(before.rows[0].version) !== expectedVersion) { await client.query("ROLLBACK"); return res.status(409).json({ error: "VERSION_CONFLICT" }); }
       const items = await client.query("SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id",[before.rows[0].id]);
       const beforeState = snapshot(before.rows[0], items.rows);
       const updated = await client.query(
