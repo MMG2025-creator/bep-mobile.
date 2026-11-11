@@ -145,6 +145,7 @@
     if (loading) return;
     const monthKey = $("monthlyBudgetNewMonth").value;
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey)) return status("Choisis un mois valide.", true);
+    const epoch = authEpoch;
     const first = months.length === 0;
     const source = first ? "current" : "previous";
     const payload = { monthKey, source };
@@ -155,6 +156,7 @@
     setBusy(true);
     try {
       const data = await api("/api/budgets/months", { method: "POST", body: JSON.stringify(payload) });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       months = [data.budget, ...months.filter(x => x.monthKey !== monthKey)].sort((a, b) => b.monthKey.localeCompare(a.monthKey));
       await loadMonth(monthKey);
       status(data.created ? "Mois créé. Les valeurs copiées sont indépendantes." : "Ce mois existait déjà ; aucune duplication effectuée.");
@@ -179,12 +181,14 @@
   };
   $("monthlyBudgetSave").onclick = async () => {
     if (!current || loading) return;
+    const epoch = authEpoch;
     setBusy(true);
     try {
       const data = await api("/api/budgets/months/" + current.monthKey, {
         method: "PUT",
         body: JSON.stringify({ expectedVersion: current.version, items })
       });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       items = current.items.map(x => ({ ...x, plannedAmount: Number(x.plannedAmount) }));
       renderItems(); status("Budget enregistré · version " + current.version);
@@ -199,11 +203,13 @@
   }
   $("monthlyBudgetClose").onclick = async () => {
     if (!current || loading) return;
+    const epoch = authEpoch;
     setBusy(true);
     try {
       const data = await api("/api/budgets/months/" + current.monthKey + "/close", {
         method: "POST", body: JSON.stringify({ expectedVersion: current.version })
       });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       await loadMonth(current.monthKey);
       status(data.changed ? "Mois clôturé. Il reste consultable." : "Ce mois était déjà clôturé.");
       await refreshMonthListOnly();
@@ -212,6 +218,7 @@
   };
   $("monthlyBudgetReopen").onclick = async () => {
     if (!current || loading) return;
+    const epoch = authEpoch;
     const reason = $("monthlyBudgetReasonInput").value.trim();
     if (!reason) return status("Indique le motif de la correction avant de rouvrir le mois.", true);
     setBusy(true);
@@ -219,6 +226,7 @@
       await api("/api/budgets/months/" + current.monthKey + "/reopen", {
         method: "POST", body: JSON.stringify({ expectedVersion: current.version, reason })
       });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       $("monthlyBudgetReasonInput").value = "";
       await loadMonth(current.monthKey);
       status("Mois rouvert. La réouverture est inscrite dans le journal d’audit.");
