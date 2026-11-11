@@ -193,3 +193,17 @@ Migration additive uniquement :
 - Le backend ne lance volontairement pas la migration au démarrage. Tant que la migration n'est pas appliquée explicitement, les nouvelles routes ne peuvent pas être utilisées; cela évite tout DDL implicite en production.
 - L’interface dédiée existe, mais les formulaires historiques revenus/charges ne sont pas encore raccordés au mois sélectionné. L’intégration des dépenses réelles datées, la migration contrôlée de la photographie budgétaire et les tests PostgreSQL/E2E restent à réaliser.
 - Aucun déploiement, aucune migration de base, aucune modification de données et aucune activation côté utilisateur n'ont été effectués.
+
+
+### Contrôles statiques d'intégration — 11 novembre 2026
+
+Contrôle du contenu publié depuis `dist/` :
+- Aucun identifiant HTML dupliqué dans `dist/index.html`.
+- Tous les identifiants DOM référencés par `monthly-budget-ui.js` existent dans le HTML publié.
+- Script UI, feuilles de style et cache-busters référencés présents dans `dist/`.
+- Styles de l'historique présents dans `dist/styles.css`.
+- Événements de session présents dans `dist/app.js` pour initialisation et purge de l'interface à la déconnexion.
+- Routeur monté dans `server.js`, endpoints attendus présents, trois tables de migration identifiées.
+- Trois groupes de tests unitaires ajoutés.
+
+Ces contrôles sont des vérifications statiques de cohérence des fichiers. Ils ne remplacent ni `node --check`, ni l'exécution de `node --test`, ni les tests PostgreSQL et E2E.
