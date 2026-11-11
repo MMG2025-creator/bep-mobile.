@@ -13,7 +13,23 @@ function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
 function available(){return totalIncome()-charges()}
 function rate(excludeGoalId){const committed=(state.goals||[]).filter(g=>!g.archivedAt&&g.id!==excludeGoalId).reduce((n,g)=>n+Math.max(0,Number(g.monthly)||0),0),free=Math.max(0,available()-committed),r=totalIncome()?free/totalIncome()*100:0;return r<5?0:r<15?5:r<25?10:r<35?15:20}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return}render();if(window.bepSignedIn)fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status)}).catch(()=>notify("Données conservées sur cet appareil, mais synchronisation serveur échouée. Vérifie ta connexion."))}
+function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return}render();window.dispatchEvent(new CustomEvent("bep:legacy-budget-changed",{detail:{income:state.income,incomes:state.incomes,budgets:state.budgets,goals:state.goals}}));if(window.bepSignedIn)fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status)}).catch(()=>notify("Données conservées sur cet appareil, mais synchronisation serveur échouée. Vérifie ta connexion."))}
+window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
+  const d=new Date(),localMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+  if(monthKey!==localMonth||!Array.isArray(monthlyItems))return false;
+  const archived=(state.goals||[]).filter(g=>g&&g.archivedAt);
+  state.incomes=monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"}));
+  state.budgets=monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0}));
+  state.goals=[...archived,...monthlyItems.filter(x=>x.itemType==="savings").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||0,duration:Number(x.metadata?.duration)||3}))];
+  syncIncomeTotal();
+  try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){throw Error("Impossible de synchroniser le budget local.")};
+  render();
+  if(window.bepSignedIn){
+    const response=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});
+    if(!response.ok)throw Error("La synchronisation du budget courant vers les données BEP a échoué.");
+  }
+  return true;
+};
 async function persistMigratedIncomeState(){const migrated=migrateIncomeState();localStorage.setItem(DB,JSON.stringify(state));if(migrated&&window.bepSignedIn){const r=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});if(!r.ok)throw Error("La migration des revenus n’a pas pu être sauvegardée sur le serveur.")}}
 const AI_USAGE_KEY="bep-ai-usage-v1";
 let coachFirstName="";
