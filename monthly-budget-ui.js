@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const API = String(window.BEP_API_BASE || "https://bep-v2-api.onrender.com").replace(/\\/+$/, "");
+  const API = String(window.BEP_API_BASE || "https://bep-v2-api.onrender.com").replace(/\/+$/, "");
   const DB = "bep-mobile-v1";
   const $ = id => document.getElementById(id);
   const card = $("monthlyHistoryCard");
