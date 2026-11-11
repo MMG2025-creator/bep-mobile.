@@ -9,6 +9,7 @@
   let months = [];
   let current = null;
   let items = [];
+  let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
   let loading = false;
   let authEpoch = 0;
 
@@ -75,6 +76,15 @@
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = false;
   }
+  function renderActuals() {
+    $("monthlyBudgetActualTotal").textContent = money(actuals.actualExpenseTotal);
+    $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
+    $("monthlyBudgetActualItems").innerHTML = actuals.expenses.length ? actuals.expenses.slice(0, 12).map(x =>
+      '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
+      new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
+      '</small></span><b>' + money(x.amount) + '</b></div>'
+    ).join("") : '<p class="empty">Aucun achat enregistré pour ce mois.</p>';
+  }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
     $("monthlyBudgetItems").innerHTML = items.length ? items.map((x, index) =>
@@ -104,15 +114,20 @@
     const epoch = authEpoch;
     setBusy(true);
     try {
-      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
+      const [data, actualData] = await Promise.all([
+        api("/api/budgets/months/" + encodeURIComponent(monthKey)),
+        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals")
+      ]);
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
+      actuals = actualData;
       items = current.items.map(x => ({
         itemType: x.itemType, sourceItemId: x.sourceItemId, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
       }));
       renderMonths();
       renderItems();
+      renderActuals();
       status(current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version);
     } catch (error) {
       status("Impossible de charger ce mois : " + error.message, true);
@@ -239,7 +254,7 @@
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
     if (window.bepSignedIn) refresh();
-    else { months = []; current = null; items = []; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    else { months = []; current = null; items = []; actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] }; renderMonths(); renderActuals(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   if (window.bepSignedIn) refresh();
 })();
