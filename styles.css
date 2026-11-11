@@ -704,3 +704,6 @@ body.chart-zoom-open{overflow:hidden}
 
 /* AI advice cards: prevent long provider errors or URLs from overflowing on mobile. */
 .ai-card,.ai-card>*{min-width:0;max-width:100%}.ai-card .coach-copy,.ai-card .ai-advice{min-width:0;overflow-wrap:anywhere;word-break:break-word}.ai-card .ai-advice{white-space:normal;overflow:hidden}
+
+/* Achats indépendants — sélection multiple par appui long */
+.purchase-row{user-select:none;-webkit-user-select:none;touch-action:pan-y}.purchase-row.is-selected{background:#edf7f1;border-color:#8fc5a7}.purchase-row-main{display:flex;align-items:center;gap:10px;min-width:0;flex:1}.purchase-row-main>span{min-width:0}.purchase-select-check{width:19px;height:19px;flex:none;accent-color:var(--green)}.purchase-bulk-toolbar{display:flex;flex-direction:column;gap:10px;padding:12px;margin:10px 0;border:1px solid #cfe4d7;border-radius:12px;background:#f2f8f4;color:var(--forest);font-size:12px;font-weight:700}.purchase-bulk-toolbar>div{display:flex;flex-wrap:wrap;gap:7px}.purchase-bulk-toolbar button{flex:1;min-width:0;padding:9px 10px;font-size:11px}.purchase-bulk-toolbar button:disabled{opacity:.45}.purchase-longpress-hint{margin:8px 0}.purchase-bulk-toolbar.hidden{display:none}
