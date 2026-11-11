@@ -118,11 +118,9 @@ function emailShell_(heading, content) {
 }
 
 function isAllowedResetUrl_(value) {
-  try {
-    return /^https:\/\/bep-mobile\\.onrender\\.com\/?\\?reset=[a-f0-9]{64}$/.test(value);
-  } catch (_) {
-    return false;
-  }
+  var prefix = "https://bep-mobile.onrender.com/?reset=";
+  return value.indexOf(prefix) === 0 &&
+    /^[a-f0-9]{64}$/.test(value.slice(prefix.length));
 }
 
 function isValidEmail_(value) {
