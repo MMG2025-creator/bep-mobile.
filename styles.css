@@ -709,3 +709,77 @@ body.chart-zoom-open{overflow:hidden}
 
 /* Achats indépendants — sélection multiple par appui long */
 .purchase-row{user-select:none;-webkit-user-select:none;touch-action:pan-y}.purchase-row.is-selected{background:#edf7f1;border-color:#8fc5a7}.purchase-row-main{display:flex;align-items:center;gap:10px;min-width:0;flex:1}.purchase-row-main>span{min-width:0}.purchase-select-check{width:19px;height:19px;flex:none;accent-color:var(--green)}.purchase-bulk-toolbar{display:flex;flex-direction:column;gap:10px;padding:12px;margin:10px 0;border:1px solid #cfe4d7;border-radius:12px;background:#f2f8f4;color:var(--forest);font-size:12px;font-weight:700}.purchase-bulk-toolbar>div{display:flex;flex-wrap:wrap;gap:7px}.purchase-bulk-toolbar button{flex:1;min-width:0;padding:9px 10px;font-size:11px}.purchase-bulk-toolbar button:disabled{opacity:.45}.purchase-longpress-hint{margin:8px 0}.purchase-bulk-toolbar.hidden{display:none}
+
+/* Auth screen polish: logo stays on BEP green and Google CTA is precisely aligned */
+.auth-gate .auth-card .auth-mark.auth-wordmark{
+  width:min(168px,72vw);
+  min-height:56px;
+  aspect-ratio:320/110;
+  height:auto;
+  padding:7px 12px;
+  margin:0 auto 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  overflow:hidden;
+  background:linear-gradient(120deg,#032d27 0%,#075d50 68%,#064338 100%);
+  border:1px solid rgba(225,185,85,.55);
+  box-shadow:0 5px 14px rgba(3,44,37,.14);
+}
+.auth-gate .auth-card .auth-mark.auth-wordmark img{
+  display:block;
+  width:100%;
+  height:100%;
+  max-height:56px;
+  object-fit:contain;
+  background:transparent;
+}
+.topbar .brand-green .logo{
+  display:block;
+  width:clamp(142px,42vw,190px);
+  height:56px;
+  max-width:100%;
+  padding:7px 11px;
+  object-fit:contain;
+  object-position:left center;
+  background:linear-gradient(105deg,rgba(255,255,255,.055),rgba(255,255,255,0));
+  border:1px solid rgba(225,185,85,.3);
+  border-radius:12px;
+}
+.google-login{
+  width:100%;
+  min-height:54px;
+  margin:0 0 12px;
+  padding:12px 18px;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-sizing:border-box;
+  border:1px solid #d9e2dc;
+  border-radius:13px;
+  background:#fff;
+  color:#24342e;
+  font:700 14px 'DM Sans',sans-serif;
+  line-height:1.2;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(17,48,36,.05);
+  cursor:pointer;
+  transition:background .18s,border-color .18s,box-shadow .18s,transform .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.google-login:hover{background:#f9fbfa;border-color:#a9c5b6;box-shadow:0 4px 12px rgba(17,48,36,.09)}
+.google-login:active{transform:translateY(1px);background:#f1f7f3}
+.google-login:focus-visible{outline:3px solid #b8dfca;outline-offset:3px}
+.google-login .google-icon{display:block;width:21px;height:21px;flex:0 0 21px}
+.google-login span{display:block;min-width:0}
+.auth-card .auth-divider{margin:20px 0 16px}
+.auth-card .auth-message:not(:empty){padding:10px 12px;border:1px solid #f0d4ce;border-radius:10px;background:#fff7f5;color:#9b3e30;line-height:1.45}
+@media(max-width:390px){
+ .auth-gate{padding:14px}
+ .auth-card{padding:21px 18px}
+ .google-login{min-height:52px;font-size:13px}
+ .topbar .brand-green .logo{width:145px;height:50px}
+}
