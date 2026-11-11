@@ -203,7 +203,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       for (const expense of expenses) {
         if (!expense || typeof expense !== "object" || Array.isArray(expense)) continue;
         const at = typeof expense.at === "string" ? expense.at : "";
-        if (!/^\\d{4}-\\d{2}-\\d{2}T/.test(at) || !Number.isFinite(Date.parse(at))) continue;
+        if (!/^\d{4}-\d{2}-\d{2}T/.test(at) || !Number.isFinite(Date.parse(at))) continue;
         const dateParts = Object.fromEntries(dateFormatter.formatToParts(new Date(at)).map(part => [part.type, part.value]));
         if (dateParts.year + "-" + dateParts.month !== monthKey) continue;
         if (expense.amount == null || !["number", "string"].includes(typeof expense.amount) || (typeof expense.amount === "string" && !expense.amount.trim())) continue;
