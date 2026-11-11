@@ -866,3 +866,23 @@ body.chart-zoom-open{overflow:hidden}
 .budget-module[hidden]{display:none!important}
 .budget-module .card{margin-bottom:0}
 @media(max-width:380px){.budget-module-nav{gap:5px}.budget-module-tab{font-size:10px;padding:8px 4px;min-height:48px}.home-budget-metrics{gap:6px}.home-budget-metric{padding:10px 7px}.home-budget-metric span{font-size:10px}}
+
+
+/* BEP startup loader — shown while the existing session and private data are restored. */
+.bep-startup-loader{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#f5f8f6;opacity:1;visibility:visible;transition:opacity .32s ease,visibility .32s ease}
+.bep-startup-loader[hidden]{display:none}
+.bep-startup-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.bep-loader-content{width:min(100%,340px);display:flex;flex-direction:column;align-items:center;text-align:center}
+.bep-loader-mark{width:220px;max-width:75%;padding:15px 17px 13px;border-radius:20px;background:linear-gradient(135deg,#103b32,#176b50);box-shadow:0 14px 34px rgba(16,46,41,.13);animation:bep-loader-float 2.8s ease-in-out infinite}
+.bep-loader-mark svg{display:block;width:100%;height:auto}
+.bep-loader-message{margin:27px 0 5px;color:#102e29;font:800 19px Manrope,'DM Sans',sans-serif;letter-spacing:-.35px}
+.bep-loader-subtitle{margin:0;color:#71817b;font-size:13px}
+.bep-loader-dots{display:flex;gap:7px;margin:24px 0 17px}
+.bep-loader-dots i{width:7px;height:7px;border-radius:50%;background:#b88d3c;animation:bep-loader-dot 1.05s ease-in-out infinite}
+.bep-loader-dots i:nth-child(2){animation-delay:.16s}.bep-loader-dots i:nth-child(3){animation-delay:.32s}
+.bep-loader-track{width:154px;height:3px;overflow:hidden;border-radius:99px;background:#dfe9e3}
+.bep-loader-track span{display:block;width:42%;height:100%;border-radius:inherit;background:#176b50;animation:bep-loader-progress 1.35s ease-in-out infinite}
+@keyframes bep-loader-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes bep-loader-dot{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+@keyframes bep-loader-progress{0%{transform:translateX(-110%)}100%{transform:translateX(350%)}}
+@media(prefers-reduced-motion:reduce){.bep-loader-mark,.bep-loader-dots i,.bep-loader-track span{animation:none}.bep-startup-loader{transition:none}}
