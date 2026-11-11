@@ -838,8 +838,8 @@ body.chart-zoom-open{overflow:hidden}
 }
 .topbar .brand-green .logo{
   display:block!important;width:190px!important;max-width:190px!important;height:58px!important;
-  object-fit:contain!important;object-position:left center!important;border:0!important;
-  border-radius:0!important;box-shadow:none!important;
+  padding:0!important;object-fit:contain!important;object-position:left center!important;
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
 }
 @media(max-width:390px){
   .topbar .brand-green,.topbar .brand-green .logo{
