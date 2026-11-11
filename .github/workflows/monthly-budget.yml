@@ -1,0 +1,32 @@
+name: Monthly budget history checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "server.js"
+      - "monthly-budget-routes.js"
+      - "database/migrations/**"
+      - "tests/monthly-budget.test.js"
+      - "package.json"
+      - ".github/workflows/monthly-budget.yml"
+  push:
+    branches: [feature/monthly-budget-history]
+    paths:
+      - "server.js"
+      - "monthly-budget-routes.js"
+      - "database/migrations/**"
+      - "tests/monthly-budget.test.js"
+      - "package.json"
+      - ".github/workflows/monthly-budget.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-audit --no-fund
+      - run: npm run check:monthly-budget
