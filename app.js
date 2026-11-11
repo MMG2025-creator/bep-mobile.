@@ -42,6 +42,25 @@ async function recordAdvice(id){
 }
 function renderAI(){const ids=["home","budget","savings","purchases"];if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.configured){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
 function renderAIUsage(){const count=$("aiRequestCount");if(!count)return;count.textContent=Number(aiUsage.requests)||0;$("aiTokenCount").textContent=(Number(aiUsage.estimatedTokens)||0).toLocaleString("fr-FR");$("aiLatency").textContent=(aiUsage.requests?Math.round((Number(aiUsage.totalMs)||0)/aiUsage.requests):0)+" ms";$("aiCost").textContent="0,00 €"}
+
+async function loadKnowledge(){
+ const host=$("knowledgeRules");if(!host||!window.bepSignedIn)return;
+ host.textContent="Chargement des règles…";
+ try{const r=await fetch(API+"/api/ai/knowledge",{credentials:"include",cache:"no-store"}),d=await r.json();if(!r.ok)throw Error(d.message||"Indisponible");
+ const rules=d.rules||[];host.innerHTML=rules.length?rules.map(x=>'<div class="knowledge-rule" data-rule-id="'+esc(x.id)+'"><div><b>'+esc(x.rule.title)+'</b><small>'+esc(x.status)+" · "+esc(x.rule.type)+" · seuil "+esc(x.rule.threshold)+'</small><p>'+esc(x.rule.message)+'</p></div>'+(x.status==="pending"?'<div class="knowledge-actions"><button type="button" data-knowledge-action="approve">Valider</button><button type="button" data-knowledge-action="reject">Refuser</button></div>':x.status==="active"?'<div class="knowledge-actions"><button type="button" data-knowledge-action="disable">Désactiver</button></div>':'')+'</div>').join(""):"Aucune règle proposée pour le moment.";
+ }catch(e){host.textContent=e.message||"Base de connaissances indisponible."}
+}
+async function proposeKnowledge(){
+ const b=$("proposeKnowledgeBtn"),status=$("knowledgeStatus");if(!b)return;b.disabled=true;status.textContent="L’IA recherche des règles générales à proposer…";
+ try{const c=currentFinancialContext(),income=Number(c.income)||0,ratio=income>0?Number(c.charges||0)/income:null,available=Number(c.available)||0;
+ const band=available<0?"negative":available<300?"low":available<1000?"medium":"high";
+ const r=await fetch(API+"/api/ai/knowledge/propose",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({financialContext:{incomeBand:income>0?"provided":"unknown",chargesRatio:ratio,availableBand:band}})}),d=await r.json();if(!r.ok)throw Error(d.message||"Proposition impossible.");
+ status.textContent=d.proposed?d.proposed+" règle(s) proposée(s). Elles restent inactives tant que tu ne les valides pas.":"Aucune nouvelle règle utile proposée.";
+ await loadKnowledge();
+ }catch(e){status.textContent=e.message||"Proposition impossible."}finally{b.disabled=false}
+}
+$("proposeKnowledgeBtn")?.addEventListener("click",proposeKnowledge);
+$("knowledgeRules")?.addEventListener("click",async e=>{const b=e.target.closest("[data-knowledge-action]");if(!b)return;const row=b.closest("[data-rule-id]");if(!row)return;b.disabled=true;try{const r=await fetch(API+"/api/ai/knowledge/"+encodeURIComponent(row.dataset.ruleId)+"/review",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:b.dataset.knowledgeAction})}),d=await r.json();if(!r.ok)throw Error(d.message||"Action impossible.");await loadKnowledge()}catch(err){notify(err.message)}finally{b.disabled=false}});
 function tab(id){document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");window.scrollTo(0,0);if(["home","budget","savings","purchases","coach"].includes(id))recordAdvice(id)}
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>tab(x.dataset.goto));$("settingsBtn").onclick=async()=>{tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
 $("linkGoogleBtn").onclick=async()=>{const button=$("linkGoogleBtn"),status=$("googleLinkStatus");button.disabled=true;status.textContent="Vérification du compte BEP…";try{const r=await fetch(API+"/api/auth/google/link/start",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("accountProofInput").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de démarrer l'association.");if(!d.url)throw Error("Adresse de connexion Google manquante.");window.location.href=d.url}catch(e){status.textContent=e.message;button.disabled=false}};
@@ -233,6 +252,7 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  $("coachModeLabel").textContent=aiConnection.mode==="bep"?"● Coach IA BEP · Quota gratuit":aiConnection.personal?"● IA personnelle connectée · "+aiConnection.provider:"● Moteur BEP local · Tes données restent dans ton espace BEP";
  $("aiConnectionStatus").textContent=aiConnection.mode==="bep"?"Ton Coach IA BEP est actif. Aucun compte IA ni aucune clé à fournir.":aiConnection.personal?"Coach connecté à "+aiConnection.provider+" · "+aiConnection.model:"Le Coach IA mutualisé sera disponible dès son activation par BEP. En attendant, le moteur local reste actif.";
  $("aiQuotaStatus").textContent=aiConnection.mode==="bep"?"Quota gratuit : "+aiConnection.used+" / "+aiConnection.limit+" requêtes utilisées ce mois-ci.":aiConnection.personal?"Ton fournisseur personnel est utilisé. Sa facturation dépend de son offre.":"Le Coach local reste gratuit.";
+ loadKnowledge();
  $("disconnectAiBtn").classList.toggle("hidden",!aiConnection.personal);
  $("aiAdvancedSettings").classList.toggle("hidden",!aiConnection.personal);
  if(aiConnection.personal){$("aiProvider").value=personal.provider;$("aiModel").value=personal.model;$("aiEndpoint").value=personal.endpoint||"";$("aiApiKey").placeholder="Clé enregistrée (saisis-en une nouvelle pour la remplacer)"}
