@@ -905,3 +905,20 @@ body.chart-zoom-open{overflow:hidden}
 .savings-rewards-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.savings-reward{padding:12px 6px;border:1px solid #e8eee9;border-radius:13px;text-align:center;background:#fbfcfb;min-width:0}.savings-reward.unlocked{background:linear-gradient(145deg,#fffaf0,#f8f3e4);border-color:#e8d8a9}.savings-reward-icon{font-size:22px;color:#b28e3d}.savings-reward strong{display:block;font:700 10px Manrope;margin-top:5px}.savings-reward small{display:block;color:var(--muted);font-size:8px;line-height:1.35;margin-top:3px}.savings-operation-list .rowitem{font-size:11px}.savings-operation-list .rowitem small{font-size:9px}.savings-operation-amount{font-weight:800;white-space:nowrap}.savings-operation-amount.positive{color:#176b50}.savings-operation-amount.negative{color:#a44936}.savings-projection-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.savings-projection-controls .field{min-width:0}.savings-projection-result{padding:15px;border-radius:14px;background:#f0f7f2}.savings-projection-result small,.savings-projection-result span{display:block;color:var(--muted);font-size:10px}.savings-projection-result strong{display:block;font:800 25px Manrope;color:#176b50;margin:5px 0}.savings-operation-empty{padding:13px;border-radius:12px;background:#f7faf8;color:var(--muted);font-size:11px;line-height:1.5}
 @media(max-width:420px){.savings-intro{padding:18px 16px;min-height:150px}.savings-orbit{flex-basis:70px;width:70px;height:70px;font-size:29px}.savings-orbit i{inset:7px}.savings-goal-grid{grid-template-columns:1fr 1fr;gap:7px}.savings-goal-card{padding:10px}.savings-goal-balance{font-size:16px}.savings-hero-card{padding:17px}.savings-ring{width:80px;height:80px;flex-basis:80px}.savings-rewards-grid{gap:6px}.savings-reward{padding:10px 4px}.savings-reward strong{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.savings-progress-track span{transition:none}}
+
+
+/* Savings page: compact progressive disclosure and responsive layout */
+#savings.savings-page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:13px}
+#savings.savings-page>.savings-intro,#savings.savings-page>.savings-hero-card,#savings.savings-page>.savings-advisor-card,#savings.savings-page>.savings-goals-card{grid-column:1/-1;width:100%;margin:0}
+#savings.savings-page>.savings-rate-card,#savings.savings-page>.savings-entry-card,#savings.savings-page>.savings-rewards-card,#savings.savings-page>.savings-projection-card,#savings.savings-page>.savings-history-card{width:100%;margin:0;min-width:0}
+.savings-disclosure{padding:0!important;overflow:hidden}
+.savings-disclosure>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px;cursor:pointer;min-height:68px}
+.savings-disclosure>summary::-webkit-details-marker{display:none}
+.savings-disclosure>summary>span:first-child{display:grid;gap:4px}
+.savings-disclosure>summary small{font-size:9px;letter-spacing:1.2px;font-weight:800;color:#789487}
+.savings-disclosure>summary strong{font:700 14px Manrope;color:var(--ink,#17382e)}
+.savings-disclosure-icon{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:grid;place-items:center;background:#edf5f0;color:#176b50;font-size:19px;transition:transform .2s ease}
+.savings-disclosure[open] .savings-disclosure-icon{transform:rotate(45deg)}
+.savings-disclosure-body{padding:0 18px 18px}
+.savings-disclosure:focus-within>summary{outline:2px solid #5b9a7a;outline-offset:-3px;border-radius:12px}
+@media(max-width:680px){#savings.savings-page{display:flex;flex-direction:column;gap:12px}#savings.savings-page>*{width:100%;margin:0}.savings-disclosure>summary{padding:15px 16px}.savings-disclosure-body{padding:0 16px 16px}}
