@@ -140,11 +140,14 @@ app.put("/api/data",auth,async(req,res)=>{
    if(!o||typeof o.id!=="string"||!o.id.trim()||ledgerMap.has(o.id)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_LEDGER_CORRUPT"})}
    ledgerMap.set(o.id,o);
   }
+  const suppliedIds=new Set();
   for(const o of suppliedOps){
-   if(o&&typeof o.id==="string"&&ledgerMap.has(o.id)){
+   if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||suppliedIds.has(o.id)){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"})}
+   suppliedIds.add(o.id);
+   if(ledgerMap.has(o.id)){
     const existing=ledgerMap.get(o.id);
     if(existing.type!==o.type||existing.goalId!==o.goalId||Number(existing.amount)!==Number(o.amount)||existing.date!==o.date||(existing.reversalOf||null)!==(o.reversalOf||null)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_OPERATION_ID_CONFLICT"})}
-   }else if(o&&typeof o.id==="string"){ledgerMap.set(o.id,o)}
+   }else{ledgerMap.set(o.id,o)}
   }
   const incomingOps=Array.from(ledgerMap.values());
   if(incomingOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
