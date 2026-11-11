@@ -1,38 +1,40 @@
 # BEP external AI exchange — schema v1
 
 ## Purpose
-The exchange is a separate, human-mediated workflow. It does not use an AI API and does not alter the encrypted .bep backup format.
+A manual, user-controlled exchange with ChatGPT, Gemini, Claude, Mistral or another external AI. BEP does not call an external AI API and does not alter the encrypted .bep backup format.
 
 ## Export
-- File: bep-bilan-ia-v1.json
-- Format: UTF-8 JSON, schema=bep-coach-exchange, schema_version=1
-- Contains an aggregated financial snapshot only.
-- Does not export names, email addresses, account IDs, free-text labels, merchant names, transaction descriptions, or individual transaction rows.
-- Currency is EUR. Values are supplied as facts from the BEP local state, not estimates.
+One click downloads two files:
+- `bep-bilan-ia-v1.json`: anonymized, aggregated financial snapshot and immutable-facts contract.
+- `bep-prompt-conseiller-financier-<provider>.txt`: provider-specific, autonomous one-pass mission prompt.
 
-## Provider instructions
-The UI provides separate instruction text for ChatGPT, Gemini, Claude, Mistral and generic assistants. The external assistant must return JSON only:
-- source=external_ai
+The prompt assigns the role of a firm, precise personal-finance coach; requires a complete data check, financial diagnosis, grounded recommendations and reusable coaching knowledge; forbids intermediate questions and requires generation of `bep-coach-retour-v1.json`. If the provider cannot create attachments, it must return the complete raw JSON as a fallback. The prompt explicitly distinguishes facts, uncertainty and missing data, and prohibits inventing or rewriting financial facts.
+
+The snapshot excludes direct identifiers, free-text labels, merchant names, transaction descriptions and individual transaction rows. It is readable and may contain amounts; it is not the encrypted .bep backup.
+
+## Import contract
+The returned file must use:
+- schema = `bep-coach-exchange`
+- schema_version = `1`
+- source = `external_ai`
+- provider, model
+- financial_analysis.summary and financial_analysis.observations[]
 - recommendations[]
 - knowledge_updates[]
-- financial_analysis is informational only and is not stored as financial truth.
 
-## Import allowlist
-Only recommendations and reusable coaching knowledge are accepted. The importer ignores all other properties, including any changed income, expenses, balances, envelopes, goals, or transactions.
+Recommendations and knowledge use the allowlisted categories, confidence and priority values described in the prompt. The importer stores only recommendations and knowledge; financial_analysis remains informational and financial data returned by the external AI is ignored.
+
+## Import safeguards
 - Max file size: 1 MiB.
-- Max 50 items of each type.
+- Max 50 recommendations and 50 knowledge items.
 - Text fields are length-limited and HTML-escaped on display.
-- Confidence is constrained to low/medium/high.
-- Category and priority are allowlisted.
-- Imported content is stored per authenticated user in bep_user_coach_knowledge.
+- Confidence, category and priority are allowlisted.
+- Imported content is stored per authenticated user in `bep_user_coach_knowledge`.
 - Unique key (user, external ID, kind) prevents repeated imports of the same item.
-- Imported content is not executable and cannot add rules or code to the deterministic engine.
+- Imported content is not executable and is not automatically injected into deterministic advice.
 
 ## Privacy and encryption
-- This exchange file is intentionally readable by an external AI and is NOT a backup.
-- Never upload the encrypted BEP backup, its passphrase, account credentials, or API keys to an AI provider.
-- The existing encrypted backup controls and format are kept separate and untouched by this feature.
-- No external provider is called by BEP. The user manually uploads/downloads files with the AI provider.
+Never upload the encrypted BEP backup, its passphrase, account credentials or API keys to an external AI. No external provider is called by BEP; the user manually uploads and downloads files.
 
-## Current rollout boundary
-Imported knowledge is persisted and displayed in the user's private coaching library. It is not yet automatically promoted to shared/global rules or injected into deterministic advice. That requires a separate review and regression-test stage before activation.
+## Rollout boundary
+Imported content is persisted in the user's private coaching library and remains pending validation. It is not automatically promoted to shared/global rules or injected into deterministic advice.
