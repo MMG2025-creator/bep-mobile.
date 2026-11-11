@@ -20,15 +20,17 @@ function validateItems(value) {
   const rows = [];
   for (const item of value) {
     if (!item || typeof item !== "object" || Array.isArray(item)) return null;
-    const itemType = String(item.itemType || "");
+    if (typeof item.itemType !== "string") return null;
+    const itemType = item.itemType;
     const label = typeof item.label === "string" ? item.label.trim() : "";
-    if (item.plannedAmount == null || (typeof item.plannedAmount === "string" && !item.plannedAmount.trim())) return null;
+    if (item.plannedAmount == null || !["number", "string"].includes(typeof item.plannedAmount) || (typeof item.plannedAmount === "string" && !item.plannedAmount.trim())) return null;
     const amount = Number(item.plannedAmount);
     if (!TYPES.has(itemType) || !label || label.length > 160 ||
         !Number.isFinite(amount) || amount < 0 || amount > MAX_AMOUNT) return null;
-    const category = item.category == null ? null : String(item.category).trim();
-    const nature = item.nature == null ? null : String(item.nature).trim();
-    const sourceItemId = item.sourceItemId == null ? null : String(item.sourceItemId).slice(0, 120);
+    if ((item.category != null && typeof item.category !== "string") || (item.nature != null && typeof item.nature !== "string") || (item.sourceItemId != null && typeof item.sourceItemId !== "string")) return null;
+    const category = item.category == null ? null : item.category.trim();
+    const nature = item.nature == null ? null : item.nature.trim();
+    const sourceItemId = item.sourceItemId == null ? null : item.sourceItemId.slice(0, 120);
     const metadata = item.metadata == null ? {} : item.metadata;
     if ((category && category.length > 80) || (nature && nature.length > 40) ||
         !metadata || typeof metadata !== "object" || Array.isArray(metadata) ||
@@ -149,8 +151,8 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       );
       const after = { monthKey, status: "open", source, copiedItems: copied.length };
       await client.query(
-        "INSERT INTO bep_budget_audit_log(user_id,budget_id,action,after_state) VALUES($1,$2,'created',$3::jsonb)",
-        [userId,budget.id,JSON.stringify(after)]
+        "INSERT INTO bep_budget_audit_log(user_id,budget_id,action,after_state) VALUES($1,$2,$3,$4::jsonb)",
+        [userId,budget.id,source === "current" ? "imported" : "created",JSON.stringify(after)]
       );
       const rows = await client.query("SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id",[budget.id]);
       await client.query("COMMIT");
