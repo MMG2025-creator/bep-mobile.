@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0.0",
+  "jurisdiction": "FR",
+  "checkedAt": "2026-11-11",
+  "records": [
+    {"id":"SP_OVERINDEBTEDNESS","publisher":"Banque de France","title":"Faire face à des difficultés financières ou à des dettes","url":"https://www.banque-france.fr/fr/a-votre-service/particuliers/faire-face-difficultes-financieres-ou-dettes","type":"official_guidance","topics":["surendettement","point conseil budget","dettes"],"volatility":"low","checkedAt":"2026-11-11"},
+    {"id":"BF_DIFFICULTIES","publisher":"Banque de France","title":"Fichiers d’incidents bancaires","url":"https://www.banque-france.fr/fr/a-votre-service/particuliers/fichiers-incident-bancaire","type":"official_guidance","topics":["FICP","FCC","incidents bancaires"],"volatility":"low","checkedAt":"2026-11-11"},
+    {"id":"SP_CREDIT_OBLIGATIONS","publisher":"Service-Public.fr","title":"Crédit à la consommation : obligations de la banque","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2440","type":"official_legal_summary","topics":["solvabilite","TAEG","usure","credit consommation"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_CREDIT_WITHDRAWAL","publisher":"Service-Public.fr","title":"Crédit à la consommation : prêt personnel","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2435","type":"official_legal_summary","topics":["retractation","pret personnel"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_CREDIT_EARLY_REPAYMENT","publisher":"Service-Public.fr","title":"Crédit à la consommation : règles du contrat","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2451","type":"official_legal_summary","topics":["remboursement anticipe","indemnites"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_SAVINGS_COMPARISON","publisher":"Service-Public.fr","title":"Comptes et livrets d'épargne : quelles différences ?","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F34393","type":"official_reference","topics":["Livret A","LEP","LDDS","plafonds","taux"],"volatility":"high","checkedAt":"2026-11-11"},
+    {"id":"SP_LEP","publisher":"Service-Public.fr","title":"Livret d'épargne populaire (LEP)","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2367","type":"official_reference","topics":["LEP","eligibilite","taux"],"volatility":"high","checkedAt":"2026-11-11"},
+    {"id":"SP_TAX_SAVINGS","publisher":"Service-Public.fr","title":"Impôt sur le revenu – Revenus d'épargne et de placement","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2613","type":"official_tax_summary","topics":["fiscalite","livrets","PEA","assurance vie"],"volatility":"high","checkedAt":"2026-11-11"},
+    {"id":"TAX_INCOME_DECLARATION","publisher":"impots.gouv.fr","title":"C'est ma première déclaration, que dois-je déclarer ?","url":"https://www.impots.gouv.fr/particulier/questions/cest-ma-premiere-declaration-que-dois-je-declarer","type":"official_tax_guidance","topics":["revenus","declaration","credits_impot"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"TAX_ACTUAL_EXPENSES","publisher":"impots.gouv.fr","title":"Comment déclarer mes frais réels ?","url":"https://www.impots.gouv.fr/particulier/questions/comment-declarer-mes-frais-reels-dans-ma-declaration-de-revenus","type":"official_tax_guidance","topics":["frais reels","deduction"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_MORTGAGE_EARLY_REPAYMENT","publisher":"Service-Public.fr","title":"Peut-on rembourser son crédit immobilier par anticipation ?","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F1669","type":"official_legal_summary","topics":["credit immobilier","remboursement anticipe"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_CREDIT_DIFFICULTIES","publisher":"Service-Public.fr","title":"Crédit à la consommation : difficultés de remboursement","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F34972","type":"official_guidance","topics":["impayes","report echeances","assurance emprunteur"],"volatility":"medium","checkedAt":"2026-11-11"},
+    {"id":"SP_OVERDRAFT","publisher":"Service-Public.fr","title":"Autorisation de découvert bancaire","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F31423","type":"official_legal_summary","topics":["decouvert","frais bancaires"],"volatility":"high","checkedAt":"2026-11-11"}
+  ],
+  "maintenance": {
+    "reviewEveryDays": 90,
+    "highVolatilityReviewEveryDays": 30,
+    "mustRecheckBeforeAdvice": ["rates", "income_thresholds", "benefit_amounts", "tax_bands", "legal_deadlines", "credit_usury_rates"],
+    "sourceHierarchy": ["legifrance.gouv.fr", "service-public.gouv.fr", "impots.gouv.fr", "banque-france.fr", "economie.gouv.fr", "amf-france.org", "abe-infoservice.fr", "caf.fr", "urssaf.fr"]
+  }
+}
