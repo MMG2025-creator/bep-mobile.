@@ -190,6 +190,10 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   router.get("/months/:monthKey/actuals", auth, async (req, res) => {
     const monthKey = req.params.monthKey;
     if (!validMonth(monthKey)) return res.status(400).json({ error: "MONTH_INVALID" });
+    const timeZone = typeof req.query.timeZone === "string" ? req.query.timeZone : "UTC";
+    let dateFormatter;
+    try { dateFormatter = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit" }); }
+    catch { return res.status(400).json({ error: "TIME_ZONE_INVALID" }); }
     try {
       const result = await pool.query("SELECT payload FROM bep_user_data WHERE user_id=$1", [req.session.user.id]);
       const payload = result.rows[0]?.payload || {};
@@ -199,7 +203,9 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       for (const expense of expenses) {
         if (!expense || typeof expense !== "object" || Array.isArray(expense)) continue;
         const at = typeof expense.at === "string" ? expense.at : "";
-        if (!/^\\d{4}-\\d{2}-\\d{2}T/.test(at) || at.slice(0, 7) !== monthKey || !Number.isFinite(Date.parse(at))) continue;
+        if (!/^\\d{4}-\\d{2}-\\d{2}T/.test(at) || !Number.isFinite(Date.parse(at))) continue;
+        const dateParts = Object.fromEntries(dateFormatter.formatToParts(new Date(at)).map(part => [part.type, part.value]));
+        if (dateParts.year + "-" + dateParts.month !== monthKey) continue;
         if (expense.amount == null || !["number", "string"].includes(typeof expense.amount) || (typeof expense.amount === "string" && !expense.amount.trim())) continue;
         const amount = Number(expense.amount);
         if (!Number.isFinite(amount) || amount < 0 || amount > MAX_AMOUNT) continue;
