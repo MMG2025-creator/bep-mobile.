@@ -1,0 +1,13 @@
+{
+  "checkedAt":"2026-11-11",
+  "records":[
+    {"id":"ENERGY_PAYMENT_DIFFICULTY","publisher":"Médiateur national de l'énergie","title":"Difficultés de paiement d'une facture d'énergie","url":"https://www.energie-info.fr/fiche_pratique/jai-des-difficultes-de-paiement/","topics":["énergie","échéancier","FSL","CCAS","chèque énergie","trêve hivernale"],"volatility":"medium"},
+    {"id":"ENERGY_WINTER_TRUCE","publisher":"Médiateur national de l'énergie","title":"Trêve hivernale : définition et conseils en cas de coupure","url":"https://www.energie-info.fr/fiche_pratique/treve-hivernale/","topics":["énergie","protection saisonnière","impayés"],"volatility":"high"},
+    {"id":"AMF_INTERMEDIARY_CHECK","publisher":"Autorité des marchés financiers","title":"Vérifier un intermédiaire financier","url":"https://www.amf-france.org/fr/quelles-sont-les-verifications-faire-concernant-votre-intermediaire-financier","topics":["investissement","ORIAS","conseiller","arnaque"],"volatility":"medium"},
+    {"id":"AMF_BLACKLISTS","publisher":"Autorité des marchés financiers","title":"Listes noires et mises en garde","url":"https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/listes-noires-et-mises-en-garde","topics":["fraude","placements non autorisés","crypto","forex"],"volatility":"high"},
+    {"id":"SP_RENT_ARREARS_HOUSING_AID","publisher":"Service-Public.fr","title":"Aide personnelle au logement maintenue en cas de loyers impayés","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F32037","topics":["loyer impayé","APL","plan apurement","FSL"],"volatility":"medium"},
+    {"id":"SP_DEPOSIT_GUARANTEE","publisher":"Service-Public.fr","title":"Dépôt de garantie dans un bail d'habitation","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F31269","topics":["location","dépôt garantie","impayés"],"volatility":"medium"},
+    {"id":"SP_HOME_INSURANCE_CANCEL","publisher":"Service-Public.fr","title":"Assurance habitation : résiliation du contrat","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F19083","topics":["assurance habitation","résiliation","continuité couverture"],"volatility":"medium"},
+    {"id":"SP_AUTO_INSURANCE_CANCEL","publisher":"Service-Public.fr","title":"Assurance auto : résiliation du contrat","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F2659","topics":["assurance auto","résiliation","continuité couverture"],"volatility":"medium"}
+  ]
+}
