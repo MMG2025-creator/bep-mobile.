@@ -187,6 +187,41 @@ function createMonthlyBudgetRouter({ pool, auth }) {
     }
   });
 
+  router.get("/months/:monthKey/actuals", auth, async (req, res) => {
+    const monthKey = req.params.monthKey;
+    if (!validMonth(monthKey)) return res.status(400).json({ error: "MONTH_INVALID" });
+    try {
+      const result = await pool.query("SELECT payload FROM bep_user_data WHERE user_id=$1", [req.session.user.id]);
+      const payload = result.rows[0]?.payload || {};
+      const expenses = Array.isArray(payload.expenses) ? payload.expenses : [];
+      const seen = new Set();
+      const rows = [];
+      for (const expense of expenses) {
+        if (!expense || typeof expense !== "object" || Array.isArray(expense)) continue;
+        const at = typeof expense.at === "string" ? expense.at : "";
+        if (!/^\\d{4}-\\d{2}-\\d{2}T/.test(at) || at.slice(0, 7) !== monthKey) continue;
+        const amount = Number(expense.amount);
+        if (!Number.isFinite(amount) || amount < 0) continue;
+        const id = typeof expense.id === "string" && expense.id ? expense.id : [at, expense.merchant || "", expense.category || "", amount].join("|");
+        if (seen.has(id)) continue;
+        seen.add(id);
+        rows.push({
+          id: typeof expense.id === "string" ? expense.id : null,
+          at,
+          label: String(expense.merchant || expense.category || "Achat").slice(0, 160),
+          category: typeof expense.category === "string" ? expense.category : null,
+          amount: amount.toFixed(2)
+        });
+      }
+      rows.sort((a, b) => b.at.localeCompare(a.at));
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ monthKey, count: rows.length, actualExpenseTotal: rows.reduce((sum, x) => sum + Number(x.amount), 0).toFixed(2), expenses: rows });
+    } catch (error) {
+      console.error("Monthly actual expenses read failed", error.message);
+      res.status(503).json({ error: "MONTHLY_ACTUALS_UNAVAILABLE" });
+    }
+  });
+
   router.put("/months/:monthKey", auth, async (req, res) => {
     const monthKey = req.params.monthKey;
     const expectedVersion = req.body?.expectedVersion;
