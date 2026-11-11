@@ -428,7 +428,7 @@ $("chartCarousel").addEventListener("touchstart",e=>{const t=e.changedTouches[0]
 $("chartCarousel").addEventListener("touchend",e=>{if(!chartTouchStart)return;const t=e.changedTouches[0],dx=t.clientX-chartTouchStart.x,dy=t.clientY-chartTouchStart.y;chartTouchStart=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.25)moveChart(dx<0?1:-1)},{passive:true});
 function savingsOperations(){if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];return state.savingsOperations}
 function savingsBalance(goalId){return savingsOperations().filter(o=>o.goalId===goalId).reduce((n,o)=>n+(o.type==="deposit"?1:-1)*Math.max(0,Number(o.amount)||0),0)}
-function savingsDate(value){if(typeof value==="string"&&/^\\d{4}-\\d{2}-\\d{2}$/.test(value)){const [y,m,d]=value.split("-").map(Number);return new Date(y,m-1,d)}const date=new Date(value);return Number.isNaN(date.getTime())?new Date():date}
+function savingsDate(value){if(typeof value==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(value)){const [y,m,d]=value.split("-").map(Number);return new Date(y,m-1,d)}const date=new Date(value);return Number.isNaN(date.getTime())?new Date():date}
 function renderSavingsExperience(){
  const goals=state.goals||[],ops=savingsOperations(),total=goals.reduce((n,g)=>n+Math.max(0,savingsBalance(g.id)),0),target=goals.reduce((n,g)=>n+Math.max(0,Number(g.monthly)||0)*Math.max(1,Number(g.duration)||1),0),progress=target?Math.min(100,total/target*100):0,now=new Date(),monthNet=ops.filter(o=>{const d=savingsDate(o.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((n,o)=>n+(o.type==="deposit"?1:-1)*Number(o.amount||0),0);
  const set=(id,value)=>{const el=$(id);if(el)el.textContent=value};
