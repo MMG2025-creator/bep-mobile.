@@ -813,3 +813,18 @@ body.chart-zoom-open{overflow:hidden}
 
 
 .auth-gate .auth-card .auth-brand-banner svg{display:block;width:100%;height:100%;min-width:0}
+
+
+/* BEP authentication palette — forest green, balanced green and soft gold */
+.auth-gate .auth-card .auth-brand-banner{
+  background:linear-gradient(125deg,#102e29 0%,#145842 58%,#176b50 100%);
+  box-shadow:0 5px 16px rgba(16,46,41,.10);
+}
+.auth-gate .auth-card .auth-brand-banner svg{display:block;width:100%;height:100%;min-width:0}
+.auth-gate .auth-card .auth-switch button.active{
+  background:#102e29;
+  border-color:#102e29;
+}
+.auth-gate .auth-card .primary{
+  background:#176b50;
+}
