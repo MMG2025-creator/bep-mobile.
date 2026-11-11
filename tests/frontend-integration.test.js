@@ -8,6 +8,7 @@ const path = require("node:path");
 const read = file => fs.readFileSync(path.join(__dirname, "..", file), "utf8");
 
 test("published frontend assets are synchronized with source", () => {
+  assert.equal(read("app.js"), read("dist/app.js"));
   assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
   assert.equal(read("styles.css"), read("dist/styles.css"));
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
