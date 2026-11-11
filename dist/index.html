@@ -61,6 +61,39 @@
 <div class="privacy-note">🔒 Tes données sont enregistrées dans ton espace personnel et synchronisées avec ton compte.</div>
 </section>
 <section id="budget" class="panel">
+<article class="card monthly-history-card" id="monthlyHistoryCard">
+  <div class="card-head"><div><p class="eyebrow">HISTORIQUE BUDGÉTAIRE</p><h2>Mes budgets mensuels</h2><p class="hint">Chaque mois conserve sa propre photographie. Une modification ne réécrit pas les mois précédents.</p></div><span class="tag">Historique</span></div>
+  <p id="monthlyBudgetStatus" class="monthly-budget-status" role="status" aria-live="polite">Connecte-toi pour consulter ton historique mensuel.</p>
+  <div id="monthlyBudgetNoMonth" hidden><p class="hint">Aucun mois n’est encore enregistré dans le nouvel historique. Le premier mois peut reprendre une seule fois les revenus, charges et objectifs actuellement enregistrés.</p></div>
+  <form id="monthlyBudgetCreateForm" class="monthly-budget-create" hidden>
+    <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required></div>
+    <button class="secondary full" type="submit">Créer le mois</button>
+  </form>
+  <div id="monthlyBudgetWorkspace" hidden>
+    <div class="field"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="monthly-budget-metrics">
+      <div><span>Revenus prévus</span><strong id="monthlyBudgetIncomeTotal">0,00 €</strong></div>
+      <div><span>Charges prévues</span><strong id="monthlyBudgetChargesTotal">0,00 €</strong></div>
+      <div><span>Épargne prévue</span><strong id="monthlyBudgetSavingsTotal">0,00 €</strong></div>
+      <div><span>Disponible prévisionnel</span><strong id="monthlyBudgetRemaining">0,00 €</strong></div>
+    </div>
+    <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
+    <form id="monthlyBudgetItemForm" class="monthly-budget-item-form">
+      <h3>Ajouter une ligne</h3>
+      <div class="field"><label for="monthlyBudgetItemType">Type</label><select id="monthlyBudgetItemType"><option value="income">Revenu</option><option value="charge">Charge</option><option value="savings">Épargne</option></select></div>
+      <div class="field"><label for="monthlyBudgetItemLabel">Libellé</label><input id="monthlyBudgetItemLabel" maxlength="160" required></div>
+      <div class="field"><label for="monthlyBudgetItemCategory">Catégorie (facultatif)</label><input id="monthlyBudgetItemCategory" maxlength="80"></div>
+      <div class="field"><label for="monthlyBudgetItemAmount">Montant mensuel (€)</label><input id="monthlyBudgetItemAmount" type="number" min="0" max="999999999999.99" step="0.01" required></div>
+      <button class="secondary full" type="submit">Ajouter la ligne</button>
+    </form>
+    <button id="monthlyBudgetSave" class="primary full" type="button">Enregistrer ce mois</button>
+    <div class="monthly-budget-close-actions">
+      <button id="monthlyBudgetClose" class="secondary full" type="button">Clôturer le mois</button>
+      <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500"></div>
+      <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
+    </div>
+  </div>
+</article>
 <div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
 <button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
 <button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
@@ -218,5 +251,6 @@
 <script src="./app.js?v=85"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./coach-exchange.js?v=1" defer></script>
+<script src="./monthly-budget-ui.js?v=1"></script>
 <script src="./pwa.js?v=9"></script>
 </body></html>
