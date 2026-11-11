@@ -137,7 +137,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
   const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
-  if(!Array.isArray(suppliedOps)||suppliedOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  if(!Array.isArray(suppliedOps)||suppliedOps.length>5000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});}
   const ledgerMap=new Map();
   for(const o of (Array.isArray(previous.savingsOperations)?previous.savingsOperations:[])){
    if(!o||typeof o.id!=="string"||!o.id.trim()||ledgerMap.has(o.id)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_LEDGER_CORRUPT"})}
@@ -153,7 +153,7 @@ app.put("/api/data",auth,async(req,res)=>{
    }else{ledgerMap.set(o.id,o)}
   }
   const incomingOps=Array.from(ledgerMap.values());
-  if(incomingOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  if(incomingOps.length>5000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});}
   const goalIds=new Set(goals.filter(g=>g&&typeof g.id==="string"&&g.id.trim()).map(g=>g.id));
   const ids=new Set(),reversals=new Map(),ops=[];
   for(const o of incomingOps){
