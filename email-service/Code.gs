@@ -119,15 +119,7 @@ function emailShell_(heading, content) {
 
 function isAllowedResetUrl_(value) {
   try {
-    var url = new URL(value);
-    return url.protocol === "https:" &&
-      url.hostname === "bep-mobile.onrender.com" &&
-      url.port === "" &&
-      url.username === "" &&
-      url.password === "" &&
-      url.pathname === "/" &&
-      url.searchParams.has("reset") &&
-      /^[a-f0-9]{64}$/.test(url.searchParams.get("reset"));
+    return /^https:\/\/bep-mobile\\.onrender\\.com\/?\\?reset=[a-f0-9]{64}$/.test(value);
   } catch (_) {
     return false;
   }
