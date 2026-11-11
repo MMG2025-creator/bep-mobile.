@@ -116,7 +116,7 @@
     try {
       const [data, actualData] = await Promise.all([
         api("/api/budgets/months/" + encodeURIComponent(monthKey)),
-        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals")
+        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"))
       ]);
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
