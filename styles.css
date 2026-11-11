@@ -665,9 +665,10 @@ body.chart-zoom-open{overflow:hidden}
 .topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}
 .topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}
 .topbar .head-actions{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;margin-left:auto}
-.topbar .settings-icon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:68px;height:58px;padding:5px 4px;border:1px solid rgba(231,185,77,.7);border-radius:13px;background:rgba(255,255,255,.08);color:#f5f6f1;flex:none}
-.topbar .settings-icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.topbar .settings-icon-label{font:600 9px/1.1 "DM Sans",sans-serif;white-space:nowrap;color:#f5f6f1}
+.topbar .settings-icon-btn{display:grid;place-items:center;width:44px;height:44px;padding:10px;border:1px solid rgba(231,185,77,.7);border-radius:13px;background:rgba(255,255,255,.08);color:#f5f6f1;font-size:0;flex:none;cursor:pointer;transition:background .18s ease,transform .18s ease,border-color .18s ease}
+.topbar .settings-icon-btn:hover,.topbar .settings-icon-btn:focus-visible{background:rgba(255,255,255,.18);border-color:#e7bd55;outline:2px solid rgba(231,189,85,.35);outline-offset:2px}
+.topbar .settings-icon-btn:active{transform:scale(.96)}
+.topbar .settings-icon-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .auth-gate .auth-mark.auth-wordmark{width:min(154px,72vw);height:auto;aspect-ratio:320/110;border-radius:0;background:var(--forest);overflow:hidden;display:flex;align-items:center;justify-content:flex-start;padding:7px 9px;margin:0 0 18px}
 .auth-gate .auth-mark.auth-wordmark img{display:block;width:100%;max-width:136px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center}
 @media(max-width:390px){.topbar .brand-green{display:flex;flex:0 1 154px;min-width:0;max-width:154px;align-items:flex-start;justify-content:flex-start;overflow:hidden;background:transparent;padding:0;border-radius:0;box-shadow:none}.topbar .brand-green .logo{display:block;width:100%;max-width:145px;height:auto;aspect-ratio:320/110;object-fit:contain;object-position:left center;border-radius:0;box-shadow:none}}
