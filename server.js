@@ -133,8 +133,17 @@ app.put("/api/data",auth,async(req,res)=>{
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
-  const incomingOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:(Array.isArray(previous.savingsOperations)?previous.savingsOperations:[]);
-  if(!Array.isArray(incomingOps)||incomingOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
+  if(!Array.isArray(suppliedOps)||suppliedOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  const ledgerMap=new Map((Array.isArray(previous.savingsOperations)?previous.savingsOperations:[]).map(o=>[o?.id,o]));
+  for(const o of suppliedOps){
+   if(o&&typeof o.id==="string"&&ledgerMap.has(o.id)){
+    const existing=ledgerMap.get(o.id);
+    if(existing.type!==o.type||existing.goalId!==o.goalId||Number(existing.amount)!==Number(o.amount)||existing.date!==o.date||(existing.reversalOf||null)!==(o.reversalOf||null)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_OPERATION_ID_CONFLICT"})}
+   }else if(o&&typeof o.id==="string"){ledgerMap.set(o.id,o)}
+  }
+  const incomingOps=Array.from(ledgerMap.values());
+  if(incomingOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
   const goalIds=new Set(goals.filter(g=>g&&typeof g.id==="string"&&g.id.trim()).map(g=>g.id));
   const ids=new Set(),reversals=new Map(),ops=[];
   for(const o of incomingOps){
