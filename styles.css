@@ -887,3 +887,6 @@ body.chart-zoom-open{overflow:hidden}
 .budget-checkup-row input[type=number]{width:100%;min-width:0;padding:8px 7px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:11px}
 .budget-checkup-status{min-height:18px;margin:8px 0;color:var(--green);font-size:12px}
 @media(max-width:380px){.budget-checkup-row{grid-template-columns:17px minmax(0,1fr) 88px;gap:6px}.budget-checkup-row{font-size:11px}}
+
+/* Dedicated advice cards at the top of the two budget submodules. */
+.budget-module .budget-advisor-card{margin-bottom:12px}
