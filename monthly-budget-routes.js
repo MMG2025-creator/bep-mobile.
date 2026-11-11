@@ -282,7 +282,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
     const expectedVersion = req.body?.expectedVersion;
     const reason = req.body?.reason == null ? null : (typeof req.body.reason === "string" ? req.body.reason.trim() : "__INVALID__");
     if (!validMonth(monthKey) || !Number.isInteger(expectedVersion) || expectedVersion < 1 ||
-        (status === "open" && (!reason || reason.length > 500)))
+        (status === "open" && (typeof req.body?.reason !== "string" || !reason || reason.length > 500)))
       return res.status(400).json({ error: "MONTHLY_BUDGET_STATUS_INVALID" });
     const client = await pool.connect();
     try {
