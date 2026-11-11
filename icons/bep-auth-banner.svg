@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 150" role="img" aria-label="BEP — Build, Earn & Preserve">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#032d27"/><stop offset=".55" stop-color="#075d50"/><stop offset="1" stop-color="#064338"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F9DE83"/><stop offset="1" stop-color="#C99A35"/></linearGradient>
+</defs>
+<rect width="1000" height="150" fill="url(#bg)"/>
+<g transform="translate(45 27)" fill="none" stroke="url(#gold)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M0 92C38 54 78 38 116 56s59 28 103-22"/>
+ <path d="M45 72V39h18v33M91 62V19h18v43M137 49V0h18v49"/>
+</g>
+<text x="335" y="105" fill="#F9DE83" font-family="Arial,Helvetica,sans-serif" font-size="102" font-style="italic" font-weight="700" letter-spacing="-5">BEP</text>
+<text x="570" y="96" fill="#D5E8DF" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="600" letter-spacing="5">BUILD • EARN • PRESERVE</text>
+</svg>
