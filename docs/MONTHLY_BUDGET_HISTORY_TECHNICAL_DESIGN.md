@@ -220,3 +220,15 @@ Ces contrôles sont des vérifications statiques de cohérence des fichiers. Ils
 - Un runbook de publication et de retour arrière est disponible dans `docs/MONTHLY_BUDGET_HISTORY_RELEASE_RUNBOOK.md`.
 - La CI prévoit Node 20, PostgreSQL 16, les tests et `npm audit --omit=dev`. Aucun résultat CI n'est disponible dans GitHub au dernier contrôle ; l'exécution reste donc non certifiée.
 - Le contrôle E2E authentifié sur navigateur et l'exécution de la migration sur un PostgreSQL de staging ne sont pas encore réalisés.
+
+
+### Résultats CI — 12 novembre 2026
+
+Workflow GitHub Actions `Monthly budget history checks`, run #65, commit `68ffc14765bc3ff84e8afc4873005c18a04653fc` :
+- Installation npm : succès.
+- `npm audit --omit=dev` : 0 vulnérabilité.
+- Vérification syntaxique Node 20 de `server.js`, `monthly-budget-routes.js` et `monthly-budget-ui.js` : succès.
+- Suite Node/PostgreSQL : 11 tests réussis, 0 échec, 0 ignoré.
+- Le scénario PostgreSQL a exécuté la migration dans un schéma isolé et vérifié l'authentification, l'isolation entre utilisateurs, les dépenses réelles, la copie indépendante, le verrouillage de version, la clôture/réouverture, l'idempotence et le journal d'audit.
+
+Cette réussite valide le backend et les règles testées sur PostgreSQL 16 en environnement CI. Elle ne remplace pas la recette navigateur authentifiée ni le test sur un environnement Render de staging.
