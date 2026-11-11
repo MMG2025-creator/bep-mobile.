@@ -22,8 +22,12 @@ on:
       - "server.js"
       - "monthly-budget-routes.js"
       - "monthly-budget-ui.js"
+      - "app.js"
+      - "dist/**"
+      - "index.html"
+      - "styles.css"
       - "database/migrations/**"
-      - "tests/monthly-budget*.test.js"
+      - "tests/**"
       - "package.json"
       - ".github/workflows/monthly-budget.yml"
 
