@@ -10,6 +10,7 @@
   let current = null;
   let items = [];
   let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+  let editingItemIndex = null;
   let loading = false;
   let authEpoch = 0;
 
@@ -42,7 +43,8 @@
     let state = {};
     try { state = JSON.parse(localStorage.getItem(DB) || "{}"); } catch {}
     const result = [];
-    (Array.isArray(state.incomes) ? state.incomes : []).forEach(x => {
+    const incomes = Array.isArray(state.incomes) && state.incomes.length ? state.incomes : (Number(state.income) > 0 ? [{ label: "Revenu principal", type: "Autre revenu", amount: Number(state.income), id: "legacy-primary-income" }] : []);
+    incomes.forEach(x => {
       const amount = Number(x.amount);
       if (x && x.label && Number.isFinite(amount) && amount >= 0) result.push({
         itemType: "income", sourceItemId: x.id || null, label: String(x.label).slice(0, 160),
@@ -90,9 +92,24 @@
     $("monthlyBudgetItems").innerHTML = items.length ? items.map((x, index) =>
       '<div class="monthly-budget-row"><span><b>' + escapeHtml(x.label) + '</b><small>' +
       labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
-      '</small></span><b>' + money(x.plannedAmount) + '</b><button type="button" data-remove-month-item="' + index +
-      '" aria-label="Retirer cette ligne" ' + (current.status === "closed" ? "disabled" : "") + '>×</button></div>'
+      '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
+      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
+      '<button type="button" data-remove-month-item="' + index + '" aria-label="Retirer cette ligne" ' +
+      (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>'
     ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
+    $("monthlyBudgetItems").querySelectorAll("[data-edit-month-item]").forEach(button => {
+      button.onclick = () => {
+        editingItemIndex = Number(button.dataset.editMonthItem);
+        const item = items[editingItemIndex];
+        $("monthlyBudgetItemType").value = item.itemType;
+        $("monthlyBudgetItemLabel").value = item.label;
+        $("monthlyBudgetItemCategory").value = item.category || "";
+        $("monthlyBudgetItemAmount").value = item.plannedAmount;
+        $("monthlyBudgetItemSubmit").textContent = "Enregistrer les modifications";
+        $("monthlyBudgetItemCancel").hidden = false;
+        $("monthlyBudgetItemLabel").focus();
+      };
+    });
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
       button.onclick = () => {
         items.splice(Number(button.dataset.removeMonthItem), 1);
@@ -121,6 +138,10 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       actuals = actualData;
+      editingItemIndex = null;
+      $("monthlyBudgetItemForm").reset();
+      $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
+      $("monthlyBudgetItemCancel").hidden = true;
       items = current.items.map(x => ({
         itemType: x.itemType, sourceItemId: x.sourceItemId, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
@@ -184,15 +205,25 @@
     const label = $("monthlyBudgetItemLabel").value.trim();
     const amount = Number($("monthlyBudgetItemAmount").value);
     if (!label || !Number.isFinite(amount) || amount < 0) return status("Libellé ou montant invalide.", true);
-    items.push({
+    const item = {
       itemType: $("monthlyBudgetItemType").value, label,
       category: $("monthlyBudgetItemCategory").value.trim() || null,
-      plannedAmount: amount, metadata: {}
-    });
-    $("monthlyBudgetItemLabel").value = "";
-    $("monthlyBudgetItemAmount").value = "";
-    $("monthlyBudgetItemCategory").value = "";
+      plannedAmount: amount,
+      metadata: editingItemIndex === null ? {} : (items[editingItemIndex]?.metadata || {})
+    };
+    if (editingItemIndex === null) items.push(item);
+    else items[editingItemIndex] = item;
+    editingItemIndex = null;
+    $("monthlyBudgetItemForm").reset();
+    $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
+    $("monthlyBudgetItemCancel").hidden = true;
     renderItems();
+  };
+  $("monthlyBudgetItemCancel").onclick = () => {
+    editingItemIndex = null;
+    $("monthlyBudgetItemForm").reset();
+    $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
+    $("monthlyBudgetItemCancel").hidden = true;
   };
   $("monthlyBudgetSave").onclick = async () => {
     if (!current || loading) return;
