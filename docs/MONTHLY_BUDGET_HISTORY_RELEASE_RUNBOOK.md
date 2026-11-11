@@ -45,6 +45,10 @@ Do not run DDL from application startup. Do not execute the migration before the
 - Closing a month prevents edits. Reopening requires a reason and writes an audit entry.
 - Stale writes are rejected using the version number.
 
+## Savings ledger compatibility
+
+The shared `/api/data` write path validates the append-only savings ledger. Every early rejection after opening a PostgreSQL transaction must explicitly roll back before returning. The feature branch includes guards and a regression assertion for invalid or oversized ledger payloads. The staging branch currently runs an earlier server revision; this correction is not present in the deployed staging service until that branch is separately updated.
+
 ## Rollback posture
 
 Do not drop the new tables as an automatic rollback. If the application release must be stopped, roll back the application code while preserving monthly records and audit rows. Restore the database only from the verified backup if an integrity issue requires it. Never delete monthly history as the first response to a deployment issue.
