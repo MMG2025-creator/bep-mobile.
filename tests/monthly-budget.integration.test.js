@@ -132,6 +132,8 @@ if (!databaseUrl) {
         expectedVersion: 3, reason: "Correction validée"
       });
       assert.equal(reopen.status, 200);
+      const invalidReason = await call(userA, "/months/2026-12/reopen", "POST", { expectedVersion: 4, reason: { unsafe: true } });
+      assert.equal(invalidReason.status, 400);
     });
 
     await t.test("is idempotent and validates inputs", async () => {
