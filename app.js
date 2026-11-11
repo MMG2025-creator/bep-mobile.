@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const API="https://bep-v2-api.onrender.com";
+const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
 const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
 if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
