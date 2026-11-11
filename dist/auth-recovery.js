@@ -77,6 +77,7 @@
   const params = new URLSearchParams(window.location.search);
   const resetToken = params.get("reset") || "";
   if (resetToken) {
+    history.replaceState({}, document.title, window.location.pathname + window.location.hash);
     setMode("reset");
     authMessage.textContent = "Choisis un nouveau mot de passe pour ton compte BEP.";
   } else {
