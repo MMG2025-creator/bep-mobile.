@@ -5,7 +5,7 @@ let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}
 if(!Array.isArray(state.incomes))state.incomes=Number(state.income)>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:Number(state.income),source:"migration"}]:[];
 function totalIncome(){return (state.incomes||[]).reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0)}
 function syncIncomeTotal(){state.income=totalIncome()}
-function migrateIncomeState(){if(!Array.isArray(state.incomes))state.incomes=Number(state.income)>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:Number(state.income),source:"migration"}]:[];syncIncomeTotal()}
+function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)||0),needsMigration=!Array.isArray(state.incomes)||(!state.incomes.length&&legacyIncome>0);if(needsMigration)state.incomes=legacyIncome>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:legacyIncome,source:"migration"}]:[];syncIncomeTotal();return needsMigration}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2300)}
 function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
