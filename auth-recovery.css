@@ -21,7 +21,7 @@
   border-radius: 15px;
   background: #102e29;
   box-shadow: 0 7px 18px rgba(16, 46, 41, .12);
-  aspect-ratio: 1000 / 285;
+  aspect-ratio: 1000 / 250;
 }
 .auth-brand-banner svg {
   display: block;
