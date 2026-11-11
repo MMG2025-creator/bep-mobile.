@@ -26,6 +26,7 @@ if (!databaseUrl) {
       options: '-c search_path="' + schema + '"'
     });
     await pool.query("CREATE TABLE bep_users(id TEXT PRIMARY KEY)");
+    await pool.query("CREATE TABLE bep_user_data(user_id TEXT PRIMARY KEY REFERENCES bep_users(id), payload JSONB NOT NULL DEFAULT '{}'::jsonb)");
     await pool.query("INSERT INTO bep_users(id) VALUES($1),($2)", [userA, userB]);
     const migration = await fs.readFile(path.join(__dirname, "../database/migrations/20261111_monthly_budget_history.sql"), "utf8");
     await pool.query(migration);
@@ -74,6 +75,26 @@ if (!databaseUrl) {
       const own = await call(userA, "/months/2026-11");
       assert.equal(own.status, 200);
       assert.equal(own.data.budget.items.length, 3);
+    });
+
+    await t.test("actual expenses are assigned by their transaction date and deduplicated", async () => {
+      await pool.query(
+        "INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb)",
+        [userA, JSON.stringify({ expenses: [
+          { id: "nov-1", at: "2026-11-03T10:00:00.000Z", merchant: "Courses", amount: 85, category: "Alimentation" },
+          { id: "nov-1", at: "2026-11-03T10:00:00.000Z", merchant: "Courses", amount: 85, category: "Alimentation" },
+          { id: "dec-1", at: "2026-12-01T10:00:00.000Z", merchant: "Train", amount: 45 },
+          { id: "bad-date", at: "not-a-date", amount: 999 }
+        ] })]
+      );
+      const actuals = await call(userA, "/months/2026-11/actuals");
+      assert.equal(actuals.status, 200);
+      assert.equal(actuals.data.count, 1);
+      assert.equal(actuals.data.actualExpenseTotal, "85.00");
+      const december = await call(userA, "/months/2026-12/actuals");
+      assert.equal(december.data.actualExpenseTotal, "45.00");
+      const otherUser = await call(userB, "/months/2026-11/actuals");
+      assert.equal(otherUser.data.count, 0);
     });
 
     await t.test("copies previous month as independent snapshot", async () => {
