@@ -94,9 +94,11 @@ if (!databaseUrl) {
           { id: "bad-date", at: "not-a-date", amount: 999 }
         ] })]
       );
+      const fixture = await pool.query("SELECT payload FROM bep_user_data WHERE user_id=$1", [userA]);
+      assert.equal(fixture.rows[0].payload.expenses.length, 5);
       const actuals = await call(userA, "/months/2026-11/actuals?timeZone=Europe%2FParis");
       assert.equal(actuals.status, 200);
-      assert.equal(actuals.data.count, 2);
+      assert.equal(actuals.data.count, 2, JSON.stringify(actuals.data));
       assert.equal(actuals.data.actualExpenseTotal, "110.00");
       const december = await call(userA, "/months/2026-12/actuals");
       assert.equal(december.data.actualExpenseTotal, "45.00");
