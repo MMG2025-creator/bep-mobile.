@@ -61,3 +61,40 @@ Le dépôt ne contient pas de `package-lock.json` dans le périmètre vérifié 
 Ne pas déclarer BEP « conforme » ou « certifié » sur la seule base de cette revue. Prioriser : (1) rate limiting, (2) suppression/encadrement SSRF des endpoints IA personnalisés, (3) CSP, (4) durcissement CSRF et origine, (5) racine statique dédiée, (6) validation TLS PostgreSQL, (7) lockfile et audit de dépendances.
 
 Cette revue est une sauvegarde documentaire des constats ; elle ne signifie pas que les écarts ont déjà été corrigés.
+
+
+## Correctifs déployés — 11 novembre 2026
+
+Les correctifs suivants ont été fusionnés dans `main` et déployés sur Render (commit initial de hardening : `2bfa4917c7295ed39c311aba0f6b4ce96210c7c6`; durcissement complémentaire SSRF : `16c5d4acbcd6a2a687c029bf33af4a18467f4b41`).
+
+- **Publication frontend isolée** : Render publie désormais `dist/`, contenant uniquement l'application et ses ressources nécessaires. Les fichiers source à la racine ne sont plus servis.
+- **API sans fichiers statiques** : suppression de `express.static(process.cwd())` et du fallback vers `index.html`. Les routes inconnues répondent JSON 404.
+- **Origine/CSRF** : les requêtes mutantes POST/PUT/PATCH/DELETE et les pré-requêtes OPTIONS sont refusées si l'origine ne correspond pas exactement à `FRONTEND_ORIGIN`. Cette protection est une défense d'origine, pas un jeton CSRF synchronisé.
+- **Rate limiting** : limites applicatives en mémoire et par IP : 20 requêtes/15 min sur `/api/auth`, 20/min sur `/api/ai`, 120/min sur `/api`. Limite importante : état local à chaque instance, non partagé entre plusieurs instances et réinitialisé au redémarrage ; remplacer par un stockage partagé (Redis ou PostgreSQL) avant montée en charge.
+- **CSP frontend** : ajout d'une politique via meta CSP, adaptée aux CDN PDF/OCR, aux polices Google et à l'API BEP. Helmet conserve également une CSP côté API.
+- **SSRF** : la création de nouvelles configurations IA personnalisées est désactivée. Une vérification complémentaire bloque également les anciennes configurations personnalisées déjà enregistrées ; les redirections HTTP sont refusées par `redirect: "error"`. Les fournisseurs prédéfinis restent disponibles.
+
+## Vérifications dynamiques non destructives — après déploiement
+
+| Vérification | Résultat observé |
+|---|---|
+| `GET /api/health` | HTTP 200 ; `databaseReady: true`, authentification configurée |
+| `GET /api/me` sans session | HTTP 401 `AUTH_REQUIRED` |
+| `GET /api/data` sans session | HTTP 401 `AUTH_REQUIRED` |
+| `GET /server.js` sur l'API | HTTP 404 JSON `NOT_FOUND` |
+| `GET /package.json` sur l'API | HTTP 404 JSON `NOT_FOUND` |
+| `GET /server.js` sur le frontend | HTTP 404 Not Found |
+| Présence des ressources frontend dans `dist/` | Vérifiée dans GitHub ; les fichiers CSS, JS, manifeste et icônes existent |
+
+Les tests ont été réalisés en GET non destructifs. Aucun compte, donnée financière, mot de passe, e-mail de vérification ou session utilisateur n'a été modifié.
+
+## Limites et risques résiduels
+
+- Les tests dynamiques authentifiés, les tests de bout en bout OAuth, le test réel du rejet d'origine par requête mutante, le test de saturation du rate limiter et le test d'une ancienne configuration SSRF n'ont pas été exécutés sur un compte de test.
+- Le rate limiter actuel est **par instance** ; une attaque répartie ou plusieurs instances peuvent contourner le quota global. C'est une mesure de réduction immédiate, pas une protection distribuée complète.
+- La validation du certificat TLS PostgreSQL (`rejectUnauthorized:false`) reste à corriger après vérification de la CA fournie par Render.
+- Le dépôt ne dispose toujours pas d'un `package-lock.json` versionné. Le build Render a rapporté zéro vulnérabilité npm lors de l'installation du 11 novembre 2026, mais cela ne remplace pas un audit CI reproductible avec lockfile.
+- La politique CSP doit être vérifiée sur les parcours réels du navigateur (connexion Google, PDF/OCR, coach IA et import) ; un test de chargement de page ne prouve pas l'absence de régression.
+- Cette intervention n'est pas un audit externe ni une certification OWASP, ANSSI ou RGPD.
+
+**Statut :** exposition des fichiers source corrigée et vérifiée sur les deux hôtes ; contrôle d'accès aux données non authentifiées vérifié. Pentest dynamique authentifié et validation complète des protections encore à réaliser.
