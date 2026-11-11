@@ -89,7 +89,8 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   router.post("/months", auth, async (req, res) => {
     const monthKey = req.body?.monthKey;
     const source = req.body?.source || "empty";
-    if (!validMonth(monthKey) || !["empty", "previous"].includes(source))
+    const initialItems = source === "current" ? validateItems(req.body?.items) : [];
+    if (!validMonth(monthKey) || !["empty", "previous", "current"].includes(source) || (source === "current" && !initialItems))
       return res.status(400).json({ error: "MONTH_OR_SOURCE_INVALID" });
     const userId = req.session.user.id;
     const client = await pool.connect();
@@ -113,7 +114,15 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       }
       const budget = inserted.rows[0];
       let copied = [];
-      if (source === "previous") {
+      if (source === "current") {
+        copied = initialItems.map(item => ({ item_type: item.itemType, source_item_id: item.sourceItemId, label: item.label, category: item.category, nature: item.nature, planned_amount: item.amount, metadata: item.metadata }));
+        for (const item of copied) {
+          await client.query(
+            "INSERT INTO bep_monthly_budget_items(budget_id,item_type,source_item_id,label,category,nature,planned_amount,metadata) VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb)",
+            [budget.id,item.item_type,item.source_item_id,item.label,item.category,item.nature,item.planned_amount,JSON.stringify(item.metadata)]
+          );
+        }
+      } else if (source === "previous") {
         const previous = await client.query(
           "SELECT id FROM bep_monthly_budgets WHERE user_id=$1 AND month_key < $2::date ORDER BY month_key DESC LIMIT 1",
           [userId, monthKey + "-01"]
