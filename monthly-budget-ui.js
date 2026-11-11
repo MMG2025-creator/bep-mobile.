@@ -45,10 +45,11 @@
     const result = [];
     const incomes = Array.isArray(state.incomes) && state.incomes.length ? state.incomes : (Number(state.income) > 0 ? [{ label: "Revenu principal", type: "Autre revenu", amount: Number(state.income), id: "legacy-primary-income" }] : []);
     incomes.forEach(x => {
+      if (!x || typeof x !== "object") return;
       const amount = Number(x.amount);
-      if (x && x.label && Number.isFinite(amount) && amount >= 0) result.push({
-        itemType: "income", sourceItemId: x.id || null, label: String(x.label).slice(0, 160),
-        category: x.type || null, plannedAmount: amount, metadata: { source: "legacy-income" }
+      if (x.label && Number.isFinite(amount) && amount >= 0) result.push({
+        itemType: "income", sourceItemId: x.id == null ? null : String(x.id), label: String(x.label).slice(0, 160),
+        category: typeof x.type === "string" ? x.type : null, plannedAmount: amount, metadata: { source: "legacy-income" }
       });
     });
     (Array.isArray(state.budgets) ? state.budgets : []).forEach(x => {
