@@ -40,7 +40,7 @@ async function recordAdvice(id){
   try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
  }catch(e){if(adviceRequestIds[id]===requestId){delete adviceFingerprints[id];target.textContent="Le conseil IA est momentanément indisponible. "+(e.message||"Réessaie dans quelques instants.")}}
 }
-function renderAI(){const ids=["home","budget","savings","purchases"];if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.configured){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
+function renderAI(){const ids=["home","budget","savings","purchases"];if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.personal){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
 function renderAIUsage(){const count=$("aiRequestCount");if(!count)return;count.textContent=Number(aiUsage.requests)||0;$("aiTokenCount").textContent=(Number(aiUsage.estimatedTokens)||0).toLocaleString("fr-FR");$("aiLatency").textContent=(aiUsage.requests?Math.round((Number(aiUsage.totalMs)||0)/aiUsage.requests):0)+" ms";$("aiCost").textContent="0,00 €"}
 function tab(id){document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(["home","budget","savings","purchases","coach"].includes(id))recordAdvice(id)}
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>tab(x.dataset.goto));$("settingsBtn").onclick=async()=>{tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
@@ -193,7 +193,7 @@ async function showPurchaseAdvice(p){
  const local=advice(p);
  target.classList.remove("hidden");
  target.textContent="Préparation du conseil BEP…";
- if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.configured){
+ if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.personal){
   const question="Analyse cet achat enregistré et donne un conseil personnalisé, concret et non moralisateur. Libellé : "+(p.merchant||p.category||"Achat")+". Montant : "+money(p.amount)+". Catégorie : "+(p.category||"non précisée")+". État déclaré : "+p.psychology+". Besoin réel : "+p.need+". Délai : "+p.delay+". Réponds en trois parties courtes : lecture de la décision, impact/prudence budgétaire à partir des données, une question utile.";
   try{
    const started=performance.now();
@@ -264,7 +264,7 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  }catch{}}
 
 function renderAiCoachControls(){
- const active=!!(aiCoachEnabled&&aiConnection.configured);
+ const active=!!(aiCoachEnabled&&aiConnection.personal);
  const badge=$("aiConnectionBadge"),button=$("toggleAiCoachBtn");
  if(badge)badge.textContent=active?"Coach IA BEP":"Coach gratuit";
  if(button){button.textContent=active?"Désactiver le Coach IA":"Activer le Coach IA BEP";button.classList.toggle("secondary",active);button.classList.toggle("primary",!active);button.disabled=false}
