@@ -20,7 +20,7 @@ window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const previousGoals=Array.isArray(state.goals)?state.goals:[];
   const savingsRows=monthlyItems.filter(x=>x.itemType==="savings");
   const activeIds=new Set(savingsRows.map(x=>x.sourceItemId||x.id).filter(Boolean));
-  const archived=previousGoals.filter(g=>g&&g.archivedAt||g&&!activeIds.has(g.id)).map(g=>g.archivedAt?g:{...g,archivedAt:new Date().toISOString()});
+  const archived=previousGoals.filter(g=>g&&typeof g==="object"&&(g.archivedAt||!activeIds.has(g.id))).map(g=>g.archivedAt?g:{...g,archivedAt:new Date().toISOString()});
   state.incomes=monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"}));
   state.budgets=monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0}));
   state.goals=[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(totalIncome()?Number(x.plannedAmount)/totalIncome()*100:0),duration:Number(x.metadata?.duration)||3}))];
