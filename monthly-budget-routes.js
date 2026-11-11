@@ -269,4 +269,4 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   return router;
 }
 
-module.exports = { createMonthlyBudgetRouter };
+module.exports = { createMonthlyBudgetRouter, validMonth, validateItems, totals };
