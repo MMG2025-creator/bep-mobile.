@@ -165,7 +165,7 @@ app.put("/api/data",auth,async(req,res)=>{
   }
   for(const [targetId,reversal] of reversals){
    const target=ops.find(o=>o.id===targetId);
-   if(!target||target.reversalOf||reversal.date<target.date||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
+   if(!target||target.reversalOf||ops.indexOf(reversal)<=ops.indexOf(target)||reversal.date<target.date||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
   }
   const balances=new Map();
   const ordered=ops.map((o,index)=>({o,index})).sort((a,b)=>a.o.date.localeCompare(b.o.date)||a.index-b.index);
