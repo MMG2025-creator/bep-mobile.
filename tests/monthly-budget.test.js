@@ -26,6 +26,10 @@ test("validateItems normalizes valid rows and rejects malformed or unsafe values
     [{ itemType: "income", label: "Salaire", plannedAmount: "NaN" }],
     [{ itemType: "income", label: "Salaire", plannedAmount: null }],
     [{ itemType: "income", label: "Salaire", plannedAmount: "" }],
+    [{ itemType: "income", label: "Salaire", plannedAmount: true }],
+    [{ itemType: true, label: "Salaire", plannedAmount: 100 }],
+    [{ itemType: "income", label: "Salaire", plannedAmount: 100, category: {} }],
+    [{ itemType: "income", label: "Salaire", plannedAmount: 999999999999.99 }, { itemType: "income", label: "Prime", plannedAmount: 1 }],
     [{ itemType: "income", label: "Salaire", plannedAmount: 1, metadata: [] }]
   ]) assert.equal(validateItems(items), null);
 });
