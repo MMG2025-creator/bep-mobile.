@@ -7,7 +7,8 @@ function totalIncome(){return (state.incomes||[]).reduce((sum,item)=>sum+Math.ma
 function syncIncomeTotal(){state.income=totalIncome()}
 function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)||0),needsMigration=!Array.isArray(state.incomes)||(!state.incomes.length&&legacyIncome>0);if(needsMigration)state.incomes=legacyIncome>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:legacyIncome,source:"migration"}]:[];syncIncomeTotal();return needsMigration}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
-function hideStartupLoader(){const loader=$("bepStartupLoader");if(!loader)return;const minimumVisibleMs=1500,elapsedMs=performance.now(),delayMs=Math.max(0,minimumVisibleMs-elapsedMs);window.setTimeout(()=>{loader.classList.add("is-hidden");window.setTimeout(()=>{loader.hidden=true},360)},delayMs)}
+const startupLoaderStartedAt=performance.now();
+function hideStartupLoader(){const loader=$("bepStartupLoader");if(!loader)return;const minimumVisibleMs=1500,elapsedMs=performance.now()-startupLoaderStartedAt,delayMs=Math.max(0,minimumVisibleMs-elapsedMs);window.setTimeout(()=>{loader.classList.add("is-hidden");window.setTimeout(()=>{loader.hidden=true},360)},delayMs)}
 function notify(s){const t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2300)}
 function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
 function available(){return totalIncome()-charges()}
