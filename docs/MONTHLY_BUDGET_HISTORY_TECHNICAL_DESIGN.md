@@ -207,3 +207,16 @@ Contrôle du contenu publié depuis `dist/` :
 - Trois groupes de tests unitaires ajoutés.
 
 Ces contrôles sont des vérifications statiques de cohérence des fichiers. Ils ne remplacent ni `node --check`, ni l'exécution de `node --test`, ni les tests PostgreSQL et E2E.
+
+
+### Compléments — recettes métier et sécurité
+
+- L'API expose aussi les dépenses réelles du mois depuis `bep_user_data.payload.expenses[]`, filtrées par `at` et par fuseau IANA transmis par le navigateur. Le regroupement tient compte des changements de mois locaux, pas uniquement du mois UTC.
+- Les achats sont dédupliqués par identifiant ; en l'absence d'identifiant, une empreinte déterministe date/enseigne/catégorie/montant est utilisée.
+- Les lignes mensuelles peuvent être ajoutées, modifiées et retirées avant sauvegarde.
+- L'import initial gère également l'ancien revenu scalaire si la liste des revenus n'est pas encore renseignée.
+- Une limite de 200 lignes est appliquée à l'import initial et à chaque sauvegarde.
+- Les tests PostgreSQL couvrent création, lecture inter-utilisateurs, copie indépendante, version obsolète, clôture/réouverture, idempotence, audit, dépenses datées et dédoublonnage, ainsi que le changement de mois selon le fuseau Europe/Paris.
+- Un runbook de publication et de retour arrière est disponible dans `docs/MONTHLY_BUDGET_HISTORY_RELEASE_RUNBOOK.md`.
+- La CI prévoit Node 20, PostgreSQL 16, les tests et `npm audit --omit=dev`. Aucun résultat CI n'est disponible dans GitHub au dernier contrôle ; l'exécution reste donc non certifiée.
+- Le contrôle E2E authentifié sur navigateur et l'exécution de la migration sur un PostgreSQL de staging ne sont pas encore réalisés.
