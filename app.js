@@ -248,47 +248,17 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const [cr,sr]=await Promise.all([fetch(API+"/api/ai/config",{credentials:"include",cache:"no-store"}),fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"})]);
  const personal=cr.ok?await cr.json():{configured:false};const status=sr.ok?await sr.json():{available:false,mode:"local",used:0,limit:60};
  aiConnection={...personal,configured:!!(personal.configured||status.available),mode:status.mode||"local",used:status.used||0,limit:status.limit||60,personal:!!personal.configured};
- renderAiCoachControls();
+
  const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=aiConnection.configured?'<span class="pin">●</span> '+(aiConnection.mode==="bep"?"Coach BEP":"IA connectée"):'<span class="pin">●</span> Coach local';
  $("coachModeLabel").textContent=aiConnection.mode==="bep"?"● Coach IA BEP · Quota gratuit":aiConnection.personal?"● IA personnelle connectée · "+aiConnection.provider:"● Moteur BEP local · Tes données restent dans ton espace BEP";
- $("aiConnectionStatus").textContent=aiConnection.mode==="bep"?"Ton Coach IA BEP est actif. Aucun compte IA ni aucune clé à fournir.":aiConnection.personal?"Coach connecté à "+aiConnection.provider+" · "+aiConnection.model:"Le Coach IA mutualisé sera disponible dès son activation par BEP. En attendant, le moteur local reste actif.";
- $("aiQuotaStatus").textContent=aiConnection.mode==="bep"?"Quota gratuit : "+aiConnection.used+" / "+aiConnection.limit+" requêtes utilisées ce mois-ci.":aiConnection.personal?"Ton fournisseur personnel est utilisé. Sa facturation dépend de son offre.":"Le Coach local reste gratuit.";
+ $("aiConnectionStatus").textContent=aiConnection.personal?"Fournisseur externe personnel connecté : "+aiConnection.provider+" · "+aiConnection.model:"Le moteur local BEP est actif automatiquement. Aucune clé API n’est nécessaire.";
+ $("aiQuotaStatus").textContent=aiConnection.personal?"La facturation dépend de ton fournisseur externe.":"Le moteur local n’utilise aucun quota API.";
  $("disconnectAiBtn").classList.toggle("hidden",!aiConnection.personal);
  $("aiAdvancedSettings").classList.remove("hidden");
  if(aiConnection.personal){$("aiProvider").value=personal.provider;$("aiModel").value=personal.model;$("aiEndpoint").value=personal.endpoint||"";$("aiApiKey").placeholder="Clé enregistrée (saisis-en une nouvelle pour la remplacer)"}
- renderAiCoachControls();
- const coachBtn=$("coachActivateBtn");if(coachBtn){coachBtn.textContent=aiConnection.mode==="bep"?"Coach IA activé":"Activer le Coach IA gratuit";coachBtn.disabled=false}
  const coachMode=$("coachAiMode");if(coachMode)coachMode.innerHTML=aiConnection.mode==="bep"?"<span>●</span> Coach IA BEP · Actif":aiConnection.personal?"<span>●</span> IA personnelle · "+aiConnection.provider:"<span>●</span> Coach BEP · Mode local";
- const coachDescription=$("coachAiDescription");if(coachDescription)coachDescription.textContent=aiConnection.mode==="bep"?"Ton Coach IA est actif. Il analyse tes données BEP et génère tes conseils.":aiConnection.personal?"Ton IA personnelle est connectée et pilote tes conseils.":"Active le Coach IA gratuit, sans créer de compte externe ni saisir de clé.";
- const coachStatus=$("coachAiStatus");if(coachStatus)coachStatus.textContent=aiConnection.mode==="bep"?"Quota gratuit : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":status.available?"Ton Coach IA est disponible.":"Le service IA BEP doit encore être activé par l’équipe. Le moteur local reste disponible.";
  }catch{}}
 
-function renderAiCoachControls(){
- const active=!!(aiCoachEnabled&&aiConnection.personal);
- const badge=$("aiConnectionBadge"),button=$("toggleAiCoachBtn");
- if(badge)badge.textContent=active?"Coach IA BEP":"Coach gratuit";
- if(button){button.textContent=active?"Désactiver le Coach IA":"Activer le Coach IA BEP";button.classList.toggle("secondary",active);button.classList.toggle("primary",!active);button.disabled=false}
-}
-renderAiCoachControls();
-$("toggleAiCoachBtn").onclick=async()=>{
- const button=$("toggleAiCoachBtn"),status=$("aiConnectionStatus");
- if(aiCoachEnabled&&aiConnection.configured){
-  aiCoachEnabled=false;try{localStorage.setItem(AI_ENABLED_KEY,"false")}catch{}
-  Object.keys(adviceFingerprints).forEach(k=>delete adviceFingerprints[k]);
-  renderAiCoachControls();status.textContent="Coach gratuit activé. Les conseils sont calculés localement, sans appel au fournisseur IA.";renderAI();return;
- }
- button.disabled=true;status.textContent="Vérification de la disponibilité du Coach IA BEP…";
- await loadAiConnection();
- if(!aiConnection.configured){
-  aiCoachEnabled=false;try{localStorage.setItem(AI_ENABLED_KEY,"false")}catch{}
-  status.textContent="Le service IA BEP n’est pas encore disponible. Le Coach gratuit reste actif.";
-  renderAiCoachControls();renderAI();return;
- }
- aiCoachEnabled=true;try{localStorage.setItem(AI_ENABLED_KEY,"true")}catch{}
- Object.keys(adviceFingerprints).forEach(k=>delete adviceFingerprints[k]);
- renderAiCoachControls();status.textContent="Coach IA BEP activé sur l’accueil, le budget, l’épargne et les dépenses.";
- renderAI();button.disabled=false;
-};
 $("aiProvider").onchange=()=>$("aiEndpointField").classList.toggle("hidden",$("aiProvider").value!=="custom");
 $("saveAiConfigBtn").onclick=async()=>{const b=$("saveAiConfigBtn"),st=$("aiConnectionStatus");b.disabled=true;st.textContent="Enregistrement sécurisé…";try{const r=await fetch(API+"/api/ai/config",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:$("aiProvider").value,model:$("aiModel").value,endpoint:$("aiEndpoint").value,apiKey:$("aiApiKey").value})}),d=await r.json();if(!r.ok)throw Error(d.message||"Configuration impossible.");localStorage.setItem(AI_ENABLED_KEY,"true");aiCoachEnabled=true;$("aiApiKey").value="";await loadAiConnection();st.textContent="Fournisseur enregistré. Teste maintenant la connexion."}catch(e){st.textContent=e.message}finally{b.disabled=false}};
 $("testAiBtn").onclick=async()=>{const b=$("testAiBtn"),st=$("aiConnectionStatus");b.disabled=true;try{if($("aiApiKey").value.trim()){st.textContent="Enregistre d'abord la clé API.";return}st.textContent="Test de connexion…";const r=await fetch(API+"/api/ai/test",{method:"POST",credentials:"include"}),d=await r.json();if(!r.ok)throw Error(d.message||"Test échoué.");st.textContent="Connexion réussie · "+d.provider+" · "+d.model;$("aiConnectionBadge").textContent="IA connectée"}catch(e){st.textContent=e.message}finally{b.disabled=false}};
