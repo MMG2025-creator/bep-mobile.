@@ -207,14 +207,14 @@
   };
   $("monthlyBudgetReopen").onclick = async () => {
     if (!current || loading) return;
-    const reason = $("monthlyBudgetReason").value.trim();
+    const reason = $("monthlyBudgetReasonInput").value.trim();
     if (!reason) return status("Indique le motif de la correction avant de rouvrir le mois.", true);
     setBusy(true);
     try {
       await api("/api/budgets/months/" + current.monthKey + "/reopen", {
         method: "POST", body: JSON.stringify({ expectedVersion: current.version, reason })
       });
-      $("monthlyBudgetReason").value = "";
+      $("monthlyBudgetReasonInput").value = "";
       await loadMonth(current.monthKey);
       status("Mois rouvert. La réouverture est inscrite dans le journal d’audit.");
       await refreshMonthListOnly();
