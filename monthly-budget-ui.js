@@ -78,7 +78,7 @@
     if (selected && months.some(x => x.monthKey === selected)) select.value = selected;
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
-    $("monthlyBudgetCreateForm").hidden = false;
+    $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
   }
   function renderActuals() {
     $("monthlyBudgetActualTotal").textContent = money(actuals.actualExpenseTotal);
