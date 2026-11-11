@@ -828,3 +828,22 @@ body.chart-zoom-open{overflow:hidden}
 .auth-gate .auth-card .primary{
   background:#176b50;
 }
+
+/* BEP header wordmark — clean transparent lockup */
+.topbar .brand-green{
+  flex:0 0 190px!important;width:190px!important;min-width:190px!important;max-width:190px!important;
+  height:58px!important;margin:0!important;padding:0!important;display:flex!important;
+  align-items:center!important;justify-content:flex-start!important;overflow:visible!important;
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+}
+.topbar .brand-green .logo{
+  display:block!important;width:190px!important;max-width:190px!important;height:58px!important;
+  object-fit:contain!important;object-position:left center!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;
+}
+@media(max-width:390px){
+  .topbar .brand-green,.topbar .brand-green .logo{
+    flex-basis:164px!important;width:164px!important;min-width:164px!important;max-width:164px!important;
+  }
+  .topbar .brand-green .logo{height:50px!important}
+}
