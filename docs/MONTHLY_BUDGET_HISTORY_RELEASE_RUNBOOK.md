@@ -37,6 +37,7 @@ Do not drop the new tables as an automatic rollback. If release must be stopped,
 
 - [ ] CI syntax, unit and PostgreSQL integration tests pass.
 - [ ] Authenticated E2E on desktop and mobile passes.
+- [ ] Savings ledger append-only, reversals, archived goals and current-month synchronization pass on staging.
 - [ ] Cross-user access, closed-month edits, stale-version writes and malformed payload tests pass.
 - [ ] Existing `/api/data` read/write and login/logout regression tests pass.
 - [ ] Staging migration and API startup/read/write pass.
