@@ -135,7 +135,11 @@ app.put("/api/data",auth,async(req,res)=>{
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
   const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
   if(!Array.isArray(suppliedOps)||suppliedOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
-  const ledgerMap=new Map((Array.isArray(previous.savingsOperations)?previous.savingsOperations:[]).map(o=>[o?.id,o]));
+  const ledgerMap=new Map();
+  for(const o of (Array.isArray(previous.savingsOperations)?previous.savingsOperations:[])){
+   if(!o||typeof o.id!=="string"||!o.id.trim()||ledgerMap.has(o.id)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_LEDGER_CORRUPT"})}
+   ledgerMap.set(o.id,o);
+  }
   for(const o of suppliedOps){
    if(o&&typeof o.id==="string"&&ledgerMap.has(o.id)){
     const existing=ledgerMap.get(o.id);
