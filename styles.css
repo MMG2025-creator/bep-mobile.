@@ -701,3 +701,6 @@ body.chart-zoom-open{overflow:hidden}
 .brand-tagline i{color:#d6b85d;font-style:normal;padding:0 2px}
 .tabs{margin-top:14px}
 @media(max-width:390px){.topbar{min-height:82px}.brand-tagline{font-size:8px;letter-spacing:1.6px}.tabs{margin-top:12px}}
+
+/* AI advice cards: prevent long provider errors or URLs from overflowing on mobile. */
+.ai-card,.ai-card>*{min-width:0;max-width:100%}.ai-card .coach-copy,.ai-card .ai-advice{min-width:0;overflow-wrap:anywhere;word-break:break-word}.ai-card .ai-advice{white-space:normal;overflow:hidden}
