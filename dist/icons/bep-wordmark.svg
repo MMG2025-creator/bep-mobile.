@@ -1,12 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" role="img" aria-label="BEP">
-<defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#032d27"/><stop offset="1" stop-color="#075d50"/></linearGradient>
-  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F9DE83"/><stop offset="1" stop-color="#C99A35"/></linearGradient>
-</defs>
-<rect x="0" y="0" width="210" height="64" rx="9" fill="url(#bg)"/>
-<g fill="none" stroke="url(#g)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M5 46C22 29 39 23 55 31s25 13 42-8"/>
-  <path d="M24 36V22h8v14M42 33V13h8v20M60 29V5h8v24"/>
-</g>
-<text x="103" y="47" fill="#F9DE83" font-family="Arial,Helvetica,sans-serif" font-size="43" font-style="italic" font-weight="700" letter-spacing="-2.8">BEP</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 72" role="img" aria-label="BEP — Build, Earn & Preserve">
+  <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/>
+    <path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/>
+  </g>
+  <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
+  <text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text>
 </svg>
