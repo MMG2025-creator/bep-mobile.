@@ -67,7 +67,33 @@
 </div>
 <div id="budgetModuleIncome" class="budget-module" role="tabpanel">
 <article class="card ai-card budget-advisor-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiIncome" class="ai-advice">Analyse de tes sources de revenus en cours…</p></article>
-<article class="card income-card"><div class="card-head"><div><h2>Mes revenus</h2><p class="hint">Ajoute toutes tes sources de revenus. Le total est calculé automatiquement.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des revenus nets</span><strong id="incomeTotal">0,00 €</strong></div><div id="incomeRows" class="rows"></div><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></article>
+<article class="card income-card"><div class="card-head"><div><h2>Mes revenus</h2><p class="hint">Ajoute toutes tes sources de revenus. Le total est calculé automatiquement.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des revenus nets</span><strong id="incomeTotal">0,00 €</strong></div><section class="budget-checkup income-checkup card" aria-labelledby="incomeCheckupTitle">
+  <div class="budget-checkup-head"><div><span class="tag">Assistant revenus</span><h3 id="incomeCheckupTitle">As-tu pensé à toutes tes sources de revenus ?</h3><p class="hint">Parcours ces exemples. Coche uniquement les revenus supplémentaires réellement perçus et indique leur moyenne nette mensuelle. Ne recompte pas un revenu déjà enregistré.</p></div></div>
+  <details id="incomeCheckupDetails">
+    <summary class="budget-checkup-summary">Faire le point sur mes revenus</summary>
+    <form id="incomeCheckupForm">
+      <p class="budget-checkup-note">Indique le montant net moyen par mois. Pour une prime ou un revenu irrégulier, estime une moyenne prudente sur les 12 derniers mois. Les montants proposés ne sont pas des revenus présumés : ajoute uniquement ceux qui te concernent.</p>
+      <div class="budget-checkup-group"><h4>Activité professionnelle</h4>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Primes récurrentes" data-income-type="Prime récurrente"><span>Primes récurrentes <small>Moyenne mensuelle nette</small></span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel moyen des primes"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Commissions et variable" data-income-type="Commissions"><span>Commissions et rémunération variable</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel moyen des commissions"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Activité indépendante complémentaire" data-income-type="Activité indépendante"><span>Activité indépendante complémentaire</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Revenu mensuel indépendant"></label>
+      </div>
+      <div class="budget-checkup-group"><h4>Aides et pensions</h4>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Prestations CAF et allocations" data-income-type="Prestations / allocations"><span>Prestations CAF et allocations <small>APL, allocations familiales, prime d’activité…</small></span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel des prestations"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Pension alimentaire reçue" data-income-type="Pension alimentaire"><span>Pension alimentaire reçue</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel pension alimentaire reçue"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Pension ou retraite complémentaire" data-income-type="Pension / retraite"><span>Pension ou retraite complémentaire</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel pension complémentaire"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Indemnités chômage ou maladie" data-income-type="Allocation chômage (ARE)"><span>Indemnités chômage ou maladie</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel indemnités"></label>
+      </div>
+      <div class="budget-checkup-group"><h4>Patrimoine et autres revenus</h4>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Revenus locatifs nets" data-income-type="Revenus locatifs"><span>Revenus locatifs nets <small>Après charges et frais récurrents</small></span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel revenus locatifs nets"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Dividendes et revenus de placements" data-income-type="Revenu de placements"><span>Dividendes et revenus de placements</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Moyenne mensuelle dividendes et placements"></label>
+        <label class="budget-checkup-row"><input type="checkbox" data-income-item="Autres revenus réguliers" data-income-type="Revenu complémentaire"><span>Autres revenus réguliers</span><input type="number" min="0" step="0.01" data-income-amount placeholder="€/mois" aria-label="Montant mensuel autres revenus"></label>
+      </div>
+      <p id="incomeCheckupStatus" class="budget-checkup-status" role="status" aria-live="polite"></p>
+      <button class="primary full" type="submit">Ajouter les revenus sélectionnés</button>
+    </form>
+  </details>
+</section><div id="incomeRows" class="rows"></div><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
 <article class="card ai-card budget-advisor-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiCharges" class="ai-advice">Analyse de tes charges et des oublis possibles en cours…</p></article>
@@ -189,7 +215,7 @@
 <div id="toast" class="toast" role="status"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="./app.js?v=83"></script>
+<script src="./app.js?v=84"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./coach-exchange.js?v=1" defer></script>
 <script src="./pwa.js?v=9"></script>
