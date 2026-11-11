@@ -13,7 +13,7 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=5"));
-  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=4"));
+  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
 });
 
 test("monthly history and savings DOM references exist in both HTML builds", () => {
