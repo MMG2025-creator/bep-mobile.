@@ -36,6 +36,7 @@ if (!databaseUrl) {
     await pool.query("INSERT INTO bep_users(id) VALUES($1),($2)", [userA, userB]);
     const migration = await fs.readFile(path.join(__dirname, "../database/migrations/20261111_monthly_budget_history.sql"), "utf8");
     await pool.query(migration);
+    await pool.query(migration); // idempotent re-application must be safe
 
     const app = express();
     app.use(express.json({ limit: "1mb" }));
