@@ -176,7 +176,7 @@
       }
     } catch (error) {
       status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
-        ? "Le module historique attend l’activation de sa migration de base de données."
+        ? "Historique indisponible : migration non appliquée ou base temporairement inaccessible."
         : "Historique temporairement indisponible : " + error.message, true);
     } finally { setBusy(false); }
   }
@@ -193,6 +193,7 @@
     const payload = { monthKey, source };
     if (first) {
       payload.items = legacyItems();
+      if (payload.items.length > 200) return status("Le budget actuel contient plus de 200 lignes. Réduis-le ou importe-le par lots après contrôle.", true);
       if (!payload.items.length && !window.confirm("Aucun revenu, charge ou objectif n’a été trouvé dans le budget actuel. Créer un mois vide ?")) return;
     }
     setBusy(true);
