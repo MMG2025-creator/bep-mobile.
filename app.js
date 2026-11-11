@@ -243,7 +243,7 @@ function addCoachMessage(role,message){
  const p=document.createElement("p");p.textContent=message;item.appendChild(p);log.appendChild(item);log.scrollTop=log.scrollHeight;
 }
 let aiConnection={configured:false,provider:"",model:""};
-const AI_ENABLED_KEY="bep-ai-enabled-v1";let aiCoachEnabled=localStorage.getItem(AI_ENABLED_KEY)!=="false";
+const AI_ENABLED_KEY="bep-external-ai-enabled-v1";let aiCoachEnabled=localStorage.getItem(AI_ENABLED_KEY)==="true";
 async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const [cr,sr]=await Promise.all([fetch(API+"/api/ai/config",{credentials:"include",cache:"no-store"}),fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"})]);
  const personal=cr.ok?await cr.json():{configured:false};const status=sr.ok?await sr.json():{available:false,mode:"local",used:0,limit:60};
@@ -290,7 +290,7 @@ $("toggleAiCoachBtn").onclick=async()=>{
  renderAI();button.disabled=false;
 };
 $("aiProvider").onchange=()=>$("aiEndpointField").classList.toggle("hidden",$("aiProvider").value!=="custom");
-$("saveAiConfigBtn").onclick=async()=>{const b=$("saveAiConfigBtn"),st=$("aiConnectionStatus");b.disabled=true;st.textContent="Enregistrement sécurisé…";try{const r=await fetch(API+"/api/ai/config",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:$("aiProvider").value,model:$("aiModel").value,endpoint:$("aiEndpoint").value,apiKey:$("aiApiKey").value})}),d=await r.json();if(!r.ok)throw Error(d.message||"Configuration impossible.");$("aiApiKey").value="";await loadAiConnection();st.textContent="Fournisseur enregistré. Teste maintenant la connexion."}catch(e){st.textContent=e.message}finally{b.disabled=false}};
+$("saveAiConfigBtn").onclick=async()=>{const b=$("saveAiConfigBtn"),st=$("aiConnectionStatus");b.disabled=true;st.textContent="Enregistrement sécurisé…";try{const r=await fetch(API+"/api/ai/config",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:$("aiProvider").value,model:$("aiModel").value,endpoint:$("aiEndpoint").value,apiKey:$("aiApiKey").value})}),d=await r.json();if(!r.ok)throw Error(d.message||"Configuration impossible.");localStorage.setItem(AI_ENABLED_KEY,"true");aiCoachEnabled=true;$("aiApiKey").value="";await loadAiConnection();st.textContent="Fournisseur enregistré. Teste maintenant la connexion."}catch(e){st.textContent=e.message}finally{b.disabled=false}};
 $("testAiBtn").onclick=async()=>{const b=$("testAiBtn"),st=$("aiConnectionStatus");b.disabled=true;try{if($("aiApiKey").value.trim()){st.textContent="Enregistre d'abord la clé API.";return}st.textContent="Test de connexion…";const r=await fetch(API+"/api/ai/test",{method:"POST",credentials:"include"}),d=await r.json();if(!r.ok)throw Error(d.message||"Test échoué.");st.textContent="Connexion réussie · "+d.provider+" · "+d.model;$("aiConnectionBadge").textContent="IA connectée"}catch(e){st.textContent=e.message}finally{b.disabled=false}};
 $("disconnectAiBtn").onclick=async()=>{if(!confirm("Déconnecter ton IA ? Le moteur local sera réactivé."))return;const r=await fetch(API+"/api/ai/config",{method:"DELETE",credentials:"include"});if(r.ok){aiConnection={configured:false};await loadAiConnection();notify("IA déconnectée.")}};
 async function submitCoachQuestion(question){
