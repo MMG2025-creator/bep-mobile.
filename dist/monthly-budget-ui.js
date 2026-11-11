@@ -10,6 +10,7 @@
   let current = null;
   let items = [];
   let loading = false;
+  let authEpoch = 0;
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   const monthNow = () => {
@@ -100,9 +101,11 @@
     $("monthlyBudgetItemForm").hidden = current.status === "closed";
   }
   async function loadMonth(monthKey) {
+    const epoch = authEpoch;
     setBusy(true);
     try {
       const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       items = current.items.map(x => ({
         itemType: x.itemType, sourceItemId: x.sourceItemId, label: x.label,
@@ -117,9 +120,11 @@
   }
   async function refresh() {
     if (!window.bepSignedIn || loading) return;
+    const epoch = authEpoch;
     setBusy(true);
     try {
       const data = await api("/api/budgets/months");
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
       months = data.months || [];
       renderMonths();
       if (months.length) await loadMonth(months[0].monthKey);
@@ -224,8 +229,9 @@
 
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
+    authEpoch++;
     if (window.bepSignedIn) refresh();
-    else { months = []; current = null; items = []; renderMonths(); status("Connecte-toi pour consulter ton historique mensuel."); }
+    else { months = []; current = null; items = []; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   if (window.bepSignedIn) refresh();
 })();
