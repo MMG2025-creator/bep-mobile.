@@ -35,6 +35,9 @@ function validateItems(value) {
         JSON.stringify(metadata).length > 4000) return null;
     rows.push({ itemType, label, amount: amount.toFixed(2), category, nature, sourceItemId, metadata });
   }
+  const grouped = { income: 0, charge: 0, savings: 0 };
+  for (const row of rows) grouped[row.itemType] += Number(row.amount);
+  if (Object.values(grouped).some(amount => !Number.isFinite(amount) || amount > MAX_AMOUNT)) return null;
   return rows;
 }
 
