@@ -46,5 +46,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm install --no-audit --no-fund
+      - run: npm install --no-fund
+      - run: npm audit --omit=dev
       - run: npm run check:monthly-budget
