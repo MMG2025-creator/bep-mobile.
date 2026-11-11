@@ -1,0 +1,167 @@
+/* BEP UI refinement — additive layer; preserves existing structure and behaviour */
+:root {
+  --bep-forest: #10372f;
+  --bep-green: #176b50;
+  --bep-green-hover: #125640;
+  --bep-mint: #edf5f0;
+  --bep-paper: #f5f8f6;
+  --bep-ink: #1b2b25;
+  --bep-muted: #687a71;
+  --bep-line: #e2eae5;
+  --bep-gold: #d2b36b;
+  --bep-danger: #a44936;
+  --bep-shadow-sm: 0 2px 8px rgba(16, 46, 41, .045);
+  --bep-shadow-md: 0 8px 24px rgba(16, 46, 41, .075);
+  --bep-shadow-lg: 0 18px 48px rgba(16, 46, 41, .13);
+  --bep-radius-card: 20px;
+  --bep-radius-control: 12px;
+  --bep-focus: 0 0 0 3px rgba(23, 107, 80, .18);
+}
+
+/* Consistent rhythm and rendering */
+html { scroll-behavior: smooth; }
+body { color: var(--bep-ink); background: var(--bep-paper); }
+.app { padding-bottom: max(36px, env(safe-area-inset-bottom)); }
+.card {
+  border-color: var(--bep-line);
+  border-radius: var(--bep-radius-card);
+  box-shadow: var(--bep-shadow-sm);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.card h2 { letter-spacing: -.02em; }
+.card h3 { letter-spacing: -.01em; }
+
+/* Navigation: clear active state, stable touch targets */
+.tabs { gap: 8px; }
+.tabs .tab {
+  min-height: 76px;
+  border-radius: 16px;
+  border-color: var(--bep-line);
+  box-shadow: var(--bep-shadow-sm);
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  touch-action: manipulation;
+}
+.tabs .tab:active { transform: scale(.98); }
+.tabs .tab.active {
+  border-color: var(--bep-gold);
+  box-shadow: 0 5px 15px rgba(16, 46, 41, .13);
+}
+
+/* Forms: readable labels, comfortable controls, predictable focus */
+.field { gap: 7px; }
+.field label, form label {
+  color: var(--bep-ink);
+  line-height: 1.4;
+}
+.field input, .field select, .field textarea,
+.auth-card input, .auth-card select, .auth-card textarea,
+input:not([type="checkbox"]):not([type="radio"]),
+select, textarea {
+  border-color: var(--bep-line);
+  border-radius: var(--bep-radius-control);
+  color: var(--bep-ink);
+  background-color: #fff;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+.field input:focus, .field select:focus, .field textarea:focus,
+.auth-card input:focus,
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--bep-green);
+  box-shadow: var(--bep-focus);
+}
+input::placeholder, textarea::placeholder { color: #94a39b; opacity: 1; }
+
+/* Action hierarchy and touch accessibility */
+.primary, .secondary, .danger,
+button.primary, button.secondary, button.danger {
+  min-height: 44px;
+  border-radius: var(--bep-radius-control);
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  touch-action: manipulation;
+}
+.primary, button.primary { background: var(--bep-green); }
+.primary:active, .secondary:active, .danger:active { transform: translateY(1px); }
+.secondary { border-color: var(--bep-line); }
+.text-btn { min-height: 40px; padding: 8px 10px; }
+.icon-btn { min-width: 44px; min-height: 44px; }
+.record-action { min-width: 36px; min-height: 36px; border-radius: 10px; }
+
+/* Lists and data rows */
+.rowitem {
+  min-height: 58px;
+  border-color: #edf1ee;
+  line-height: 1.45;
+}
+.rowitem button { touch-action: manipulation; }
+.metric-card {
+  border-radius: 15px;
+  border-color: #dfe9e3;
+  box-shadow: var(--bep-shadow-sm);
+}
+.notice, .privacy-note, .advice {
+  border-radius: 14px;
+  line-height: 1.6;
+}
+
+/* Dialogs, chart zoom and overlays */
+.auth-card {
+  border-color: var(--bep-line);
+  border-radius: 26px;
+  box-shadow: var(--bep-shadow-lg);
+}
+.chart-zoom-panel {
+  border-radius: 20px;
+  box-shadow: var(--bep-shadow-lg);
+}
+
+/* Visible keyboard focus for all interactive elements */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid rgba(23, 107, 80, .48);
+  outline-offset: 2px;
+}
+button:disabled, [aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+/* Desktop: use available width without changing mobile-first navigation */
+@media (min-width: 900px) {
+  .app { max-width: 820px; }
+  .card { padding: 21px; }
+  .tabs .tab:hover:not(.active) {
+    border-color: #bfd4c8;
+    background: #fbfdfb;
+  }
+  .primary:hover:not(:disabled) { background: var(--bep-green-hover); }
+  .secondary:hover:not(:disabled) { border-color: #bfd4c8; background: #f8fbf9; }
+}
+
+/* Honour the operating system's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Budget workflow: progressive disclosure and category grouping */
+.budget-editor{margin:14px 0 18px;border:1px solid var(--bep-line,#e2eae5);border-radius:14px;background:#fbfdfb;overflow:hidden}
+.budget-editor>summary{cursor:pointer;list-style:none;padding:14px 16px;color:var(--bep-green,#176b50);font-weight:700;font-size:13px;min-height:48px;display:flex;align-items:center}
+.budget-editor>summary::-webkit-details-marker{display:none}
+.budget-editor>summary::after{content:'+';margin-left:auto;font-size:20px;font-weight:500}
+.budget-editor[open]>summary::after{content:'−'}
+.budget-editor>form{padding:0 15px 15px}
+.budget-category-group{border:1px solid var(--bep-line,#e2eae5);border-radius:14px;margin:10px 0;overflow:hidden;background:#fff}
+.budget-category-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#f1f7f3;color:var(--bep-forest,#10372f);font-size:12px;font-weight:700}
+.budget-category-group .rowitem{margin:0 10px;border-bottom:1px solid #edf1ee}
+.budget-category-group .rowitem:last-child{border-bottom:0}
+.budget-list-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:16px 0 6px}
+.budget-list-heading h3{margin:0;font:700 14px Manrope,sans-serif}
+.budget-list-heading .hint{margin:0;font-size:10px}
+.budget-category-group .rowitem small{display:block;color:var(--bep-muted,#687a71);font-size:10px;margin-top:3px}
+@media(max-width:390px){.budget-list-heading{align-items:flex-start;flex-direction:column;gap:3px}}
