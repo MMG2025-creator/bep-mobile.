@@ -221,7 +221,8 @@
       itemType: $("monthlyBudgetItemType").value, label,
       category: $("monthlyBudgetItemCategory").value.trim() || null,
       plannedAmount: amount,
-      metadata: editingItemIndex === null ? {} : (items[editingItemIndex]?.metadata || {})
+      sourceItemId: editingItemIndex === null ? crypto.randomUUID() : (items[editingItemIndex]?.sourceItemId || crypto.randomUUID()),
+      metadata: editingItemIndex === null ? { source: "monthly-history" } : (items[editingItemIndex]?.metadata || { source: "monthly-history" })
     };
     if (editingItemIndex === null) items.push(item);
     else items[editingItemIndex] = item;
