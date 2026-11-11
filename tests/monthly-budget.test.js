@@ -2,6 +2,8 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const { validMonth, validateItems, totals, monthKeyAt } = require("../monthly-budget-routes");
 
 test("validMonth accepts only supported YYYY-MM civil months", () => {
@@ -49,4 +51,11 @@ test("monthKeyAt uses the user's local timezone at month boundaries", () => {
   assert.equal(monthKeyAt("2026-11-01T00:30:00.000Z", "America/Los_Angeles"), "2026-10");
   assert.equal(monthKeyAt("not-a-date", "Europe/Paris"), null);
   assert.throws(() => monthKeyAt("2026-11-01T00:00:00.000Z", "Not/AZone"), RangeError);
+});
+
+
+test("savings ledger validation rolls back its PostgreSQL transaction on early rejection", () => {
+  const server = fs.readFileSync(path.join(__dirname, "../server.js"), "utf8");
+  assert.match(server, /if\(!Array\.isArray\(suppliedOps\)\|\|suppliedOps\.length>5000\)\{await client\.query\("ROLLBACK"\);return res\.status\(400\)/);
+  assert.match(server, /if\(incomingOps\.length>5000\)\{await client\.query\("ROLLBACK"\);return res\.status\(400\)/);
 });
