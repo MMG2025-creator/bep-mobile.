@@ -15,6 +15,15 @@ function validMonth(value) {
   return year >= 2000 && year <= 2099;
 }
 
+function monthKeyAt(timestamp, timeZone = "UTC") {
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "2-digit" }).formatToParts(date);
+  const year = parts.find(part => part.type === "year")?.value;
+  const month = parts.find(part => part.type === "month")?.value;
+  return year && month ? year + "-" + month : null;
+}
+
 function validateItems(value) {
   if (!Array.isArray(value) || value.length > MAX_ITEMS) return null;
   const rows = [];
@@ -191,8 +200,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
     const monthKey = req.params.monthKey;
     if (!validMonth(monthKey)) return res.status(400).json({ error: "MONTH_INVALID" });
     const timeZone = typeof req.query.timeZone === "string" ? req.query.timeZone : "UTC";
-    let dateFormatter;
-    try { dateFormatter = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit" }); }
+    try { new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "2-digit" }); }
     catch { return res.status(400).json({ error: "TIME_ZONE_INVALID" }); }
     try {
       const result = await pool.query("SELECT payload FROM bep_user_data WHERE user_id=$1", [req.session.user.id]);
@@ -204,8 +212,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
         if (!expense || typeof expense !== "object" || Array.isArray(expense)) continue;
         const at = typeof expense.at === "string" ? expense.at : "";
         if (!/^\d{4}-\d{2}-\d{2}T/.test(at) || !Number.isFinite(Date.parse(at))) continue;
-        const dateParts = Object.fromEntries(dateFormatter.formatToParts(new Date(at)).map(part => [part.type, part.value]));
-        if (dateParts.year + "-" + dateParts.month !== monthKey) continue;
+        if (monthKeyAt(at, timeZone) !== monthKey) continue;
         if (expense.amount == null || !["number", "string"].includes(typeof expense.amount) || (typeof expense.amount === "string" && !expense.amount.trim())) continue;
         const amount = Number(expense.amount);
         if (!Number.isFinite(amount) || amount < 0 || amount > MAX_AMOUNT) continue;
@@ -326,4 +333,4 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   return router;
 }
 
-module.exports = { createMonthlyBudgetRouter, validMonth, validateItems, totals };
+module.exports = { createMonthlyBudgetRouter, validMonth, validateItems, totals, monthKeyAt };
