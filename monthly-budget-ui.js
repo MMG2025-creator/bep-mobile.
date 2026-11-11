@@ -39,9 +39,9 @@
     if (!response.ok) throw new Error(data.error || "SERVICE_UNAVAILABLE");
     return data;
   }
-  function legacyItems() {
-    let state = {};
-    try { state = JSON.parse(localStorage.getItem(DB) || "{}"); } catch {}
+  function legacyItems(sourceState) {
+    let state = sourceState && typeof sourceState === "object" ? sourceState : {};
+    if (!sourceState) { try { state = JSON.parse(localStorage.getItem(DB) || "{}"); } catch {} }
     const result = [];
     const incomes = Array.isArray(state.incomes) && state.incomes.length ? state.incomes : (Number(state.income) > 0 ? [{ label: "Revenu principal", type: "Autre revenu", amount: Number(state.income), id: "legacy-primary-income" }] : []);
     incomes.forEach(x => {
@@ -64,7 +64,7 @@
       const amount = Number(x.monthly);
       if ((x.name || x.id) && Number.isFinite(amount) && amount >= 0) result.push({
         itemType: "savings", sourceItemId: x.id == null ? null : String(x.id), label: String(x.name || "Épargne programmée").slice(0, 160),
-        plannedAmount: amount, metadata: { source: "legacy-savings-goal" }
+        plannedAmount: amount, metadata: { source: "legacy-savings-goal", rate: Number(x.rate) || 0, duration: Number(x.duration) || 3 }
       });
     });
     return result;
@@ -149,12 +149,16 @@
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
       $("monthlyBudgetItemCancel").hidden = true;
       items = current.items.map(x => ({
-        itemType: x.itemType, sourceItemId: x.sourceItemId, label: x.label,
+        itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
       }));
       renderMonths();
       renderItems();
       renderActuals();
+      if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
+        try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
+        catch (syncError) { status("Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncError.message, true); }
+      }
       status(current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version);
     } catch (error) {
       status("Impossible de charger ce mois : " + error.message, true);
@@ -182,6 +186,7 @@
   }
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
+  window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
     if (loading) return;
@@ -244,11 +249,49 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       items = current.items.map(x => ({ ...x, plannedAmount: Number(x.plannedAmount) }));
-      renderItems(); status("Budget enregistré · version " + current.version);
+      renderItems();
+      if (current.monthKey === monthNow() && current.status === "open" && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
+        await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items);
+      }
+      status("Budget enregistré · version " + current.version);
       await refreshMonthListOnly();
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
+  async function syncLegacyBudget(event) {
+    if (!window.bepSignedIn || !current || current.status !== "open" ||
+        current.monthKey !== monthNow() || loading) return;
+    const incoming = legacyItems(event.detail || {});
+    const managed = new Set(["legacy-income", "legacy-budget", "legacy-savings-goal", "monthly-history"]);
+    const custom = items.filter(x => !managed.has(x.metadata?.source));
+    const merged = [...incoming, ...custom];
+    const signature = rows => JSON.stringify(rows.map(x => ({
+      itemType: x.itemType, sourceItemId: x.sourceItemId || null, label: x.label,
+      category: x.category || null, nature: x.nature || null,
+      plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
+    })));
+    if (signature(merged) === signature(items)) return;
+    setBusy(true);
+    try {
+      const data = await api("/api/budgets/months/" + current.monthKey, {
+        method: "PUT",
+        body: JSON.stringify({ expectedVersion: current.version, items: merged })
+      });
+      current = data.budget;
+      items = current.items.map(x => ({
+        itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
+        category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
+      }));
+      renderItems();
+      await refreshMonthListOnly();
+      status("Budget mensuel synchronisé avec les modules Revenus, Charges et Épargne.");
+    } catch (error) {
+      status(error.message === "VERSION_CONFLICT"
+        ? "Le budget mensuel a changé en parallèle. Recharge le mois avant de modifier les deux vues."
+        : "Synchronisation du budget mensuel impossible : " + error.message, true);
+    } finally { setBusy(false); }
+  }
+
   async function refreshMonthListOnly() {
     const data = await api("/api/budgets/months");
     months = data.months || [];
