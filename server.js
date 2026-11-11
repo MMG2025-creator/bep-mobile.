@@ -130,6 +130,7 @@ app.put("/api/data",auth,async(req,res)=>{
  const client=await pool.connect();
  try{
   await client.query("BEGIN");
+  await client.query("INSERT INTO bep_user_data(user_id) VALUES($1) ON CONFLICT(user_id) DO NOTHING",[req.session.user.id]);
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
