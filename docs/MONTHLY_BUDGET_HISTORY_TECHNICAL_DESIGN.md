@@ -170,8 +170,24 @@ Migration additive uniquement :
 - [x] Dossier de conception technique versionné.
 - [ ] Audit de données réelles et volumétrie (accès SQL requis).
 - [ ] Validation finale des règles d'affectation et de déduplication des opérations.
-- [ ] Implémentation backend et migration additive.
+- [x] Schéma SQL additif versionné préparé dans `database/migrations/20261111_monthly_budget_history.sql` (non appliqué à une base).
+- [x] Routes API isolées préparées dans `monthly-budget-routes.js` et montées sous `/api/budgets` (non activées en production; tables requises).
+- [x] Tests unitaires de validation et calcul ajoutés avec `node:test`.
+- [ ] Exécution CI des tests et tests d’intégration PostgreSQL.
 - [ ] Implémentation interface et adaptation de `dist`.
 - [ ] Tests automatisés et E2E.
 - [ ] Revue de sécurité et contrôle de non-régression.
 - [ ] Publication (validation distincte avant déploiement).
+
+
+## 11. Avancement d'implémentation — 11 novembre 2026
+
+- Migration additive préparée, sans exécution sur Render ni modification de données.
+- API isolée : liste des mois, création vide ou copie du mois précédent, lecture, mise à jour avec contrôle de version, clôture et réouverture auditée.
+- Toutes les lectures/écritures sont filtrées par l'identifiant de session; aucun identifiant utilisateur n'est accepté depuis le corps de requête.
+- Les écritures multi-tables utilisent une transaction SQL; les mises à jour remplacent les lignes du seul mois ciblé et incrémentent sa version.
+- Contrôles d'entrée : format de mois, types, libellés, montants, métadonnées, nombre de lignes et plafonds d'agrégats.
+- Tests unitaires Node intégrés et workflow GitHub Actions préparé.
+- Le backend ne lance volontairement pas la migration au démarrage. Tant que la migration n'est pas appliquée explicitement, les nouvelles routes ne peuvent pas être utilisées; cela évite tout DDL implicite en production.
+- L'interface utilisateur, la migration contrôlée de la photographie budgétaire actuelle et les tests PostgreSQL/E2E restent à réaliser.
+- Aucun déploiement, aucune migration de base, aucune modification de données et aucune activation côté utilisateur n'ont été effectués.
