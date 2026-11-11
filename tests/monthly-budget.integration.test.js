@@ -18,6 +18,12 @@ if (!databaseUrl) {
 
   test("monthly budget API preserves isolation, versioning, copies and audit", async t => {
     adminPool = new Pool({ connectionString: databaseUrl, max: 2 });
+    t.after(async () => {
+      if (server) await new Promise(resolve => server.close(resolve));
+      if (pool) await pool.end();
+      if (adminPool && schema) await adminPool.query('DROP SCHEMA IF EXISTS "' + schema + '" CASCADE');
+      if (adminPool) await adminPool.end();
+    });
     schema = "bep_monthly_test_" + process.pid + "_" + Date.now();
     await adminPool.query('CREATE SCHEMA "' + schema + '"');
     pool = new Pool({
@@ -143,12 +149,4 @@ if (!databaseUrl) {
     });
   });
 
-  test("cleanup monthly budget PostgreSQL integration fixture", async () => {
-    if (server) await new Promise(resolve => server.close(resolve));
-    if (pool) await pool.end();
-    if (adminPool && schema) {
-      await adminPool.query('DROP SCHEMA IF EXISTS "' + schema + '" CASCADE');
-      await adminPool.end();
-    }
-  });
 }
