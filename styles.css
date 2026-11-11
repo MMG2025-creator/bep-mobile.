@@ -783,3 +783,30 @@ body.chart-zoom-open{overflow:hidden}
  .google-login{min-height:52px;font-size:13px}
  .topbar .brand-green .logo{width:145px;height:50px}
 }
+
+
+/* Full-width BEP brand banner on the authentication screen */
+.auth-gate .auth-card{overflow:hidden;padding-top:0}
+.auth-gate .auth-card .auth-brand-banner{
+  width:calc(100% + 50px);
+  height:104px;
+  margin:0 -25px 22px;
+  overflow:hidden;
+  background:linear-gradient(110deg,#032d27 0%,#075d50 62%,#064338 100%);
+  box-shadow:0 5px 16px rgba(3,44,37,.12);
+}
+.auth-gate .auth-card .auth-brand-banner img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+@media(max-width:390px){
+  .auth-gate .auth-card{padding-top:0;padding-left:18px;padding-right:18px}
+  .auth-gate .auth-card .auth-brand-banner{
+    width:calc(100% + 36px);
+    height:82px;
+    margin:0 -18px 19px;
+  }
+}
