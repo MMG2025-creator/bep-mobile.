@@ -866,3 +866,11 @@ body.chart-zoom-open{overflow:hidden}
 .budget-module[hidden]{display:none!important}
 .budget-module .card{margin-bottom:0}
 @media(max-width:380px){.budget-module-nav{gap:5px}.budget-module-tab{font-size:10px;padding:8px 4px;min-height:48px}.home-budget-metrics{gap:6px}.home-budget-metric{padding:10px 7px}.home-budget-metric span{font-size:10px}}
+
+
+/* Compact AI adviser modules inside income and charges */
+.budget-ai-adviser{margin:0 0 16px;padding:12px 14px;border:1px solid #dcece3;border-left:3px solid #73b99a;border-radius:13px;background:linear-gradient(135deg,#fff 0%,#f1f8f4 100%)}
+.budget-ai-heading{display:flex;align-items:center;gap:8px;min-width:0;color:var(--forest);font-size:12px}
+.budget-ai-mark{display:inline-grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border-radius:8px;background:#e4f2eb;color:#176b50;font-size:9px;font-weight:800}
+.budget-ai-caption{margin-left:auto;color:var(--muted);font-size:10px;font-weight:500;text-align:right}
+.budget-ai-adviser .ai-advice{margin:7px 0 0;font-size:12px;line-height:1.55}
