@@ -59,7 +59,7 @@
         category: typeof x.category === "string" ? x.category : null, nature: typeof x.nature === "string" ? x.nature : null, plannedAmount: amount, metadata: { source: "legacy-budget" }
       });
     });
-    (Array.isArray(state.goals) ? state.goals : []).forEach(x => {
+    (Array.isArray(state.goals) ? state.goals : []).filter(x => x && !x.archivedAt).forEach(x => {
       if (!x || typeof x !== "object") return;
       const amount = Number(x.monthly);
       if ((x.name || x.id) && Number.isFinite(amount) && amount >= 0) result.push({
