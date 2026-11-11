@@ -828,3 +828,19 @@ body.chart-zoom-open{overflow:hidden}
 .auth-gate .auth-card .primary{
   background:#176b50;
 }
+
+
+/* BEP header finish: one solid brand surface shared with the wordmark */
+.topbar{
+  background:#032d27!important;
+  background-image:none!important;
+  border-bottom:1px solid rgba(201,154,53,.48)!important;
+  box-shadow:none!important;
+}
+.topbar .brand-green .logo{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
