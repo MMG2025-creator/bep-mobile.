@@ -75,7 +75,7 @@ jobs:
         run: |
           for pair in "app.js dist/app.js" "monthly-budget-ui.js dist/monthly-budget-ui.js" "styles.css dist/styles.css"; do
             read -r source built <<< "$pair"
-            if git diff --quiet HEAD^ HEAD -- "$source" "$built"; then
+            if ! git diff-tree --no-commit-id --name-only -r HEAD | grep -Fxq "$source" && ! git diff-tree --no-commit-id --name-only -r HEAD | grep -Fxq "$built"; then
               echo "No changes to $source or $built; synchronization check not applicable."
             else
               cmp -s "$source" "$built" || {
