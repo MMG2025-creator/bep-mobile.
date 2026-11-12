@@ -82,12 +82,17 @@
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
   }
   function renderActuals() {
-    $("monthlyBudgetActualTotal").textContent = money(actuals.actualExpenseTotal);
+    const hasActuals = Number(actuals.count) > 0;
+    $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
     $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
-    const plannedCharges = items.filter(x => x.itemType === "charge").reduce((sum, x) => sum + Number(x.plannedAmount || 0), 0);
-    const variance = Number(actuals.actualExpenseTotal || 0) - plannedCharges;
-    const varianceLabel = variance > 0 ? "dépassement constaté" : variance < 0 ? "sous le prévisionnel" : "au niveau du prévisionnel";
-    $("monthlyBudgetActualVariance").textContent = "Achats enregistrés : " + varianceLabel + " de " + money(Math.abs(variance)) + " par rapport aux charges prévues.";
+    if (hasActuals) {
+      const plannedCharges = items.filter(x => x.itemType === "charge").reduce((sum, x) => sum + Number(x.plannedAmount || 0), 0);
+      const variance = Number(actuals.actualExpenseTotal || 0) - plannedCharges;
+      const varianceLabel = variance > 0 ? "dépassement constaté" : variance < 0 ? "sous le prévisionnel" : "au niveau du prévisionnel";
+      $("monthlyBudgetActualVariance").textContent = "Achats enregistrés : " + varianceLabel + " de " + money(Math.abs(variance)) + " par rapport aux charges prévues.";
+    } else {
+      $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
+    }
     $("monthlyBudgetActualItems").innerHTML = actuals.expenses.length ? actuals.expenses.slice(0, 12).map(x =>
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
