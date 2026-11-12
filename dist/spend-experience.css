@@ -98,3 +98,8 @@
 #purchases .bep-spend-basics input:focus-visible,#purchases .bep-spend-basics select:focus-visible{outline:3px solid #dcefe2;outline-offset:1px}
 #purchases #purchaseAmount{font-variant-numeric:tabular-nums}
 #purchases .bep-spend-advanced-body #city{max-width:100%}
+
+/* Spend experience: only the selected internal view is visible. */
+#purchases .bep-spend-view[hidden]{display:none!important}
+#purchases .bep-spend-radar{display:block;min-width:0}
+#purchases .bep-spend-nav button:focus-visible{outline:2px solid #b98b2e;outline-offset:2px}
