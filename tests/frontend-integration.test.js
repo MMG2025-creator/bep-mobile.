@@ -172,16 +172,16 @@ test("monthly actual expenses refresh after app state changes and background syn
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
     const start = js.indexOf("async function refreshActuals()");
-    const end = js.indexOf("\\n  async function refresh()", start);
+    const end = js.indexOf("\n  async function refresh()", start);
     assert.ok(start >= 0 && end > start, file + " actuals refresh function is missing");
     const refresh = js.slice(start, end);
     assert.match(refresh, /actualsRequestId/);
     assert.match(refresh, /actualsRefreshPending/);
-    assert.match(refresh, /current\\.monthKey !== monthKey/);
-    assert.match(refresh, /renderActuals\\(\\)/);
-    assert.doesNotMatch(refresh, /loadMonth\\(/);
-    assert.match(js, /addEventListener\\("bep:state-rendered", refreshActuals\\)/);
-    assert.match(js, /addEventListener\\("bep:offline-synced", refreshActuals\\)/);
+    assert.match(refresh, /current\.monthKey !== monthKey/);
+    assert.match(refresh, /renderActuals\(\)/);
+    assert.doesNotMatch(refresh, /loadMonth\(/);
+    assert.match(js, /addEventListener\("bep:state-rendered", refreshActuals\)/);
+    assert.match(js, /addEventListener\("bep:offline-synced", refreshActuals\)/);
   }
   assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
 });
