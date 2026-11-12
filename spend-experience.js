@@ -99,6 +99,7 @@ function mountQuickExpenseModal(panel,entry){
  panel.appendChild(dialog);dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
  const open=()=>{if(dialog.open)return;$("purchaseSubmit")?.classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");dialog.showModal();setTimeout(()=>$("purchaseAmount")?.focus(),80)};
  const close=()=>{if(dialog.open)dialog.close()};
+ window.BEP_OPEN_PURCHASE_DIALOG=open;
  $("bepQuickExpense")?.addEventListener("click",open);
  dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);
  dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
@@ -110,11 +111,28 @@ function mountFinancialEntryDialogs(){
  const definitions=[["income","Ajouter un revenu","+ Ajouter un revenu","incomeEditorDetails"],["income-checkup","Faire le point sur mes revenus","Faire le point sur mes revenus","incomeCheckupDetails"],["charge","Ajouter une charge","+ Ajouter une charge","budgetEditorDetails"],["charge-checkup","Faire le point sur mes charges","Faire le point sur mes charges","budgetCheckupDetails"],["savings-goal","Créer un objectif d’épargne","Créer un objectif d’épargne",".savings-objective-form"],["savings-movement","Enregistrer un mouvement","Enregistrer un versement ou un retrait",".savings-movement-form"],["monthly-create","Créer un mois de budget","Créer un mois","monthlyBudgetCreateForm"],["monthly-item","Ajouter une ligne au budget mensuel","+ Ajouter une ligne au budget mensuel","monthlyBudgetItemForm"],["profile","Modifier mon profil","Modifier mon profil","profileForm"]];
  const dialogs=new Map();
  for(const [id,title,buttonText,selector] of definitions){const source=document.querySelector(selector);if(!source||dialogs.has(id))continue;const trigger=document.createElement("button");trigger.type="button";trigger.className="primary full bep-entry-trigger";trigger.textContent=buttonText;trigger.dataset.entryDialog=id;source.parentNode.insertBefore(trigger,source);const dialog=document.createElement("dialog");dialog.className="bep-quick-expense-dialog bep-entry-dialog";dialog.id="bepEntryDialog-"+id;dialog.setAttribute("aria-labelledby","bepEntryTitle-"+id);dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE BEP</p><h2 id="bepEntryTitle-'+id+'"></h2><p>Renseigne les informations puis confirme.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';dialog.querySelector("h2").textContent=title;document.body.appendChild(dialog);const body=dialog.querySelector(".bep-quick-expense-body");if(source.tagName==="DETAILS"){source.open=true;source.querySelector(":scope > summary")?.classList.add("bep-entry-summary-hidden")}body.appendChild(source);const open=()=>{if(dialog.open)return;source.hidden=false;if(source.tagName==="DETAILS")source.open=true;dialog.showModal();const field=source.querySelector("input:not([type=checkbox]),select,textarea,button");setTimeout(()=>field?.focus(),60)};const close=()=>{if(dialog.open)dialog.close()};trigger.addEventListener("click",open);dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);dialog.addEventListener("click",event=>{if(event.target===dialog)close()});dialog.addEventListener("close",()=>trigger.focus());window.addEventListener("bep:entry-saved",event=>{if(event.detail?.id===id)close()});dialogs.set(id,{open,close,dialog,trigger})}
- window.BEP_OPEN_ENTRY_DIALOG=id=>dialogs.get(id)?.open();
+ window.BEP_OPEN_ENTRY_DIALOG=id=>id==="purchase"?(window.BEP_OPEN_PURCHASE_DIALOG?.()):dialogs.get(id)?.open();
+}
+
+function mountFinancialConfirmDialog(){
+ if($("bepConfirmDialog"))return;
+ const dialog=document.createElement("dialog");dialog.id="bepConfirmDialog";dialog.className="bep-quick-expense-dialog bep-entry-dialog";
+ dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">CONFIRMATION</p><h2 class="bep-confirm-title">Confirmer cette action</h2><p class="bep-confirm-message"></p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-confirm-actions"><button type="button" class="secondary bep-confirm-cancel">Annuler</button><button type="button" class="primary bep-confirm-accept">Confirmer</button></div></div>';
+ document.body.appendChild(dialog);
+ window.BEP_CONFIRM_ACTION=(message,title="Confirmer cette action")=>new Promise(resolve=>{
+  dialog.querySelector(".bep-confirm-title").textContent=title;dialog.querySelector(".bep-confirm-message").textContent=message;
+  const finish=value=>{dialog.close();resolve(value)};
+  dialog.querySelector(".bep-confirm-accept").onclick=()=>finish(true);
+  dialog.querySelector(".bep-confirm-cancel").onclick=()=>finish(false);
+  dialog.querySelector(".bep-quick-expense-close").onclick=()=>finish(false);
+  dialog.oncancel=event=>{event.preventDefault();finish(false)};
+  dialog.showModal();
+ });
 }
 
 mountQuickExpenseModal(panel,entry);
 mountFinancialEntryDialogs();
+mountFinancialConfirmDialog();
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
 form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
