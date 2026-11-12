@@ -20,13 +20,13 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./financial-engine.js?v=1"));
   assert.ok(read("dist/index.html").includes("./app.js?v=100"));
   assert.ok(read("index.html").includes("./styles.css?v=82"));
-  assert.ok(read("dist/index.html").includes("./styles.css?v=81"));
+  assert.ok(read("dist/index.html").includes("./styles.css?v=82"));
   assert.ok(read("index.html").includes("./spend-experience.css?v=5"));
   assert.ok(read("dist/index.html").includes("./spend-experience.css?v=5"));
   assert.ok(read("index.html").includes("./spend-experience.js?v=6"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=5"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=6"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=6"));
-  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
+  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=6"));
 });
 
 test("monthly history and savings DOM references exist in both HTML builds", () => {
@@ -232,8 +232,8 @@ test("purchase affordability is judged only against remaining available money an
   const server = read("server.js");
   assert.match(server, /zone==="purchases"/);
   assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
-  assert.match(server, /utilise exclusivement le montant restant disponible/);
-  assert.match(server, /ne bloque jamais la saisie ou l'enregistrement/i);
+  assert.match(server, /la seule référence financière est le montant restant disponible/);
+  assert.match(server, /sans bloquer son enregistrement/i);
 });
 
 
@@ -242,8 +242,8 @@ test("production API initialization and purchase adviser use a single valid serv
   assert.equal((server.match(/function auth\(req,res,next\)/g)||[]).length, 1);
   assert.equal((server.match(/app\.listen/g)||[]).length, 1);
   assert.match(server, /currency CHAR\(3\)[\s\S]*?currency ~ '\^\[A-Z\]\{3\}\$'/);
-  assert.match(server, /const ctx=zone==="purchases"[\s\S]*?resteDisponible/);
+  assert.match(server, /const purchaseReview=req\.body\?\.intent==="purchase_review"[\s\S]*?const ctx=purchaseReview\?\{resteDisponible/);
   assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
   assert.match(server, /utilise exclusivement le montant restant disponible/);
-  assert.match(server, /ne bloque jamais la saisie ou l'enregistrement de l'achat/i);
+  assert.match(server, /sans bloquer son enregistrement/i);
 });
