@@ -217,3 +217,14 @@ test("purchase entry keeps the core flow reliable and avoids inline voice prompt
     assert.match(js, /purchaseCategory"\)\.required=false/);
   }
 });
+
+test("purchase form title follows edit, cancel and new-purchase states", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /function setPurchaseFormTitle\(isEditing\)/);
+    assert.match(js, /heading\.textContent=isEditing\?"Modifier ma dépense":"Ajouter une dépense"/);
+    assert.match(js, /editingPurchaseId=id;setPurchaseFormTitle\(true\)/);
+    assert.match(js, /function cancelPurchaseEdit\(\)\{editingPurchaseId=null;setPurchaseFormTitle\(false\)/);
+    assert.match(js, /onclick=\(\)=>\{editingPurchaseId=null;setPurchaseFormTitle\(false\)/);
+  }
+});
