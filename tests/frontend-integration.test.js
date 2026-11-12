@@ -289,3 +289,15 @@ test("income assistant action buttons use the same solid green as charges", () =
   assert.match(css, /#budgetModuleIncome \.bep-entry-trigger\{background:#176b50;border-color:#176b50;color:#fff\}/);
   assert.match(css, /#budgetModuleIncome \.bep-entry-trigger:hover\{background:#12583f;border-color:#12583f;color:#fff\}/);
 });
+
+test("Budget income and charges copy is concrete and action-oriented", () => {
+  const app = read("app.js");
+  const html = read("index.html");
+  assert.ok(app.includes("sources enregistrées : "));
+  assert.ok(app.includes("charges enregistrées : "));
+  assert.ok(!app.includes("poste(s) de charges"));
+  assert.ok(html.includes("Vérifie que tous tes revenus sont pris en compte."));
+  assert.ok(html.includes("Vérifie que toutes tes charges sont prises en compte."));
+  assert.ok(html.includes("Vérifier mes sources de revenus"));
+  assert.ok(html.includes("Vérifier mes charges"));
+});
