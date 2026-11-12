@@ -4,7 +4,8 @@
   "private": true,
   "description": "BEP PWA with Google authentication and private user data",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"
