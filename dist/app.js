@@ -349,7 +349,39 @@ async function prepareReceiptImageForOcr(file){
  finally{bitmap?.close?.()}
 }
 $("receiptCaptureButton")?.addEventListener("click",()=> $("receiptFile")?.click());
-if($("receiptFile"))$("receiptFile").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const status=$("receiptStatus");status.textContent="Préparation du ticket…";let worker;try{await loadTesseract();const ocrImage=await prepareReceiptImageForOcr(file);status.textContent="Lecture du ticket sur cet appareil…";worker=await window.Tesseract.createWorker("fra+eng",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="Lecture du ticket : "+Math.round((m.progress||0)*100)+" %"}});const result=await worker.recognize(ocrImage);const text=String(result.data?.text||"").trim();if(!text)throw Error("Aucun texte lisible. Essaie une photo plus nette.");const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const merchant=lines.find(x=>x.length>2&&x.length<70&&!/^(ticket|facture|reçu|date|caisse|siret|tva|total|merci|carte|cb|visa|mastercard)/i.test(x));const totalLines=lines.filter(x=>/(total\s*(?:ttc|à payer)?|net à payer|montant total|à régler)/i.test(x));const amountRx=/\d[\d\s.,]*[,.]\d{2}/g;let amountText="";for(const line of [...totalLines].reverse()){const found=line.match(amountRx);if(found?.length){amountText=found[found.length-1];break}}if(!amountText){const all=text.match(amountRx);if(all?.length)amountText=all[all.length-1]}const amount=amountText?imageMoney(amountText):NaN;if(merchant&&!$("merchant").value.trim())$("merchant").value=merchant.slice(0,70);if(Number.isFinite(amount)&&amount>0)$("purchaseAmount").value=amount.toFixed(2);if(!$("purchaseCategory").value.trim())$("purchaseCategory").value=imageCategory(text);$("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}));$("purchaseAmount").dispatchEvent(new Event("input",{bubbles:true}));receiptCaptureText="Ticket photographié · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");status((Number.isFinite(amount)&&amount>0?"Montant proposé : "+amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(merchant?"Enseigne proposée : "+merchant+". ":"")+"Vérifie et corrige les champs avant d’enregistrer. La photo reste sur cet appareil et n’est pas conservée par BEP.");}catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}finally{if(worker)await worker.terminate().catch(()=>{});e.target.value="";}};
+$("receiptImportButton")?.addEventListener("click",()=> $("receiptGalleryFile")?.click());
+async function processReceiptFile(file,input){
+ if(!file)return;
+ const status=$("receiptStatus");status.textContent="Préparation de la photo…";
+ let worker;
+ try{
+  if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw Error("Format non pris en charge. Utilise une photo JPG, PNG ou WebP.");
+  if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Prends une photo en résolution standard ou importe une version compressée.");
+  await loadTesseract();
+  const ocrImage=await prepareReceiptImageForOcr(file);
+  status.textContent="Lecture du ticket sur cet appareil…";
+  worker=await window.Tesseract.createWorker("fra",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="Lecture du ticket : "+Math.round((m.progress||0)*100)+" %"}});
+  const result=await worker.recognize(ocrImage);
+  const text=String(result.data?.text||"").trim();
+  if(!text)throw Error("Aucun texte lisible. Tu peux saisir les informations manuellement.");
+  const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const merchant=lines.find(x=>x.length>2&&x.length<70&&!/^(ticket|facture|reçu|date|caisse|siret|tva|total|merci|carte|cb|visa|mastercard)/i.test(x));
+  const totalLines=lines.filter(x=>/(total\s*(?:ttc|à payer)?|net à payer|montant total|à régler)/i.test(x));
+  const amountRx=/\d[\d\s.,]*[,.]\d{2}/g;let amountText="";
+  for(const line of [...totalLines].reverse()){const found=line.match(amountRx);if(found?.length){amountText=found[found.length-1];break}}
+  if(!amountText){const all=text.match(amountRx);if(all?.length)amountText=all[all.length-1]}
+  const amount=amountText?imageMoney(amountText):NaN;
+  if(merchant&&!$("merchant").value.trim())$("merchant").value=merchant.slice(0,70);
+  if(Number.isFinite(amount)&&amount>0)$("purchaseAmount").value=amount.toFixed(2);
+  if(!$("purchaseCategory").value.trim())$("purchaseCategory").value=imageCategory(text);
+  $("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}));
+  $("purchaseAmount").dispatchEvent(new Event("input",{bubbles:true}));
+  receiptCaptureText="Ticket importé · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");
+  status.textContent=(Number.isFinite(amount)&&amount>0?"Montant proposé : "+amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(merchant?"Enseigne proposée : "+merchant+". ":"")+"Vérifie et corrige les champs avant d’enregistrer. La photo n’est pas conservée par BEP.";
+ }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
+ finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";}
+}
+["receiptFile","receiptGalleryFile"].forEach(id=>{const input=$(id);if(input)input.onchange=e=>processReceiptFile(e.target.files?.[0],e.target)});
 
 let purchaseSelectionMode=false,purchaseSelection=new Set(),suppressPurchaseClick=false;
 let incomeSelectionMode=false,incomeSelection=new Set(),budgetSelectionMode=false,budgetSelection=new Set();
