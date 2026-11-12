@@ -94,7 +94,7 @@ renderCoachProfile();
 
 async function recordAdvice(id){
  const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
- if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&aiConnection?.mode==="bep")){target.textContent=makeAdvice(id);return}
+ if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode))){target.textContent=makeAdvice(id);return}
  const context=currentFinancialContext(),fingerprint=JSON.stringify({zone:id,context,provider:aiConnection.provider,model:aiConnection.model});
  if(adviceFingerprints[id]===fingerprint&&target.textContent!=="Ton IA analyse ta situation financière…")return;
  adviceFingerprints[id]=fingerprint;
@@ -111,7 +111,7 @@ async function recordAdvice(id){
   try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
  }catch(e){if(adviceRequestIds[id]===requestId){delete adviceFingerprints[id];target.textContent="Le conseil IA est momentanément indisponible. "+(e.message||"Réessaie dans quelques instants.")}}
 }
-function renderAI(){const panel=document.querySelector(".panel.active")?.id;const ids=panel==="budget"?[activeBudgetModule]:panel==="home"?["home"]:panel==="savings"?["savings"]:panel==="purchases"?["purchases"]:[];if(window.bepSignedIn&&aiConnection?.mode==="bep"){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
+function renderAI(){const panel=document.querySelector(".panel.active")?.id;const ids=panel==="budget"?[activeBudgetModule]:panel==="home"?["home"]:panel==="savings"?["savings"]:panel==="purchases"?["purchases"]:[];if(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode)){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
 function renderAIUsage(){const count=$("aiRequestCount");if(!count)return;count.textContent=Number(aiUsage.requests)||0;$("aiTokenCount").textContent=(Number(aiUsage.estimatedTokens)||0).toLocaleString("fr-FR");$("aiLatency").textContent=(aiUsage.requests?Math.round((Number(aiUsage.totalMs)||0)/aiUsage.requests):0)+" ms";$("aiCost").textContent="0,00 €"}
 const VALID_PANEL_IDS=new Set(["home","budget","savings","purchases","coach","settings"]);function getSavedTab(){try{const id=localStorage.getItem(ACTIVE_TAB_KEY);return VALID_PANEL_IDS.has(id)&&document.getElementById(id)?.classList.contains("panel")?id:"home"}catch{return "home"}}function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
@@ -427,7 +427,7 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach BEP structuré';
  const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · Gemini sous verrou gratuit";
  const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Gemini est verrouillé tant que le fonctionnement sans facturation du projet Google n'est pas confirmé.";
- const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Mode local : aucune requête externe consommée.";quotaLabel.classList.remove("hidden")}
+ const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Base BEP : conseils structurés sans appel Gemini.";quotaLabel.classList.remove("hidden")}
  const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Gemini gratuit":"BEP structuré";
  const disconnect=$("disconnectAiBtn");if(disconnect)disconnect.classList.add("hidden");
  const advanced=$("aiAdvancedSettings");if(advanced){advanced.hidden=true;advanced.classList.add("hidden")}
