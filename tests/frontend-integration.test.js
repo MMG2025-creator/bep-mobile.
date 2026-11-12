@@ -338,3 +338,12 @@ test("income saved accordion and rows match charges by direct element IDs", () =
   assert.match(css, /#incomeRows \.rowitem,#budgetRows \.rowitem\{font-size:14px!important/);
   assert.match(css, /#incomeRows \.rowitem>span:first-child small,#budgetRows \.rowitem>span:first-child small\{font-size:12px!important/);
 });
+
+test("BEP advice is a contextual popup and quick expense floating button is removed", () => {
+ const html=read("index.html");
+ assert.ok(html.includes('id="bepAdviceDialog"'));
+ assert.ok(html.includes('id="bepAdviceRobot"'));
+ assert.ok(html.includes('id="bepCoachMascot"'));
+ assert.ok(!html.includes('id="bepQuickExpense"'));
+ assert.ok(html.includes('id="aiIncome"')&&html.includes('id="aiCharges"')&&html.includes('id="aiSavings"')&&html.includes('id="aiPurchases"'));
+});
