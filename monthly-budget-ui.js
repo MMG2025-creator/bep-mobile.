@@ -69,6 +69,62 @@
   let authEpoch = 0;
   let actualsRequestId = 0;
   let actualsRefreshPending = false;
+  const OFFLINE_USER_KEY = "bep-last-authenticated-user";
+  const OFFLINE_CACHE_PREFIX = "bep-monthly-history-cache-v1:";
+  function offlineCacheKey() {
+    const user = localStorage.getItem(OFFLINE_USER_KEY);
+    return user ? OFFLINE_CACHE_PREFIX + user : null;
+  }
+  function readOfflineCache() {
+    const key = offlineCacheKey();
+    if (!key) return null;
+    try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
+  }
+  function writeOfflineCache() {
+    const key = offlineCacheKey();
+    if (!key) return;
+    try {
+      const cache = readOfflineCache() || { months: [], byMonth: {} };
+      cache.months = months;
+      cache.byMonth = cache.byMonth || {};
+      if (current?.monthKey) cache.byMonth[current.monthKey] = {
+        budget: current, items, actuals, auditEntries, auditUnavailable
+      };
+      const keep = Object.keys(cache.byMonth).sort().reverse().slice(0, 12);
+      cache.byMonth = Object.fromEntries(keep.map(month => [month, cache.byMonth[month]]));
+      localStorage.setItem(key, JSON.stringify(cache));
+    } catch {}
+  }
+  function loadCachedMonth(monthKey) {
+    const cache = readOfflineCache();
+    const snapshot = cache?.byMonth?.[monthKey];
+    if (!snapshot) {
+      status("Ce mois n’a pas encore été mis en cache sur cet appareil. Reconnecte-toi pour le consulter.", true);
+      return false;
+    }
+    current = snapshot.budget;
+    items = Array.isArray(snapshot.items) ? snapshot.items : [];
+    actuals = snapshot.actuals || { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+    auditEntries = Array.isArray(snapshot.auditEntries) ? snapshot.auditEntries : [];
+    auditUnavailable = Boolean(snapshot.auditUnavailable);
+    renderMonths(); renderItems(); renderActuals(); renderAudit();
+    status("Mode hors ligne : historique consultable en lecture seule. Les modifications seront disponibles à la reconnexion.");
+    return true;
+  }
+  function loadOfflineCache() {
+    const cache = readOfflineCache();
+    months = Array.isArray(cache?.months) ? cache.months : [];
+    renderMonths();
+    const monthKey = months.find(month => cache?.byMonth?.[month.monthKey])?.monthKey ||
+      Object.keys(cache?.byMonth || {}).sort().reverse()[0];
+    if (monthKey) loadCachedMonth(monthKey);
+    else {
+      current = null; items = []; auditEntries = []; auditUnavailable = false;
+      actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+      renderMonths(); renderActuals();
+      status("Aucun historique mensuel n’est disponible hors ligne. Reconnecte-toi pour le charger.", true);
+    }
+  }
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   function financialPosition() {
@@ -200,9 +256,9 @@
       '<div class="monthly-budget-row" data-month-row="' + index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
       labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
-      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
+      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" || !window.bepSignedIn ? "disabled" : "") + '>Modifier</button>' +
       '<button type="button" data-remove-month-item="' + index + '" aria-label="Retirer cette ligne" ' +
-      (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>'
+      (current.status === "closed" || !window.bepSignedIn ? "disabled" : "") + '>×</button></span></div>'
     ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
     $("monthlyBudgetItems").querySelectorAll("[data-edit-month-item]").forEach(button => {
       button.onclick = () => {
@@ -239,15 +295,16 @@
     $("monthlyBudgetChargesTotal").textContent = money(sum("charge"));
     $("monthlyBudgetSavingsTotal").textContent = money(sum("savings"));
     $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
-    $("monthlyBudgetSave").hidden = current.status === "closed";
-    $("monthlyBudgetClose").hidden = current.status === "closed";
-    $("monthlyBudgetReopen").hidden = current.status !== "closed";
-    $("monthlyBudgetReason").hidden = current.status !== "closed";
-    $("monthlyBudgetItemForm").hidden = current.status === "closed";
+    $("monthlyBudgetSave").hidden = current.status === "closed" || !window.bepSignedIn;
+    $("monthlyBudgetClose").hidden = current.status === "closed" || !window.bepSignedIn;
+    $("monthlyBudgetReopen").hidden = current.status !== "closed" || !window.bepSignedIn;
+    $("monthlyBudgetReason").hidden = current.status !== "closed" || !window.bepSignedIn;
+    $("monthlyBudgetItemForm").hidden = current.status === "closed" || !window.bepSignedIn;
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = current.status === "closed";
   }
   async function loadMonth(monthKey) {
+    if (!navigator.onLine || !window.bepSignedIn) { loadCachedMonth(monthKey); return; }
     const epoch = authEpoch;
     actualsRequestId++;
     setBusy(true);
@@ -274,6 +331,7 @@
       renderItems();
       renderActuals();
       renderAudit();
+      writeOfflineCache();
       let syncWarning = null;
       if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
@@ -301,6 +359,7 @@
           !current || current.monthKey !== monthKey) return;
       actuals = data;
       renderActuals();
+      writeOfflineCache();
       $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
     } catch (error) {
       if (requestId === actualsRequestId && epoch === authEpoch && current?.monthKey === monthKey) {
@@ -318,6 +377,7 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       months = data.months || [];
       renderMonths();
+      writeOfflineCache();
       if (months.length) await loadMonth(months[0].monthKey);
       else {
         current = null; items = []; auditEntries = []; auditUnavailable = false; renderMonths(); renderAudit();
@@ -330,7 +390,10 @@
     } finally { setBusy(false); }
   }
 
-  $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
+  $("monthlyBudgetMonth").onchange = event => {
+    if (!navigator.onLine || !window.bepSignedIn) loadCachedMonth(event.target.value);
+    else loadMonth(event.target.value);
+  };
   window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
   window.addEventListener("bep:state-rendered", refreshActuals);
   window.addEventListener("bep:offline-synced", refreshActuals);
@@ -459,6 +522,7 @@
     const data = await api("/api/budgets/months");
     months = data.months || [];
     renderMonths();
+    writeOfflineCache();
   }
   $("monthlyBudgetClose").onclick = async () => {
     if (!current || loading) return;
@@ -499,7 +563,8 @@
     authEpoch++;
     actualsRequestId++;
     if (window.bepSignedIn) refresh();
-    else { months = []; current = null; items = []; actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] }; renderMonths(); renderActuals(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    else { loadOfflineCache(); setBusy(false); }
   });
   if (window.bepSignedIn) refresh();
+  else loadOfflineCache();
 })();
