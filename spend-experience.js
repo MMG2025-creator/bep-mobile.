@@ -79,7 +79,7 @@ if(entry){
  quick.append(amountWrap,basics);
  const chips=document.createElement("div");chips.className="bep-spend-category-chips";chips.setAttribute("aria-label","Catégories rapides");chips.innerHTML=['Alimentation','Transport et carburant','Restaurant et sorties','Maison et décoration','Vêtements et chaussures','Santé et pharmacie'].map((x,i)=>'<button type="button" data-spend-category="'+x+'">'+['🥑','🚗','☕','🏠','🛍️','✚'][i]+' '+x+'</button>').join("");
  if(categoryField){const hint=document.createElement("small");hint.className="bep-spend-auto-hint";hint.textContent="BEP propose une catégorie à partir de ta description. Tu peux la modifier.";categoryField.appendChild(hint);categoryField.appendChild(chips)}
- const advanced=document.createElement("details");advanced.className="bep-spend-advanced";advanced.innerHTML='<summary><span>Personnaliser mon analyse</span><small>Facultatif · 3 questions</small></summary><div class="bep-spend-advanced-body"></div>';
+ const advanced=document.createElement("details");advanced.className="bep-spend-advanced";advanced.innerHTML='<summary><span>Personnaliser mon analyse</span><small> · Facultatif · 3 questions</small></summary><div class="bep-spend-advanced-body"></div>';
  const advancedBody=advanced.querySelector(".bep-spend-advanced-body");
  [cityField,psychologyField,needField,delayField].forEach(el=>{if(el)advancedBody.appendChild(el)});
  if(oldTwo&&oldTwo.children.length===0)oldTwo.remove();
