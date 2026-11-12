@@ -165,15 +165,37 @@ function imageCategory(text){const s=pdfCleanText(text);if(/loyer|immobilier|syn
 async function imageGreenHighlight(file,bbox){try{if(!bbox||![bbox.x0,bbox.y0,bbox.x1,bbox.y1].every(Number.isFinite))return false;const bitmap=await createImageBitmap(file),canvas=document.createElement("canvas");canvas.width=bitmap.width;canvas.height=bitmap.height;const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(bitmap,0,0);const x=Math.max(0,Math.floor(bbox.x0)),y=Math.max(0,Math.floor(bbox.y0)),w=Math.min(bitmap.width-x,Math.ceil(bbox.x1-bbox.x0)),h=Math.min(bitmap.height-y,Math.ceil(bbox.y1-bbox.y0));if(w<=0||h<=0){bitmap.close();return false}const data=ctx.getImageData(x,y,w,h).data;let green=0,total=0;for(let i=0;i<data.length;i+=4){const r=data[i],g=data[i+1],b=data[i+2];if(g>105&&g>r*1.10&&g>b*1.04)green++;total++}bitmap.close();return total>0&&green/total>.035}catch{return false}}
 function imageCandidateFromLine(line,fileName,greenCue=false){const clean=String(line||"").replace(/\s+/g," ").trim();if(clean.length<5||/solde|disponible|plafond|total des operations|ancien solde|nouveau solde|date valeur|date operation|iban|bic|numero de compte/i.test(pdfCleanText(clean)))return null;const matches=clean.match(/[-+]?\s*\d[\d\s.,]*[,.]\d{2}/g);if(!matches?.length)return null;const amount=imageMoney(matches[matches.length-1]);if(!Number.isFinite(amount)||amount<0.01||amount>100000)return null;const description=clean.replace(matches[matches.length-1]," ").replace(/\b\d{2}[/.]\d{2}(?:[/.]\d{2,4})?\b/g," ").replace(/[€$]/g," ").replace(/\s+/g," ").trim();if(!description||description.length<2)return null;const cleanedDescription=description.replace(/[©®™]/g," ").replace(/^[^A-Za-zÀ-ÿ0-9]+/,"").replace(/\s+/g," ").trim(),normalized=pdfCleanText(cleanedDescription),salary=/salaire|paie|remuneration|bulletin|caf|pole emploi|france travail|alloca/.test(normalized),credit=/virement en votre faveur|virement recu|virement entrant|remboursement|versement|prestation|allocation|alloca|salaire|paie|pension/.test(normalized),financing=/\b(?:3|4|10|12)\s*x\b|credit|pret|echeance|mensualite|cofidis|cetelem|sofinco|franfinance|younited/.test(normalized),recurring=/loyer|assurance|mutuelle|edf|engie|electric|energie|eau|gaz|telephone|internet|orange|sfr|free|bouygues|abonnement|prelevement|prlv/.test(normalized);const finalDescription=cleanedDescription.slice(0,120);return {description:finalDescription,amount,type:(salary||credit)?"income":((financing||recurring)?"budget":"ignore"),category:financing?"Crédits":imageCategory(finalDescription),source:fileName||"Capture bancaire",rawLine:clean}}
 function imageOcrRows(data){const words=(data?.words||[]).filter(w=>String(w.text||"").trim()&&w.bbox&&Number.isFinite(w.bbox.y0)&&Number.isFinite(w.bbox.y1)&&(w.confidence==null||w.confidence>=18));if(!words.length)return (data?.lines||[]).map(l=>({text:String(l.text||""),bbox:l.bbox||null,centerY:l.bbox?(l.bbox.y0+l.bbox.y1)/2:0,height:l.bbox?l.bbox.y1-l.bbox.y0:16}));const heights=words.map(w=>Math.max(1,w.bbox.y1-w.bbox.y0)).sort((x,y)=>x-y),median=heights[Math.floor(heights.length/2)]||16,tolerance=Math.max(7,median*.72),sorted=words.slice().sort((x,y)=>(x.bbox.y0+x.bbox.y1)-(y.bbox.y0+y.bbox.y1));const rows=[];for(const w of sorted){const cy=(w.bbox.y0+w.bbox.y1)/2;let row=rows.find(r=>Math.abs(r.centerY-cy)<=Math.max(tolerance,Math.min(r.height,w.bbox.y1-w.bbox.y0)*.55));if(!row){row={words:[],centerY:cy,height:w.bbox.y1-w.bbox.y0};rows.push(row)}row.words.push(w);row.centerY=row.words.reduce((n,x)=>n+(x.bbox.y0+x.bbox.y1)/2,0)/row.words.length;row.height=Math.max(row.height,w.bbox.y1-w.bbox.y0)}return rows.map(r=>{r.words.sort((x,y)=>x.bbox.x0-y.bbox.x0);return {text:r.words.map(w=>w.text).join(" ").replace(/\s+/g," ").trim(),bbox:{x0:Math.min(...r.words.map(w=>w.bbox.x0)),y0:Math.min(...r.words.map(w=>w.bbox.y0)),x1:Math.max(...r.words.map(w=>w.bbox.x1)),y1:Math.max(...r.words.map(w=>w.bbox.y1))},centerY:r.centerY,height:r.height}}).sort((x,y)=>x.centerY-y.centerY)}
+async function isHeicReceiptImage(file){
+ const declared=/heic|heif/i.test((file.type||"")+" "+(file.name||""));
+ if(declared)return true;
+ try{const bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());const brand=String.fromCharCode(...bytes.slice(8,12));return bytes.length>=12&&String.fromCharCode(...bytes.slice(4,8))==="ftyp"&&/(heic|heix|hevc|hevx|mif1|msf1)/i.test(brand)}catch{return false}
+}
+async function receiptImageFromBlob(blob){
+ return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)});img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne sait pas décoder ce format d'image."))};img.src=url})
+}
+async function decodeBankImageForOcr(file){
+ try{return await createImageBitmap(file)}catch(nativeError){
+  if(await isHeicReceiptImage(file)){
+   const converter=await loadHeicDecoder(),converted=await converter({blob:file,toType:"image/jpeg",quality:.92}),jpeg=Array.isArray(converted)?converted[0]:converted;
+   if(!jpeg)throw Error("La conversion HEIC n'a produit aucune image.");
+   try{return await createImageBitmap(jpeg)}catch{return await receiptImageFromBlob(jpeg)}
+  }
+  return await receiptImageFromBlob(file);
+ }
+}
 async function prepareBankImageForOcr(file){
+ let bitmap;
  try{
-  if(!window.createImageBitmap||!document.createElement("canvas").getContext)return file;
-  const bitmap=await createImageBitmap(file),maxSide=2600,scale=Math.min(2, maxSide/Math.max(bitmap.width,bitmap.height),Math.max(1,1800/Math.min(bitmap.width,bitmap.height)));
+  if(!document.createElement("canvas").getContext)return file;
+  bitmap=await decodeBankImageForOcr(file);
+  if(!bitmap.width||!bitmap.height)throw Error("Dimensions d'image invalides.");
+  const maxSide=2600,scale=Math.min(2,maxSide/Math.max(bitmap.width,bitmap.height),Math.max(1,1800/Math.min(bitmap.width,bitmap.height)));
   const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
-  const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx){bitmap.close?.();return file}
-  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.filter="grayscale(100%) contrast(112%)";ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return file;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.filter="grayscale(100%) contrast(112%)";ctx.drawImage(bitmap.image||bitmap,0,0,canvas.width,canvas.height);
   return canvas;
- }catch{return file}
+ }catch(error){if(await isHeicReceiptImage(file))throw Error("Impossible de convertir cette photo HEIC/HEIF : "+(error?.message||"format non pris en charge"));return file}
+ finally{bitmap?.close?.()}
 }
 function imageCandidatesFromOcrData(data,fileName){
  const rows=imageOcrRows(data),out=[],amountRx=/[-+]?\s*\d[\d\s.,]*[,.]\d{2}/;
@@ -338,39 +360,8 @@ async function loadHeicDecoder(){
  if(!window.heic2any)throw Error("Le convertisseur HEIC est indisponible.");
  return window.heic2any;
 }
-function receiptImageFromBlob(blob){
- return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)});img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne sait pas décoder ce format d'image."))};img.src=url});
-}
-async function decodeReceiptImage(file){
- const isHeic=/heic|heif/i.test((file.type||"")+" "+(file.name||""));
- if(window.createImageBitmap){try{return await createImageBitmap(file)}catch(nativeError){if(!isHeic)try{return await receiptImageFromBlob(file)}catch(imageError){}}}
- if(isHeic){
-  const converter=await loadHeicDecoder();
-  const converted=await converter({blob:file,toType:"image/jpeg",quality:.92});
-  const jpeg=Array.isArray(converted)?converted[0]:converted;
-  if(!jpeg)throw Error("La conversion HEIC n'a produit aucune image.");
-  if(window.createImageBitmap)return await createImageBitmap(jpeg);
-  return await receiptImageFromBlob(jpeg);
- }
- return await receiptImageFromBlob(file);
-}
 async function prepareReceiptImageForOcr(file){
- if(!document.createElement("canvas").getContext)throw Error("Ce navigateur ne peut pas préparer cette image pour la lecture.");
- let bitmap;
- try{
-  bitmap=await decodeReceiptImage(file);
-  if(!bitmap.width||!bitmap.height)throw Error("L'image décodée ne contient aucune dimension valide.");
-  const maxSide=1800,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
-  const canvas=document.createElement("canvas");
-  canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
-  const ctx=canvas.getContext("2d");if(!ctx)throw Error("Préparation de l'image impossible.");
-  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.filter="grayscale(100%) contrast(115%)";ctx.drawImage(bitmap.image||bitmap,0,0,canvas.width,canvas.height);
-  const dataUrl=canvas.toDataURL("image/jpeg",.86);
-  if(!dataUrl||!dataUrl.startsWith("data:image/jpeg;base64,"))throw Error("Conversion de l'image impossible.");
-  canvas.width=1;canvas.height=1;return dataUrl;
- }catch(error){throw Error("Impossible de préparer la photo pour l'OCR : "+(error&&error.message?error.message:"format d'image non pris en charge"))}
- finally{bitmap?.close?.()}
+ return prepareBankImageForOcr(file);
 }
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
 async function processReceiptFile(file,input){
