@@ -148,3 +148,21 @@
 .bep-quick-expense-body .bep-spend-form-note{font-size:13px}
 @media(max-width:480px){.bep-quick-expense-dialog{width:calc(100vw - 20px);max-height:90dvh}.bep-quick-expense-panel{max-height:90dvh}.bep-quick-expense-head{padding:16px}.bep-quick-expense-body{padding:10px 12px max(14px,env(safe-area-inset-bottom))}.bep-quick-expense{right:12px;bottom:max(14px,env(safe-area-inset-bottom));min-height:52px;padding:0 16px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){.bep-quick-expense,.bep-coach-mascot{transition:none}}
+
+/* Keep the simplified form styling when rendered inside the native dialog. */
+.bep-quick-expense-body .bep-spend-quick{display:grid;gap:14px}
+.bep-quick-expense-body .bep-spend-amount{margin:0}
+.bep-quick-expense-body .bep-spend-amount label,.bep-quick-expense-body .bep-spend-basics .field label{display:block;font-size:14px;font-weight:800;line-height:1.4}
+.bep-quick-expense-body .bep-spend-amount input{width:100%;min-height:64px;padding:12px 15px;border:1.5px solid #cfe1d4;border-radius:15px;background:#f7fbf8;color:#174b39;font-size:28px;font-weight:800}
+.bep-quick-expense-body .bep-spend-basics{display:grid;grid-template-columns:1fr;gap:12px}
+.bep-quick-expense-body .bep-spend-basics .field{margin:0}
+.bep-quick-expense-body .bep-spend-basics input{width:100%;min-height:50px;padding:12px;border:1px solid #dce9df;border-radius:12px;font-size:16px}
+.bep-quick-expense-body .bep-spend-category-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.bep-quick-expense-body .bep-spend-category-chips button{min-height:38px;padding:7px 10px;border:1px solid #e0eae3;border-radius:99px;background:#f8faf8;color:#60766a;font-size:12px}
+.bep-quick-expense-body .bep-spend-category-chips button.selected{background:#e7f4eb;border-color:#a9d1b7;color:#1b6848}
+.bep-quick-expense-body .bep-spend-advanced{margin-top:14px;border:1px solid #e5ece6;border-radius:14px;background:#fbfcfb}
+.bep-quick-expense-body .bep-spend-advanced summary{min-height:48px;padding:13px 14px;font-size:14px;font-weight:800}
+.bep-quick-expense-body .bep-spend-advanced-body{display:grid;gap:12px;padding:0 14px 14px}
+.bep-quick-expense-body .bep-spend-advanced-body .field{margin:0}
+.bep-quick-expense-body .bep-spend-submit-row{display:grid;gap:8px;margin-top:14px}
+.bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{width:100%;min-height:54px;border-radius:14px;font-size:16px;font-weight:800}

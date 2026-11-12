@@ -96,7 +96,7 @@ function mountQuickExpenseModal(panel,entry){
  if(!panel||!entry||$("bepQuickExpenseDialog"))return;
  const dialog=document.createElement("dialog");dialog.id="bepQuickExpenseDialog";dialog.className="bep-quick-expense-dialog";dialog.setAttribute("aria-labelledby","bepQuickExpenseTitle");
  dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE RAPIDE</p><h2 id="bepQuickExpenseTitle">Ajouter une dépense</h2><p>Quelques secondes suffisent.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';
- document.body.appendChild(dialog);dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
+ panel.appendChild(dialog);dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
  const open=()=>{if(dialog.open)return;$("purchaseSubmit")?.classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");dialog.showModal();setTimeout(()=>$("purchaseAmount")?.focus(),80)};
  const close=()=>{if(dialog.open)dialog.close()};
  $("bepQuickExpense")?.addEventListener("click",open);
