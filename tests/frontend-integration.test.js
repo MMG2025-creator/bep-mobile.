@@ -23,7 +23,7 @@ test("monthly history and savings DOM references exist in both HTML builds", () 
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, file + " contains duplicate IDs");
     const required = [
-      "monthlyHistoryCard", "monthlyBudgetMonth", "monthlyBudgetActualTotal",
+      "monthlyHistoryCard", "monthlyBudgetMonth", "monthlyBudgetActualTotal", "monthlyBudgetActualVariance",
       "monthlyBudgetItemSubmit", "monthlyBudgetItemCancel", "monthlyBudgetItems",
       "savingsCapital", "savingsGoalCards", "savingsOperationForm",
       "savingsRewards", "savingsProjectionTotal", "customSavingsRate", "goalsList"
