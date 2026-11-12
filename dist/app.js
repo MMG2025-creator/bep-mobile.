@@ -284,9 +284,9 @@ async function showPurchaseAdvice(p){
 }
 function parseCoachHypothetical(question){
  const q=String(question||"");
- if(!/\\b(disponible|reste|reste[- ]?à[- ]?vivre|combien)\\b/i.test(q))return null;
- const number="(\\\\d{1,3}(?:[ \\u00a0\\u202f]\\\\d{3})*(?:[,.]\\\\d{1,2})?|\\\\d+(?:[,.]\\\\d{1,2})?)";
- const amount=label=>{const m=q.match(new RegExp(label+"\\\\D{0,45}("+number+")\\\\s*€?","i"));if(!m)return null;const n=Number(m[1].replace(/[ \\u00a0\\u202f]/g,"").replace(",", "."));return Number.isFinite(n)&&n>=0?n:null};
+ if(!/\b(disponible|reste|reste[- ]?à[- ]?vivre|combien)\b/i.test(q))return null;
+ const number="(\\d{1,3}(?:[ \\u00a0\\u202f]\\d{3})*(?:[,.]\\d{1,2})?|\\d+(?:[,.]\\d{1,2})?)";
+ const amount=label=>{const m=q.match(new RegExp(label+"\\D{0,45}("+number+")\\s*€?","i"));if(!m)return null;const n=Number(m[1].replace(/[ \\u00a0\\u202f]/g,"").replace(",", "."));return Number.isFinite(n)&&n>=0?n:null};
  const income=amount("revenus?"),charges=amount("charges?");
  return income===null||charges===null?null:{income,charges,available:Math.round((income-charges)*100)/100};
 }
