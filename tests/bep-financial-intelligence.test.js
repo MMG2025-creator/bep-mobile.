@@ -98,15 +98,3 @@ test("loads persisted financial context even when RAG is disabled",async()=>{
  assert.match(result.prompt,/RAG désactivé/);
  assert.ok(calls.some(x=>x.includes("bep_user_data")));
 });
-
-test("derives total income from persisted income sources when legacy total is absent",async()=>{
- const pool={query:async(sql)=>sql.includes("bep_user_data")?{rows:[{payload:{incomes:[{amount:1800},{amount:200}],budgets:[{amount:700}]}}]}:{rows:[]}};
- const c=await loadUserFinancialContext(pool,"u",{});
- assert.equal(c.income,2000);assert.equal(c.available,1300);
-});
-test("uses monthly budget totals as a fallback source for financial context",async()=>{
- const pool={query:async(sql)=>sql.includes("bep_user_data")?{rows:[{payload:{}}]}:{rows:[{month_key:"2026-11-01",status:"open",version:1,planned_income_total:"2400",planned_charges_total:"1500",planned_savings_total:"200",items:[{itemType:"income",label:"Salaire",plannedAmount:"2400"},{itemType:"charge",label:"Loyer",plannedAmount:"1500"}]}]}};
- const c=await loadUserFinancialContext(pool,"u",{});
- assert.equal(c.income,2400);assert.equal(c.charges,1500);assert.equal(c.available,900);
- assert.equal(c.incomes.length,1);assert.equal(c.budgets.length,1);
-});

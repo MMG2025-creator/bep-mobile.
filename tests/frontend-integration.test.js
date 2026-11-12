@@ -248,3 +248,7 @@ test("production API initialization and purchase adviser use a single valid serv
   assert.match(server, /la seule référence financière est le montant restant disponible/);
   assert.match(server, /sans bloquer son enregistrement/i);
 });
+
+test("Coach hypothetical calculations are deterministic and synchronized in source and published bundle",()=>{
+ for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/function parseCoachHypothetical/);assert.match(js,/Ces montants sont ceux de ton hypothèse/);assert.match(js,/informations enregistrées dans ton espace BEP/);}
+});
