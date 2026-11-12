@@ -168,7 +168,7 @@ async function resolveConflict(choice){
    await setBaselineFor(user,remote);
    await serializeQueue(async()=>{await clear(key)});
    window.dispatchEvent(new CustomEvent("bep:offline-use-remote",{detail:{payload:remote}}));
-   window.dispatchEvent(new CustomEvent("bep:offline-synced"));
+   window.dispatchEvent(new CustomEvent("bep:offline-conflict-resolved"));
    return true;
   }
   await serializeQueue(async()=>{
@@ -221,6 +221,7 @@ function setupConflictDialog(){
  laterButton?.addEventListener("click",close);
  reopen?.addEventListener("click",()=>{if(!dialog.open)dialog.showModal()});
  window.addEventListener("bep:offline-synced",()=>{close();if(banner)banner.hidden=true});
+ window.addEventListener("bep:offline-conflict-resolved",()=>{close();if(banner)banner.hidden=true});
  window.addEventListener("bep:offline-sync-error",event=>{if(dialog.open&&status)status.textContent=event.detail?.message||"Synchronisation en attente."});
  if(conflictDialogPending&&!dialog.open)dialog.showModal();
 }
