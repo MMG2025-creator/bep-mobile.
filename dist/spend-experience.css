@@ -349,69 +349,37 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #incomeRows .rowitem.is-selected,#budgetRows .rowitem.is-selected,#monthlyBudgetItems .monthly-budget-row.is-selected{background:#eef8f1;outline:1px solid #a9d6ba}
 #incomeRows .rowitem,#budgetRows .rowitem,#monthlyBudgetItems .monthly-budget-row{touch-action:pan-y;user-select:none;-webkit-user-select:none}
 
-/* Saved income/charge rows: override the legacy 3-column budget rules.
-   Keep the amount/actions group in the final grid column, exactly like Expenses. */
+
+/* Final saved budget rows: full-width row with the action group pinned right.
+   Neutralize the legacy three-column budget grid for the purchase-row structure. */
 #budgetModuleIncome #incomeRows .saved-income-row,
 #budgetModuleCharges .charges-card #budgetRows .saved-charge-row{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  align-items:center;
-  column-gap:12px;
-  min-width:0;
+  display:flex !important;flex-flow:row nowrap !important;align-items:center !important;
+  justify-content:stretch !important;width:100% !important;min-width:0 !important;
+  gap:12px !important;box-sizing:border-box !important;
 }
 #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-main,
 #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-main{
-  grid-column:1;
-  min-width:0;
-  width:auto;
-  flex:initial;
+  display:flex !important;flex:1 1 auto !important;min-width:0 !important;width:auto !important;
 }
 #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions,
 #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions{
-  grid-column:2;
-  display:grid;
-  grid-template-columns:auto 32px 32px;
-  align-items:center;
-  justify-items:center;
-  justify-content:end;
-  gap:7px;
-  min-width:max-content;
-  flex-wrap:nowrap;
+  display:flex !important;flex:0 0 auto !important;align-items:center !important;
+  justify-content:flex-end !important;gap:7px !important;width:max-content !important;
+  min-width:max-content !important;margin-left:auto !important;white-space:nowrap !important;
 }
 #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions>b,
 #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions>b{
-  min-width:0;
-  text-align:right;
-  white-space:nowrap;
-  font-variant-numeric:tabular-nums;
-  font-size:13px;
+  display:block !important;flex:0 0 auto !important;min-width:0 !important;margin:0 !important;
+  text-align:right !important;white-space:nowrap !important;font-variant-numeric:tabular-nums !important;
 }
 #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions button,
 #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions button{
-  width:32px;
-  height:32px;
-  min-width:32px;
-  padding:0;
+  flex:0 0 28px !important;width:28px !important;min-width:28px !important;height:28px !important;padding:0 !important;
 }
 @media(max-width:640px){
   #budgetModuleIncome #incomeRows .saved-income-row,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row{
-    grid-template-columns:minmax(0,1fr) auto;
-    column-gap:8px;
-  }
+  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row{gap:7px !important}
   #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions{
-    grid-template-columns:auto 28px 28px;
-    gap:4px;
-  }
-  #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions button,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions button{
-    width:28px;
-    height:28px;
-    min-width:28px;
-  }
-  #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions>b,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions>b{
-    font-size:12px;
-  }
+  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions{gap:4px !important}
 }
