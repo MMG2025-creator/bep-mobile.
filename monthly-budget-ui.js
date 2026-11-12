@@ -65,6 +65,8 @@
   }
   let loading = false;
   let authEpoch = 0;
+  let actualsRequestId = 0;
+  let actualsRefreshPending = false;
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   function financialPosition() {
@@ -87,6 +89,10 @@
   const setBusy = value => {
     loading = value;
     card.querySelectorAll("button,input,select").forEach(el => { el.disabled = value; });
+    if (!value && actualsRefreshPending) {
+      actualsRefreshPending = false;
+      Promise.resolve().then(refreshActuals);
+    }
   };
   async function api(path, options = {}) {
     const response = await fetch(API + path, {
@@ -223,6 +229,7 @@
   }
   async function loadMonth(monthKey) {
     const epoch = authEpoch;
+    actualsRequestId++;
     setBusy(true);
     try {
       const [data, actualData] = await Promise.all([
@@ -256,6 +263,28 @@
       status("Impossible de charger ce mois : " + error.message, true);
     } finally { setBusy(false); }
   }
+  async function refreshActuals() {
+    if (loading) { actualsRefreshPending = true; return; }
+    if (!window.bepSignedIn || !current || !current.monthKey) return;
+    const epoch = authEpoch;
+    const requestId = ++actualsRequestId;
+    const monthKey = current.monthKey;
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    try {
+      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey) +
+        "/actuals?timeZone=" + encodeURIComponent(timeZone));
+      if (requestId !== actualsRequestId || epoch !== authEpoch || !window.bepSignedIn ||
+          !current || current.monthKey !== monthKey) return;
+      actuals = data;
+      renderActuals();
+      $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
+    } catch (error) {
+      if (requestId === actualsRequestId && epoch === authEpoch && current?.monthKey === monthKey) {
+        status("Actualisation des dépenses réelles impossible : " + error.message, true);
+      }
+    }
+  }
+
   async function refresh() {
     if (!window.bepSignedIn || loading) return;
     const epoch = authEpoch;
@@ -279,6 +308,8 @@
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
   window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
+  window.addEventListener("bep:state-rendered", refreshActuals);
+  window.addEventListener("bep:offline-synced", refreshActuals);
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
     if (loading) return;
@@ -442,6 +473,7 @@
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
+    actualsRequestId++;
     if (window.bepSignedIn) refresh();
     else { months = []; current = null; items = []; actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] }; renderMonths(); renderActuals(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
