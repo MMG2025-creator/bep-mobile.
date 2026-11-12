@@ -58,3 +58,13 @@ test("monthly-to-savings bridge waits for server confirmation before changing lo
       file + " must calculate savings rates from the imported monthly income");
   }
 });
+
+test("legacy module synchronization preserves manually managed monthly rows", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /const managed = new Set\(\["legacy-income", "legacy-budget", "legacy-savings-goal"\]\)/,
+      file + " must only replace rows owned by legacy modules");
+    assert.match(js, /const custom = items\.filter\(x => !managed\.has\(x\.metadata\?\.source\)\)/,
+      file + " must preserve manually created monthly rows");
+  }
+});
