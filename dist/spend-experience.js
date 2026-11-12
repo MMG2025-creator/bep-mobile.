@@ -57,9 +57,9 @@ radar.insertBefore(score,entry?.nextSibling||null);panel.insertBefore(challenge,
 nav.querySelectorAll("button").forEach((b,index)=>{b.addEventListener("click",()=>setTab(b.dataset.spendTab));b.addEventListener("keydown",event=>{if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key))return;event.preventDefault();const tabs=[...nav.querySelectorAll("button")];const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;tabs[next].click();tabs[next].focus();});});
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
-form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();updateBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
-const rows=$("purchaseRows");if(rows&&"MutationObserver"in window)new MutationObserver(()=>{updateHero();updateBalance()}).observe(rows,{childList:true,subtree:true});
-renderChallenges();updateHero();updateBalance();updateScore();
+form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
+const rows=$("purchaseRows");if(rows&&"MutationObserver"in window)new MutationObserver(()=>{updateHero();renderBalance()}).observe(rows,{childList:true,subtree:true});
+renderChallenges();updateHero();renderBalance();updateScore();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
