@@ -84,6 +84,20 @@ test("legacy module synchronization preserves manually managed monthly rows", ()
   }
 });
 
+test("first monthly snapshot requires explicit confirmation before importing legacy data", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    const start = js.indexOf('$("monthlyBudgetCreateForm").onsubmit');
+    const end = js.indexOf('$("monthlyBudgetItemForm").onsubmit', start);
+    assert.ok(start >= 0 && end > start, file + " month creation handler is missing");
+    const create = js.slice(start, end);
+    const confirm = create.indexOf("window.confirm(confirmation)");
+    const post = create.indexOf('api("/api/budgets/months"');
+    assert.ok(confirm >= 0 && post > confirm, file + " must confirm the one-time legacy import before creating the first snapshot");
+    assert.match(create, /Cette copie sera indépendante/);
+  }
+});
+
 test("monthly load preserves a failed cross-module sync warning", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
