@@ -2,7 +2,7 @@ name: Savings security checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "feature/savings-redesign-v1-pr"]
   push:
     branches: [main, "security/**", "feature/savings-redesign-v1-pr"]
 
