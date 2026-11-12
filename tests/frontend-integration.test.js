@@ -18,11 +18,10 @@ test("published frontend assets are synchronized with source", () => {
     const html = read(file);
     for (const asset of ["runtime-config.js", "financial-engine.js", "app.js", "styles.css",
       "spend-experience.css", "spend-experience.js", "monthly-budget-ui.js"]) {
-      assert.match(html, new RegExp("./" + asset.replace(".", "\\\\.") + "\\?v=[^\\\\"']+"),
-        file + " must reference versioned " + asset);
+      assert.ok(html.includes("./" + asset + "?v="), file + " must reference versioned " + asset);
     }
   }
-  const assetRefs = file => [...read(file).matchAll(/\\.\\/(?:runtime-config|financial-engine|app|spend-experience|monthly-budget-ui)\\.js\\?v=[^"']+|\\.\\/(?:styles|spend-experience)\\.css\\?v=[^"']+/g)].map(match => match[0]);
+  const assetRefs = file => [...read(file).matchAll(/(?:src|href)="\.\/([^"]+\?v=[^"]+)"/g)].map(match => match[1]);
   assert.deepEqual(assetRefs("index.html"), assetRefs("dist/index.html"),
     "source and dist HTML must load the same asset versions");
 });
