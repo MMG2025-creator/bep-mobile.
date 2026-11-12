@@ -33,6 +33,87 @@ The API depends on these tables. During the production rollout:
 
 Do not run DDL from application startup. Do not execute the migration before the matching code is ready. Keep the migration additive and preserve the legacy JSONB payload.
 
+## Production backup and restore protocol
+
+This section is an operational procedure, not authorization to access production. Execute it only from an approved operator workstation or managed deployment runner with least-privilege credentials. Never paste a production connection string into chat, commit it, print it, or place it in shell history.
+
+### A. Preconditions and change record
+
+1. Name the release operator and a second reviewer. Record the intended application commit, migration filename, production database identifier, PostgreSQL major version, UTC start time, and change/ticket reference.
+2. Confirm the production API and database are healthy. Confirm the database is PostgreSQL 16-compatible with the tested migration. If health, storage, connection capacity, or backup status is uncertain, stop.
+3. Confirm the exact application revision to be released is the same revision whose migration and tests were reviewed. Confirm the PR's required checks are green on the exact head SHA.
+4. Announce a short change window. Prevent concurrent schema changes by other operators. The application can remain online for a normal `pg_dump`; do not run destructive maintenance during the backup.
+5. Confirm sufficient free storage for the dump plus a second restored copy, and a secure destination outside the production database host/account.
+
+### B. Create and verify a recoverable backup
+
+Use the managed database provider's supported snapshot/backup mechanism where available, and additionally create a logical backup when permitted. A provider snapshot is not considered restorable until a restore drill succeeds.
+
+For a logical backup, load the connection string from the approved secret manager into the process environment (not a command-line argument). Example commands:
+
+```bash
+set -euo pipefail
+umask 077
+: "${DATABASE_URL:?DATABASE_URL must be injected from the secret manager}"
+BACKUP_FILE="bep-prod-before-monthly-budget-$(date -u +%Y%m%dT%H%M%SZ).dump"
+pg_dump --dbname="$DATABASE_URL" --format=custom --no-owner --no-acl --file="$BACKUP_FILE"
+test -s "$BACKUP_FILE"
+pg_restore --list "$BACKUP_FILE" >/dev/null
+sha256sum "$BACKUP_FILE" > "$BACKUP_FILE.sha256"
+```
+
+- Run with a PostgreSQL client version compatible with the server.
+- Copy the dump and checksum to the approved encrypted, access-controlled off-host backup location. Do not rely on a local workstation copy as the only backup.
+- Verify the remote object exists, its byte size is non-zero, and its SHA-256 matches the locally generated checksum after transfer.
+- Record backup object identifier, checksum, size, timestamp, retention/expiry, and operator in the change record. Keep the pre-release backup under the organization's normal retention policy.
+- A successful `pg_dump` or `pg_restore --list` proves archive readability only; it does not prove that a restore is usable.
+
+### C. Mandatory isolated restore drill
+
+Restore into a new, isolated, access-restricted database on the same PostgreSQL major version. Never restore over production as a test.
+
+```bash
+set -euo pipefail
+: "${RESTORE_DATABASE_URL:?RESTORE_DATABASE_URL must target a disposable empty database}"
+pg_restore --dbname="$RESTORE_DATABASE_URL" --no-owner --no-acl --exit-on-error "$BACKUP_FILE"
+```
+
+After restore:
+- Confirm the restore command exits successfully and the database accepts connections.
+- Compare key object inventory and row counts with the source backup metadata, including `bep_users`, `bep_user_data`, `user_sessions`, and all existing application tables. Do not export or expose personal row contents in the release log.
+- Verify application-critical constraints and indexes exist; run read-only integrity checks approved for the production schema.
+- Start the exact candidate application revision against the restored clone using isolated credentials and a non-production origin. Verify login/session behavior with a dedicated test account, `/api/health`, existing `/api/data` read/write compatibility, and monthly-budget list/detail/create/update/close/reopen flows. Delete the disposable clone and its credentials after the drill according to policy.
+- Record restore duration, validation results, any warnings, and reviewer sign-off. If any step fails, the backup is not accepted and release is blocked.
+
+### D. Migration and deployment sequence
+
+1. Reconfirm backup checksum, off-host availability, and successful restore-drill sign-off immediately before the change window.
+2. Confirm the candidate code is ready and the additive migration has been reviewed. This migration references the existing `bep_users` table; verify that prerequisite exists before execution.
+3. Apply `database/migrations/20261111_monthly_budget_history.sql` exactly once through the approved production database access path, with stop-on-error enabled. Example:
+
+```bash
+set -euo pipefail
+: "${DATABASE_URL:?DATABASE_URL must be injected from the secret manager}"
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f database/migrations/20261111_monthly_budget_history.sql
+```
+
+4. Verify the three tables `bep_monthly_budgets`, `bep_monthly_budget_items`, `bep_budget_audit_log` and their expected indexes/constraints exist. Confirm the migration transaction committed and no partial DDL remains.
+5. Deploy only the application revision matching the reviewed migration. Do not deploy the frontend or API independently if they would be incompatible.
+6. Run authenticated smoke tests using a dedicated authorized test account. Verify the new monthly endpoints, cross-user isolation, legacy `/api/data` behavior, Savings synchronization, and that existing users' data is unchanged. Confirm no sensitive data is emitted in logs.
+7. Monitor API/database errors, latency, connection pool saturation and user reports throughout the observation window. Record the final result and reviewer sign-off.
+
+### E. Stop, rollback and recovery decision
+
+- **Before migration:** cancel the release; no database action is needed.
+- **Migration fails:** stop deployment. Because the migration is wrapped in a transaction, verify the transaction rolled back and the three new tables were not partially installed. Capture logs without secrets and investigate; do not improvise manual DDL.
+- **Migration succeeds but application deployment or smoke tests fail:** roll the application back to the previous known-good revision while leaving the additive tables in place. The previous application is expected to ignore these new tables. Do not drop tables or delete monthly/audit data as a first response.
+- **Data corruption or confirmed database-wide integrity issue:** declare an incident, stop writes if required by the incident commander, and choose recovery point/time with the data owner. Restore the verified backup to a separate database first, validate it, then perform a separately approved controlled cutover. Do not overwrite production automatically; account for writes made after the backup and reconcile them before any recovery cutover.
+- Record decision maker, recovery point, data-loss window, application revision, and verification evidence. A production restore/cutover requires explicit change authorization.
+
+### F. Required release evidence
+
+The release record must contain: exact application SHA; PR and CI run links; migration checksum; production database identifier (not its URL); backup timestamp/object ID/size/SHA-256; restore-drill target and outcome/duration; migration start/end and outcome; smoke-test results; monitoring window; operator and reviewer approvals; and final go/no-go decision. Keep credentials, tokens, user payloads and personally identifying data out of this record.
+
 ## Initial user data and accounting rules
 
 - The first monthly snapshot is created only after the user explicitly chooses a month and confirms the one-time import (including the number of lines and the fact that the copy is independent); an empty month also requires confirmation.
