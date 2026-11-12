@@ -19,16 +19,15 @@ test("Madame Michu readability pass is present in source and published styles", 
   }
 });
 
-test("budget exposes a direct, labelled route to recording a new expense", () => {
+test("budget modules do not expose an expense shortcut", () => {
   for (const file of ["index.html", "dist/index.html"]) {
     const html = read(file);
-    assert.match(html, /class="budget-quick-actions"/);
-    assert.match(html, /data-goto="purchases">Enregistrer une dépense/);
+    assert.doesNotMatch(html, /class="budget-quick-actions"/);
+    assert.doesNotMatch(html, /data-goto="purchases">Enregistrer une dépense/);
     assert.match(html, /aria-live="polite" aria-atomic="true"/);
-    assert.match(html, /ui-polish\.css\?v=[23]/);
+    assert.match(html, /ui-polish\\.css\\?v=[23]/);
   }
 });
-
 test("expense entry explains its effect on the real-time available budget", () => {
   for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
     const js = read(file);
