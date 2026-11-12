@@ -351,32 +351,32 @@ async function prepareReceiptImageForOcr(file){
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
 async function processReceiptFile(file,input){
  if(!file)return;
- const status=$("receiptStatus");status.textContent="Préparation de la photo…";
+ const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
  let worker;
  try{
   if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw Error("Format non pris en charge. Utilise une photo JPG, PNG ou WebP.");
-  if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Prends une photo en résolution standard ou importe une version compressée.");
+  if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Limite : 12 Mo.");
+  if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
   const ocrImage=await prepareReceiptImageForOcr(file);
-  status.textContent="Lecture du ticket sur cet appareil…";
-  worker=await window.Tesseract.createWorker("fra",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="Lecture du ticket : "+Math.round((m.progress||0)*100)+" %"}});
+  status.textContent="Lecture du justificatif sur cet appareil…";
+  worker=await window.Tesseract.createWorker("fra+eng",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="Lecture du justificatif : "+Math.round((m.progress||0)*100)+" %"}});
   const result=await worker.recognize(ocrImage);
-  const text=String(result.data?.text||"").trim();
-  if(!text)throw Error("Aucun texte lisible. Tu peux saisir les informations manuellement.");
-  const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-  const merchant=lines.find(x=>x.length>2&&x.length<70&&!/^(ticket|facture|reçu|date|caisse|siret|tva|total|merci|carte|cb|visa|mastercard)/i.test(x));
-  const totalLines=lines.filter(x=>/(total\s*(?:ttc|à payer)?|net à payer|montant total|à régler)/i.test(x));
-  const amountRx=/\d[\d\s.,]*[,.]\d{2}/g;let amountText="";
-  for(const line of [...totalLines].reverse()){const found=line.match(amountRx);if(found?.length){amountText=found[found.length-1];break}}
-  if(!amountText){const all=text.match(amountRx);if(all?.length)amountText=all[all.length-1]}
-  const amount=amountText?imageMoney(amountText):NaN;
-  if(merchant&&!$("merchant").value.trim())$("merchant").value=merchant.slice(0,70);
-  if(Number.isFinite(amount)&&amount>0)$("purchaseAmount").value=amount.toFixed(2);
-  if(!$("purchaseCategory").value.trim())$("purchaseCategory").value=imageCategory(text);
+  const rawText=String(result.data?.text||"").trim();
+  if(!rawText)throw Error("Aucun texte lisible. Tu peux saisir les informations manuellement.");
+  const extracted=window.BEPReceiptOCR.extract(rawText);
+  if(extracted.merchant&&!$("merchant").value.trim())$("merchant").value=extracted.merchant.slice(0,70);
+  if(extracted.city&&$("city")&&!$("city").value.trim())$("city").value=extracted.city.slice(0,60);
+  if(Number.isFinite(extracted.amount)&&extracted.amount>0)$("purchaseAmount").value=extracted.amount.toFixed(2);
+  if(extracted.date&&$("purchaseDate"))$("purchaseDate").value=extracted.date;
+  if(extracted.category&&(!$("purchaseCategory").value.trim()||$("purchaseCategory").value==="Autres dépenses"))$("purchaseCategory").value=extracted.category;
   $("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}));
   $("purchaseAmount").dispatchEvent(new Event("input",{bubbles:true}));
-  receiptCaptureText="Preuve d’achat importée · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");
-  status.textContent=(Number.isFinite(amount)&&amount>0?"Montant proposé : "+amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(merchant?"Enseigne proposée : "+merchant+". ":"")+"Vérifie et corrige les champs avant d’enregistrer. La photo n’est pas conservée par BEP.";
+  const confidenceLabel=v=>v>=.85?"élevée":v>=.65?"moyenne":"faible";
+  const fields=[["commerçant",extracted.confidence.merchant],["montant",extracted.confidence.amount],["date",extracted.confidence.date],["catégorie",extracted.confidence.category]].map(([name,value])=>name+" : "+confidenceLabel(value)).join(" · ");
+  receiptCaptureText="Preuve d’achat importée · "+(extracted.merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(extracted.amount)?extracted.amount.toFixed(2)+" €":"montant à vérifier");
+  const dateLabel=extracted.date?"Date proposée : "+new Date(extracted.date+"T12:00:00").toLocaleDateString("fr-FR")+". ":"Date non identifiée. ";
+  status.textContent=(Number.isFinite(extracted.amount)&&extracted.amount>0?"Montant proposé : "+extracted.amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(extracted.merchant?"Enseigne : "+extracted.merchant+". ":"")+(extracted.city?"Ville : "+extracted.city+". ":"")+dateLabel+"Confiance — "+fields+". Vérifie et corrige chaque champ avant d’enregistrer. La photo n’est pas conservée par BEP."+(extracted.ambiguous?" Plusieurs montants ont été détectés : contrôle le total.":"");
  }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
  finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
 }
@@ -454,9 +454,11 @@ function setPurchaseFormTitle(isEditing){
  if(heading)heading.textContent=isEditing?"Modifier ma dépense":"Ajouter une dépense";
  if(intro)intro.textContent=isEditing?"Modifie les informations de ton achat puis enregistre les changements.":"Trois informations suffisent. Le reste est facultatif.";
 }
-function editPurchase(id){const p=state.expenses.find(x=>x.id===id);if(!p)return;editingPurchaseId=id;setPurchaseFormTitle(true);if($("purchaseId"))$("purchaseId").value=id;if($("merchant"))$("merchant").value=p.label||"";if($("purchaseNotes"))$("purchaseNotes").value=p.notes||"";if($("city"))$("city").value=p.city||"";if($("purchaseAmount"))$("purchaseAmount").value=p.amount??"";if($("purchaseCategory")){$("purchaseCategory").value=p.category||"";$("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}))}if($("psychology"))$("psychology").value=p.psychology||"reflective";if($("moodAfter"))$("moodAfter").value=p.moodAfter||"neutral";if($("need"))$("need").value=p.need||"yes";if($("delay"))$("delay").value=p.delay||"now";if($("purchaseSubmit")){$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer les modifications';$("purchaseSubmit").classList.remove("hidden")}if($("purchaseNew"))$("purchaseNew").classList.add("hidden");if($("cancelEdit"))$("cancelEdit").classList.remove("hidden");setPurchaseMode("manual");if(window.BEP_OPEN_ENTRY_DIALOG)window.BEP_OPEN_ENTRY_DIALOG("purchase");else $("purchaseForm")?.scrollIntoView({behavior:"smooth",block:"center"})}
-function cancelPurchaseEdit(){editingPurchaseId=null;receiptCaptureText="";setPurchaseFormTitle(false);$("purchaseForm").reset();if($("purchaseId"))$("purchaseId").value="";$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("purchaseSubmit").classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");$("cancelEdit").classList.add("hidden")}
-if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"))$("purchaseNew").onclick=()=>{editingPurchaseId=null;setPurchaseFormTitle(false);$("purchaseForm").reset();if($("purchaseId"))$("purchaseId").value="";$("purchaseSubmit").classList.remove("hidden");$("purchaseNew").classList.add("hidden");$("cancelEdit").classList.add("hidden");$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("merchant")?.focus()};
+function localPurchaseDate(value){const d=value?new Date(value):new Date();if(!Number.isFinite(d.getTime()))return "";return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+if($("purchaseDate")&&!$("purchaseDate").value)$("purchaseDate").value=localPurchaseDate();
+function editPurchase(id){const p=state.expenses.find(x=>x.id===id);if(!p)return;editingPurchaseId=id;setPurchaseFormTitle(true);if($("purchaseId"))$("purchaseId").value=id;if($("purchaseDate"))$("purchaseDate").value=localPurchaseDate(p.at);if($("merchant"))$("merchant").value=p.label||"";if($("purchaseNotes"))$("purchaseNotes").value=p.notes||"";if($("city"))$("city").value=p.city||"";if($("purchaseAmount"))$("purchaseAmount").value=p.amount??"";if($("purchaseCategory")){$("purchaseCategory").value=p.category||"";$("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}))}if($("psychology"))$("psychology").value=p.psychology||"reflective";if($("moodAfter"))$("moodAfter").value=p.moodAfter||"neutral";if($("need"))$("need").value=p.need||"yes";if($("delay"))$("delay").value=p.delay||"now";if($("purchaseSubmit")){$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer les modifications';$("purchaseSubmit").classList.remove("hidden")}if($("purchaseNew"))$("purchaseNew").classList.add("hidden");if($("cancelEdit"))$("cancelEdit").classList.remove("hidden");setPurchaseMode("manual");if(window.BEP_OPEN_ENTRY_DIALOG)window.BEP_OPEN_ENTRY_DIALOG("purchase");else $("purchaseForm")?.scrollIntoView({behavior:"smooth",block:"center"})}
+function cancelPurchaseEdit(){editingPurchaseId=null;receiptCaptureText="";setPurchaseFormTitle(false);$("purchaseForm").reset();if($("purchaseDate"))$("purchaseDate").value=localPurchaseDate();if($("purchaseId"))$("purchaseId").value="";$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("purchaseSubmit").classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");$("cancelEdit").classList.add("hidden")}
+if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"))$("purchaseNew").onclick=()=>{editingPurchaseId=null;setPurchaseFormTitle(false);$("purchaseForm").reset();if($("purchaseDate"))$("purchaseDate").value=localPurchaseDate();if($("purchaseId"))$("purchaseId").value="";$("purchaseSubmit").classList.remove("hidden");$("purchaseNew").classList.add("hidden");$("cancelEdit").classList.add("hidden");$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("merchant")?.focus()};
 if($("selectAllPurchases"))$("selectAllPurchases").onclick=()=>{const items=(state.expenses||[]);if(items.length&&purchaseSelection.size===items.length)purchaseSelection.clear();else items.forEach(p=>purchaseSelection.add(p.id));render()};if($("cancelPurchaseSelection"))$("cancelPurchaseSelection").onclick=()=>{purchaseSelectionMode=false;purchaseSelection.clear();render()};if($("deleteSelectedPurchases"))$("deleteSelectedPurchases").onclick=async()=>{const ids=new Set(purchaseSelection);if(!ids.size)return;if(!(await (window.BEP_CONFIRM_ACTION?window.BEP_CONFIRM_ACTION("Cette action supprimera "+ids.size+" achat(s), sans modifier les revenus ni les charges.","Supprimer la sélection"):Promise.resolve(confirm("Supprimer définitivement les "+ids.size+" achats sélectionnés ? Cette action ne modifiera pas le budget ni les revenus.")))))return;state.expenses=(state.expenses||[]).filter(p=>!ids.has(p.id));if(ids.has(editingPurchaseId))cancelPurchaseEdit();purchaseSelection.clear();purchaseSelectionMode=false;save();notify(ids.size+" achat(s) supprimé(s)")};
 $("purchaseForm").onsubmit=e=>{
  e.preventDefault();
@@ -467,7 +469,7 @@ $("purchaseForm").onsubmit=e=>{
  if($("purchaseCategory"))$("purchaseCategory").required=false;
  const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};
  const purchaseLabel=label||previous.label||"";
- const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:editingPurchaseId?(previous.at||new Date().toISOString()):new Date().toISOString()};
+ const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:(()=>{const date=$("purchaseDate")?.value||localPurchaseDate();return date?new Date(date+"T12:00:00").toISOString():new Date().toISOString()})()};
  const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice();
  if(wasEditing)state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x);else state.expenses.unshift(p);
  if(save()===false){state.expenses=beforeExpenses;return}
