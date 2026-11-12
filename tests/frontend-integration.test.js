@@ -21,10 +21,10 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./app.js?v=101"));
   assert.ok(read("index.html").includes("./styles.css?v=82"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=82"));
-  assert.ok(read("index.html").includes("./spend-experience.css?v=8"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=8"));
-  assert.ok(read("index.html").includes("./spend-experience.js?v=8"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=8"));
+  assert.ok(read("index.html").includes("./spend-experience.css?v=9"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=9"));
+  assert.ok(read("index.html").includes("./spend-experience.js?v=9"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=9"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=6"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=6"));
 });
@@ -246,4 +246,16 @@ test("production API initialization and purchase adviser use a single valid serv
   assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
   assert.match(server, /la seule référence financière est le montant restant disponible/);
   assert.match(server, /sans bloquer son enregistrement/i);
+});
+
+
+test("income entry actions mount as native modal dialogs with valid ID selectors", () => {
+  const js = read("spend-experience.js");
+  const css = read("spend-experience.css");
+  assert.match(js, /\["income"[^\]]+"#incomeEditorDetails"\]/);
+  assert.match(js, /\["income-checkup"[^\]]+"#incomeCheckupDetails"\]/);
+  assert.match(js, /document\.querySelector\(selector\)/);
+  assert.match(js, /dialog\.showModal\(\)/);
+  assert.match(css, /#budgetModuleIncome \.income-card/);
+  assert.match(css, /#budgetModuleIncome \.bep-entry-dialog/);
 });
