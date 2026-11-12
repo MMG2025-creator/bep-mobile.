@@ -352,7 +352,7 @@ function attachLongPressSelection(containerId,kind,selection,modeSetter,removeSe
    if(!check){check=document.createElement("input");check.type="checkbox";check.dataset.multiCheck="";check.className="multi-select-check";check.setAttribute("aria-label","Sélectionner");row.prepend(check)}
    check.checked=selection.has(id);
    check.onchange=()=>{if(check.checked)selection.add(id);else selection.delete(id);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)};
-  }else check?.remove();
+  }else{check?.remove();row.classList.remove("has-multi-check")}
   if(row.dataset.multiBound==="1")return;
   row.dataset.multiBound="1";
   let timer=null,startedAt=0;
