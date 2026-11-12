@@ -1,5 +1,6 @@
 "use strict";
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),bcrypt=require("bcryptjs");
+const {rollbackAndRespond}=require("./transaction-guard");
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null;
 const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.GOOGLE_REDIRECT_URI&&process.env.SESSION_SECRET);
@@ -124,8 +125,9 @@ app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  }catch(e){if(quota)await releaseBepAiQuota(req.session.user.id,quota.month).catch(()=>{});res.status(400).json({message:e.message||"IA indisponible."})}});
 app.get("/api/coach/knowledge",auth,async(req,res)=>{try{const r=await pool.query("SELECT id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider,review_status,created_at FROM bep_user_coach_knowledge WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows.map(x=>({id:x.id,kind:x.kind,category:x.category,title:x.title,detail:x.detail,priority:x.priority,confidence:x.confidence,evidence:x.evidence,action:x.action,valid_until:x.valid_until,provider:x.source_provider,status:x.review_status,created_at:x.created_at}))})}catch(e){console.error("Coach knowledge read failed",e.message);res.status(500).json({message:"Base de connaissances indisponible."})}});
 app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.items,provider=String(req.body?.source_provider||"other");if(!Array.isArray(items)||items.length<1||items.length>100||!["chatgpt","gemini","claude","mistral","other"].includes(provider))return res.status(400).json({message:"Import BEP invalide."});const client=await pool.connect();let inserted=0;try{await client.query("BEGIN");for(const x of items){const kind=x?.kind==="recommendation"?"recommendation":x?.kind==="knowledge"?"knowledge":null,category=String(x?.category||"other"),title=String(x?.title||"").trim().slice(0,120),detail=String(x?.detail||"").trim().slice(0,1500),priority=["low","medium","high"].includes(x?.priority)?x.priority:"medium",confidence=["low","medium","high"].includes(x?.confidence)?x.confidence:"low",externalId=String(x?.id||"").trim().slice(0,80);const allowed=kind==="recommendation"?["budget","spending","savings","debt","behavior","other"]:["budget","spending","savings","behavior","general"];const dateCandidate=kind==="recommendation"?String(x.valid_until||""):"";const dateValid=!dateCandidate||(/^\d{4}-\d{2}-\d{2}$/.test(dateCandidate)&&!Number.isNaN(Date.parse(dateCandidate+"T00:00:00Z"))&&new Date(dateCandidate+"T00:00:00Z").toISOString().slice(0,10)===dateCandidate);if(!kind||!allowed.includes(category)||!title||!detail||!externalId||!dateValid)continue;const evidence=Array.isArray(x.evidence)?x.evidence.slice(0,8).map(v=>String(v).slice(0,300)):[],action=kind==="recommendation"?String(x.action||"").slice(0,500):"",validUntil=kind==="recommendation"&&/^\d{4}-\d{2}-\d{2}$/.test(x.valid_until||"")?x.valid_until:null;const r=await client.query("INSERT INTO bep_user_coach_knowledge(user_id,external_id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12) ON CONFLICT(user_id,external_id,kind) DO NOTHING RETURNING id",[req.session.user.id,externalId,kind,category,title,detail,priority,confidence,JSON.stringify(evidence),action,validUntil,provider]);if(r.rowCount)inserted++}await client.query("COMMIT");res.status(201).json({ok:true,inserted,received:items.length})}catch(e){await client.query("ROLLBACK");console.error("Coach knowledge import failed",e.message);res.status(500).json({message:"Import non enregistré. Aucune donnée financière n'a été modifiée."})}finally{client.release()}});
-app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT payload,updated_at FROM bep_user_data WHERE user_id=$1",[req.session.user.id]);res.json(r.rows[0]||{payload:{income:0,budgets:[],expenses:[],goals:[]}})});
+app.get("/api/data",auth,async(req,res)=>{res.setHeader("Cache-Control","no-store");const r=await pool.query("SELECT payload,updated_at FROM bep_user_data WHERE user_id=$1",[req.session.user.id]);res.json(r.rows[0]||{payload:{income:0,budgets:[],expenses:[],goals:[]}})});
 app.put("/api/data",auth,async(req,res)=>{
+ res.setHeader("Cache-Control","no-store");
  const p=req.body;
  if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000)return res.status(400).json({error:"INVALID_PAYLOAD"});
  const client=await pool.connect();
@@ -136,44 +138,44 @@ app.put("/api/data",auth,async(req,res)=>{
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
   const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
-  if(!Array.isArray(suppliedOps)||suppliedOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  if(!Array.isArray(suppliedOps)||suppliedOps.length>5000)return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_LEDGER");
   const ledgerMap=new Map();
   for(const o of (Array.isArray(previous.savingsOperations)?previous.savingsOperations:[])){
-   if(!o||typeof o.id!=="string"||!o.id.trim()||ledgerMap.has(o.id)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_LEDGER_CORRUPT"})}
+   if(!o||typeof o.id!=="string"||!o.id.trim()||ledgerMap.has(o.id)){return rollbackAndRespond(client,res,409,"SAVINGS_LEDGER_CORRUPT")}
    ledgerMap.set(o.id,o);
   }
   const suppliedIds=new Set();
   for(const o of suppliedOps){
-   if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||suppliedIds.has(o.id)){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"})}
+   if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||suppliedIds.has(o.id)){return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_LEDGER")}
    suppliedIds.add(o.id);
    if(ledgerMap.has(o.id)){
     const existing=ledgerMap.get(o.id);
-    if(existing.type!==o.type||existing.goalId!==o.goalId||Number(existing.amount)!==Number(o.amount)||existing.date!==o.date||(existing.reversalOf||null)!==(o.reversalOf||null)){await client.query("ROLLBACK");return res.status(409).json({error:"SAVINGS_OPERATION_ID_CONFLICT"})}
+    if(existing.type!==o.type||existing.goalId!==o.goalId||Number(existing.amount)!==Number(o.amount)||existing.date!==o.date||(existing.reversalOf||null)!==(o.reversalOf||null)){return rollbackAndRespond(client,res,409,"SAVINGS_OPERATION_ID_CONFLICT")}
    }else{ledgerMap.set(o.id,o)}
   }
   const incomingOps=Array.from(ledgerMap.values());
-  if(incomingOps.length>5000)return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+  if(incomingOps.length>5000)return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_LEDGER");
   const goalIds=new Set(goals.filter(g=>g&&typeof g.id==="string"&&g.id.trim()).map(g=>g.id));
   const ids=new Set(),reversals=new Map(),ops=[];
   for(const o of incomingOps){
    if(!o||typeof o!=="object"||Array.isArray(o)||typeof o.id!=="string"||!o.id.trim()||o.id.length>128||ids.has(o.id)||!["deposit","withdrawal"].includes(o.type)||typeof o.goalId!=="string"||!goalIds.has(o.goalId)||!Number.isFinite(Number(o.amount))||Number(o.amount)<=0||Number(o.amount)>10000000||Math.abs(Number(o.amount)*100-Math.round(Number(o.amount)*100))>1e-7||typeof o.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(o.date)||Number.isNaN(Date.parse(o.date+"T00:00:00Z"))||new Date(o.date+"T00:00:00Z").toISOString().slice(0,10)!==o.date){
-    await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});
+    return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_LEDGER");
    }
    ids.add(o.id);ops.push(o);
    if(o.reversalOf!==undefined){
-    if(typeof o.reversalOf!=="string"||!o.reversalOf.trim()||reversals.has(o.reversalOf)){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
+    if(typeof o.reversalOf!=="string"||!o.reversalOf.trim()||reversals.has(o.reversalOf)){return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_REVERSAL")}
     reversals.set(o.reversalOf,o);
    }
   }
   for(const [targetId,reversal] of reversals){
    const target=ops.find(o=>o.id===targetId);
-   if(!target||target.reversalOf||ops.indexOf(reversal)<=ops.indexOf(target)||reversal.date<target.date||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_REVERSAL"})}
+   if(!target||target.reversalOf||ops.indexOf(reversal)<=ops.indexOf(target)||reversal.date<target.date||target.goalId!==reversal.goalId||Number(target.amount)!==Number(reversal.amount)||target.type===reversal.type){return rollbackAndRespond(client,res,400,"INVALID_SAVINGS_REVERSAL")}
   }
   const balances=new Map();
   const ordered=ops.map((o,index)=>({o,index})).sort((a,b)=>a.o.date.localeCompare(b.o.date)||a.index-b.index);
   for(const {o} of ordered){
    const next=(balances.get(o.goalId)||0)+(o.type==="deposit"?1:-1)*Number(o.amount);
-   if(next < -0.005){await client.query("ROLLBACK");return res.status(400).json({error:"SAVINGS_BALANCE_NEGATIVE"})}
+   if(next < -0.005){return rollbackAndRespond(client,res,400,"SAVINGS_BALANCE_NEGATIVE")}
    balances.set(o.goalId,next);
   }
   const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000)};
