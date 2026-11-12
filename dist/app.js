@@ -467,8 +467,8 @@ $("purchaseForm").onsubmit=e=>{
  if(!Number.isFinite(amount)||amount<=0||amount>999999999999.99)return notify("Le montant doit être supérieur à zéro et rester dans la limite autorisée.");
  const category=$("purchaseCategory")?.value.trim()||"Autre";
  if($("purchaseCategory"))$("purchaseCategory").required=false;
- const purchaseLabel=label||previous.label||"";
  const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};
+ const purchaseLabel=label||previous.label||"";
  const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:(()=>{const date=$("purchaseDate")?.value||localPurchaseDate();return date?new Date(date+"T12:00:00").toISOString():new Date().toISOString()})()};
  const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice();
  if(wasEditing)state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x);else state.expenses.unshift(p);
