@@ -358,3 +358,40 @@ button.primary, button.secondary, button.danger {
 @media(max-width:390px){.welcome.welcome-playful{grid-template-columns:minmax(0,1fr) 82px;gap:2px;padding:15px 13px 14px;border-radius:21px}.welcome-playful .eyebrow{font-size:8px;letter-spacing:1px}.welcome-playful h1{font-size:clamp(20px,6.1vw,24px);margin:8px 0}.welcome-playful .sub{font-size:11px;line-height:1.4}.welcome-pills{gap:5px;margin-top:11px}.welcome-pill{min-height:28px;padding:6px 8px;font-size:9px;gap:4px}.welcome-pill svg{width:12px;height:12px}.welcome-bot{max-width:88px}}
 @media(min-width:600px){.welcome.welcome-playful{grid-template-columns:minmax(0,1fr) 132px;padding:21px 24px 19px}.welcome-playful .sub{font-size:13px}.welcome-pill{font-size:11px;padding:7px 11px}.welcome-bot{max-width:140px}}
 @media(prefers-reduced-motion:reduce){.welcome-bot{animation:none}}
+
+
+/* Home production update — portage sélectif depuis la préproduction */
+.home-financial-snapshot{display:block!important;margin:12px 0 16px}
+.home-financial-snapshot .card-head{margin-bottom:12px}
+.home-financial-snapshot .home-snapshot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.home-financial-snapshot .home-snapshot-card{display:flex;flex-direction:column;gap:7px;min-width:0;padding:13px 12px;border:1px solid #e1ece5;border-radius:15px;background:linear-gradient(145deg,#fff 0%,#f7fbf8 100%)}
+.home-financial-snapshot .home-snapshot-card span{font-size:10px;line-height:1.35;color:#64786d;font-weight:650}
+.home-financial-snapshot .home-snapshot-card strong{font-size:clamp(15px,3.8vw,21px);line-height:1.2;color:#173f35;font-weight:800;overflow-wrap:anywhere}
+.home-financial-snapshot .home-budget-available{background:linear-gradient(145deg,#effaf2,#f8fcf8);border-color:#cfe8d7}
+.home-financial-snapshot .home-budget-savings{background:linear-gradient(145deg,#f3f0ff,#fbfaff);border-color:#e4dcf5}
+.home-financial-snapshot .home-budget-savings strong{color:#7656a8}
+.home-financial-snapshot .home-financial-detail{margin:10px 2px 0;font-size:10px;line-height:1.45;color:#687a71}
+.home-budget-action-row{display:flex;justify-content:flex-end;margin-top:10px}
+.home-budget-cta{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:37px;padding:8px 13px;border-radius:10px;font-size:11px;font-weight:750;white-space:nowrap}
+.home-budget-cta span{font-size:13px}
+.home-coach-card{display:block;margin:0 0 16px;padding:15px 17px;border:1px solid #dcebe2;border-radius:18px;background:linear-gradient(120deg,#f4fbf6,#f4f9ff)}
+.home-coach-card .ai-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.home-coach-card .ai-card-head .eyebrow{margin:0 0 3px;color:#39805b;font-size:8px;font-weight:800;letter-spacing:1px}
+.home-coach-card .ai-card-head h2{margin:0;color:#173f35;font-size:16px;line-height:1.2;font-weight:800}
+.home-coach-card .ai-advice{margin:8px 0 3px;color:#405b4e;font-size:13px;line-height:1.55}
+.home-coach-card .home-coach-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;margin-top:8px;padding:7px 11px;border:1px solid #cfe5d6;border-radius:10px;background:#edf7f0;color:#176b50;box-shadow:none;font-size:11px;font-weight:700;line-height:1.25}
+.home-coach-card .home-coach-link span{font-size:13px;color:inherit}
+.home-coach-card .home-coach-link:hover:not(:disabled){background:#e3f1e7;border-color:#b9d8c4;color:#125640}
+.chart-carousel .chart-note{max-width:62ch;margin:12px auto 2px;font-size:11px;line-height:1.7;white-space:normal;overflow-wrap:break-word;text-wrap:pretty}
+.chart-carousel .chart-empty{min-height:155px;padding:22px 18px;line-height:1.65;font-size:12px;white-space:normal;text-wrap:pretty}
+.capacity-chart .chart-note{max-width:64ch}
+@media(max-width:600px){
+ .home-financial-snapshot .home-snapshot-grid{gap:7px}
+ .home-financial-snapshot .home-snapshot-card{padding:11px 10px}
+ .home-financial-snapshot .home-snapshot-card span{font-size:9px}
+ .home-financial-snapshot .home-budget-cta{min-height:35px;padding:7px 11px}
+ .home-coach-card .ai-advice{font-size:12px;line-height:1.5}
+ .chart-carousel .chart-note{display:none}
+ .chart-carousel .chart-empty{min-height:120px;padding:16px 12px;font-size:11px;line-height:1.45}
+}
+@media(min-width:600px){.home-financial-snapshot .home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
