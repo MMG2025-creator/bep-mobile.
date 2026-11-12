@@ -264,7 +264,7 @@
     if (!window.bepSignedIn || !current || current.status !== "open" ||
         current.monthKey !== monthNow() || loading) return;
     const incoming = legacyItems(event.detail || {});
-    const managed = new Set(["legacy-income", "legacy-budget", "legacy-savings-goal", "monthly-history"]);
+    const managed = new Set(["legacy-income", "legacy-budget", "legacy-savings-goal"]);
     const custom = items.filter(x => !managed.has(x.metadata?.source));
     const merged = [...incoming, ...custom];
     const signature = rows => JSON.stringify(rows.map(x => ({
