@@ -1192,3 +1192,20 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(prefers-reduced-motion:no-preference){.bep-advice-robot{transition:transform .18s,box-shadow .18s}.bep-advice-robot:hover{transform:translateY(-2px);box-shadow:0 12px 30px #123b3433}}
 
 .bep-advice-robot>svg{width:38px;height:38px;display:block;flex:none}
+
+/* Larger, more readable contextual BEP advice */
+.bep-advice-dialog{width:min(560px,calc(100vw - 28px));max-height:min(78vh,720px)}
+.bep-advice-head{padding:20px 22px}
+.bep-advice-identity h2{font-size:24px;line-height:1.25}
+.bep-advice-identity span:not(.bep-advice-avatar){font-size:15px}
+.bep-advice-avatar{width:48px;height:48px;font-size:26px}
+.bep-advice-content{padding:28px 26px 32px}
+.bep-advice-content .ai-advice{font-size:23px;line-height:1.7;font-weight:500}
+.bep-advice-content .ai-label{font-size:14px}
+@media(max-width:560px){
+ .bep-advice-dialog{inset:auto 10px calc(76px + env(safe-area-inset-bottom)) 10px;width:auto;max-height:76vh}
+ .bep-advice-head{padding:17px 18px}
+ .bep-advice-identity h2{font-size:22px}
+ .bep-advice-content{padding:23px 20px 26px}
+ .bep-advice-content .ai-advice{font-size:21px;line-height:1.65}
+}
