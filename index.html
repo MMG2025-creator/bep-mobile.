@@ -185,8 +185,9 @@
     <div class="savings-hero-stats"><div><small>Versements nets ce mois</small><strong id="savingsMonthNet">0 €</strong></div><div><small>Objectifs actifs</small><strong id="savingsGoalCount">0</strong></div><div><small>Régularité</small><strong id="savingsStreak">0 mois</strong></div></div>
   </article>
   <article class="card ai-card savings-advisor-card"><div class="ai-card-head"><h2>Ton conseil Épargne BEP</h2><span class="ai-label">Analyse budget</span></div><p id="aiSavings" class="ai-advice">Analyse de ta capacité d'épargne en cours…</p><p class="savings-advisor-foot" id="savingsAdvisorFoot">BEP s'appuie sur tes revenus et charges enregistrés.</p></article>
-  <article class="card savings-rate-card">
-    <div class="savings-section-heading"><div><p class="eyebrow">TA STRATÉGIE</p><h2>Combien mettre de côté ?</h2></div><span class="savings-spark">✦</span></div>
+  <article class="card savings-rate-card savings-linked-card">
+    <button type="button" class="savings-section-heading savings-group-toggle" data-savings-group-toggle aria-controls="savingsGoalCreateBody savingsGoalCardsBody" aria-expanded="false"><span><span class="eyebrow">TA STRATÉGIE</span><h2>Créer un objectif d'épargne</h2></span><span class="savings-group-toggle-icon" aria-hidden="true">+</span></button>
+    <div id="savingsGoalCreateBody" class="savings-linked-body" hidden>
     <div class="savings-recommendation"><div><span class="savings-reco-label">SUGGESTION BEP</span><strong id="savingsSuggestedRate">—</strong><small id="savingsSuggestedAmount">Renseigne ton budget pour calculer ta suggestion.</small></div><span class="savings-reco-tag" id="savingsRecoTag">Personnalisée</span></div>
     <form id="savingsForm">
       <div class="field"><label for="goalName">Nom de ton objectif</label><input id="goalName" maxlength="50" placeholder="Ex. Fonds de sécurité"></div>
@@ -196,8 +197,9 @@
       <div class="calculation savings-calculation" id="savingsPreview">Renseigne d'abord ton budget.</div>
       <button class="primary full savings-submit" id="savingsSubmit">Créer mon objectif</button>
     </form>
+    </div>
   </article>
-  <article class="card savings-goals-card"><div class="savings-section-heading"><div><p class="eyebrow">MES PROJETS</p><h2>Mes coffres d'épargne</h2></div><span class="savings-count" id="savingsGoalCountBadge">0</span></div><div id="savingsGoalCards" class="savings-goal-grid"></div><div id="goalsList" class="savings-legacy-list" hidden></div></article>
+  <article class="card savings-goals-card savings-linked-card"><button type="button" class="savings-section-heading savings-group-toggle" data-savings-group-toggle aria-controls="savingsGoalCreateBody savingsGoalCardsBody" aria-expanded="false"><span><span class="eyebrow">MES PROJETS</span><h2>Mes coffres d'épargne</h2></span><span class="savings-count" id="savingsGoalCountBadge">0</span></button><div id="savingsGoalCardsBody" class="savings-linked-body" hidden><div id="savingsGoalCards" class="savings-goal-grid"></div><div id="goalsList" class="savings-legacy-list" hidden></div></div></article>
   <article class="card savings-entry-card"><div class="savings-section-heading"><div><p class="eyebrow">PASSER À L'ACTION</p><h2>Enregistrer un mouvement</h2></div><span class="savings-entry-icon">↗</span></div><p class="muted">Note les versements et retraits que tu effectues réellement. BEP ne déplace pas l'argent et ne se connecte pas à ta banque.</p>
     <form id="savingsOperationForm"><div class="two"><div class="field"><label for="savingsOperationType">Opération</label><select id="savingsOperationType"><option value="deposit">Versement</option><option value="withdrawal">Retrait</option></select></div><div class="field"><label for="savingsOperationDate">Date</label><input id="savingsOperationDate" type="date" required></div></div>
       <div class="field"><label for="savingsOperationGoal">Coffre concerné</label><select id="savingsOperationGoal" required><option value="">Choisis un coffre</option></select></div>
