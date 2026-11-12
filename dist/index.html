@@ -16,6 +16,13 @@
 @media(prefers-reduced-motion:reduce){#bepStartupLoader .bep-spinner{animation-duration:1.8s}}
 </style>
 <link rel="stylesheet" href="./spend-experience.css?v=5">
+<style id="pwa-install-style">
+.pwa-install-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 13px;border:1px solid #176b50;border-radius:999px;background:#176b50;color:#fff;font:600 13px/1.2 inherit;white-space:nowrap;cursor:pointer}
+.pwa-install-btn:hover{background:#125b43}
+.pwa-install-btn:focus-visible{outline:3px solid #e8c66f;outline-offset:3px}
+.pwa-install-btn:disabled{opacity:.75;cursor:default}
+@media(max-width:420px){.pwa-install-btn{min-height:36px;padding:0 10px;font-size:12px}}
+</style>
 </head>
 <body>
 <div id="bepStartupLoader" role="status" aria-label="Chargement">
@@ -38,7 +45,7 @@
 <header class="topbar"><a class="brand brand-green" id="homeLink" href="#home" aria-label="BEP — Build, Earn & Preserve" title="Retour à l’accueil"><svg class="logo" viewBox="0 0 250 72" role="img" aria-label="BEP — Build, Earn & Preserve" xmlns="http://www.w3.org/2000/svg">
 <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round"><path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/><path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/></g>
 <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
-<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.75 14 4l2.35-.35 1.05 2.1 2.2 1.05-.35 2.35L20.5 12l-1.25 2 .35 2.35-2.1 1.05-1.05 2.2-2.35-.35L12 20.5l-2-1.25-2.35.35-1.05-2.1-2.2-1.05.35-2.35L3.5 12l1.25-2-.35-2.35 2.1-1.05 1.05-2.2 2.35.35L12 2.75Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.65"/></svg></button></div></header>
+<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.75 14 4l2.35-.35 1.05 2.1 2.2 1.05-.35 2.35L20.5 12l-1.25 2 .35 2.35-2.1 1.05-1.05 2.2-2.35-.35L12 20.5l-2-1.25-2.35.35-1.05-2.1-2.2-1.05.35-2.35L3.5 12l1.25-2-.35-2.35 2.1-1.05 1.05-2.2 2.35.35L12 2.75Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.65"/></svg></button></div></header>
 <main>
 <section class="welcome welcome-playful" aria-labelledby="welcomeTitle">
   <div class="welcome-copy">
@@ -367,6 +374,6 @@
 <script src="./app.js?v=100"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=6"></script>
-<script src="./pwa.js?v=9"></script>
+<script src="./pwa.js?v=10"></script>
 <script src="./spend-experience.js?v=6"></script>
 </body></html>

@@ -1,18 +1,43 @@
 (()=>{"use strict";
-const btn=document.getElementById("installBtn");let deferred=null;
-const standalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
-function refresh(){if(!btn)return;if(standalone()){btn.hidden=false;btn.textContent="Application installée";btn.disabled=true}else if(deferred){btn.hidden=false;btn.disabled=false;btn.textContent="Installer l’app"}else{btn.hidden=false;btn.disabled=false;btn.textContent="Ajouter à l’écran d’accueil"}}
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;refresh()});
-window.addEventListener("appinstalled",()=>{deferred=null;refresh();});
-if(btn)btn.addEventListener("click",async()=>{if(standalone())return;if(deferred){deferred.prompt();const choice=await deferred.userChoice;deferred=null;refresh();if(choice.outcome==="accepted")btn.textContent="Installation lancée";return}
-const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-const isAndroid=/android/i.test(navigator.userAgent);
-const msg=isIOS?"Sur iPhone : touche Partager, puis « Sur l’écran d’accueil ».":"Dans Chrome : ouvre le menu ⋮ puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».";
-if(isAndroid||isIOS)alert(msg);else alert("Ouvre BEP depuis Chrome ou Edge, puis choisis Installer l’application dans le menu du navigateur.");
+const button=document.getElementById("installBtn");
+let deferredPrompt=null;
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)&&!isStandalone();
+const refresh=()=>{
+  if(!button)return;
+  button.hidden=false;
+  if(isStandalone()){button.textContent="BEP installée";button.disabled=true;button.setAttribute("aria-label","BEP est déjà installée");return;}
+  button.disabled=false;
+  button.textContent="Installer BEP";
+  button.setAttribute("aria-label","Installer BEP sur cet appareil");
+};
+window.addEventListener("beforeinstallprompt",event=>{
+  event.preventDefault();deferredPrompt=event;refresh();
 });
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(registrations.map(registration => registration.unregister()))).catch(() => {});
-  if ("caches" in window) caches.keys().then(names => Promise.all(names.map(name => caches.delete(name)))).catch(() => {});
+window.addEventListener("appinstalled",()=>{deferredPrompt=null;refresh();});
+if(button)button.addEventListener("click",async()=>{
+  if(isStandalone())return;
+  if(deferredPrompt){
+    const prompt=deferredPrompt;deferredPrompt=null;
+    await prompt.prompt();
+    const choice=await prompt.userChoice;
+    if(choice&&choice.outcome==="accepted"){button.textContent="Installation lancée";button.disabled=true;}
+    else refresh();
+    return;
+  }
+  const instructions=isIOS()
+    ?"Pour installer BEP sur ton iPhone :\n1. Appuie sur le bouton Partager de Safari.\n2. Choisis « Sur l’écran d’accueil ».\n3. Appuie sur Ajouter."
+    :/android/i.test(navigator.userAgent)
+      ?"Dans Chrome : ouvre le menu ⋮ puis choisis « Installer l’application » ou « Ajouter à l’écran d’accueil »."
+      :"Dans Chrome ou Edge : ouvre le menu du navigateur puis choisis « Installer BEP » ou « Installer cette application ».";
+  window.alert(instructions);
+});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js",{scope:"./",updateViaCache:"none"})
+      .then(registration=>registration.update().catch(()=>{}))
+      .catch(error=>console.warn("BEP PWA: service worker non disponible",error));
+  });
 }
 refresh();
 })();
