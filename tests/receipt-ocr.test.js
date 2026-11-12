@@ -49,3 +49,21 @@ test("uses adjacent OCR lines to identify a labelled amount",()=>{
  assert.equal(result.amount,17.99);
  assert.ok(result.confidence.amount>=.95);
 });
+
+test("source and published OCR assets stay synchronized and support generic image uploads",()=>{
+ const fs=require("node:fs");
+ const path=require("node:path");
+ const root=path.join(__dirname,"..");
+ assert.equal(fs.readFileSync(path.join(root,"receipt-ocr.js"),"utf8"),fs.readFileSync(path.join(root,"dist/receipt-ocr.js"),"utf8"));
+ for(const file of ["app.js","dist/app.js"]){
+  const js=fs.readFileSync(path.join(root,file),"utf8");
+  assert.match(js,/image\\\/[a-z0-9.+-]+/i);
+  assert.match(js,/Support détecté/);
+  assert.match(js,/extracted\.confidence\.time/);
+ }
+ for(const file of ["index.html","dist/index.html"]){
+  const html=fs.readFileSync(path.join(root,file),"utf8");
+  assert.match(html,/id="receiptFile" type="file" accept="image\/\*"/);
+  assert.match(html,/receipt-ocr\.js\?v=2&bep=multi-source-ocr-20261112/);
+ }
+});
