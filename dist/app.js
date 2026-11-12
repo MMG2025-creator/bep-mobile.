@@ -9,7 +9,7 @@ function totalIncome(){return (state.incomes||[]).reduce((sum,item)=>sum+Math.ma
 function syncIncomeTotal(){state.income=totalIncome()}
 function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)||0),needsMigration=!Array.isArray(state.incomes)||(!state.incomes.length&&legacyIncome>0);if(needsMigration)state.incomes=legacyIncome>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:legacyIncome,source:"migration"}]:[];syncIncomeTotal();return needsMigration}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
-function notify(s){const t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2300)}
+function notify(s){const t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4200)}
 function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
 function financialPosition(options={}){return window.BEPFinancialEngine.calculate({incomes:options.incomes??state.incomes,legacyIncome:options.legacyIncome??state.income,budgets:options.budgets??state.budgets,goals:options.goals??state.goals,expenses:options.expenses??state.expenses,monthKey:options.monthKey,timeZone:options.timeZone,excludeGoalId:options.excludeGoalId})}
 function available(){return financialPosition().available}
