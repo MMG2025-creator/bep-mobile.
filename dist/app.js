@@ -355,7 +355,7 @@ async function processReceiptFile(file,input){
  let worker;
  try{
   if(!/^image\/[a-z0-9.+-]+$/i.test(file.type))throw Error("Format non pris en charge. Importe une image lisible par ton navigateur.");
-  if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Limite : 12 Mo.");
+  if(file.size>12*1024*1024)throw Error("Cette photo dépasse la limite actuelle de 12 Mo. Réduis-la ou compresse-la, ou prends une capture d’écran. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
   const ocrImage=await prepareReceiptImageForOcr(file);
@@ -377,7 +377,7 @@ async function processReceiptFile(file,input){
   receiptCaptureText="Preuve d’achat importée · "+(extracted.merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(extracted.amount)?extracted.amount.toFixed(2)+" €":"montant à vérifier");
   const dateLabel=extracted.date?"Date proposée : "+new Date(extracted.date+"T12:00:00").toLocaleDateString("fr-FR")+(extracted.time?" à "+extracted.time:"")+". ":"Date non identifiée. ";const documentLabels={ticket_caisse:"ticket de caisse",commande_web:"commande web",facture:"facture",releve_bancaire:"relevé bancaire",affichage_ou_borne:"écran ou borne",ecran_ou_document:"écran ou document",inconnu:"support non identifié"};const documentLabel="Support détecté : "+(documentLabels[extracted.documentType]||"support non identifié")+". ";
   status.textContent=documentLabel+(Number.isFinite(extracted.amount)&&extracted.amount>0?"Montant proposé : "+extracted.amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(extracted.merchant?"Enseigne : "+extracted.merchant+". ":"")+(extracted.city?"Ville : "+extracted.city+". ":"")+dateLabel+"Confiance — "+fields+". Vérifie et corrige chaque champ avant d’enregistrer. La photo n’est pas conservée par BEP."+(extracted.ambiguous?" Plusieurs montants ont été détectés : contrôle le total.":"");
- }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
+ }catch(err){const reason=String(err?.message||"Lecture impossible.");const photoHelp="\n\nLa photo est peut-être trop lourde ou difficile à décoder. Essaie de la réduire ou de la compresser, ou prends une capture d’écran du justificatif. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».";status.textContent=reason+photoHelp}
  finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
 }
 if($("receiptFile"))$("receiptFile").onchange=e=>processReceiptFile(e.target.files?.[0],e.target);
