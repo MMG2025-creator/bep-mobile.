@@ -51,6 +51,9 @@ Do not run DDL from application startup. Do not execute the migration before the
 
 The shared `/api/data` write path validates the append-only savings ledger. Every early rejection after opening a PostgreSQL transaction must explicitly roll back before returning. The feature branch includes guards and a regression assertion for invalid or oversized ledger payloads. The staging branch currently runs an earlier server revision; this correction is not present in the deployed staging service until that branch is separately updated.
 
+- The savings interface uses an objective-first layout with separate `Mes objectifs` and `Mes mouvements` tabs. The tab controls support keyboard navigation as well as pointer/touch input.
+- Removing a movement hides both the original operation and its compensating entry from the visible history. The append-only ledger retains the compensation internally so the balance remains correct without exposing a second “annulation” row.
+
 ## Rollback posture
 
 Do not drop the new tables as an automatic rollback. If the application release must be stopped, roll back the application code while preserving monthly records and audit rows. Restore the database only from the verified backup if an integrity issue requires it. Never delete monthly history as the first response to a deployment issue.
@@ -65,6 +68,7 @@ Do not drop the new tables as an automatic rollback. If the application release 
 - [ ] Manual monthly rows survive legacy-module synchronization, and local state is not committed before server confirmation.
 - [ ] Root/dist JavaScript, HTML and CSS assets are synchronized.
 - [ ] Savings ledger and current-month cross-module synchronization are reviewed and tested.
+- [ ] Savings objective/movement tabs, keyboard navigation and hidden compensating reversals are verified in the frontend.
 - [ ] Existing `/api/data` compatibility is checked.
 - [ ] Production backup and restore readiness confirmed before production migration.
 - [ ] Final release decision recorded before merge/deploy.
