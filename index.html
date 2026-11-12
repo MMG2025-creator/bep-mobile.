@@ -158,11 +158,13 @@
 </section><section class="income-manual-entry" aria-label="Ajouter une source de revenu"><span class="tag">Ajouter un revenu</span><h3>Une autre source à enregistrer ?</h3><p class="hint">Ajoute directement un revenu net mensuel.</p><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></section></div><details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><div id="incomeRows" class="rows"></div></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
-
-<article class="card"><div class="card-head"><div><h2>Mes charges</h2><p class="hint">Centralise tes charges fixes, variables et échéances mensuelles.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des charges nettes</span><strong id="chargesTotal">0,00 €</strong></div><section class="budget-checkup card" aria-labelledby="budgetCheckupTitle">
-  <div class="budget-checkup-head"><div><span class="tag">Assistant budget</span><h3 id="budgetCheckupTitle">As-tu pensé à toutes tes dépenses ?</h3><p class="hint">Parcours ces exemples. Coche uniquement les dépenses qui te concernent et indique un montant moyen.</p></div></div>
+<article class="card charges-card">
+<div class="card-head"><div><h2>Mes charges</h2><p class="hint">Centralise tes charges fixes, variables et échéances mensuelles.</p></div><span class="tag">Mensuel</span></div>
+<div class="income-total"><span>Total des charges nettes</span><strong id="chargesTotal">0,00 €</strong></div>
+<div class="charges-actions-grid">
+<section class="budget-checkup charges-checkup card" aria-labelledby="budgetCheckupTitle">
+  <div class="budget-checkup-head"><div><span class="tag">Assistant charges</span><h3 id="budgetCheckupTitle">As-tu pensé à toutes tes charges ?</h3></div></div>
   <details id="budgetCheckupDetails">
-    <summary class="budget-checkup-summary">Faire le point sur mes dépenses</summary>
     <form id="budgetCheckupForm">
       <p class="budget-checkup-note">Les montants sont indicatifs et restent modifiables. Les dépenses annuelles seront réparties sur 12 mois pour calculer ton budget réel.</p>
       <div class="budget-checkup-group"><h4>Logement et factures</h4>
@@ -200,7 +202,14 @@
       <button class="primary full" type="submit">Ajouter les dépenses sélectionnées</button>
     </form>
   </details>
-</section><details id="budgetEditorDetails" class="budget-editor"><summary>+ Ajouter une charge</summary><form id="budgetForm"><div class="field"><label for="budgetLabel">Libellé / organisme (facultatif)</label><input id="budgetLabel" type="text" maxlength="100" placeholder="Ex. Crédit auto, Cofidis, assurance habitation"></div><div class="field"><label for="budgetCategory">Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label for="budgetNature">Nature de la charge</label><select id="budgetNature"><option value="unspecified">À préciser</option><option value="fixed">Charge fixe / récurrente</option><option value="variable">Charge variable</option></select></div><div class="field"><label for="budgetAmount">Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter une charge</button></form></details><div class="budget-list-heading"><h3>Mes charges enregistrées</h3><span class="hint">Regroupées par catégorie</span></div><div id="budgetRows" class="rows"></div></article>
+</section>
+<section class="charges-manual-entry" aria-label="Ajouter une charge">
+<span class="tag">Ajouter une charge</span><h3>Une autre charge à enregistrer ?</h3><p class="hint">Ajoute directement une charge mensuelle.</p>
+<details id="budgetEditorDetails" class="budget-editor"><summary>+ Ajouter une charge</summary><form id="budgetForm"><div class="field"><label for="budgetLabel">Libellé / organisme (facultatif)</label><input id="budgetLabel" type="text" maxlength="100" placeholder="Ex. Crédit auto, Cofidis, assurance habitation"></div><div class="field"><label for="budgetCategory">Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label for="budgetNature">Nature de la charge</label><select id="budgetNature"><option value="unspecified">À préciser</option><option value="fixed">Charge fixe / récurrente</option><option value="variable">Charge variable</option></select></div><div class="field"><label for="budgetAmount">Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter une charge</button></form></details>
+</section>
+</div>
+<details id="chargesSavedDetails" class="income-saved-details"><summary><span>Mes charges enregistrées</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><div id="budgetRows" class="rows"></div></details>
+</article>
 </div>
 <div id="budgetModulePhotos" class="budget-module" role="tabpanel" hidden>
 <article class="card image-import-card" id="imageImportCard">
