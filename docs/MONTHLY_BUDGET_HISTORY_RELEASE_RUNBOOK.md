@@ -40,6 +40,7 @@ Do not run DDL from application startup. Do not execute the migration before the
 - New months copy the latest earlier snapshot as independent line items.
 - Planned income, charges and savings remain distinct.
 - Actual purchases are assigned by their real `at` timestamp in the user's IANA timezone; impossible calendar dates are rejected rather than normalized into another month.
+- If no actual purchase is recorded for a month, the interface displays `Non renseigné` and does not calculate a misleading variance against planned charges.
 - Duplicate non-empty IDs within `expenses[]` are counted once. Purchases without IDs are kept as separate entries; identical timestamps/merchant/amounts alone are not enough evidence to collapse two real purchases.
 - `transactions[]` is not imported into actual expenses until its relationship to `expenses[]` is established; this avoids double counting.
 - Manual monthly lines are retained when Revenus/Charges/Épargne changes synchronize legacy-managed rows.
