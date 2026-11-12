@@ -362,3 +362,10 @@ test("floating advice control reuses the header robot mascot", () => {
  assert.ok(html.includes('sourceFace.cloneNode(true)'));
  assert.ok(html.includes('.bep-advice-robot>svg'));
 });
+
+test("header coach shortcut is removed and popup advice uses larger typography", () => {
+ const html=read("index.html"),css=read("styles.css");
+ assert.ok(!html.includes('id="bepCoachMascot"'));
+ assert.ok(html.includes('id="bepAdviceRobot"'));
+ assert.match(css,/\.bep-advice-content \.ai-advice\{font-size:23px;line-height:1\.7;font-weight:500\}/);
+});
