@@ -326,7 +326,6 @@ button.primary, button.secondary, button.danger {
   bottom: max(18px, env(safe-area-inset-bottom));
   box-shadow: 0 10px 30px rgba(16,46,41,.24);
 }
-#toast[role="status"] { aria-live: polite; }
 @media (max-width: 390px) {
   .budget-module-nav { grid-template-columns: 1fr; }
   .budget-module-tab { min-height: 54px; }
