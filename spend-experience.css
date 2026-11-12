@@ -1,0 +1,123 @@
+/* BEP Spend Experience — playful decision coach */
+:root{--sp-ink:#173a32;--sp-green:#176b50;--sp-mint:#eaf6ef;--sp-yellow:#fff4cf;--sp-blue:#eaf2ff;--sp-line:#e3ece6}
+#purchases.panel{display:none}#purchases.panel.active{display:grid;gap:14px}
+.bep-spend-hero{position:relative;overflow:hidden;border:1px solid #dcebe1;border-radius:24px;padding:22px;background:linear-gradient(135deg,#f0f8f2 0%,#f7f8ff 54%,#fff7df 100%);box-shadow:0 12px 30px #173c2910}
+.bep-spend-hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-100px;background:#dff1e5;opacity:.7}
+.bep-spend-hero-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.bep-spend-kicker{font-size:10px;font-weight:800;letter-spacing:1.7px;color:#56816c}
+.bep-spend-pill{font-size:10px;font-weight:800;padding:7px 10px;border-radius:99px;background:#fff;border:1px solid #dcebe1;color:#35644e}
+.bep-spend-hero-main{position:relative;z-index:1;display:grid;grid-template-columns:1fr 112px;gap:12px;align-items:center;margin-top:13px}
+.bep-spend-hero h1{font:800 clamp(25px,6vw,34px)/1.08 Manrope,sans-serif;letter-spacing:-1px;color:#173a32;margin:0 0 9px}
+.bep-spend-hero p{font-size:13px;line-height:1.55;color:#60776c;margin:0;max-width:430px}
+.bep-spend-mascot{width:108px;height:108px;filter:drop-shadow(0 8px 10px #214c3220)}
+.bep-spend-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:19px}
+.bep-spend-stat{background:#ffffffc9;border:1px solid #e0ebe3;border-radius:14px;padding:11px 12px;min-width:0}
+.bep-spend-stat span{display:block;color:#71847a;font-size:10px;line-height:1.35}
+.bep-spend-stat strong{display:block;color:#1c5942;font:800 clamp(15px,4vw,19px) Manrope;margin-top:5px;overflow-wrap:anywhere}
+.bep-spend-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:5px;background:#edf3ef;border:1px solid #e1ebe4;border-radius:15px}
+.bep-spend-nav button{border:0;background:transparent;border-radius:11px;padding:11px 6px;font:700 12px 'DM Sans',sans-serif;color:#6a7d72;cursor:pointer}
+.bep-spend-nav button[aria-selected=true]{background:white;color:#174f3c;box-shadow:0 2px 8px #173c2912}
+.bep-spend-view[hidden]{display:none!important}
+.bep-spend-score{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:14px;background:#fff;border:1px solid var(--sp-line);border-radius:18px;padding:15px;margin:0 0 13px}
+.bep-spend-score-ring{--score:0;width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#1a9568 calc(var(--score)*1%),#edf2ee 0);position:relative}
+.bep-spend-score-ring:before{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
+.bep-spend-score-ring strong{position:relative;z-index:1;font:800 20px Manrope;color:#174f3c}
+.bep-spend-score-copy b{display:block;font:800 14px Manrope;color:#173a32}
+.bep-spend-score-copy span{display:block;font-size:11px;line-height:1.45;color:#718078;margin-top:4px}
+.bep-spend-score-track{height:6px;border-radius:9px;background:#edf2ee;overflow:hidden;margin-top:8px}
+.bep-spend-score-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0c45c,#1b9668);border-radius:9px;transition:width .2s ease}
+#purchases .purchase-entry-card{border:1px solid #dfeae3;box-shadow:0 7px 22px #173c290b}
+#purchases .purchase-entry-card h2{font-size:18px;margin-bottom:5px}
+.bep-spend-form-intro{font-size:12px;color:#718078;line-height:1.5;margin:0 0 14px}
+#purchases .purchase-entry-card .field label{color:#405b4e}
+#purchases .purchase-entry-card input,#purchases .purchase-entry-card select{border-radius:12px}
+.bep-spend-form-note{display:flex;gap:8px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:#f2f7f3;color:#587366;font-size:11px;line-height:1.45;margin:12px 0}
+.bep-spend-challenge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bep-spend-challenge{background:#fff;border:1px solid var(--sp-line);border-radius:17px;padding:14px;display:flex;flex-direction:column;min-height:170px}
+.bep-spend-challenge:nth-child(1){background:linear-gradient(145deg,#f0f8f2,#fff)}
+.bep-spend-challenge:nth-child(2){background:linear-gradient(145deg,#fff7df,#fff)}
+.bep-spend-challenge:nth-child(3){background:linear-gradient(145deg,#eef4ff,#fff)}
+.bep-spend-challenge:nth-child(4){background:linear-gradient(145deg,#f5efff,#fff)}
+.bep-spend-challenge-icon{width:35px;height:35px;border-radius:12px;background:#ffffffc9;display:grid;place-items:center;font-size:18px;margin-bottom:11px}
+.bep-spend-challenge b{font:800 13px Manrope;color:#23483a}
+.bep-spend-challenge p{font-size:11px;line-height:1.45;color:#718078;margin:6px 0 12px;flex:1}
+.bep-spend-challenge button{border:1px solid #d6e5da;border-radius:10px;background:#fff;padding:9px 10px;color:#286047;font-size:11px;font-weight:800;cursor:pointer}
+.bep-spend-challenge.is-done button{background:#e3f4e9;border-color:#b9dec6;color:#176b50}
+.bep-spend-challenge-status{font-size:11px;color:#5f786a;margin:0 0 12px}
+.bep-spend-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.bep-spend-insight{border:1px solid var(--sp-line);border-radius:15px;padding:14px;background:#fff}
+.bep-spend-insight span{display:block;font-size:10px;color:#78877f}
+.bep-spend-insight strong{display:block;font:800 19px Manrope;color:#1c5942;margin-top:6px}
+.bep-spend-insight p{font-size:10px;color:#7b8981;margin:4px 0 0;line-height:1.4}
+.bep-spend-insight-wide{grid-column:1/-1}
+.bep-spend-category-list{display:grid;gap:8px;margin-top:12px}
+.bep-spend-category-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#526b5d}
+.bep-spend-category-row b{color:#23483a}
+.bep-spend-empty{padding:20px;text-align:center;background:#f7faf7;border:1px dashed #d8e5dc;border-radius:14px;color:#718078;font-size:12px;line-height:1.5}
+#purchases .ai-card{border-color:#e5eadf;background:linear-gradient(135deg,#fff,#f7faf6)}
+#purchases .purchase-row{border-radius:12px;padding:12px 10px}
+@media(max-width:430px){.bep-spend-hero{padding:18px}.bep-spend-hero-main{grid-template-columns:1fr 84px}.bep-spend-mascot{width:84px;height:84px}.bep-spend-stats{gap:6px}.bep-spend-stat{padding:9px 8px}.bep-spend-nav button{font-size:11px}.bep-spend-challenge-grid{gap:8px}.bep-spend-challenge{padding:11px;min-height:180px}}
+@media(prefers-reduced-motion:reduce){.bep-spend-score-track i{transition:none}}
+
+
+/* Quick-entry redesign */
+#purchases .purchase-entry-card{padding:clamp(16px,3vw,24px);border-radius:22px;background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%);border-color:#dce9df;box-shadow:0 12px 30px #173c290d}
+#purchases .purchase-entry-card h2{font-size:21px;letter-spacing:-.45px;margin:0}
+#purchases .bep-spend-form-intro{margin:5px 0 18px;color:#74857a;font-size:12px}
+#purchases .bep-spend-quick{display:grid;gap:14px}
+#purchases .bep-spend-amount{margin:0}
+#purchases .bep-spend-amount label{font-size:11px;font-weight:800;letter-spacing:.2px}
+#purchases .bep-spend-amount input{height:62px;font-size:28px;font-weight:800;letter-spacing:-.7px;color:#174b39;border:1.5px solid #cfe1d4;background:#f7fbf8;border-radius:15px;padding:12px 15px;box-shadow:inset 0 1px 2px #193b2608}
+#purchases .bep-spend-amount input:focus{border-color:#6aa887;box-shadow:0 0 0 3px #dff1e5}
+#purchases .bep-spend-basics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#purchases .bep-spend-basics .field{min-width:0;margin:0}
+#purchases .bep-spend-basics .field label{font-size:11px;font-weight:750}
+#purchases .bep-spend-basics input{min-height:47px}
+#purchases .bep-spend-category-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+#purchases .bep-spend-category-chips button{border:1px solid #e0eae3;background:#f8faf8;color:#60766a;border-radius:99px;padding:7px 10px;font:650 10px 'DM Sans',sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+#purchases .bep-spend-category-chips button.selected{background:#e7f4eb;border-color:#a9d1b7;color:#1b6848}
+#purchases .bep-spend-advanced{margin-top:16px;border:1px solid #e5ece6;border-radius:14px;background:#fbfcfb;overflow:hidden}
+#purchases .bep-spend-advanced summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:13px 14px;cursor:pointer;color:#345b47;font-size:12px;font-weight:800}
+#purchases .bep-spend-advanced summary::-webkit-details-marker{display:none}
+#purchases .bep-spend-advanced summary:after{content:"＋";font-size:16px;color:#6d8c78}
+#purchases .bep-spend-advanced[open] summary:after{content:"−"}
+#purchases .bep-spend-advanced summary small{font-size:10px;font-weight:500;color:#849188;margin-left:auto}
+#purchases .bep-spend-advanced-body{display:grid;gap:11px;padding:0 14px 14px}
+#purchases .bep-spend-advanced-body .field{margin:0}
+#purchases .bep-spend-advanced-body .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#purchases .bep-spend-submit-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px}
+#purchases .bep-spend-submit-row #purchaseSubmit{width:100%;min-height:49px;border-radius:14px;font-size:13px;font-weight:800;box-shadow:0 5px 12px #176b5020}
+#purchases .bep-spend-submit-row #purchaseNew{width:100%;min-height:49px;border-radius:14px}
+#purchases .bep-spend-form-note{font-size:10px;line-height:1.45;margin:10px 0 0;padding:9px 11px;background:#f5f8f5}
+#purchases .bep-spend-score{margin-top:0}
+#purchases .purchase-entry-card .field{margin-bottom:0}
+@media(max-width:480px){#purchases .bep-spend-basics{grid-template-columns:1fr}#purchases .bep-spend-advanced-body .two{grid-template-columns:1fr}#purchases .bep-spend-advanced summary{flex-wrap:wrap}#purchases .bep-spend-advanced summary small{margin-left:0}}
+
+/* Reliable low-friction purchase entry */
+#purchases .bep-spend-auto-hint{display:block;margin-top:5px;color:#7a8b80;font-size:10px;line-height:1.4}
+#purchases .bep-spend-basics input:focus-visible,#purchases .bep-spend-basics select:focus-visible{outline:3px solid #dcefe2;outline-offset:1px}
+#purchases #purchaseAmount{font-variant-numeric:tabular-nums}
+#purchases .bep-spend-advanced-body #city{max-width:100%}
+
+/* Spend experience: only the selected internal view is visible. */
+#purchases .bep-spend-view[hidden]{display:none!important}
+#purchases .bep-spend-radar{display:block;min-width:0}
+#purchases .bep-spend-nav button:focus-visible{outline:2px solid #b98b2e;outline-offset:2px}
+
+/* Personal challenge picker and expanded challenge catalogue */
+#purchases .bep-spend-challenge-picker{margin:0 0 14px;border:1px solid #dce9df;border-radius:14px;background:#f8fbf8;overflow:hidden}
+#purchases .bep-spend-challenge-picker summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;color:#20583f;font-size:12px;font-weight:800}
+#purchases .bep-spend-challenge-picker summary::-webkit-details-marker{display:none}
+#purchases .bep-spend-challenge-picker summary:after{content:"⌄";font-size:18px;color:#6b8b76}
+#purchases .bep-spend-challenge-picker[open] summary:after{content:"⌃"}
+#purchases .bep-spend-challenge-picker summary small{margin-left:auto;color:#7a8b80;font-size:10px;font-weight:600;white-space:nowrap}
+#purchases .bep-spend-challenge-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 12px 13px}
+#purchases .bep-spend-challenge-options>p{grid-column:1/-1;margin:0 0 3px;color:#75877b;font-size:11px}
+#purchases .bep-spend-challenge-option{display:flex;align-items:center;gap:8px;min-width:0;padding:9px 10px;border:1px solid #e2ebe4;border-radius:10px;background:white;color:#526c5b;font-size:11px;line-height:1.3;cursor:pointer}
+#purchases .bep-spend-challenge-option input{width:15px;height:15px;flex:0 0 auto;accent-color:#287451}
+#purchases .bep-spend-challenge-grid-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#purchases .bep-spend-challenge-done{display:block;margin-top:7px;color:#347451;font-size:10px;line-height:1.4}
+@media(max-width:480px){#purchases .bep-spend-challenge-options,#purchases .bep-spend-challenge-grid-inner{grid-template-columns:1fr}#purchases .bep-spend-challenge-picker summary{flex-wrap:wrap}#purchases .bep-spend-challenge-picker summary small{margin-left:0}}
+
+#purchases #bepSpendChallengeGrid{display:block}
+#purchases .bep-spend-challenge-grid-inner{margin-top:0}
