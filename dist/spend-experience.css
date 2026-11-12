@@ -349,53 +349,69 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #incomeRows .rowitem.is-selected,#budgetRows .rowitem.is-selected,#monthlyBudgetItems .monthly-budget-row.is-selected{background:#eef8f1;outline:1px solid #a9d6ba}
 #incomeRows .rowitem,#budgetRows .rowitem,#monthlyBudgetItems .monthly-budget-row{touch-action:pan-y;user-select:none;-webkit-user-select:none}
 
-/* Budget saved lists: mirror the exact two-column layout of #purchaseRows.
-   The old three-column selectors left an unused third track and squeezed the
-   amount/actions into the middle track. */
+/* Budget test pass: normalize saved income and charge rows independently of legacy .rowitem rules.
+   The label stays flexible; the amount and controls occupy a fixed intrinsic action track. */
 #budgetModuleIncome #incomeRows .saved-income-row,
-#budgetModuleCharges .charges-card #budgetRows .saved-charge-row{
+#budgetModuleCharges #budgetRows .saved-charge-row{
   display:grid !important;
-  grid-template-columns:minmax(0,1fr) auto !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
   align-items:center !important;
-  justify-content:initial !important;
-  gap:12px !important;
+  justify-content:stretch !important;
+  column-gap:12px !important;
   width:100% !important;
   min-width:0 !important;
-  padding:16px 0 !important;
   box-sizing:border-box !important;
+  padding:14px 0 !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-main,
-#budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-main{
-  grid-column:1 !important;
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main{
+  grid-column:1;
   min-width:0 !important;
-  width:auto !important;
-  flex:initial !important;
+  width:100% !important;
+  display:block !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions,
-#budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions{
-  grid-column:2 !important;
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main > span,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main > span{
+  display:block !important;
+  min-width:0 !important;
+}
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main b,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main b{
+  display:block !important;
+  overflow-wrap:anywhere !important;
+}
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main small,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main small{
+  display:block !important;
+  margin-top:3px !important;
+  overflow-wrap:anywhere !important;
+}
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
+  grid-column:2;
   display:grid !important;
-  grid-template-columns:auto 32px 32px !important;
+  grid-template-columns:max-content 32px 32px !important;
   align-items:center !important;
-  justify-items:center !important;
   justify-content:end !important;
-  gap:7px !important;
+  justify-items:center !important;
+  gap:6px !important;
   min-width:max-content !important;
-  width:auto !important;
+  width:max-content !important;
   margin:0 !important;
   white-space:nowrap !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions>b,
-#budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions>b{
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions > b,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions > b{
   min-width:0 !important;
   margin:0 !important;
   text-align:right !important;
   white-space:nowrap !important;
   font-variant-numeric:tabular-nums !important;
-  font-size:13px !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions button,
-#budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions button{
+#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
+#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
+  display:grid !important;
+  place-items:center !important;
   width:32px !important;
   height:32px !important;
   min-width:32px !important;
@@ -403,15 +419,14 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 }
 @media(max-width:640px){
   #budgetModuleIncome #incomeRows .saved-income-row,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row{gap:7px !important}
-  #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions{
-    grid-template-columns:auto 28px 28px !important;gap:4px !important;
+  #budgetModuleCharges #budgetRows .saved-charge-row{column-gap:7px !important;padding:13px 0 !important}
+  #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
+  #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
+    grid-template-columns:max-content 28px 28px !important;
+    gap:4px !important;
   }
-  #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions button,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions button{
+  #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
+  #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
     width:28px !important;height:28px !important;min-width:28px !important;
   }
-  #budgetModuleIncome #incomeRows .saved-income-row>.purchase-row-actions>b,
-  #budgetModuleCharges .charges-card #budgetRows .saved-charge-row>.purchase-row-actions>b{font-size:12px !important}
 }
