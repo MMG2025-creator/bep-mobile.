@@ -15,8 +15,8 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("index.html").includes("./app.js?v=93"));
   assert.ok(read("dist/index.html").includes("./app.js?v=93"));
-  assert.ok(read("index.html").includes("./styles.css?v=76"));
-  assert.ok(read("dist/index.html").includes("./styles.css?v=76"));
+  assert.ok(read("index.html").includes("./styles.css?v=79"));
+  assert.ok(read("dist/index.html").includes("./styles.css?v=79"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=5"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
 });
@@ -191,5 +191,18 @@ test("budget advice stays above the income, charges and monthly budget navigatio
     const js = read(file);
     assert.match(js, /data-budget-advice/);
     assert.match(js, /zone:id==="monthly"\?"budget":id/);
+  }
+});
+
+
+test("budget module navigation uses the rounded segmented menu treatment in both builds", () => {
+  for (const file of ["styles.css", "dist/styles.css"]) {
+    const css = read(file);
+    assert.match(css, /#budget \.budget-module-nav[\s\S]*?background:#edf3ef/);
+    assert.match(css, /#budget \.budget-module-tab\.active[\s\S]*?background:#fff/);
+    assert.match(css, /#budget \.budget-module-tab:focus-visible/);
+  }
+  for (const file of ["index.html", "dist/index.html"]) {
+    assert.match(read(file), /styles\.css\?v=79/);
   }
 });
