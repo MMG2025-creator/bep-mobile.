@@ -76,3 +76,25 @@ test("the explicit Gemini test endpoint consumes the same guarded quota",()=>{
  const src=read("server.js"),i=src.indexOf('app.post("/api/ai/test"'),j=src.indexOf('app.get("/api/ai/status"',i);
  assert.ok(i>=0&&j>i);const route=src.slice(i,j);assert.match(route,/consumeBepAiQuota/);assert.match(route,/releaseBepAiQuota/);
 });
+
+test("does not trust an available amount when no income or charge data exists",async()=>{
+ const pool={query:async(sql)=>sql.includes("bep_user_data")?{rows:[{payload:{}}]}:{rows:[]}};
+ const c=await loadUserFinancialContext(pool,"u",{available:680.75,income:0,charges:0});
+ assert.equal(c.available,null);
+ assert.ok(c.dataWarnings.some(x=>x.includes("ne peut pas être calculé")));
+});
+test("recalculates available amount from income and charges instead of trusting a stale value",async()=>{
+ const pool={query:async(sql)=>sql.includes("bep_user_data")?{rows:[{payload:{}}]}:{rows:[]}};
+ const c=await loadUserFinancialContext(pool,"u",{income:2000,charges:900,available:680.75,incomes:[{amount:2000}],budgets:[{amount:900}]});
+ assert.equal(c.available,1100);
+ assert.ok(c.dataWarnings.some(x=>x.includes("a été recalculé")));
+});
+test("loads persisted financial context even when RAG is disabled",async()=>{
+ const calls=[];
+ const pool={query:async(sql)=>{calls.push(sql);if(sql.includes("bep_user_data"))return{rows:[{payload:{income:1800,incomes:[{amount:1800}],budgets:[{amount:700}],expenses:[],goals:[]}}]};if(sql.includes("bep_monthly_budgets"))return{rows:[]};throw Error("unexpected query")}};
+ const result=await buildIntelligence({pool,userId:"u",query:"situation",context:{},enabled:false});
+ assert.equal(result.context.available,1100);
+ assert.equal(result.knowledge.length,0);
+ assert.match(result.prompt,/RAG désactivé/);
+ assert.ok(calls.some(x=>x.includes("bep_user_data")));
+});

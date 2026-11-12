@@ -1,0 +1,10 @@
+"use strict";
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const source=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+test("Gemini requires explicit zero-billing confirmation",()=>{assert.match(source,/BEP_AI_ZERO_BILLING_CONFIRMED!==\"true\"/);assert.match(source,/BEP_AI_ZERO_BILLING_CONFIRMED===\"true\"/);});
+test("per-user free Coach quota is capped at ten requests",()=>{assert.match(source,/Math\.max\(1,Math\.min\(10,Number\(process\.env\.BEP_AI_FREE_MONTHLY_LIMIT\)\|\|10\)\)/);});
+test("AI test endpoint consumes and releases quota",()=>{const i=source.indexOf('app.post("/api/ai/test"'),j=source.indexOf('app.get("/api/ai/status"',i);assert.ok(i>=0&&j>i);assert.match(source.slice(i,j),/consumeBepAiQuota/);assert.match(source.slice(i,j),/releaseBepAiQuota/);});
+test("AI status requires zero-billing confirmation",()=>{const i=source.indexOf('app.get("/api/ai/status"'),j=source.indexOf('app.post("/api/ai/advice"',i);assert.ok(i>=0&&j>i);assert.match(source.slice(i,j),/BEP_AI_ZERO_BILLING_CONFIRMED===\"true\"/);});

@@ -385,6 +385,14 @@ async function showPurchaseAdvice(p){
  }
  target.innerHTML=(budgetWarning?"<strong>"+esc(budgetWarning)+"</strong><br><br>":"")+"<strong>"+esc(local[0])+"</strong>"+esc(local[1])+"<br><br><b>Question BEP :</b> "+esc(local[2]);
 }
+function parseCoachHypothetical(question){
+ const q=String(question||"");
+ if(!/\\b(disponible|reste|reste[- ]?à[- ]?vivre|combien)\\b/i.test(q))return null;
+ const number="((?:\\\\d{1,3}(?:[ \\u00a0\\u202f]\\\\d{3})+|\\\\d+)(?:[,.]\\\\d{1,2})?)";
+ const amount=label=>{const m=q.match(new RegExp(label+"\\\\D{0,45}("+number+")\\\\s*€?","i"));if(!m)return null;const n=Number(m[1].replace(/\\\\s/g,"").replace(",", "."));return Number.isFinite(n)&&n>=0?n:null};
+ const income=amount("revenus?"),charges=amount("charges?");
+ return income===null||charges===null?null:{income,charges,available:Math.round((income-charges)*100)/100};
+}
 function coachReply(question){
  const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
  const income=totalIncome(),spent=charges(),left=available(),budgets=state.budgets||[],goals=state.goals||[],expenses=state.expenses||[];
@@ -393,6 +401,9 @@ function coachReply(question){
  const impulsive=month.filter(p=>p.psychology==="impulsive"||p.psychology==="pressure").length;
  const monthlyGoals=goals.reduce((n,g)=>n+Number(g.monthly||0),0);
  const hi=coachFirstName?coachFirstName+", ":"";
+ const hypothetical=parseCoachHypothetical(question);
+ if(hypothetical)return hi+"pour ce scénario, ton disponible est de "+money(hypothetical.available)+". Calcul : "+money(hypothetical.income)+" de revenus − "+money(hypothetical.charges)+" de charges = "+money(hypothetical.available)+". Ces montants sont ceux de ton hypothèse ; ils ne remplacent pas ton budget enregistré.";
+ if(/données|donnees|sources|informations financières|informations financieres/.test(q))return hi+"je m’appuie uniquement sur les informations enregistrées dans ton espace BEP : revenus "+money(income)+", charges "+money(spent)+", disponible calculé "+money(left)+". Le calcul est revenus moins charges. J’ai accès à "+(state.incomes||[]).length+" source(s) de revenus, "+budgets.length+" poste(s) de charges, "+goals.length+" objectif(s) et "+expenses.length+" dépense(s) enregistrée(s). Je n’ai pas accès à tes comptes bancaires ni aux opérations non enregistrées dans BEP.";
  if(!income)return hi+"je peux t'accompagner, mais il me manque ton revenu mensuel. Renseigne-le dans l'onglet Budget pour que mes recommandations reposent sur des chiffres fiables. En attendant, évite de fixer un objectif d'épargne sans connaître ta marge réelle.";
  if(/stress|pression|peur|angoiss|difficile|panique|culpabil/.test(q)){
   return hi+"commençons par ralentir la décision. Ne prends aucun engagement financier sous le coup de la pression. Note le fait concret qui t'inquiète, distingue-le de ce que tu imagines, puis reporte toute dépense non essentielle de 24 heures. Ton reste disponible estimé est de "+money(left)+".";
