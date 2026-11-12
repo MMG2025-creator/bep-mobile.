@@ -208,7 +208,7 @@ test("expenses module keeps the hero, shows only purchases and offers a minimal 
   assert.equal(js, read("dist/spend-experience.js"));
   assert.match(js, /TES DÉPENSES, EN TOUTE SIMPLICITÉ/);
   assert.match(js, /BEP · MON QUOTIDIEN/);
-  assert.match(js, /data-spend-tab="radar">Mes achats/);
+  assert.doesNotMatch(js, /data-spend-tab="radar"|>Mes achats<|bep-spend-nav/);
   assert.doesNotMatch(js, /data-spend-tab="challenges"|data-spend-tab="balance"/);
   assert.match(js, /bepAddPurchase/);
   assert.match(js, /\+ Ajouter un achat/);
