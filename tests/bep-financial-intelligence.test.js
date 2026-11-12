@@ -1,4 +1,8 @@
-"use strict";\nconst fs=require("node:fs");\nconst path=require("node:path");\nconst read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
+"use strict";
+const fs=require("node:fs");
+const path=require("node:path");
+const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
+\nconst fs=require("node:fs");\nconst path=require("node:path");\nconst read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge}=require("../lib/bep-financial-intelligence");
