@@ -430,3 +430,49 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
     width:28px !important;height:28px !important;min-width:28px !important;
   }
 }
+
+
+/* Production fix: match the legacy charges selector specificity so the saved rows keep a stable two-column layout. */
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
+  align-items:center !important;
+  column-gap:10px !important;
+  min-width:0 !important;
+}
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-main,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-main{
+  grid-column:1 !important;
+  min-width:0 !important;
+  width:100% !important;
+}
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
+  grid-column:2 !important;
+  display:grid !important;
+  grid-template-columns:max-content 32px 32px !important;
+  align-items:center !important;
+  justify-content:end !important;
+  justify-items:center !important;
+  gap:6px !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  margin:0 !important;
+}
+@media(max-width:640px){
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
+    grid-template-columns:minmax(0,1fr) max-content !important;
+    column-gap:7px !important;
+  }
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
+    grid-template-columns:max-content 28px 28px !important;
+    gap:4px !important;
+  }
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions button,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions button{
+    width:28px !important;height:28px !important;min-width:28px !important;
+  }
+}
