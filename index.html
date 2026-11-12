@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=76"><link rel="stylesheet" href="./ui-polish.css?v=1">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=77"><link rel="stylesheet" href="./ui-polish.css?v=1">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=3">
@@ -70,6 +70,12 @@
 </section>
 <section id="budget" class="panel">
 
+<article class="card ai-card budget-advisor-card" id="budgetAdvisorCard">
+<div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div>
+<p id="aiIncome" class="ai-advice" data-budget-advice="income">Analyse de tes sources de revenus en cours…</p>
+<p id="aiCharges" class="ai-advice" data-budget-advice="charges" hidden>Analyse de tes charges et des oublis possibles en cours…</p>
+<p id="aiMonthly" class="ai-advice" data-budget-advice="monthly" hidden>Analyse de ton budget mensuel en cours…</p>
+</article>
 <div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
 <button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
 <button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
@@ -113,7 +119,6 @@
 </article>
 </div>
 <div id="budgetModuleIncome" class="budget-module" role="tabpanel">
-<article class="card ai-card budget-advisor-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiIncome" class="ai-advice">Analyse de tes sources de revenus en cours…</p></article>
 <article class="card income-card"><div class="card-head"><div><h2>Mes revenus</h2><p class="hint">Ajoute toutes tes sources de revenus. Le total est calculé automatiquement.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des revenus nets</span><strong id="incomeTotal">0,00 €</strong></div><section class="budget-checkup income-checkup card" aria-labelledby="incomeCheckupTitle">
   <div class="budget-checkup-head"><div><span class="tag">Assistant revenus</span><h3 id="incomeCheckupTitle">As-tu pensé à toutes tes sources de revenus ?</h3><p class="hint">Parcours ces exemples. Coche uniquement les revenus supplémentaires réellement perçus et indique leur moyenne nette mensuelle. Ne recompte pas un revenu déjà enregistré.</p></div></div>
   <details id="incomeCheckupDetails">
@@ -143,7 +148,6 @@
 </section><div id="incomeRows" class="rows"></div><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
-<article class="card ai-card budget-advisor-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiCharges" class="ai-advice">Analyse de tes charges et des oublis possibles en cours…</p></article>
 <article class="card"><div class="card-head"><div><h2>Mes charges</h2><p class="hint">Centralise tes charges fixes, variables et échéances mensuelles.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des charges nettes</span><strong id="chargesTotal">0,00 €</strong></div><section class="budget-checkup card" aria-labelledby="budgetCheckupTitle">
   <div class="budget-checkup-head"><div><span class="tag">Assistant budget</span><h3 id="budgetCheckupTitle">As-tu pensé à toutes tes dépenses ?</h3><p class="hint">Parcours ces exemples. Coche uniquement les dépenses qui te concernent et indique un montant moyen.</p></div></div>
   <details id="budgetCheckupDetails">
@@ -302,7 +306,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="./runtime-config.js?v=1"></script>
-<script src="./app.js?v=93"></script>
+<script src="./app.js?v=94"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=5"></script>
 <script src="./pwa.js?v=9"></script>

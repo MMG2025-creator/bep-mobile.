@@ -172,3 +172,24 @@ test("monthly save distinguishes a persisted snapshot from a failed module sync"
     assert.match(js, /Actualisation de la liste des mois impossible/);
   }
 });
+
+test("budget advice stays above the income, charges and monthly budget navigation", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    const advice = html.indexOf('id="budgetAdvisorCard"');
+    const nav = html.indexOf('class="budget-module-nav"');
+    const income = html.indexOf('id="budgetModuleIncome"');
+    const charges = html.indexOf('id="budgetModuleCharges"');
+    const monthly = html.indexOf('id="budgetModuleMonthly"');
+    assert.ok(advice >= 0 && advice < nav && nav < income && nav < charges && nav < monthly,
+      file + " must show the shared BEP advice before all three budget modules");
+    assert.match(html, /data-budget-advice="income"/);
+    assert.match(html, /data-budget-advice="charges" hidden/);
+    assert.match(html, /data-budget-advice="monthly" hidden/);
+  }
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /data-budget-advice/);
+    assert.match(js, /zone:id==="monthly"\?"budget":id/);
+  }
+});
