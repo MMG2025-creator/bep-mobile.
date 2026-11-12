@@ -88,7 +88,7 @@ jobs:
           )
           for file in index.html dist/index.html; do
             for asset in "${assets[@]}"; do
-              grep -Eq "./${asset//./\\.}\\?v=[^\"&]+" "$file" || {
+              grep -Fq "./${asset}?v=" "$file" || {
                 echo "Missing versioned asset reference: $asset in $file"
                 exit 1
               }
@@ -96,7 +96,7 @@ jobs:
           done
 
           extract_assets() {
-            grep -Eo '(src|href)="\\./(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)(\\.js|\\.css)\\?v=[^\"]+"' "$1" |
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)[.](js|css)[?]v=[^"]+"' "$1" |
               sed -E 's/^[^"]*"//; s/"$//' |
               sort
           }
