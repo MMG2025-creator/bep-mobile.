@@ -81,3 +81,23 @@ En l'absence d'accord explicite : ne rien changer à l'infrastructure.
 La V1.1 est désignée par le propriétaire comme version de production stable de référence. Les deux déploiements de production ont été contrôlés LIVE sur le même SHA. Cette validation d'état de publication ne doit pas être présentée comme une certification de sécurité, une preuve de sauvegarde restaurable ou une recette exhaustive de tous les parcours authentifiés.
 
 Toute documentation ou automatisation future doit respecter ce contrat, sauf décision explicite ultérieure qui le remplace et qui sera datée et versionnée.
+
+
+## 8. Preuve opérationnelle détaillée — relevé du 12 novembre 2026
+
+### Production V1.1
+
+- Frontend Render service ID `srv-dbpb7ubbc2fs739nec5g`, déploiement LIVE `dep-dbr3gqogkstc738r0lng`, SHA `4269bb01d3a35772a77a6a28e3c24654782bebcf`.
+- API Render service ID `srv-dbpbcb5bedkc73893520`, déploiement LIVE `dep-dbr3gquf240s739sbet0`, même SHA `4269bb01d3a35772a77a6a28e3c24654782bebcf`.
+
+### Environnement test et API staging
+
+- Frontend test service ID `srv-dbr2rkuc6qcc73aghgpg`, déploiement LIVE `dep-dbr3of8gkstc738r80bg`, SHA `e047aec823338edcf6e859cc30bc8b086d3c1ab8`.
+- API staging service ID `srv-dbqggrgae00c738bbe00`, déploiement LIVE `dep-dbqr901srm7s738u91ng`, SHA `743591cde95887d5792c72aa1ea0a0e8a7c6d8e9`.
+- Les quatre services ont été relevés non suspendus. Le frontend test conserve le build command qui injecte l'URL de l'API staging.
+
+### Blueprint dédié abandonné
+
+L'objet Blueprint Render `exs-dbr3l5on74is73d8chkg` existe encore dans le compte Render avec le statut `created`, `autoSync=false` et `resources=[]`. Il ne possède aucune ressource gérée et ne doit pas être approuvé. Le fichier YAML correspondant a été supprimé de la branche `infra/bep-budget-test-api` ; commit de retrait `589c34695234e2d387b8ef937942a2a8717aeea9`. Aucun nouveau service ou aucune nouvelle base n'a été créé.
+
+Ces preuves décrivent l'état des déploiements au moment du relevé ; toute modification ultérieure doit déclencher une nouvelle vérification et une entrée datée dans le journal.
