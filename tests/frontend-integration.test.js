@@ -260,7 +260,7 @@ test("challenge catalogue offers twenty selectable challenges with persistent pe
   assert.match(js, /Choisir les défis que je veux relever/);
   assert.match(js, /data-challenge-select=/);
   assert.match(js, /localStorage\.setItem\(SELECT_KEY,JSON\.stringify\(selected\)\)/);
-  assert.match(js, /selected\.filter\(id=>challenges\.some\(c=>c\.id===id\)\)/);
+  assert.match(js, /saved\.filter\(id=>challenges\.some\(c=>c\.id===id\)\)/);
   assert.match(js, /completed\+" \/ "\+selected\.length/);
   assert.match(js, /c\.done/);
   for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
