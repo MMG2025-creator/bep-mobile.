@@ -231,3 +231,35 @@ button:disabled, [aria-disabled="true"] {
 .home-budget-action-row{display:flex;justify-content:flex-end;margin-top:11px}
 .home-budget-cta{min-height:38px;padding:8px 13px;border-radius:11px;font-size:11px;gap:7px;box-shadow:0 3px 9px rgba(23,107,80,.12)}
 .home-budget-cta span{font-size:14px}
+
+/* Coach Home: explicit primary action and clearer advice text */
+.home-coach-card .ai-advice{font-size:14px;line-height:1.65;color:#405b4e}
+.home-coach-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;margin-top:9px;padding:9px 15px;border-radius:12px;font-size:12px;font-weight:800}
+.home-coach-link span{font-size:15px}
+/* Financial charts: improve contrast, spacing and reading comfort without changing chart data or behaviour */
+.chart-carousel{border:1px solid #dfeae3;background:linear-gradient(155deg,#fff 0%,#fbfdfb 100%);box-shadow:0 5px 17px rgba(16,46,41,.055);border-radius:21px}
+.chart-carousel-head h2{font-size:19px;line-height:1.25;letter-spacing:-.025em;color:#173f35}
+.chart-kicker{color:#39805b;font-weight:800;letter-spacing:1.3px}
+.chart-period{display:inline-flex;margin-top:2px;background:#edf5f0;color:#426b56;font-weight:700}
+.chart-carousel .chart-body{min-height:205px;padding:8px 0}
+.chart-carousel .donut-layout{gap:12px}
+.chart-carousel .donut-svg{max-width:205px}
+.chart-carousel .donut-total{font-size:15px}
+.chart-carousel .donut-caption{font-size:11px}
+.chart-carousel .chart-legend{gap:11px}
+.chart-carousel .chart-legend-item{font-size:11px;gap:8px}
+.chart-carousel .chart-legend-item i{width:9px;height:9px}
+.chart-carousel .chart-legend-item b{font-size:11px;color:#203b30}
+.chart-carousel .chart-note{font-size:11px;line-height:1.6;color:#63766c}
+.chart-carousel-footer{padding-top:12px;margin-top:10px;font-size:11px}
+.chart-carousel-footer span:first-child{padding:4px 9px;border-radius:999px;background:#edf5f0}
+.capacity-chart{padding:12px 4px 4px}
+.capacity-chart-plot{gap:17px}
+.capacity-row{gap:9px}
+.capacity-row>span{font-size:12px}
+.capacity-row>b{font-size:12px;font-variant-numeric:tabular-nums}
+.capacity-track{height:11px;border-radius:999px;background:#edf3ef;overflow:hidden}
+.capacity-track>i{border-radius:999px}
+.monthly-chart-svg{max-height:250px}
+@media(max-width:390px){.home-coach-card .ai-advice{font-size:13.5px}.chart-carousel{padding:15px 13px 12px}.chart-carousel .chart-legend{gap:9px}.chart-carousel .chart-legend-item{font-size:10px}.chart-carousel .chart-legend-item b{font-size:10px}}
+@media(min-width:600px){.chart-carousel .donut-svg{max-width:220px}.chart-carousel .chart-legend{gap:13px}}
