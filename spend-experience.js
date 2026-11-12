@@ -87,7 +87,6 @@ function init(){
  dialog.addEventListener("close",()=>trigger.focus());
  window.addEventListener("bep:expense-saved",close);
  window.BEP_OPEN_PURCHASE_DIALOG=open;
- window.BEP_OPEN_ENTRY_DIALOG=id=>id==="purchase"?open():undefined;
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
