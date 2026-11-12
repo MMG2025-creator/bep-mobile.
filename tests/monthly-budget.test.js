@@ -4,7 +4,14 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { validMonth, validateItems, totals, monthKeyAt } = require("../monthly-budget-routes");
+const { validMonth, validateItems, totals, monthKeyAt, monthKeyFromDate } = require("../monthly-budget-routes");
+
+test("monthKeyFromDate normalizes PostgreSQL DATE values without locale-dependent strings", () => {
+  assert.equal(monthKeyFromDate(new Date(2026, 10, 1)), "2026-11");
+  assert.equal(monthKeyFromDate("2026-11-01"), "2026-11");
+  assert.equal(monthKeyFromDate("invalid"), null);
+  assert.equal(monthKeyFromDate(new Date("invalid")), null);
+});
 
 test("validMonth accepts only supported YYYY-MM civil months", () => {
   assert.equal(validMonth("2026-11"), true);
