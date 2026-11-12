@@ -13,6 +13,7 @@ test("published frontend assets are synchronized with source", () => {
   assert.equal(read("spend-experience.js"), read("dist/spend-experience.js"));
   assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
   assert.equal(read("styles.css"), read("dist/styles.css"));
+  assert.equal(read("app.js"), read("dist/app.js"));
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("index.html").includes("./financial-engine.js?v=1"));
@@ -346,4 +347,12 @@ test("BEP advice is a contextual popup and quick expense floating button is remo
  assert.ok(html.includes('id="bepCoachMascot"'));
  assert.ok(!html.includes('id="bepQuickExpense"'));
  assert.ok(html.includes('id="aiIncome"')&&html.includes('id="aiCharges"')&&html.includes('id="aiSavings"')&&html.includes('id="aiPurchases"'));
+});
+
+test("BEP advice popup replaces repeated cards and floating quick expense", () => {
+ const html=read("index.html");
+ assert.ok(html.includes('id="bepAdviceDialog"'));
+ assert.ok(html.includes('id="bepAdviceRobot"'));
+ assert.ok(!html.includes('id="bepQuickExpense"'));
+ for (const id of ["aiHome","aiIncome","aiCharges","aiMonthly","aiSavings","aiPurchases"]) assert.ok(html.includes('id="'+id+'"'));
 });
