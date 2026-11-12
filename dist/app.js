@@ -171,30 +171,41 @@ async function isHeicReceiptImage(file){
  try{const bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());const brand=String.fromCharCode(...bytes.slice(8,12));return bytes.length>=12&&String.fromCharCode(...bytes.slice(4,8))==="ftyp"&&/(heic|heix|hevc|hevx|mif1|msf1)/i.test(brand)}catch{return false}
 }
 async function receiptImageFromBlob(blob){
- return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)});img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne sait pas décoder ce format d'image."))};img.src=url})
+ return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>{if(!img.naturalWidth||!img.naturalHeight){URL.revokeObjectURL(url);reject(Error("La photo est illisible ou ses dimensions sont invalides."));return}resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)})};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne parvient pas à décoder cette photo. Essaie une capture JPG ou PNG."))};img.src=url})
 }
 async function decodeBankImageForOcr(file){
- try{return await createImageBitmap(file)}catch(nativeError){
-  if(await isHeicReceiptImage(file)){
-   const converter=await loadHeicDecoder(),converted=await converter({blob:file,toType:"image/jpeg",quality:.92}),jpeg=Array.isArray(converted)?converted[0]:converted;
-   if(!jpeg)throw Error("La conversion HEIC n'a produit aucune image.");
-   try{return await createImageBitmap(jpeg)}catch{return await receiptImageFromBlob(jpeg)}
-  }
-  return await receiptImageFromBlob(file);
+ let nativeError;
+ if(typeof createImageBitmap==="function"){
+  try{return await createImageBitmap(file,{imageOrientation:"from-image"})}catch(error){nativeError=error}
+  try{return await createImageBitmap(file)}catch(error){nativeError=error}
  }
+ if(await isHeicReceiptImage(file)){
+  try{
+   const converter=await loadHeicDecoder(),converted=await converter({blob:file,toType:"image/jpeg",quality:.9}),jpeg=Array.isArray(converted)?converted[0]:converted;
+   if(!jpeg)throw Error("La conversion HEIC n'a produit aucune image.");
+   if(typeof createImageBitmap==="function"){try{return await createImageBitmap(jpeg,{imageOrientation:"from-image"})}catch{}}
+   return await receiptImageFromBlob(jpeg);
+  }catch(error){throw Error("Conversion HEIC/HEIF impossible : "+(error?.message||"format non pris en charge"))}
+ }
+ try{return await receiptImageFromBlob(file)}catch(error){throw Error((error?.message||"Décodage impossible")+(nativeError?" (décodage natif indisponible)":""))}
 }
 async function prepareBankImageForOcr(file){
  let bitmap;
  try{
-  if(!document.createElement("canvas").getContext)return file;
+  const probe=document.createElement("canvas");
+  if(!probe.getContext)throw Error("Le navigateur ne permet pas de préparer les images.");
   bitmap=await decodeBankImageForOcr(file);
-  if(!bitmap.width||!bitmap.height)throw Error("Dimensions d'image invalides.");
-  const maxSide=2600,scale=Math.min(2,maxSide/Math.max(bitmap.width,bitmap.height),Math.max(1,1800/Math.min(bitmap.width,bitmap.height)));
-  const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
-  const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return file;
-  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.filter="grayscale(100%) contrast(112%)";ctx.drawImage(bitmap.image||bitmap,0,0,canvas.width,canvas.height);
+  const width=Number(bitmap.width),height=Number(bitmap.height);
+  if(!width||!height||!Number.isFinite(width*height))throw Error("Dimensions de photo invalides.");
+  const maxSide=2400,maxPixels=4500000;
+  const scale=Math.min(1,maxSide/Math.max(width,height),Math.sqrt(maxPixels/(width*height)));
+  const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)throw Error("Préparation de la photo impossible sur cet appareil.");
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
+  try{ctx.filter="grayscale(100%) contrast(112%)"}catch{}
+  ctx.drawImage(bitmap.image||bitmap,0,0,canvas.width,canvas.height);
   return canvas;
- }catch(error){if(await isHeicReceiptImage(file))throw Error("Impossible de convertir cette photo HEIC/HEIF : "+(error?.message||"format non pris en charge"));return file}
+ }catch(error){throw Error("Préparation de la photo impossible : "+(error?.message||"format non pris en charge"))}
  finally{bitmap?.close?.()}
 }
 function imageCandidatesFromOcrData(data,fileName){
@@ -370,7 +381,7 @@ async function processReceiptFile(file,input){
  let worker;
  try{
   if(!(/^image\/[a-z0-9.+-]+$/i.test(file.type)||await isHeicReceiptImage(file)))throw Error("Format non pris en charge. Importe une image JPG, PNG, WebP ou HEIC.");
-  if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Limite : 12 Mo.");
+  if(file.size>40*1024*1024)throw Error("Cette photo dépasse 40 Mo. Réduis sa taille ou prends une capture d’écran du justificatif.");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
   const ocrImage=await prepareReceiptImageForOcr(file);
