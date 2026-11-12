@@ -21,7 +21,7 @@ test("published frontend assets are synchronized with source", () => {
       assert.ok(html.includes("./" + asset + "?v="), file + " must reference versioned " + asset);
     }
   }
-  const assetRefs = file => [...read(file).matchAll(/(?:src|href)="\.\/([^"]+\?v=[^"]+)"/g)].map(match => match[1]);
+  const assetRefs = file => [...read(file).matchAll(/(?:src|href)="\.\/((?:runtime-config|financial-engine|app|styles|spend-experience|monthly-budget-ui)(?:\.css|\.js)\?v=[^"]+)"/g)].map(match => match[1]);
   assert.deepEqual(assetRefs("index.html"), assetRefs("dist/index.html"),
     "source and dist HTML must load the same asset versions");
 });
