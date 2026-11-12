@@ -103,3 +103,18 @@
 #purchases .bep-spend-view[hidden]{display:none!important}
 #purchases .bep-spend-radar{display:block;min-width:0}
 #purchases .bep-spend-nav button:focus-visible{outline:2px solid #b98b2e;outline-offset:2px}
+
+/* Personal challenge picker and expanded challenge catalogue */
+#purchases .bep-spend-challenge-picker{margin:0 0 14px;border:1px solid #dce9df;border-radius:14px;background:#f8fbf8;overflow:hidden}
+#purchases .bep-spend-challenge-picker summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;color:#20583f;font-size:12px;font-weight:800}
+#purchases .bep-spend-challenge-picker summary::-webkit-details-marker{display:none}
+#purchases .bep-spend-challenge-picker summary:after{content:"⌄";font-size:18px;color:#6b8b76}
+#purchases .bep-spend-challenge-picker[open] summary:after{content:"⌃"}
+#purchases .bep-spend-challenge-picker summary small{margin-left:auto;color:#7a8b80;font-size:10px;font-weight:600;white-space:nowrap}
+#purchases .bep-spend-challenge-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 12px 13px}
+#purchases .bep-spend-challenge-options>p{grid-column:1/-1;margin:0 0 3px;color:#75877b;font-size:11px}
+#purchases .bep-spend-challenge-option{display:flex;align-items:center;gap:8px;min-width:0;padding:9px 10px;border:1px solid #e2ebe4;border-radius:10px;background:white;color:#526c5b;font-size:11px;line-height:1.3;cursor:pointer}
+#purchases .bep-spend-challenge-option input{width:15px;height:15px;flex:0 0 auto;accent-color:#287451}
+#purchases .bep-spend-challenge-grid-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#purchases .bep-spend-challenge-done{display:block;margin-top:7px;color:#347451;font-size:10px;line-height:1.4}
+@media(max-width:480px){#purchases .bep-spend-challenge-options,#purchases .bep-spend-challenge-grid-inner{grid-template-columns:1fr}#purchases .bep-spend-challenge-picker summary{flex-wrap:wrap}#purchases .bep-spend-challenge-picker summary small{margin-left:0}}
