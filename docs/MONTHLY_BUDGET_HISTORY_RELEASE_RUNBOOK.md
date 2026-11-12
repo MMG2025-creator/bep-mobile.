@@ -35,7 +35,7 @@ Do not run DDL from application startup. Do not execute the migration before the
 
 ## Initial user data and accounting rules
 
-- The first monthly snapshot is created only after the user explicitly chooses a month and confirms importing the current budget.
+- The first monthly snapshot is created only after the user explicitly chooses a month and confirms the one-time import (including the number of lines and the fact that the copy is independent); an empty month also requires confirmation.
 - No earlier months are fabricated or backfilled.
 - New months copy the latest earlier snapshot as independent line items.
 - Planned income, charges and savings remain distinct.
