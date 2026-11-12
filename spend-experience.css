@@ -92,3 +92,9 @@
 #purchases .bep-spend-score{margin-top:0}
 #purchases .purchase-entry-card .field{margin-bottom:0}
 @media(max-width:480px){#purchases .bep-spend-basics{grid-template-columns:1fr}#purchases .bep-spend-advanced-body .two{grid-template-columns:1fr}#purchases .bep-spend-advanced summary{flex-wrap:wrap}#purchases .bep-spend-advanced summary small{margin-left:0}}
+
+/* Reliable low-friction purchase entry */
+#purchases .bep-spend-auto-hint{display:block;margin-top:5px;color:#7a8b80;font-size:10px;line-height:1.4}
+#purchases .bep-spend-basics input:focus-visible,#purchases .bep-spend-basics select:focus-visible{outline:3px solid #dcefe2;outline-offset:1px}
+#purchases #purchaseAmount{font-variant-numeric:tabular-nums}
+#purchases .bep-spend-advanced-body #city{max-width:100%}
