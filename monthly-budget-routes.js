@@ -252,8 +252,16 @@ function createMonthlyBudgetRouter({ pool, auth }) {
         });
       }
       rows.sort((a, b) => b.at.localeCompare(a.at));
+      const savingsOperations = Array.isArray(payload.savingsOperations) ? payload.savingsOperations.filter(op => {
+        if (!op || typeof op !== "object" || !["deposit", "withdrawal"].includes(op.type) ||
+            typeof op.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(op.date) || op.date.slice(0, 7) !== monthKey) return false;
+        const amount = Number(op.amount);
+        return Number.isFinite(amount) && amount > 0 && amount <= MAX_AMOUNT;
+      }).map(op => ({ id: typeof op.id === "string" ? op.id : null, type: op.type,
+        goalId: typeof op.goalId === "string" ? op.goalId : null, amount: Number(op.amount).toFixed(2),
+        date: op.date, reversalOf: typeof op.reversalOf === "string" ? op.reversalOf : null })) : [];
       res.setHeader("Cache-Control", "no-store");
-      res.json({ monthKey, count: rows.length, actualExpenseTotal: rows.reduce((sum, x) => sum + Number(x.amount), 0).toFixed(2), expenses: rows });
+      res.json({ monthKey, count: rows.length, actualExpenseTotal: rows.reduce((sum, x) => sum + Number(x.amount), 0).toFixed(2), expenses: rows, savingsOperations });
     } catch (error) {
       console.error("Monthly actual expenses read failed", error.message);
       res.status(503).json({ error: "MONTHLY_ACTUALS_UNAVAILABLE" });
