@@ -212,3 +212,16 @@ button:disabled, [aria-disabled="true"] {
 .home-coach-card .ai-label{font-size:9px}
 @media(max-width:390px){.home-snapshot-grid{gap:6px}.home-snapshot-card{padding:10px 8px 11px;border-radius:14px}.home-snapshot-label{font-size:9px}.home-coach-card{grid-template-columns:70px minmax(0,1fr);gap:10px;padding:13px}.home-coach-mascot{max-width:70px}.home-section-heading h2{font-size:17px}}
 @media(min-width:600px){.home-snapshot-grid{gap:12px}.home-snapshot-card{padding:16px}.home-coach-card{grid-template-columns:104px minmax(0,1fr);padding:18px}.home-coach-mascot{max-width:96px}}
+
+/* Home feedback: stronger budget action, planned savings, no duplicate mascot */
+.home-section-heading{align-items:center}
+.home-budget-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:11px 17px;border-radius:13px;font-size:12px;font-weight:800;box-shadow:0 5px 13px rgba(23,107,80,.16);white-space:nowrap}
+.home-budget-cta span{font-size:16px;line-height:1}
+.home-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.home-snapshot-savings{background:linear-gradient(145deg,#f3f0ff,#fbfaff);border-color:#e4dcf5}
+.savings-icon{background:#eee7ff;color:#7656a8}
+.home-coach-card{display:block;padding:16px 18px}
+.home-coach-card .ai-card-head{justify-content:space-between}
+.home-coach-card .ai-advice{margin-top:10px}
+@media(max-width:390px){.home-budget-cta{min-height:43px;padding:10px 12px;font-size:11px}.home-snapshot-grid{gap:7px}.home-snapshot-card{padding:11px 10px}.home-section-heading{align-items:flex-start;flex-direction:column;gap:7px}}
+@media(min-width:600px){.home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
