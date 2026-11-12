@@ -381,7 +381,7 @@
  document.getElementById("bepAdviceMinimize").addEventListener("click",close);
  dialog.addEventListener("click",e=>{if(e.target===dialog)close()});
  window.BEP_OPEN_ADVICE=open;
- const head=document.getElementById("bepCoachMascot");if(head){head.onclick=e=>{e.preventDefault();open()};head.setAttribute("aria-label","Ouvrir le conseil BEP")}
+ const head=document.getElementById("bepCoachMascot");const sourceFace=head?.querySelector("svg");if(sourceFace){const face=sourceFace.cloneNode(true);face.setAttribute("aria-hidden","true");robot.querySelector(".bep-advice-robot-face")?.replaceWith(face)}if(head){head.onclick=e=>{e.preventDefault();open()};head.setAttribute("aria-label","Ouvrir le conseil BEP")}
 })();
 </script>
 
