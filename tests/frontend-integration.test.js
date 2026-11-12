@@ -439,3 +439,21 @@ test("long press enables bulk selection for saved charges, incomes and monthly b
     assert.doesNotMatch(js, /actuals\.expenses\.slice\(0, 12\)/);
   }
 });
+
+test("spending hero stats refresh from the authoritative app state and label the current month", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    assert.match(read(file), /bep:state-rendered/);
+  }
+  for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
+    const js = read(file);
+    assert.match(js, /bep:state-rendered/);
+    assert.match(js, /bep:auth-ready/);
+    assert.match(js, /toLocaleDateString\("fr-FR",\{month:"long",year:"numeric"\}\)/);
+    assert.match(js, /getMonth\(\)===now\.getMonth\(\)&&d\.getFullYear\(\)===now\.getFullYear\(\)/);
+  }
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.match(html, /spend-experience\.js\?v=15&bep=monthly-header-refresh-20261112/);
+    assert.match(html, /app\.js\?v=86&bep=spend-stats-refresh-20261112/);
+  }
+});
