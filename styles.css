@@ -1017,3 +1017,15 @@ body.chart-zoom-open{overflow:hidden}
 /* Final savings order: BEP advice must precede saved capital */
 #savings.savings-page>.savings-advisor-card{order:1!important;grid-column:1/-1}
 #savings.savings-page>.savings-hero-card{order:2!important;grid-column:1/-1}
+
+/* Coach IA: compact disclosure, expandable on demand */
+.coach-ai-disclosure{margin-top:14px}
+.coach-ai-disclosure>.coach-ai-summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;min-height:54px;padding:14px 16px;border:1px solid var(--line,#dce9e3);border-radius:16px;background:#f2f8f5;color:var(--text,#17352b);font-weight:600}
+.coach-ai-disclosure>.coach-ai-summary::-webkit-details-marker{display:none}
+.coach-ai-open-hint{display:inline-flex;align-items:center;gap:8px;color:var(--muted,#668078);font-size:12px;font-weight:500}
+.coach-ai-plus{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e1f0e9;color:#187a58;font-size:17px;line-height:1;transition:transform .22s ease}
+.coach-ai-disclosure[open]>.coach-ai-summary{border-radius:16px 16px 0 0}
+.coach-ai-disclosure[open] .coach-ai-plus{transform:rotate(45deg)}
+.coach-ai-disclosure>.ai-connection-card{margin-top:0;border-top:0;border-radius:0 0 16px 16px;animation:coachAiReveal .22s ease-out}
+@keyframes coachAiReveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:520px){.coach-ai-disclosure>.coach-ai-summary{align-items:flex-start;flex-direction:column;gap:5px}.coach-ai-open-hint{font-size:11px}}
