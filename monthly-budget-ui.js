@@ -66,6 +66,7 @@
   let loading = false;
   let authEpoch = 0;
   let actualsRequestId = 0;
+  let actualsRefreshPending = false;
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   function financialPosition() {
@@ -88,6 +89,10 @@
   const setBusy = value => {
     loading = value;
     card.querySelectorAll("button,input,select").forEach(el => { el.disabled = value; });
+    if (!value && actualsRefreshPending) {
+      actualsRefreshPending = false;
+      Promise.resolve().then(refreshActuals);
+    }
   };
   async function api(path, options = {}) {
     const response = await fetch(API + path, {
@@ -259,7 +264,8 @@
     } finally { setBusy(false); }
   }
   async function refreshActuals() {
-    if (!window.bepSignedIn || !current || !current.monthKey || loading) return;
+    if (loading) { actualsRefreshPending = true; return; }
+    if (!window.bepSignedIn || !current || !current.monthKey) return;
     const epoch = authEpoch;
     const requestId = ++actualsRequestId;
     const monthKey = current.monthKey;
