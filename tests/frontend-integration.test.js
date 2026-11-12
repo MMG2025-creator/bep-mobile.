@@ -17,17 +17,17 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("index.html").includes("./financial-engine.js?v=1"));
-  assert.ok(read("index.html").includes("./app.js?v=102"));
+  assert.ok(read("index.html").includes("./app.js?v=85"));
   assert.ok(read("dist/index.html").includes("./financial-engine.js?v=1"));
-  assert.ok(read("dist/index.html").includes("./app.js?v=102"));
-  assert.ok(read("index.html").includes("./styles.css?v=82"));
-  assert.ok(read("dist/index.html").includes("./styles.css?v=82"));
+  assert.ok(read("dist/index.html").includes("./app.js?v=85"));
+  assert.ok(read("index.html").includes("./styles.css?v=85"));
+  assert.ok(read("dist/index.html").includes("./styles.css?v=85"));
   assert.ok(read("index.html").includes("./spend-experience.css?v=16"));
   assert.ok(read("dist/index.html").includes("./spend-experience.css?v=13"));
   assert.ok(read("index.html").includes("./spend-experience.js?v=12"));
   assert.ok(read("dist/index.html").includes("./spend-experience.js?v=10"));
-  assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=6"));
-  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=6"));
+  assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=8"));
+  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=8"));
 });
 
 test("monthly history and savings DOM references exist in both HTML builds", () => {
@@ -425,11 +425,17 @@ test("long press enables bulk selection for saved charges, incomes and monthly b
     assert.match(js, /attachLongPressSelection\("incomeRows"/);
     assert.match(js, /attachLongPressSelection\("budgetRows"/);
     assert.match(js, /data-multi-delete/);
+    assert.match(js, /row\.addEventListener\("pointerdown",start/);
+    assert.match(js, /row\.dataset\.multiBound="1"/);
   }
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
     assert.match(js, /function attachMonthLongPress/);
     assert.match(js, /data-month-row/);
     assert.match(js, /Retirer les .* lignes sélectionnées/);
+    assert.match(js, /row\.addEventListener\("pointerdown", start/);
+    assert.match(js, /row\.dataset\.monthLongPressBound = "1"/);
+    assert.match(js, /Mes dépenses de /);
+    assert.doesNotMatch(js, /actuals\.expenses\.slice\(0, 12\)/);
   }
 });
