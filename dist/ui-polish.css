@@ -263,3 +263,9 @@ button:disabled, [aria-disabled="true"] {
 .monthly-chart-svg{max-height:250px}
 @media(max-width:390px){.home-coach-card .ai-advice{font-size:13.5px}.chart-carousel{padding:15px 13px 12px}.chart-carousel .chart-legend{gap:9px}.chart-carousel .chart-legend-item{font-size:10px}.chart-carousel .chart-legend-item b{font-size:10px}}
 @media(min-width:600px){.chart-carousel .donut-svg{max-width:220px}.chart-carousel .chart-legend{gap:13px}}
+
+/* Chart explanations: preserve complete sentences and make them easy to scan */
+.chart-carousel .chart-note{max-width:62ch;margin:12px auto 2px;font-size:11px;line-height:1.7;white-space:normal;overflow-wrap:break-word;text-wrap:pretty}
+.chart-carousel .chart-empty{min-height:155px;padding:22px 18px;line-height:1.65;font-size:12px;white-space:normal;text-wrap:pretty}
+.capacity-chart .chart-note{max-width:64ch}
+@media(max-width:390px){.chart-carousel .chart-note{font-size:10.5px;line-height:1.65}.chart-carousel .chart-empty{padding:18px 12px}}
