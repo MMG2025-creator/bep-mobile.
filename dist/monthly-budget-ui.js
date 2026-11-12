@@ -252,10 +252,14 @@
       current = data.budget;
       items = current.items.map(x => ({ ...x, plannedAmount: Number(x.plannedAmount) }));
       renderItems();
+      let syncWarning = null;
       if (current.monthKey === monthNow() && current.status === "open" && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
-        await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items);
+        try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
+        catch (syncError) { syncWarning = syncError.message; }
       }
-      status("Budget enregistré · version " + current.version);
+      status(syncWarning
+        ? "Budget mensuel enregistré · version " + current.version + ". Synchronisation des autres modules à reprendre : " + syncWarning
+        : "Budget enregistré · version " + current.version, Boolean(syncWarning));
       await refreshMonthListOnly();
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
