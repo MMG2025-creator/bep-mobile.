@@ -94,7 +94,7 @@ test("financial entry forms open in accessible dialogs", () => {
 });
 test("receipt photo capture suggests expense fields locally without automatic saving", () => {
   for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="receiptFile"[^>]*capture="environment"/);assert.match(html,/id="receiptStatus"/)}
-  for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/await loadTesseract\(\)/);assert.match(js,/window\.Tesseract\.recognize\(file,"fra\+eng"/);assert.match(js,/receiptCaptureText=text/);assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);assert.match(js,/captureMode:editingPurchaseId\?\(previous\.captureMode\|\|"manual"\):\(receiptCaptureText\?"receipt":"manual"\)/)}
+  for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/await loadTesseract\(\)/);assert.match(js,/window\.Tesseract\.recognize\(file,"fra\+eng"/);assert.match(js,/receiptCaptureText="Ticket photographié/);assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);assert.match(js,/captureMode:editingPurchaseId\?\(previous\.captureMode\|\|"manual"\):\(receiptCaptureText\?"receipt":"manual"\)/)}
   for(const file of ["spend-experience.css","dist/spend-experience.css"])assert.match(read(file),/\.bep-receipt-capture/);
 });
 test("monthly budget dialogs close only after successful form updates",()=>{const js=read("monthly-budget-ui.js");assert.match(js,/id:"monthly-create"/);assert.match(js,/id:"monthly-item"/)});
