@@ -84,3 +84,17 @@ test("coach mascot is visible and heavy OCR libraries no longer block initial lo
     assert.equal(js, read(file === "app.js" ? "dist/app.js" : "app.js"));
   }
 });
+
+
+test("financial entry forms open in accessible dialogs", () => {
+  const spend=read("spend-experience.js");assert.equal(spend,read("dist/spend-experience.js"));
+  for(const id of ["income","income-checkup","charge","charge-checkup","savings-goal","savings-movement","monthly-create","monthly-item"])assert.ok(spend.includes('"'+id+'"'));
+  assert.match(spend,/mountQuickExpenseModal\(panel,entry\)/);assert.match(spend,/mountFinancialEntryDialogs\(\)/);assert.match(spend,/dialog\.showModal\(\)/);assert.match(spend,/dialog\.addEventListener\("close",\(\)=>trigger\.focus\(\)\)/);
+  for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("income"\)/);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("charge"\)/);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("savings-goal"\)/);assert.match(js,/bep:entry-saved/)}
+});
+test("receipt photo capture suggests expense fields locally without automatic saving", () => {
+  for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="receiptFile"[^>]*capture="environment"/);assert.match(html,/id="receiptStatus"/)}
+  for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/await loadTesseract\(\)/);assert.match(js,/window\.Tesseract\.recognize\(file,"fra\+eng"/);assert.match(js,/receiptCaptureText=text/);assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);assert.match(js,/captureMode:editingPurchaseId\?\(previous\.captureMode\|\|"manual"\):\(receiptCaptureText\?"receipt":"manual"\)/)}
+  for(const file of ["spend-experience.css","dist/spend-experience.css"])assert.match(read(file),/\.bep-receipt-capture/);
+});
+test("monthly budget dialogs close only after successful form updates",()=>{const js=read("monthly-budget-ui.js");assert.match(js,/id:"monthly-create"/);assert.match(js,/id:"monthly-item"/)});
