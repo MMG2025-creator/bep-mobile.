@@ -1,0 +1,17 @@
+<!-- BEP — mascotte officielle unique. Ne pas modifier ni décliner sans validation explicite. -->
+<svg  viewBox="0 0 160 170" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="80" cy="158" rx="48" ry="7" fill="#b9d9c8" opacity=".45"/>
+      <path d="M36 83 18 70q-8-6-12 2-3 7 5 13l22 18M124 83l18-13q8-6 12 2 3 7-5 13l-22 18" fill="none" stroke="#238653" stroke-width="11" stroke-linecap="round"/>
+      <path d="M52 112v23m56-23v23" stroke="#238653" stroke-width="12" stroke-linecap="round"/>
+      <rect x="39" y="94" width="82" height="57" rx="24" fill="#fff" stroke="#d4e8dc" stroke-width="3"/>
+      <rect x="61" y="111" width="38" height="24" rx="8" fill="#e9f8ef"/>
+      <path d="M68 129v-7m10 7v-12m10 12v-17" stroke="#25965b" stroke-width="4" stroke-linecap="round"/>
+      <path d="M80 12c-25 0-43 17-43 41v19c0 23 18 39 43 39s43-16 43-39V53c0-24-18-41-43-41Z" fill="#fff" stroke="#d4e8dc" stroke-width="3"/>
+      <path d="M34 54h-8v24h10m88-24h8v24h-10" fill="#d9f3e3" stroke="#238653" stroke-width="4" stroke-linejoin="round"/>
+      <rect x="47" y="38" width="66" height="47" rx="19" fill="#123f35"/>
+      <path d="M62 57v5m35-5v5" stroke="#a8f0c2" stroke-width="5" stroke-linecap="round"/>
+      <path d="M68 71q12 12 24 0" fill="none" stroke="#75dfa0" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M80 10V4m-6 0h12" stroke="#e4b94e" stroke-width="3" stroke-linecap="round"/>
+      <path d="m17 35 5-7m-9 1 4-2m121 12 6-6m-3 13 6-2" stroke="#e8b94d" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="132" cy="24" r="5" fill="#f6d96d"/><path d="M20 112h8m-4-4v8" stroke="#5bbd83" stroke-width="3" stroke-linecap="round"/>
+    </svg>
