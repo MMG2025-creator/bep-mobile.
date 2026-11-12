@@ -32,8 +32,6 @@
 #purchases.bep-expenses-page .bep-expenses-history-card[hidden]{display:none!important}
 
 /* Match the compact plus/minus disclosure control used in Revenues and Charges. */
-#purchases.bep-expenses-page .bep-expenses-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#purchases.bep-expenses-page .bep-expenses-section-title>span,#purchases.bep-expenses-page .bep-expenses-section-title>h2,#purchases.bep-expenses-page .bep-expenses-section-title>p{flex-basis:100%}
-#purchases.bep-expenses-page .bep-expenses-section-title{flex-wrap:wrap}
-#purchases.bep-expenses-page .bep-expenses-history-toggle{display:grid;place-items:center;width:42px;height:42px;min-width:42px;padding:0;margin:0 0 12px;border:0;border-radius:50%;background:#e8f3ee;color:#176b50;font:400 25px/1 "DM Sans",sans-serif;cursor:pointer;flex:0 0 42px}
+#purchases.bep-expenses-page .bep-expenses-section-title{position:relative;padding-right:54px}
+#purchases.bep-expenses-page .bep-expenses-history-toggle{position:absolute;right:0;top:0;display:grid;place-items:center;width:42px;height:42px;min-width:42px;padding:0;margin:0;border:0;border-radius:50%;background:#e8f3ee;color:#176b50;font:400 25px/1 "DM Sans",sans-serif;cursor:pointer;flex:0 0 42px}
 #purchases.bep-expenses-page .bep-expenses-history-toggle:hover{background:#dceee5}
