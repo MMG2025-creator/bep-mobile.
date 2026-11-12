@@ -146,10 +146,12 @@ async function refreshAuthAndSync(){
   if(!response.ok)return;
   const auth=await response.json();
   if(!auth.user)return;
+  const wasSignedIn=Boolean(window.bepSignedIn);
   window.bepSignedIn=true;
   const user=String(auth.user.id||auth.user.email||"authenticated");
   if(identity()!==user)window.BEPOffline.markKnownUser(user);
   await loadBaseline(user);
+  if(!wasSignedIn)window.dispatchEvent(new CustomEvent("bep:auth-ready"));
   await flush();
  }catch{}
 }
