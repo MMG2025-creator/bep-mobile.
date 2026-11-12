@@ -92,6 +92,19 @@ if(entry){
 }
 radar.insertBefore(score,entry?.nextSibling||null);panel.insertBefore(challenge,radar.nextSibling);panel.insertBefore(balance,challenge.nextSibling);
 nav.querySelectorAll("button").forEach((b,index)=>{b.addEventListener("click",()=>setTab(b.dataset.spendTab));b.addEventListener("keydown",event=>{if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key))return;event.preventDefault();const tabs=[...nav.querySelectorAll("button")];const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;tabs[next].click();tabs[next].focus();});});
+function mountQuickExpenseModal(panel,entry){
+ if(!panel||!entry||$("bepQuickExpenseDialog"))return;
+ const dialog=document.createElement("dialog");dialog.id="bepQuickExpenseDialog";dialog.className="bep-quick-expense-dialog";dialog.setAttribute("aria-labelledby","bepQuickExpenseTitle");
+ dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE RAPIDE</p><h2 id="bepQuickExpenseTitle">Ajouter une dépense</h2><p>Quelques secondes suffisent.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';
+ document.body.appendChild(dialog);dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
+ const open=()=>{if(dialog.open)return;$("purchaseSubmit")?.classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");dialog.showModal();setTimeout(()=>$("purchaseAmount")?.focus(),80)};
+ const close=()=>{if(dialog.open)dialog.close()};
+ $("bepQuickExpense")?.addEventListener("click",open);
+ dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);
+ dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
+ dialog.addEventListener("close",()=>{$("bepQuickExpense")?.focus()});
+ window.addEventListener("bep:expense-saved",close);
+}
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
 form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
