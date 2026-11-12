@@ -203,22 +203,23 @@ test("budget advice stays above the income, charges and monthly budget navigatio
 });
 
 
-test("expenses module keeps the hero, opens purchase entry in a modal and folds purchase history", () => {
+test("expenses module keeps the hero, shows only purchases and offers a minimal add-purchase form", () => {
   const js = read("spend-experience.js");
   assert.equal(js, read("dist/spend-experience.js"));
   assert.match(js, /TES DÉPENSES, EN TOUTE SIMPLICITÉ/);
   assert.match(js, /BEP · MON QUOTIDIEN/);
   assert.match(js, /data-spend-tab="radar">Mes achats/);
+  assert.doesNotMatch(js, /data-spend-tab="challenges"|data-spend-tab="balance"/);
   assert.match(js, /bepAddPurchase/);
-  assert.match(js, /Saisis le montant de ton achat/);
-  assert.match(js, /\+ Ajouter une charge/);
+  assert.match(js, /\+ Ajouter un achat/);
+  assert.match(js, /merchantField\.remove\(\)/);
   assert.match(js, /bep-spend-history-details/);
   assert.match(js, /mountQuickExpenseModal\(panel,entry,addButton\)/);
   for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
     const css = read(file);
     assert.match(css, /bep-spend-add-button/);
     assert.match(css, /bep-spend-history-details/);
-    assert.match(css, /data-spend-tab="challenges"/);
+    assert.match(css, /#purchases #purchaseNew/);
   }
 });
 
