@@ -156,8 +156,74 @@ async function refreshAuthAndSync(){
   await flush();
  }catch{}
 }
+async function resolveConflict(choice){
+ if(choice!=="local"&&choice!=="remote")return false;
+ if(!navigator.onLine||!window.bepSignedIn)return false;
+ const user=identity(),key=queueKey(user),api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+ try{
+  const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});
+  if(!response.ok)throw Error("Lecture de la version du compte impossible ("+response.status+")");
+  const server=await response.json(),remote=server.payload&&typeof server.payload==="object"?server.payload:{};
+  if(choice==="remote"){
+   await setBaselineFor(user,remote);
+   await serializeQueue(async()=>{await clear(key)});
+   window.dispatchEvent(new CustomEvent("bep:offline-use-remote",{detail:{payload:remote}}));
+   return true;
+  }
+  await serializeQueue(async()=>{
+   const latest=await read(key);
+   if(!latest)return;
+   latest.base=JSON.parse(JSON.stringify(remote));
+   latest.revision=(Number(latest.revision)||0)+1;
+   latest.queuedAt=new Date().toISOString();
+   await write(key,latest);
+  });
+  return await flush();
+ }catch(error){
+  window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));
+  return false;
+ }
+}
+let conflictDialogPending=false;
+function showConflictDialog(){
+ conflictDialogPending=true;
+ if(typeof document==="undefined")return;
+ const dialog=document.getElementById("bepOfflineConflictDialog");
+ if(dialog&&!dialog.open)dialog.showModal();
+}
+function setupConflictDialog(){
+ const dialog=document.getElementById("bepOfflineConflictDialog");
+ if(!dialog)return;
+ const localButton=document.getElementById("bepOfflineKeepLocal");
+ const remoteButton=document.getElementById("bepOfflineUseRemote");
+ const laterButton=document.getElementById("bepOfflineConflictLater");
+ const status=document.getElementById("bepOfflineConflictStatus");
+ const close=()=>{if(dialog.open)dialog.close()};
+ const run=async(choice)=>{
+  const warning=choice==="local"
+   ?"Cette action remplacera les données actuelles du compte par tes modifications locales. Continuer ?"
+   :"Cette action abandonnera les modifications locales en attente et chargera la version du compte. Continuer ?";
+  if(!window.confirm(warning))return;
+  [localButton,remoteButton,laterButton].forEach(button=>{if(button)button.disabled=true});
+  if(status)status.textContent="Résolution du conflit en cours…";
+  const ok=await window.BEPOffline.resolveConflict(choice);
+  [localButton,remoteButton,laterButton].forEach(button=>{if(button)button.disabled=false});
+  if(ok&&choice==="remote")close();
+  else if(!ok&&status)status.textContent="Le conflit n’a pas pu être résolu. Tes données locales restent conservées.";
+ };
+ localButton?.addEventListener("click",()=>run("local"));
+ remoteButton?.addEventListener("click",()=>run("remote"));
+ laterButton?.addEventListener("click",close);
+ window.addEventListener("bep:offline-synced",close);
+ window.addEventListener("bep:offline-sync-error",event=>{if(dialog.open&&status)status.textContent=event.detail?.message||"Synchronisation en attente."});
+ if(conflictDialogPending&&!dialog.open)dialog.showModal();
+}
+if(typeof document!=="undefined"){
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",setupConflictDialog,{once:true});
+ else setupConflictDialog();
+}
 window.BEPOffline={
- setBaseline,enqueue,flush,readPending:()=>read(queueKey()),refreshAuthAndSync,
+ setBaseline,enqueue,flush,resolveConflict,readPending:()=>read(queueKey()),refreshAuthAndSync,
  hasKnownUser:()=>!!localStorage.getItem(USER_KEY),
  markKnownUser:id=>{
   try{
@@ -168,5 +234,5 @@ window.BEPOffline={
  }
 };
 window.addEventListener("online",()=>{refreshAuthAndSync()});
-window.addEventListener("bep:offline-conflict",()=>{window.dispatchEvent(new CustomEvent("bep:toast",{detail:{message:"Synchronisation suspendue : les données du compte ont changé sur un autre appareil. Tes données locales sont préservées."}}))});
+window.addEventListener("bep:offline-conflict",()=>{showConflictDialog();window.dispatchEvent(new CustomEvent("bep:toast",{detail:{message:"Conflit de synchronisation : tes données locales sont préservées. Choisis quelle version conserver."}}))});
 })();
