@@ -244,7 +244,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000),coachProfile};
   await client.query("INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb) ON CONFLICT(user_id) DO UPDATE SET payload=EXCLUDED.payload,updated_at=NOW()",[req.session.user.id,JSON.stringify(safe)]);
   await client.query("COMMIT");
-  res.json({ok:true,updatedAt:new Date().toISOString()});
+  res.json({ok:true,updatedAt:new Date().toISOString(),payload:safe});
  }catch(e){
   await client.query("ROLLBACK").catch(()=>{});
   console.error("User data save failed",e.message);
