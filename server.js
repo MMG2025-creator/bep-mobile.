@@ -105,6 +105,11 @@ async function consumeBepAiQuota(userId){
 }
 async function releaseBepAiQuota(userId,month){await pool.query("UPDATE bep_ai_monthly_usage SET used=GREATEST(0,used-1),updated_at=NOW() WHERE user_id=$1 AND month_key=$2",[userId,month])}
 
+function coachProfileGuidance(raw){
+ const allowed={budget:"gestion du budget et équilibre revenus-charges",spending:"maîtrise des dépenses et identification d'économies",savings:"constitution d'une épargne et capacité d'épargne",goals:"progression vers des objectifs financiers",income:"compréhension et optimisation des ressources",debt:"maîtrise des dettes, crédits et remboursements",planning:"anticipation des dépenses futures et imprévus",learning:"explications pédagogiques et progression en éducation financière"};
+ const selected=Array.isArray(raw)?[...new Set(raw.filter(x=>Object.prototype.hasOwnProperty.call(allowed,x)))].slice(0,8):[];
+ return selected.length?"Profil d'accompagnement choisi par l'utilisateur : "+selected.map(x=>allowed[x]).join("; ")+". Adapte la priorité, les exemples et les recommandations à ces thématiques, sans ignorer la question posée ni les données réelles.":"Aucune préférence thématique n'est définie : conserve un accompagnement équilibré et contextuel.";
+}
 app.get("/api/ai/config",auth,async(req,res)=>{const r=await pool.query("SELECT provider,model,endpoint FROM bep_user_ai WHERE user_id=$1",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({configured:!!r.rowCount,...(r.rows[0]||{})})});
 app.put("/api/ai/config",auth,async(req,res)=>res.status(410).json({message:"La connexion d'une clé IA personnelle est désactivée. Le Coach IA BEP intégré est utilisé automatiquement."}));
 app.delete("/api/ai/config",auth,async(req,res)=>{await pool.query("DELETE FROM bep_user_ai WHERE user_id=$1",[req.session.user.id]);res.json({ok:true})});
@@ -136,7 +141,8 @@ app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  const p=req.body?.financialContext||{},purchaseReview=req.body?.intent==="purchase_review",ctx=purchaseReview
   ? {resteDisponible:p.available===null||p.available===undefined||p.available===""?null:(Number.isFinite(Number(p.available))?Number(p.available):null)}
   : {revenus:Number(p.income)||0,sourcesRevenus:Array.isArray(p.incomes)?p.incomes.slice(0,30):[],charges:Number(p.charges)||0,resteDisponible:Number(p.available)||0,postes:Array.isArray(p.budgets)?p.budgets.slice(0,40):[],objectifs:Array.isArray(p.goals)?p.goals.slice(0,20):[],depenses:Array.isArray(p.expenses)?p.expenses.slice(0,30):[]};
- const system="Tu es le Coach BEP, assistant de gestion budgétaire personnel. Réponds en français, de façon claire, concrète et prudente. Utilise les chiffres fournis, signale les données manquantes et distingue faits et recommandations. Ne prétends pas être conseiller financier réglementé. "+(purchaseReview?"Pour cet avis d'achat, la seule référence financière est le montant restant disponible (resteDisponible). N'utilise aucun revenu, charge, budget catégoriel, épargne, objectif ou historique pour recalculer la capacité. Compare le prix indiqué dans la question au montant disponible. Si le prix le dépasse, avertis explicitement que l'achat est hors budget et recommande la prudence, mais ne bloque jamais sa saisie ou son enregistrement. Si le disponible manque, indique-le sans le remplacer par zéro. ":"")+"Contexte EUR: "+JSON.stringify(ctx);
+ const profileGuidance=coachProfileGuidance(req.body?.coachProfile);
+ const system="Tu es le Coach BEP, assistant de gestion budgétaire personnel. Réponds en français, de façon claire, concrète et prudente. "+profileGuidance+ Utilise les chiffres fournis, signale les données manquantes et distingue faits et recommandations. Ne prétends pas être conseiller financier réglementé. "+(purchaseReview?"Pour cet avis d'achat, la seule référence financière est le montant restant disponible (resteDisponible). N'utilise aucun revenu, charge, budget catégoriel, épargne, objectif ou historique pour recalculer la capacité. Compare le prix indiqué dans la question au montant disponible. Si le prix le dépasse, avertis explicitement que l'achat est hors budget et recommande la prudence, mais ne bloque jamais sa saisie ou son enregistrement. Si le disponible manque, indique-le sans le remplacer par zéro. ":"")+"Contexte EUR: "+JSON.stringify(ctx);
  const out=await invokeAi(cfg,key,[{role:"system",content:system},{role:"user",content:q}]);
  res.setHeader("Cache-Control","no-store");res.json({answer:out.answer,usage:out.usage,provider:cfg.provider,model:cfg.model,mode,quota:mode==="bep"?quota:null});
  }catch(e){if(quota)await releaseBepAiQuota(req.session.user.id,quota.month).catch(()=>{});res.status(400).json({message:e.message||"IA indisponible."})}});
@@ -195,7 +201,8 @@ app.put("/api/data",auth,async(req,res)=>{
    if(next < -0.005){await client.query("ROLLBACK");return res.status(400).json({error:"SAVINGS_BALANCE_NEGATIVE"})}
    balances.set(o.goalId,next);
   }
-  const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000)};
+  const rawCoachProfile=Object.prototype.hasOwnProperty.call(p,"coachProfile")?p.coachProfile:previous.coachProfile;const coachProfile=Array.isArray(rawCoachProfile)?[...new Set(rawCoachProfile.filter(x=>["budget","spending","savings","goals","income","debt","planning","learning"].includes(x)))].slice(0,8):[];
+  const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000),coachProfile};
   await client.query("INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb) ON CONFLICT(user_id) DO UPDATE SET payload=EXCLUDED.payload,updated_at=NOW()",[req.session.user.id,JSON.stringify(safe)]);
   await client.query("COMMIT");
   res.json({ok:true,updatedAt:new Date().toISOString()});
