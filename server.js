@@ -151,7 +151,7 @@ app.post("/api/ai/test",auth,async(req,res)=>{let quota=null;try{const {cfg,key}
 app.get("/api/ai/status",auth,async(req,res)=>{try{
  const [u,g]=await Promise.all([pool.query("SELECT used FROM bep_ai_monthly_usage WHERE user_id=$1 AND month_key=$2",[req.session.user.id,aiMonthKey()]),pool.query("SELECT used FROM bep_ai_global_usage WHERE month_key=$1",[aiMonthKey()])]);
  const configured=!!String(process.env.BEP_AI_API_KEY||"").trim()&&!!aiProviders[String(process.env.BEP_AI_PROVIDER||"gemini").toLowerCase()]&&process.env.BEP_AI_ZERO_BILLING_CONFIRMED==="true";
- res.setHeader("Cache-Control","no-store");res.json({available:configured,mode:configured?"bep":"structured",used:Number(u.rows[0]?.used)||0,limit:BEP_AI_FREE_MONTHLY_LIMIT,globalUsed:Number(g.rows[0]?.used)||0,globalLimit:BEP_AI_GLOBAL_MONTHLY_LIMIT,month:aiMonthKey()});
+ res.setHeader("Cache-Control","no-store");res.json({available:configured,mode:configured?"bep":"structured",provider:configured?String(process.env.BEP_AI_PROVIDER||"gemini").toLowerCase():"",model:configured?String(process.env.BEP_AI_MODEL||"gemini-3.5-flash"):"",used:Number(u.rows[0]?.used)||0,limit:BEP_AI_FREE_MONTHLY_LIMIT,globalUsed:Number(g.rows[0]?.used)||0,globalLimit:BEP_AI_GLOBAL_MONTHLY_LIMIT,month:aiMonthKey()});
  }catch(e){res.status(500).json({message:"Statut du Coach IA indisponible."})}});
 app.post("/api/ai/advice",auth,async(req,res)=>{try{
  const zone=String(req.body?.zone||"home"),allowed=["home","budget","income","charges","savings","purchases"];
