@@ -1,5 +1,9 @@
 name: Monthly budget history checks
 
+concurrency:
+  group: monthly-budget-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
