@@ -1241,46 +1241,15 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .rowitem[data-multi-row],.monthly-budget-row[data-month-row]{user-select:none;-webkit-user-select:none;touch-action:pan-y}
 
 
-/* Listes de revenus et charges : lignes explicitement structurées, y compris en sélection multiple */
+/* Revenus et charges enregistrés : même structure de ligne que la liste Dépenses */
 .saved-list-longpress-hint{margin:8px 0 4px;line-height:1.45}
-.saved-selectable-list .saved-income-row,
-.saved-selectable-list .saved-charge-row{
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
-  align-items:center;column-gap:12px;row-gap:2px;min-width:0;padding:14px 0;text-align:left;
-}
-.saved-selectable-list .saved-income-row>span:first-child,
-.saved-selectable-list .saved-charge-row>span:first-child{
-  grid-column:1;grid-row:1;min-width:0;text-align:left;overflow-wrap:anywhere;
-}
-.saved-selectable-list .saved-income-row>span:first-child>b,
-.saved-selectable-list .saved-charge-row>span:first-child>b{display:block;line-height:1.35}
-.saved-selectable-list .saved-income-row>span:first-child>small,
-.saved-selectable-list .saved-charge-row>span:first-child>small{line-height:1.45}
-.saved-selectable-list .saved-row-amount{
-  grid-column:2;grid-row:1;justify-self:end;align-self:center;white-space:nowrap;
-  font-size:13px;font-variant-numeric:tabular-nums;
-}
-.saved-selectable-list .record-actions{
-  grid-column:1;grid-row:2;justify-self:start;display:flex;align-items:center;
-  gap:7px;flex-wrap:nowrap;margin-top:2px;
-}
-.saved-selectable-list .saved-income-row.has-multi-check,
-.saved-selectable-list .saved-charge-row.has-multi-check{grid-template-columns:24px minmax(0,1fr) auto}
-.saved-selectable-list .saved-income-row.has-multi-check>.multi-select-check,
-.saved-selectable-list .saved-charge-row.has-multi-check>.multi-select-check{
-  grid-column:1;grid-row:1 / span 2;justify-self:start;align-self:center;
-  width:19px;height:19px;margin:0;accent-color:var(--green);
-}
-.saved-selectable-list .saved-income-row.has-multi-check>span:first-child,
-.saved-selectable-list .saved-charge-row.has-multi-check>span:first-child{grid-column:2;grid-row:1}
-.saved-selectable-list .saved-income-row.has-multi-check>.saved-row-amount,
-.saved-selectable-list .saved-charge-row.has-multi-check>.saved-row-amount{grid-column:3;grid-row:1}
-.saved-selectable-list .saved-income-row.has-multi-check>.record-actions,
-.saved-selectable-list .saved-charge-row.has-multi-check>.record-actions{grid-column:2;grid-row:2}
+.saved-income-row,.saved-charge-row{min-width:0}
+.saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{width:100%}
+.saved-income-row .purchase-row-main>span:first-child,
+.saved-charge-row .purchase-row-main>span:first-child{min-width:0;overflow-wrap:anywhere}
+.saved-income-row .purchase-row-actions,
+.saved-charge-row .purchase-row-actions{flex:0 0 auto}
 @media(max-width:390px){
- .saved-selectable-list .saved-income-row,.saved-selectable-list .saved-charge-row{column-gap:7px;padding:13px 0}
- .saved-selectable-list .saved-income-row.has-multi-check,.saved-selectable-list .saved-charge-row.has-multi-check{grid-template-columns:22px minmax(0,1fr) auto}
- .saved-selectable-list .saved-row-amount{font-size:12px}
- .saved-selectable-list .record-actions{gap:4px}
- .saved-selectable-list .record-action{width:28px;height:28px;min-width:28px}
+ .saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{gap:7px}
+ .saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{gap:5px}
 }
