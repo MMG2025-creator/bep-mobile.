@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "check:monthly-budget": "node --check financial-engine.js && node --check dist/financial-engine.js && node --check spend-experience.js && node --check dist/spend-experience.js && node --check lib/bep-financial-intelligence.js && node --check lib/bep-financial-knowledge-seed.js && node --check server.js && node --check monthly-budget-routes.js && node --check monthly-budget-ui.js && node --check app.js && node --check dist/app.js && node --check dist/monthly-budget-ui.js && node --test tests/monthly-budget.test.js tests/monthly-budget.integration.test.js tests/frontend-integration.test.js tests/bep-financial-intelligence.test.js tests/financial-engine.test.js"
+    "check:monthly-budget": "node --check financial-engine.js && node --check dist/financial-engine.js && node --check spend-experience.js && node --check dist/spend-experience.js && node --check lib/bep-financial-intelligence.js && node --check lib/bep-coach-intent.js && node --check lib/bep-financial-knowledge-seed.js && node --check server.js && node --check monthly-budget-routes.js && node --check monthly-budget-ui.js && node --check app.js && node --check dist/app.js && node --check dist/monthly-budget-ui.js && node --test tests/monthly-budget.test.js tests/monthly-budget.integration.test.js tests/frontend-integration.test.js tests/bep-financial-intelligence.test.js tests/financial-engine.test.js tests/bep-coach-intent.test.js tests/ai-billing-guard.test.js"
   },
   "engines": {
     "node": ">=20"

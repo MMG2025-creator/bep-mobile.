@@ -5,7 +5,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge,loadUserFinancialContext,buildIntelligence}=require("../lib/bep-financial-intelligence");
+const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge}=require("../lib/bep-financial-intelligence");
 
 const corpus=[
  {slug:"annual-expenses-provision",category:"budget",title:"Provisionner les dépenses annuelles",content:"Mensualiser les assurances et taxes annuelles",keywords:["annuel","provision","assurance","taxe"],evidence_level:"institutional_guidance",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/"},
