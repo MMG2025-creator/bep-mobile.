@@ -61,15 +61,17 @@ Do not drop the new tables as an automatic rollback. If the application release 
 
 ## Acceptance checklist
 
-- [ ] Latest CI run passes on the exact PR head SHA.
-- [ ] PostgreSQL integration tests apply the real migration in an isolated schema.
-- [ ] Cross-user isolation, unauthenticated access, invalid payloads and invalid timezones are covered.
-- [ ] Month creation, idempotency, copy independence, version conflicts, closure/reopening and audit are covered.
-- [ ] Actual-expense timezone boundary, duplicate-ID deduplication and impossible calendar dates are covered.
-- [ ] Manual monthly rows survive legacy-module synchronization, and local state is not committed before server confirmation.
-- [ ] Root/dist JavaScript, HTML and CSS assets are synchronized.
-- [ ] Savings ledger and current-month cross-module synchronization are reviewed and tested.
-- [ ] Savings objective/movement tabs, keyboard navigation and hidden compensating reversals are verified in the frontend.
-- [ ] Existing `/api/data` compatibility is checked.
+- [x] Latest pull-request CI run passes on the exact PR head SHA `34dca953ede35b277e0de58448778dc43b624bc2`.
+- [x] PostgreSQL integration tests apply the real migration in an isolated schema.
+- [x] Cross-user isolation, unauthenticated access, invalid payloads and invalid timezones are covered.
+- [x] Month creation, idempotency, copy independence, version conflicts, closure/reopening and audit are covered.
+- [x] Actual-expense timezone boundary, duplicate-ID deduplication and impossible calendar dates are covered.
+- [x] Manual monthly rows survive legacy-module synchronization, and local state is not committed before server confirmation.
+- [x] Root/dist JavaScript, HTML and CSS assets are synchronized.
+- [x] Savings ledger and current-month cross-module synchronization are covered by integration and frontend regression checks.
+- [x] Savings objective/movement tabs, keyboard navigation and hidden compensating reversals are covered by frontend regression checks.
+- [x] Missing actual purchases display as `Non renseigné`; no variance is calculated without actual data.
+- [ ] Existing `/api/data` compatibility has not yet had an authenticated end-to-end browser acceptance test.
+- [ ] Authenticated browser acceptance on the intended deployment target.
 - [ ] Production backup and restore readiness confirmed before production migration.
 - [ ] Final release decision recorded before merge/deploy.
