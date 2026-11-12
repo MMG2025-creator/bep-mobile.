@@ -70,6 +70,13 @@
 <div class="privacy-note">🔒 Tes données sont enregistrées dans ton espace personnel et synchronisées avec ton compte.</div>
 </section>
 <section id="budget" class="panel">
+
+<div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
+<button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
+<button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
+<button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleMonthly" data-budget-module="monthly">Mes budgets mensuels</button>
+</div>
+<div id="budgetModuleMonthly" class="budget-module" role="tabpanel" hidden>
 <article class="card monthly-history-card" id="monthlyHistoryCard">
   <div class="card-head"><div><p class="eyebrow">HISTORIQUE BUDGÉTAIRE</p><h2>Mes budgets mensuels</h2><p class="hint">Chaque mois conserve sa propre photographie. Une modification ne réécrit pas les mois précédents.</p></div><span class="tag">Historique</span></div>
   <p id="monthlyBudgetStatus" class="monthly-budget-status" role="status" aria-live="polite">Connecte-toi pour consulter ton historique mensuel.</p>
@@ -105,9 +112,6 @@
     </div>
   </div>
 </article>
-<div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
-<button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
-<button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
 </div>
 <div id="budgetModuleIncome" class="budget-module" role="tabpanel">
 <article class="card ai-card budget-advisor-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiIncome" class="ai-advice">Analyse de tes sources de revenus en cours…</p></article>
