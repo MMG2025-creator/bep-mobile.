@@ -88,6 +88,8 @@
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
+    const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
+    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
