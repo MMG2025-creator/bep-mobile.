@@ -378,7 +378,7 @@ async function processReceiptFile(file,input){
   receiptCaptureText="Preuve d’achat importée · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");
   status.textContent=(Number.isFinite(amount)&&amount>0?"Montant proposé : "+amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(merchant?"Enseigne proposée : "+merchant+". ":"")+"Vérifie et corrige les champs avant d’enregistrer. La photo n’est pas conservée par BEP.";
  }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
- finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";}
+ finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
 }
 if($("receiptFile"))$("receiptFile").onchange=e=>processReceiptFile(e.target.files?.[0],e.target);
 
