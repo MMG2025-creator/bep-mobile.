@@ -170,6 +170,18 @@ async function isHeicReceiptImage(file){
  if(declared)return true;
  try{const bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());const brand=String.fromCharCode(...bytes.slice(8,12));return bytes.length>=12&&String.fromCharCode(...bytes.slice(4,8))==="ftyp"&&/(heic|heix|hevc|hevx|mif1|msf1)/i.test(brand)}catch{return false}
 }
+async function isSupportedReceiptImage(file){
+ if(!file)return false;
+ if(/^image\//i.test(file.type||""))return true;
+ if(/\.(jpe?g|png|webp|heic|heif|avif)$/i.test(file.name||""))return true;
+ try{
+  const bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());
+  if(bytes.length>=3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff)return true;
+  if(bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a)return true;
+  if(bytes.length>=12&&String.fromCharCode(...bytes.slice(0,4))==="RIFF"&&String.fromCharCode(...bytes.slice(8,12))==="WEBP")return true;
+  return await isHeicReceiptImage(file);
+ }catch{return false}
+}
 async function receiptImageFromBlob(blob){
  return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>{if(!img.naturalWidth||!img.naturalHeight){URL.revokeObjectURL(url);reject(Error("La photo est illisible ou ses dimensions sont invalides."));return}resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)})};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne parvient pas à décoder cette photo. Essaie une capture JPG ou PNG."))};img.src=url})
 }
@@ -380,7 +392,7 @@ async function processReceiptFile(file,input){
  const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
  let worker;
  try{
-  if(!(/^image\/[a-z0-9.+-]+$/i.test(file.type)||await isHeicReceiptImage(file)))throw Error("Format non pris en charge. Importe une image JPG, PNG, WebP ou HEIC.");
+  if(!await isSupportedReceiptImage(file))throw Error("Format non pris en charge. Importe une image JPG, PNG, WebP ou HEIC.");
   if(file.size>40*1024*1024)throw Error("Cette photo dépasse 40 Mo. Réduis sa taille ou prends une capture d’écran du justificatif.");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
