@@ -67,7 +67,7 @@ if(history){const oldTitle=history.querySelector("h2");const details=document.cr
 panel.insertBefore(radar,nav.nextSibling);
 if(entry){
  const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter un achat";
- const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Saisis le montant de ton achat. BEP mettra à jour tes dépenses après validation."entry.insertBefore(intro,form);
+ const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Saisis le montant de ton achat. BEP mettra à jour tes dépenses après validation.";entry.insertBefore(intro,form);
  const merchantField=$("merchant")?.closest(".field"),cityField=$("city")?.closest(".field"),amountField=$("purchaseAmount")?.closest(".field"),categoryField=$("purchaseCategory")?.closest(".field");
  const psychologyField=$("psychology")?.closest(".field"),needField=$("need")?.closest(".field"),delayField=$("delay")?.closest(".field");
  const oldTwo=cityField?.parentElement?.classList.contains("two")?cityField.parentElement:null;
@@ -88,7 +88,7 @@ if(entry){
  form.insertBefore(quick,form.firstChild);
  if(actions){form.insertBefore(advanced,actions);actions.querySelector("#purchaseSubmit").textContent="+ Ajouter une charge";actions.classList.add("bep-spend-submit-row")}
  form.appendChild(note);
- const amount=$("purchaseAmount");if(amount){amount.placeholder="0,00";amount.setAttribute("aria-label","Montant de la dépense en euros")}
+ const amount=$("purchaseAmount");if(amount){amount.placeholder="0,00";amount.setAttribute("aria-label","Montant de ton achat en euros")}if(amountField){const amountLabel=amountField.querySelector("label");if(amountLabel)amountLabel.textContent="Saisis le montant de ton achat (€)"}
  chips.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const input=$("purchaseCategory");if(!input)return;input.value=b.dataset.spendCategory;input.dataset.autoSuggested="0";input.dispatchEvent(new Event("input",{bubbles:true}));chips.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b))}));
  if(amount)amount.addEventListener("input",()=>{updateScore();const s=$("bepSpendScore");if(s)s.hidden=!(Number(amount.value)>0)});
  const category=$("purchaseCategory");if(category)category.addEventListener("input",()=>chips.querySelectorAll("button").forEach(b=>b.classList.toggle("selected",b.dataset.spendCategory.toLowerCase()===category.value.toLowerCase())));
@@ -134,6 +134,7 @@ function mountFinancialConfirmDialog(){
 }
 
 mountQuickExpenseModal(panel,entry,addButton);
+nav.querySelector("[data-spend-tab=radar]")?.addEventListener("click",()=>window.BEP_OPEN_PURCHASE_DIALOG?.());
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
 form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
