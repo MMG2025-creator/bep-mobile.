@@ -283,3 +283,9 @@ test("charges module mirrors the income assistant layout with modal-only actions
   const js = read("spend-experience.js");
   assert.match(js, /\["charge-checkup","Sélectionner mes charges","Sélectionner mes charges","#budgetCheckupDetails"\]/);
 });
+
+test("income assistant action buttons use the same solid green as charges", () => {
+  const css = read("spend-experience.css");
+  assert.match(css, /#budgetModuleIncome \.bep-entry-trigger\{background:#176b50;border-color:#176b50;color:#fff\}/);
+  assert.match(css, /#budgetModuleIncome \.bep-entry-trigger:hover\{background:#12583f;border-color:#12583f;color:#fff\}/);
+});
