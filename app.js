@@ -348,8 +348,7 @@ async function prepareReceiptImageForOcr(file){
  }catch{return file}
  finally{bitmap?.close?.()}
 }
-$("receiptCaptureButton")?.addEventListener("click",()=> $("receiptFile")?.click());
-$("receiptImportButton")?.addEventListener("click",()=> $("receiptGalleryFile")?.click());
+$("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
 async function processReceiptFile(file,input){
  if(!file)return;
  const status=$("receiptStatus");status.textContent="Préparation de la photo…";
@@ -376,12 +375,12 @@ async function processReceiptFile(file,input){
   if(!$("purchaseCategory").value.trim())$("purchaseCategory").value=imageCategory(text);
   $("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}));
   $("purchaseAmount").dispatchEvent(new Event("input",{bubbles:true}));
-  receiptCaptureText="Ticket importé · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");
+  receiptCaptureText="Preuve d’achat importée · "+(merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(amount)&&amount>0?amount.toFixed(2)+" €":"montant à vérifier");
   status.textContent=(Number.isFinite(amount)&&amount>0?"Montant proposé : "+amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(merchant?"Enseigne proposée : "+merchant+". ":"")+"Vérifie et corrige les champs avant d’enregistrer. La photo n’est pas conservée par BEP.";
  }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
  finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";}
 }
-["receiptFile","receiptGalleryFile"].forEach(id=>{const input=$(id);if(input)input.onchange=e=>processReceiptFile(e.target.files?.[0],e.target)});
+if($("receiptFile"))$("receiptFile").onchange=e=>processReceiptFile(e.target.files?.[0],e.target);
 
 let purchaseSelectionMode=false,purchaseSelection=new Set(),suppressPurchaseClick=false;
 let incomeSelectionMode=false,incomeSelection=new Set(),budgetSelectionMode=false,budgetSelection=new Set();
