@@ -68,3 +68,12 @@ test("legacy module synchronization preserves manually managed monthly rows", ()
       file + " must preserve manually created monthly rows");
   }
 });
+
+test("monthly save distinguishes a persisted snapshot from a failed module sync", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /let syncWarning = null/);
+    assert.match(js, /Budget mensuel enregistré · version /);
+    assert.match(js, /Synchronisation des autres modules à reprendre/);
+  }
+});
