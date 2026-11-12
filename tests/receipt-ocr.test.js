@@ -59,13 +59,13 @@ test("source and published OCR assets stay synchronized and support generic imag
   const js=fs.readFileSync(path.join(root,file),"utf8");
   assert.ok(js.includes("image\\/"), file + " must accept image MIME types");
   assert.match(js,/Support détecté/);
-  assert.ok(js.includes('canvas.toDataURL("image/jpeg",.86)'));
-  assert.ok(js.includes("loadHeicDecoder"));
+  assert.ok(js.includes("return prepareBankImageForOcr(file)"),"receipt OCR must reuse bank image preparation");
+  assert.ok(js.includes("async function decodeBankImageForOcr"));
+  assert.ok(js.includes("ftyp"),"HEIC must also be detected by file signature");
   assert.ok(js.includes("heic2any@0.0.4"));
-  assert.ok(js.includes("decodeReceiptImage"));
-  assert.match(js,/worker\.recognize\(ocrImage\)/);
-  assert.doesNotMatch(js,/canvas\.toBlob/);
-  assert.match(js,/extracted\.confidence\.time/);
+  assert.match(js,/worker\\.recognize\\(ocrImage\\)/);
+  assert.doesNotMatch(js,/canvas\\.toBlob/);
+  assert.match(js,/extracted\\.confidence\\.time/);
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=fs.readFileSync(path.join(root,file),"utf8");
