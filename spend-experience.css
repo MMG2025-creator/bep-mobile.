@@ -306,3 +306,10 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #budgetModuleCharges #budgetRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
 #budgetModuleIncome #incomeRows .rowitem>b,
 #budgetModuleCharges #budgetRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
+
+/* Explicit IDs avoid parent-scope differences between the income and charges accordions. */
+#incomeSavedDetails>summary,#chargesSavedDetails>summary{font-size:16px!important;line-height:1.4!important;font-weight:800!important}
+#incomeRows .rowitem,#budgetRows .rowitem{font-size:14px!important;line-height:1.45!important}
+#incomeRows .rowitem>span:first-child b,#budgetRows .rowitem>span:first-child b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
+#incomeRows .rowitem>span:first-child small,#budgetRows .rowitem>span:first-child small{font-size:12px!important;line-height:1.4!important}
+#incomeRows .rowitem>b,#budgetRows .rowitem>b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
