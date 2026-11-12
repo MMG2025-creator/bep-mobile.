@@ -260,6 +260,25 @@ function createMonthlyBudgetRouter({ pool, auth }) {
     }
   });
 
+  router.get("/months/:monthKey/audit", auth, async (req, res) => {
+    const monthKey = req.params.monthKey;
+    if (!validMonth(monthKey)) return res.status(400).json({ error: "MONTHLY_BUDGET_MONTH_INVALID" });
+    try {
+      const result = await pool.query(
+        "SELECT a.id,a.action,a.reason,a.created_at FROM bep_budget_audit_log a JOIN bep_monthly_budgets b ON b.id=a.budget_id AND b.user_id=a.user_id WHERE a.user_id=$1 AND b.month_key=$2::date AND a.action='reopened' ORDER BY a.created_at DESC,a.id DESC LIMIT 30",
+        [req.session.user.id, monthKey + "-01"]
+      );
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ monthKey, entries: result.rows.map(row => ({
+        id: String(row.id), action: row.action, reason: row.reason,
+        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : new Date(row.created_at).toISOString()
+      })) });
+    } catch (error) {
+      console.error("Monthly budget audit read failed", error.message);
+      res.status(503).json({ error: "MONTHLY_BUDGET_AUDIT_UNAVAILABLE" });
+    }
+  });
+
   router.put("/months/:monthKey", auth, async (req, res) => {
     const monthKey = req.params.monthKey;
     const expectedVersion = req.body?.expectedVersion;

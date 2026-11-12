@@ -471,3 +471,31 @@ test("spending hero stats refresh from the authoritative app state and label the
     assert.match(html, /app\.js\?v=86&bep=spend-stats-refresh-20261112/);
   }
 });
+
+
+test("monthly budget expense list is collapsible and correction reasons are surfaced in history", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.match(html, /id="monthlyBudgetExpensesDetails"[^>]*class="monthly-budget-expenses-details"/);
+    assert.match(html, /id="monthlyBudgetExpensesSummary">Afficher les dépenses/);
+    assert.match(html, /id="monthlyBudgetAuditItems"/);
+    assert.match(html, /Historique des corrections/);
+    assert.match(html, /Motif de correction \(obligatoire\)/);
+    assert.match(html, /Enregistrer le mois/);
+    assert.match(html, /Enregistrer les modifications/);
+  }
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /monthlyBudgetExpensesSummary/);
+    assert.match(js, /Afficher les dépenses/);
+    assert.match(js, /function renderAudit\(\)/);
+    assert.match(js, /Correction du budget/);
+    assert.match(js, /\/audit/);
+    assert.match(js, /Motif :/);
+  }
+  for (const file of ["styles.css", "dist/styles.css"]) {
+    const css = read(file);
+    assert.match(css, /\.monthly-budget-expenses-details/);
+    assert.match(css, /\.monthly-budget-audit-row/);
+  }
+});

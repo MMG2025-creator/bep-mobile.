@@ -1285,3 +1285,21 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .saved-income-row .purchase-row-actions button,.saved-charge-row .purchase-row-actions button{width:28px;height:28px;min-width:28px}
   .saved-income-row .purchase-row-actions>b,.saved-charge-row .purchase-row-actions>b{font-size:12px}
 }
+
+
+/* Monthly budget UX: keep the expense detail list collapsed until requested. */
+.monthly-budget-expenses-details{margin-top:8px;border-top:1px solid var(--line)}
+.monthly-budget-expenses-details>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:8px 2px;color:var(--forest);font-size:12px;font-weight:700;cursor:pointer;list-style:none}
+.monthly-budget-expenses-details>summary::-webkit-details-marker{display:none}
+.monthly-budget-expenses-details>summary:after{content:"+";display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--mint);color:var(--forest);font-size:17px;line-height:1}
+.monthly-budget-expenses-details[open]>summary:after{content:"−"}
+.monthly-budget-expenses-details[open]>summary{border-bottom:1px solid var(--line)}
+.monthly-budget-expenses-details #monthlyBudgetActualItems{padding-top:4px}
+.monthly-budget-audit{margin-top:16px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fbfdfb}
+.monthly-budget-audit h3{margin:0 0 8px;color:var(--forest);font-size:13px}
+.monthly-budget-audit-row{padding:10px 0;border-top:1px solid var(--line)}
+.monthly-budget-audit-row>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.monthly-budget-audit-row b{color:var(--forest);font-size:12px}
+.monthly-budget-audit-row small{color:var(--muted);font-size:10px}
+.monthly-budget-audit-row p{margin:6px 0 0;color:var(--text);font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.monthly-budget-audit-row p strong{color:var(--forest)}

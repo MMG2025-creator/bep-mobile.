@@ -10,6 +10,8 @@
   let current = null;
   let items = [];
   let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+  let auditEntries = [];
+  let auditUnavailable = false;
   let editingItemIndex = null;
   let monthSelectionMode = false;
   const monthSelection = new Set();
@@ -168,11 +170,29 @@
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
     const monthExpenses = Array.isArray(actuals.expenses) ? actuals.expenses.slice().sort((a, b) => new Date(b.at) - new Date(a.at)) : [];
+    const summary = $("monthlyBudgetExpensesSummary");
+    if (summary) summary.textContent = "Afficher les dépenses (" + monthExpenses.length + ")";
     $("monthlyBudgetActualItems").innerHTML = monthExpenses.length ? monthExpenses.map(x =>
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.amount) + '</b></div>'
     ).join("") : '<p class="empty">Aucune dépense enregistrée pour ce mois.</p>';
+  }
+  function renderAudit() {
+    const container = $("monthlyBudgetAuditItems");
+    if (!container) return;
+    if (auditUnavailable) {
+      container.innerHTML = '<p class="empty">Historique des corrections temporairement indisponible.</p>';
+      return;
+    }
+    container.innerHTML = auditEntries.length ? auditEntries.map(entry => {
+      const date = entry.createdAt ? new Date(entry.createdAt) : null;
+      const dateLabel = date && Number.isFinite(date.getTime())
+        ? date.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "";
+      return '<article class="monthly-budget-audit-row"><div><b>Correction du budget</b>' +
+        (dateLabel ? '<small>' + escapeHtml(dateLabel) + '</small>' : '') +
+        '</div><p><strong>Motif :</strong> ' + escapeHtml(entry.reason || "Non renseigné") + '</p></article>';
+    }).join("") : '<p class="empty">Aucune correction enregistrée pour ce mois.</p>';
   }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
@@ -232,13 +252,16 @@
     actualsRequestId++;
     setBusy(true);
     try {
-      const [data, actualData] = await Promise.all([
+      const [data, actualData, auditData] = await Promise.all([
         api("/api/budgets/months/" + encodeURIComponent(monthKey)),
-        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"))
+        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC")),
+        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/audit").catch(() => ({ entries: [], unavailable: true }))
       ]);
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       actuals = actualData;
+      auditEntries = Array.isArray(auditData.entries) ? auditData.entries : [];
+      auditUnavailable = Boolean(auditData.unavailable);
       editingItemIndex = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -250,6 +273,7 @@
       renderMonths();
       renderItems();
       renderActuals();
+      renderAudit();
       let syncWarning = null;
       if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
@@ -296,8 +320,8 @@
       renderMonths();
       if (months.length) await loadMonth(months[0].monthKey);
       else {
-        current = null; items = []; renderMonths();
-        status("Aucun historique mensuel. Crée le premier mois à partir de ton budget actuel.");
+        current = null; items = []; auditEntries = []; auditUnavailable = false; renderMonths(); renderAudit();
+        status("Aucun historique mensuel. Enregistre ton premier mois à partir de ton budget actuel.");
       }
     } catch (error) {
       status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
@@ -336,7 +360,7 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       months = [data.budget, ...months.filter(x => x.monthKey !== monthKey)].sort((a, b) => b.monthKey.localeCompare(a.monthKey));
       await loadMonth(monthKey);
-      status(data.created ? "Mois créé. Les valeurs copiées sont indépendantes." : "Ce mois existait déjà ; aucune duplication effectuée.");
+      status(data.created ? "Mois enregistré. Les valeurs copiées sont indépendantes." : "Ce mois existait déjà ; aucune duplication effectuée.");
       window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"monthly-create"}}));
     } catch (error) { status("Création impossible : " + error.message, true); }
     finally { setBusy(false); }
@@ -388,8 +412,8 @@
         catch (syncError) { syncWarning = syncError.message; }
       }
       status(syncWarning
-        ? "Budget mensuel enregistré · version " + current.version + ". Synchronisation des autres modules à reprendre : " + syncWarning
-        : "Budget enregistré · version " + current.version, Boolean(syncWarning));
+        ? "Modifications enregistrées · version " + current.version + ". Synchronisation des autres modules à reprendre : " + syncWarning
+        : "Modifications enregistrées · version " + current.version, Boolean(syncWarning));
       try { await refreshMonthListOnly(); }
       catch (refreshError) {
         status("Budget mensuel enregistré · version " + current.version + ". Actualisation de la liste des mois impossible : " + refreshError.message, true);
@@ -464,7 +488,7 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       $("monthlyBudgetReasonInput").value = "";
       await loadMonth(current.monthKey);
-      status("Mois rouvert. La réouverture est inscrite dans le journal d’audit.");
+      status("Mois rouvert. Le motif est visible dans l’historique des corrections.");
       await refreshMonthListOnly();
     } catch (error) { status("Réouverture impossible : " + error.message, true); }
     finally { setBusy(false); }
