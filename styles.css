@@ -1285,3 +1285,55 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .saved-income-row .purchase-row-actions button,.saved-charge-row .purchase-row-actions button{width:28px;height:28px;min-width:28px}
   .saved-income-row .purchase-row-actions>b,.saved-charge-row .purchase-row-actions>b{font-size:12px}
 }
+
+
+/* BEP Budget saved lists — final production cascade override.
+   Keep the amount and edit/delete controls on the same row as the label. */
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
+  align-items:center !important;
+  justify-content:stretch !important;
+  gap:10px !important;
+  min-width:0 !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-main,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-main{
+  grid-column:1 !important;
+  display:flex !important;
+  min-width:0 !important;
+  width:100% !important;
+}
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
+  grid-column:2 !important;
+  display:grid !important;
+  grid-template-columns:max-content 32px 32px !important;
+  align-items:center !important;
+  justify-content:end !important;
+  justify-items:center !important;
+  gap:6px !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  flex-wrap:nowrap !important;
+  margin:0 !important;
+}
+#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions > b,
+#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions > b{
+  display:block !important;
+  min-width:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+@media(max-width:640px){
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{grid-template-columns:minmax(0,1fr) max-content !important;gap:7px !important}
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{grid-template-columns:max-content 28px 28px !important;gap:4px !important}
+  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions button,
+  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions button{width:28px !important;height:28px !important;min-width:28px !important}
+}
