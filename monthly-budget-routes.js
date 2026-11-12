@@ -113,7 +113,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       );
       if (!inserted.rowCount) {
         const existing = await client.query(
-          "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date",
+          "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date FOR UPDATE",
           [userId, monthKey + "-01"]
         );
         const rows = await client.query(
@@ -178,21 +178,30 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   router.get("/months/:monthKey", auth, async (req, res) => {
     const monthKey = req.params.monthKey;
     if (!validMonth(monthKey)) return res.status(400).json({ error: "MONTH_INVALID" });
+    const client = await pool.connect();
     try {
-      const result = await pool.query(
+      await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+      const result = await client.query(
         "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date",
         [req.session.user.id, monthKey + "-01"]
       );
-      if (!result.rowCount) return res.status(404).json({ error: "MONTH_NOT_FOUND" });
-      const rows = await pool.query(
+      if (!result.rowCount) {
+        await client.query("COMMIT");
+        return res.status(404).json({ error: "MONTH_NOT_FOUND" });
+      }
+      const rows = await client.query(
         "SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id",
         [result.rows[0].id]
       );
+      await client.query("COMMIT");
       res.setHeader("Cache-Control", "no-store");
       res.json({ budget: snapshot(result.rows[0], rows.rows) });
     } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
       console.error("Monthly budget read failed", error.message);
       res.status(503).json({ error: "MONTHLY_BUDGET_UNAVAILABLE" });
+    } finally {
+      client.release();
     }
   });
 
