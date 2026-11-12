@@ -30,7 +30,7 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));
+    await Promise.all(keys.filter(key=>![CACHE_NAME,RUNTIME_CACHE].includes(key)).map(key=>caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -39,7 +39,7 @@ self.addEventListener("fetch",event=>{
   if(request.method!=="GET")return;
   const url=new URL(request.url);
   if(url.origin!==self.location.origin){
-    if(OFFLINE_CDN_HOSTS.has(url.hostname))event.respondWith((async()=>{const cache=await caches.open(RUNTIME_CACHE),cached=await cache.match(request);if(cached)return cached;try{const response=await fetch(request);if(response&&response.ok)await cache.put(request,response.clone());return response}catch(error){return cached||Response.error()}})());
+    if(OFFLINE_CDN_HOSTS.has(url.hostname))event.respondWith((async()=>{const cache=await caches.open(RUNTIME_CACHE),cached=await cache.match(request);if(cached)return cached;try{const response=await fetch(request);if(response&&(response.ok||response.type==="opaque"))await cache.put(request,response.clone());return response}catch(error){return cached||Response.error()}})());
     return;
   }
   if(url.pathname.startsWith("/api/"))return;
