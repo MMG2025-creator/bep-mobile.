@@ -294,3 +294,15 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #budgetModuleIncome #incomeRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
 #budgetModuleIncome #incomeRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
 #budgetModuleIncome #incomeRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
+
+/* Final typography parity: saved income rows use the same scale as saved charges. */
+#budgetModuleIncome .income-saved-details>summary,
+#budgetModuleCharges .income-saved-details>summary{font-size:16px!important;line-height:1.4;font-weight:800}
+#budgetModuleIncome #incomeRows .rowitem,
+#budgetModuleCharges #budgetRows .rowitem{font-size:14px;line-height:1.45}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child b,
+#budgetModuleCharges #budgetRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child small,
+#budgetModuleCharges #budgetRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
+#budgetModuleIncome #incomeRows .rowitem>b,
+#budgetModuleCharges #budgetRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
