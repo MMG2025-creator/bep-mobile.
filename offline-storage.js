@@ -168,6 +168,7 @@ async function resolveConflict(choice){
    await setBaselineFor(user,remote);
    await serializeQueue(async()=>{await clear(key)});
    window.dispatchEvent(new CustomEvent("bep:offline-use-remote",{detail:{payload:remote}}));
+   window.dispatchEvent(new CustomEvent("bep:offline-synced"));
    return true;
   }
   await serializeQueue(async()=>{
@@ -189,6 +190,8 @@ function showConflictDialog(){
  conflictDialogPending=true;
  if(typeof document==="undefined")return;
  const dialog=document.getElementById("bepOfflineConflictDialog");
+ const banner=document.getElementById("bepOfflineConflictBanner");
+ if(banner)banner.hidden=false;
  if(dialog&&!dialog.open)dialog.showModal();
 }
 function setupConflictDialog(){
@@ -198,6 +201,8 @@ function setupConflictDialog(){
  const remoteButton=document.getElementById("bepOfflineUseRemote");
  const laterButton=document.getElementById("bepOfflineConflictLater");
  const status=document.getElementById("bepOfflineConflictStatus");
+ const banner=document.getElementById("bepOfflineConflictBanner");
+ const reopen=document.getElementById("bepOfflineConflictReopen");
  const close=()=>{if(dialog.open)dialog.close()};
  const run=async(choice)=>{
   const warning=choice==="local"
@@ -214,7 +219,8 @@ function setupConflictDialog(){
  localButton?.addEventListener("click",()=>run("local"));
  remoteButton?.addEventListener("click",()=>run("remote"));
  laterButton?.addEventListener("click",close);
- window.addEventListener("bep:offline-synced",close);
+ reopen?.addEventListener("click",()=>{if(!dialog.open)dialog.showModal()});
+ window.addEventListener("bep:offline-synced",()=>{close();if(banner)banner.hidden=true});
  window.addEventListener("bep:offline-sync-error",event=>{if(dialog.open&&status)status.textContent=event.detail?.message||"Synchronisation en attente."});
  if(conflictDialogPending&&!dialog.open)dialog.showModal();
 }
