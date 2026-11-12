@@ -348,7 +348,7 @@ function attachLongPressSelection(containerId,kind,selection,modeSetter,removeSe
   const id=row.dataset.multiRow;
   row.classList.toggle("is-selected",active&&selection.has(id));
   let check=row.querySelector("[data-multi-check]");
-  if(active){
+  if(active){row.classList.add("has-multi-check");
    if(!check){check=document.createElement("input");check.type="checkbox";check.dataset.multiCheck="";check.className="multi-select-check";check.setAttribute("aria-label","Sélectionner");row.prepend(check)}
    check.checked=selection.has(id);
    check.onchange=()=>{if(check.checked)selection.add(id);else selection.delete(id);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)};
