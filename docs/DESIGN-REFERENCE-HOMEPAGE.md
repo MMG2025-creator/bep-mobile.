@@ -17,6 +17,18 @@ La référence est la homepage claire et chaleureuse montrée et validée par le
 - mascotte robot BEP souriante, verte et blanche, à droite, avec animation de flottement douce ;
 - ambiance générale positive, adulte, accessible et motivante — jamais enfantine.
 
+
+## Mascotte BEP officielle — SVG unique et verrouillé
+
+**Décision explicite du propriétaire : 12 novembre 2026.** Le dessin SVG du robot visible sur la Home et repris dans « Conseil BEP » est l'unique mascotte autorisée dans toute l'application BEP. Cette décision est ferme et permanente jusqu'à demande explicite contraire du propriétaire.
+
+- Fichier maître immuable : [docs/assets/bep-robot-conseil-officiel.svg](https://github.com/MMG2025-creator/bep-mobile./blob/main/docs/assets/bep-robot-conseil-officiel.svg).
+- Source actuellement intégrée : `dist/index.html`, SVG inline avec `viewBox="0 0 160 170"`.
+- Le même dessin doit être réutilisé à l'identique dans Accueil, Conseil BEP, Dépenses et tous les autres écrans ou composants.
+- Interdiction de créer, substituer ou réintroduire un autre robot, une variante, un pictogramme robot alternatif ou un style concurrent.
+- Les changements de taille, placement ou adaptation responsive peuvent être faits par CSS uniquement ; ne pas altérer les tracés, proportions, couleurs ou détails du SVG maître.
+- Toute évolution graphique du robot exige une demande et une validation explicites du propriétaire.
+
 ## Règles de conservation
 
 1. Ce visuel est l'unique référence de la homepage BEP.
