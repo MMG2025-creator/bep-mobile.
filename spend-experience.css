@@ -181,3 +181,5 @@
 .bep-receipt-capture input[type=file]{width:100%;min-height:48px;font-size:14px}
 .bep-receipt-capture .hint{margin:8px 0 0;font-size:13px;line-height:1.45}
 @media(max-width:480px){.bep-entry-dialog .bep-quick-expense-body{padding:12px 14px max(18px,env(safe-area-inset-bottom))}.bep-entry-trigger{min-height:50px}}
+/* The global expense shortcut is hidden throughout the Budget workspace. */
+body:has(#budget.active) #bepQuickExpense{display:none!important}
