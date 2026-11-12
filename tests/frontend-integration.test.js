@@ -26,7 +26,7 @@ test("monthly history and savings DOM references exist in both HTML builds", () 
       "monthlyHistoryCard", "monthlyBudgetMonth", "monthlyBudgetActualTotal", "monthlyBudgetActualVariance",
       "monthlyBudgetItemSubmit", "monthlyBudgetItemCancel", "monthlyBudgetItems",
       "savingsCapital", "savingsGoalCards", "savingsOperationForm",
-      "savingsRewards", "savingsProjectionTotal", "customSavingsRate", "goalsList"
+      "savingsRewards", "savingsRewardsTitle", "savingsModuleGoals", "savingsModuleMovements", "customSavingsRate", "goalsList"
     ];
     for (const id of required) assert.ok(ids.includes(id), file + " missing #" + id);
   }
@@ -39,6 +39,36 @@ test("monthly and savings scripts use the configured API and shared budget bridg
     assert.ok(js.includes("BEP_APPLY_MONTHLY_ITEMS"), file + " lacks monthly snapshot bridge");
     assert.ok(js.includes("bep:legacy-budget-changed"), file + " lacks legacy-to-monthly sync event");
     assert.ok(js.includes("function renderSavingsExperience()"), file + " lacks savings experience");
+  }
+});
+
+test("savings objectives and movements tabs are wired in both frontend builds", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /function setSavingsModule\(name\)/);
+    assert.match(js, /data-savings-module/);
+    assert.match(js, /setSavingsModule\("goals"\)/);
+  }
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.match(html, /id="savingsModuleGoals"/);
+    assert.match(html, /id="savingsModuleMovements"/);
+    assert.match(html, /data-savings-module="goals"/);
+    assert.match(html, /data-savings-module="movements"/);
+  }
+  for (const file of ["styles.css", "dist/styles.css"]) {
+    assert.match(read(file), /\.savings-module-tab/);
+  }
+});
+
+test("deleted savings movements are hidden while compensating ledger entries remain internal", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /const cancelledIds=new Set\(ops\.filter\(o=>o\.reversalOf\)/);
+    assert.match(js, /visibleOps=ops\.filter\(o=>!o\.reversalOf&&!cancelledIds\.has\(o\.id\)\)/);
+    assert.match(js, /Supprimer ce mouvement de l'historique visible/);
+    assert.match(js, /savings-delete-button/);
+    assert.match(js, /Mouvement supprimé de l'historique/);
   }
 });
 
