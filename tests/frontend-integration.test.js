@@ -259,3 +259,27 @@ test("income entry actions mount as native modal dialogs with valid ID selectors
   assert.match(css, /#budgetModuleIncome \.income-card/);
   assert.match(css, /#budgetModuleIncome \.bep-entry-dialog/);
 });
+
+test("charges module mirrors the income assistant layout with modal-only actions", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    const start = html.indexOf('id="budgetModuleCharges"');
+    const end = html.indexOf('id="budgetModulePhotos"', start);
+    const charges = html.slice(start, end);
+    assert.match(charges, /class="charges-actions-grid"/);
+    assert.match(charges, /Assistant charges/);
+    assert.match(charges, /As-tu pensé à toutes tes charges \?/);
+    assert.match(charges, /id="budgetCheckupDetails"/);
+    assert.match(charges, /id="budgetEditorDetails"/);
+    assert.match(charges, /Mes charges enregistrées/);
+    assert.match(charges, /id="budgetRows"/);
+    assert.doesNotMatch(charges, /Parcours ces exemples/);
+  }
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    const css = read(file);
+    assert.match(css, /#budgetModuleCharges \.charges-actions-grid/);
+    assert.match(css, /#budgetModuleCharges \.charges-card #budgetRows \.rowitem/);
+  }
+  const js = read("spend-experience.js");
+  assert.match(js, /\["charge-checkup","Sélectionner mes charges","Sélectionner mes charges","#budgetCheckupDetails"\]/);
+});
