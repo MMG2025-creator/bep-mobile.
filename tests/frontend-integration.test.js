@@ -22,9 +22,9 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./app.js?v=102"));
   assert.ok(read("index.html").includes("./styles.css?v=82"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=82"));
-  assert.ok(read("index.html").includes("./spend-experience.css?v=13"));
+  assert.ok(read("index.html").includes("./spend-experience.css?v=16"));
   assert.ok(read("dist/index.html").includes("./spend-experience.css?v=13"));
-  assert.ok(read("index.html").includes("./spend-experience.js?v=10"));
+  assert.ok(read("index.html").includes("./spend-experience.js?v=12"));
   assert.ok(read("dist/index.html").includes("./spend-experience.js?v=10"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=6"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=6"));
@@ -203,16 +203,22 @@ test("budget advice stays above the income, charges and monthly budget navigatio
 });
 
 
-test("challenge catalogue offers twenty selectable challenges with persistent personal selection", () => {
+test("expenses module keeps the hero, opens purchase entry in a modal and folds purchase history", () => {
   const js = read("spend-experience.js");
   assert.equal(js, read("dist/spend-experience.js"));
-  assert.equal((js.match(/\{id:"[a-z-]+",icon:/g)||[]).length, 20);
-  assert.match(js, /SELECT_KEY="bep-spend-selected-challenges-v1"/);
-  assert.match(js, /Choisir les défis que je veux relever/);
-  assert.match(js, /localStorage\.setItem\(SELECT_KEY,JSON\.stringify\(selected\)\)/);
+  assert.match(js, /TES DÉPENSES, EN TOUTE SIMPLICITÉ/);
+  assert.match(js, /BEP · MON QUOTIDIEN/);
+  assert.match(js, /data-spend-tab="radar">Mes achats/);
+  assert.match(js, /bepAddPurchase/);
+  assert.match(js, /Saisis le montant de ton achat/);
+  assert.match(js, /\+ Ajouter une charge/);
+  assert.match(js, /bep-spend-history-details/);
+  assert.match(js, /mountQuickExpenseModal\(panel,entry,addButton\)/);
   for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
-    assert.match(read(file), /\.bep-spend-challenge-picker/);
-    assert.match(read(file), /\.bep-spend-challenge-grid-inner/);
+    const css = read(file);
+    assert.match(css, /bep-spend-add-button/);
+    assert.match(css, /bep-spend-history-details/);
+    assert.match(css, /data-spend-tab="challenges"/);
   }
 });
 
