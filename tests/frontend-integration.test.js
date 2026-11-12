@@ -42,6 +42,21 @@ test("monthly and savings scripts use the configured API and shared budget bridg
   }
 });
 
+test("legacy module changes notify monthly history only after server persistence", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    const start = js.indexOf("function save(){");
+    const end = js.indexOf("\nasync function persistMigratedIncomeState()", start);
+    assert.ok(start >= 0 && end > start, file + " save function is missing");
+    const save = js.slice(start, end);
+    const serverWrite = save.indexOf('fetch(API+"/api/data"');
+    const serverConfirm = save.indexOf("dispatchLegacyBudgetChanged()", serverWrite);
+    const failure = save.indexOf(".catch(()=>notify", serverWrite);
+    assert.ok(serverWrite >= 0 && serverConfirm > serverWrite && failure > serverConfirm,
+      file + " must wait for successful legacy-data persistence before syncing monthly history");
+  }
+});
+
 test("monthly-to-savings bridge waits for server confirmation before changing local state", () => {
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
