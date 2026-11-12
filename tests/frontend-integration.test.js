@@ -75,5 +75,6 @@ test("monthly save distinguishes a persisted snapshot from a failed module sync"
     assert.match(js, /let syncWarning = null/);
     assert.match(js, /Budget mensuel enregistré · version /);
     assert.match(js, /Synchronisation des autres modules à reprendre/);
+    assert.match(js, /Actualisation de la liste des mois impossible/);
   }
 });
