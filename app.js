@@ -11,6 +11,16 @@ function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");if(!t)return;t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4200)}
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
+window.addEventListener("bep:offline-use-remote",event=>{
+ const payload=event.detail?.payload;
+ if(!payload||typeof payload!=="object"||Array.isArray(payload))return;
+ state={...defaults,...payload};
+ if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
+ if(!Array.isArray(state.coachProfile))state.coachProfile=[];
+ migrateIncomeState();
+ try{localStorage.setItem(DB,JSON.stringify(state));render();dispatchLegacyBudgetChanged();notify("Version du compte chargée. Les modifications locales en attente ont été abandonnées.");}
+ catch{render();notify("Version du compte chargée en mémoire, mais son enregistrement local a échoué.");}
+});
 window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged();notify("Synchronisation BEP terminée.")});
 window.addEventListener("bep:offline-sync-error",e=>notify("Synchronisation en attente : "+(e.detail?.message||"connexion indisponible.")));
 function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
