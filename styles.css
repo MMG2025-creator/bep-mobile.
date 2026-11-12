@@ -993,3 +993,7 @@ body.chart-zoom-open{overflow:hidden}
 .savings-reward small{font-size:9px;line-height:1.3;color:#829087}
 .savings-reward.unlocked strong{color:#176b50}
 @media(max-width:390px){.savings-rewards-panel{padding:14px}.savings-rewards-heading{display:block}.savings-rewards-heading>p{max-width:none;margin:8px 0 0;text-align:left}.savings-rewards-grid{gap:6px}.savings-reward{padding:9px 5px;min-height:98px}}
+
+/* Respect global tab visibility: savings uses grid only while its page is active */
+.panel#savings.savings-page:not(.active){display:none!important}
+.panel#savings.savings-page.active{display:grid}
