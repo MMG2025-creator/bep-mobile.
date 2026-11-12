@@ -107,7 +107,8 @@
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
-    $("monthlyBudgetActualItems").innerHTML = actuals.expenses.length ? actuals.expenses.slice(0, 12).map(x =>
+    const hasActualRows = actuals.expenses.length > 0 || (actuals.savingsOperations || []).length > 0;
+    $("monthlyBudgetActualItems").innerHTML = hasActualRows ? actuals.expenses.slice(0, 12).map(x =>
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.amount) + '</b></div>'
