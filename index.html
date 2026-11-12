@@ -93,8 +93,8 @@
   <p id="monthlyBudgetStatus" class="monthly-budget-status" role="status" aria-live="polite">Connecte-toi pour consulter ton historique mensuel.</p>
   <div id="monthlyBudgetNoMonth" hidden><p class="hint">Aucun mois n’est encore enregistré dans le nouvel historique. Le premier mois peut reprendre une seule fois les revenus, charges et objectifs actuellement enregistrés.</p></div>
   <form id="monthlyBudgetCreateForm" class="monthly-budget-create" hidden>
-    <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required></div>
-    <button class="secondary full" type="submit">Créer le mois</button>
+    <div class="field"><label for="monthlyBudgetNewMonth">Nouveau mois à enregistrer</label><input id="monthlyBudgetNewMonth" type="month" required></div>
+    <button class="secondary full" type="submit">Enregistrer le mois</button>
   </form>
   <div id="monthlyBudgetWorkspace" hidden>
     <div class="field"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
@@ -104,7 +104,7 @@
       <div><span>Épargne prévue</span><strong id="monthlyBudgetSavingsTotal">0,00 €</strong></div>
       <div><span>Disponible prévisionnel</span><strong id="monthlyBudgetRemaining">0,00 €</strong></div>
     </div>
-    <div class="monthly-budget-actuals"><h3 id="monthlyBudgetActualHeading">Mes dépenses du mois</h3><strong id="monthlyBudgetActualTotal">—</strong><small id="monthlyBudgetActualCount">Chargement des achats datés…</small><small id="monthlyBudgetActualVariance">Écart avec les charges prévues : —</small><div id="monthlyBudgetActualItems"></div></div>
+    <div class="monthly-budget-actuals"><h3 id="monthlyBudgetActualHeading">Mes dépenses du mois</h3><strong id="monthlyBudgetActualTotal">—</strong><small id="monthlyBudgetActualCount">Chargement des achats datés…</small><small id="monthlyBudgetActualVariance">Écart avec les charges prévues : —</small><details id="monthlyBudgetExpensesDetails" class="monthly-budget-expenses-details"><summary id="monthlyBudgetExpensesSummary">Afficher les dépenses</summary><div id="monthlyBudgetActualItems"></div></details></div>
     <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
     <form id="monthlyBudgetItemForm" class="monthly-budget-item-form">
       <h3>Ajouter une ligne</h3>
@@ -115,12 +115,16 @@
       <button id="monthlyBudgetItemSubmit" class="secondary full" type="submit">Ajouter la ligne</button>
       <button id="monthlyBudgetItemCancel" class="secondary full" type="button" hidden>Annuler la modification</button>
     </form>
-    <button id="monthlyBudgetSave" class="primary full" type="button">Enregistrer ce mois</button>
+    <button id="monthlyBudgetSave" class="primary full" type="button">Enregistrer les modifications</button>
     <div class="monthly-budget-close-actions">
       <button id="monthlyBudgetClose" class="secondary full" type="button">Clôturer le mois</button>
-      <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500"></div>
-      <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
+      <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction (obligatoire)</label><input id="monthlyBudgetReasonInput" maxlength="500" placeholder="Ex. Correction d’une charge ou d’un revenu"></div>
+      <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir le mois pour corriger</button>
     </div>
+    <section class="monthly-budget-audit" aria-labelledby="monthlyBudgetAuditTitle">
+      <h3 id="monthlyBudgetAuditTitle">Historique des corrections</h3>
+      <div id="monthlyBudgetAuditItems"><p class="empty">Aucune correction enregistrée pour ce mois.</p></div>
+    </section>
   </div>
 </article>
 </div>
