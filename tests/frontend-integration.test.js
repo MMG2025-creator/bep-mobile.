@@ -325,3 +325,9 @@ test("saved income typography matches saved charges", () => {
   assert.match(css, /#budgetModuleIncome #incomeRows \.rowitem\{font-size:14px;line-height:1\.45\}/);
   assert.match(css, /#budgetModuleIncome #incomeRows \.rowitem>b\{font-size:14px;line-height:1\.4;font-weight:700\}/);
 });
+
+test("saved income and charges use the same typography scale", () => {
+  const css = read("spend-experience.css");
+  assert.match(css, /#budgetModuleIncome \.income-saved-details>summary,[\s\S]*?#budgetModuleCharges \.income-saved-details>summary\{font-size:16px!important;line-height:1\.4;font-weight:800\}/);
+  assert.match(css, /#budgetModuleIncome #incomeRows \.rowitem,[\s\S]*?#budgetModuleCharges #budgetRows \.rowitem\{font-size:14px;line-height:1\.45\}/);
+});
