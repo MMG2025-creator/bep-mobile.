@@ -346,7 +346,7 @@ async function submitCoachQuestion(question){
     const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
     trace.push(sources.length+" source(s) récupérée(s)");
     if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));
-    const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");
+    const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");(c.dataWarnings||[]).forEach(w=>trace.push("Alerte données : "+w));
     const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
    }
    const tokens=Number(d.usage?.total_tokens||d.usage?.totalTokenCount)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
