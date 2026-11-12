@@ -20,6 +20,7 @@
     if (!toolbar) { toolbar = document.createElement("div"); toolbar.id = "monthlyBudgetItemsBulkToolbar"; toolbar.className = "multi-select-toolbar hidden"; container.before(toolbar); }
     toolbar.classList.toggle("hidden", !monthSelectionMode);
     toolbar.innerHTML = monthSelectionMode ? '<span>' + monthSelection.size + ' ligne(s) sélectionnée(s)</span><button type="button" data-month-all>Tout sélectionner</button><button type="button" data-month-delete>Supprimer la sélection</button><button type="button" data-month-cancel>Annuler</button>' : "";
+    if (!monthSelectionMode) rows.forEach(row => { row.classList.remove("is-selected"); row.querySelector("[data-month-check]")?.remove(); });
     if (monthSelectionMode) rows.forEach(row => {
       const index = Number(row.dataset.monthRow); row.classList.toggle("is-selected", monthSelection.has(index));
       let check = row.querySelector("[data-month-check]");
