@@ -313,3 +313,22 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #incomeRows .rowitem>span:first-child b,#budgetRows .rowitem>span:first-child b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
 #incomeRows .rowitem>span:first-child small,#budgetRows .rowitem>span:first-child small{font-size:12px!important;line-height:1.4!important}
 #incomeRows .rowitem>b,#budgetRows .rowitem>b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
+
+/* Expenses refresh: keep the hero, simplify the navigation and open purchase entry in a modal. */
+.bep-spend-nav{grid-template-columns:1fr}
+.bep-spend-nav button[data-spend-tab="challenges"],
+.bep-spend-nav button[data-spend-tab="balance"]{display:none!important}
+.bep-spend-add-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;margin:0 0 14px;padding:14px 18px;border:1px solid #176b50;border-radius:14px;background:#176b50;color:#fff;font:800 16px/1.25 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 5px 14px #176b5020}
+.bep-spend-add-button:hover{background:#12583f;border-color:#12583f}
+.bep-spend-add-button:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
+.bep-spend-history-details{border:1px solid #e1ebe4;border-radius:16px;background:#fff;overflow:hidden}
+.bep-spend-history-details>summary{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:14px 16px;color:#173a32;font:800 16px/1.4 'DM Sans',sans-serif;cursor:pointer;list-style:none}
+.bep-spend-history-details>summary::-webkit-details-marker{display:none}
+.bep-spend-history-details>summary:after{content:"＋";display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eaf5ef;color:#176b50;font-size:20px}
+.bep-spend-history-details[open]>summary:after{content:"−"}
+.bep-spend-history-details>#purchaseBulkToolbar,.bep-spend-history-details>.purchase-longpress-hint,.bep-spend-history-details>#purchaseRows{margin-left:14px;margin-right:14px}
+.bep-spend-history-details>#purchaseRows{margin-bottom:14px}
+.bep-quick-expense-dialog .bep-quick-expense-panel{max-height:min(90vh,900px);overflow:auto}
+.bep-quick-expense-dialog .bep-quick-expense-body .bep-spend-amount label{font-size:15px;font-weight:800}
+.bep-quick-expense-dialog .bep-quick-expense-body #purchaseAmount{min-height:58px;font-size:22px;font-weight:800}
+@media(max-width:480px){.bep-spend-add-button{min-height:54px;font-size:16px}.bep-spend-history-details>summary{min-height:52px}}
