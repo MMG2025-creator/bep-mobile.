@@ -249,3 +249,24 @@ test("spend navigation switches complete views and keeps purchase history inside
     assert.match(read(file), /#purchases \.bep-spend-view\[hidden\]\{display:none!important\}/);
   }
 });
+
+
+test("challenge catalogue offers twenty selectable challenges with persistent personal selection", () => {
+  const js = read("spend-experience.js");
+  assert.equal(js, read("dist/spend-experience.js"));
+  assert.match(js, /const challenges=\[/);
+  assert.equal((js.match(/\{id:"[a-z-]+",icon:/g)||[]).length, 20);
+  assert.match(js, /SELECT_KEY="bep-spend-selected-challenges-v1"/);
+  assert.match(js, /Choisir les défis que je veux relever/);
+  assert.match(js, /data-challenge-select=/);
+  assert.match(js, /localStorage\.setItem\(SELECT_KEY,JSON\.stringify\(selected\)\)/);
+  assert.match(js, /selected\.filter\(id=>challenges\.some\(c=>c\.id===id\)\)/);
+  assert.match(js, /completed\+" \/ "\+selected\.length/);
+  assert.match(js, /c\.done/);
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    const css = read(file);
+    assert.match(css, /\.bep-spend-challenge-picker/);
+    assert.match(css, /\.bep-spend-challenge-options/);
+    assert.match(css, /\.bep-spend-challenge-grid-inner/);
+  }
+});
