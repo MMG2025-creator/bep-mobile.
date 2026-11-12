@@ -1241,14 +1241,15 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .rowitem[data-multi-row],.monthly-budget-row[data-month-row]{user-select:none;-webkit-user-select:none;touch-action:pan-y}
 
 
-/* Revenus et charges enregistrés : même structure de ligne que la liste Dépenses */
+/* Revenus et charges enregistrés : réutilisation du layout natif Dépenses */
 .saved-list-longpress-hint{margin:8px 0 4px;line-height:1.45}
 .saved-income-row,.saved-charge-row{min-width:0}
 .saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{width:100%}
 .saved-income-row .purchase-row-main>span:first-child,
 .saved-charge-row .purchase-row-main>span:first-child{min-width:0;overflow-wrap:anywhere}
-.saved-income-row .purchase-row-actions,
-.saved-charge-row .purchase-row-actions{flex:0 0 auto}
+.saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{flex:0 0 auto}
+.saved-income-row .purchase-row-main>.purchase-select-check,
+.saved-charge-row .purchase-row-main>.purchase-select-check{margin:0}
 @media(max-width:390px){
  .saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{gap:7px}
  .saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{gap:5px}
