@@ -18,7 +18,7 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("index.html").includes("./financial-engine.js?v=1"));
   assert.ok(read("index.html").includes("./app.js?v=102"));
   assert.ok(read("dist/index.html").includes("./financial-engine.js?v=1"));
-  assert.ok(read("dist/index.html").includes("./app.js?v=101"));
+  assert.ok(read("dist/index.html").includes("./app.js?v=102"));
   assert.ok(read("index.html").includes("./styles.css?v=82"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=82"));
   assert.ok(read("index.html").includes("./spend-experience.css?v=6"));
@@ -90,7 +90,7 @@ test("legacy module changes are persisted locally and queued for conflict-guarde
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
     const start = js.indexOf("function save(){");
-    const end = js.indexOf("\\nwindow.BEP_APPLY_MONTHLY_ITEMS", start);
+    const end = js.indexOf("\nwindow.BEP_APPLY_MONTHLY_ITEMS", start);
     assert.ok(start >= 0 && end > start, file + " save function is missing");
     const save = js.slice(start, end);
     assert.ok(save.includes('localStorage.setItem(DB,JSON.stringify(state))'));
