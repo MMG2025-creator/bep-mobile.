@@ -64,6 +64,9 @@ test("source and published OCR assets stay synchronized and support generic imag
   assert.ok(js.includes("ftyp"),"HEIC must also be detected by file signature");
   assert.ok(js.includes("await isHeicReceiptImage(file)"),"HEIC file signature must bypass generic MIME rejection");
   assert.ok(js.includes("heic2any@0.0.4"));
+  assert.ok(js.includes("imageOrientation:\"from-image\""),"mobile decoding should honor image orientation");
+  assert.ok(js.includes("maxPixels=4500000"),"OCR preprocessing should downsample large phone photos");
+  assert.ok(js.includes("file.size>40*1024*1024"),"large-file guard should allow normal high-resolution phone photos");
   assert.match(js,/worker\\.recognize\\(ocrImage\\)/);
   assert.doesNotMatch(js,/canvas\\.toBlob/);
   assert.match(js,/extracted\\.confidence\\.time/);
