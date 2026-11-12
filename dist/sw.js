@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v3";
+const CACHE_NAME="bep-shell-v4";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
