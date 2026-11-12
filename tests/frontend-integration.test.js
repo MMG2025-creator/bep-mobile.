@@ -84,6 +84,20 @@ test("legacy module synchronization preserves manually managed monthly rows", ()
   }
 });
 
+test("monthly load preserves a failed cross-module sync warning", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    const start = js.indexOf("async function loadMonth(monthKey)");
+    const end = js.indexOf("\n  async function refresh()", start);
+    assert.ok(start >= 0 && end > start, file + " loadMonth function is missing");
+    const load = js.slice(start, end);
+    assert.match(load, /let syncWarning = null/);
+    assert.match(load, /Boolean\(syncWarning\)/);
+    assert.ok(load.indexOf("syncWarning") < load.lastIndexOf("status("),
+      file + " must preserve sync failure feedback after loading");
+  }
+});
+
 test("monthly save distinguishes a persisted snapshot from a failed module sync", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
