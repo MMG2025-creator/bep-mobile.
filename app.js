@@ -276,7 +276,7 @@ const rules=[
 let autoWriting=false;
 const suggest=()=>{
  const text=normalize(description.value);
- if(!text)return;
+ if(!text){if(category.dataset.autoSuggested==="1"){category.value="";delete category.dataset.autoSuggested;category.dispatchEvent(new Event("input",{bubbles:true}))}return}
  const match=rules.find(([,pattern])=>pattern.test(text));
  if(!match){if(category.dataset.autoSuggested==="1"){category.value="";delete category.dataset.autoSuggested;category.dispatchEvent(new Event("input",{bubbles:true}))}return}
  if(category.value.trim()&&category.dataset.autoSuggested!=="1")return;
