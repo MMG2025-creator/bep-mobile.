@@ -1233,24 +1233,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:430px){.welcome{min-height:210px;padding:21px 31% 22px 21px}.welcome h1{max-width:100%;font-size:29px}.welcome .sub{max-width:100%;font-size:12px}.bep-home-mascot{right:3%;width:29%;height:120px}.hero-growth{right:2%;width:30%;height:92px;opacity:.2}}
 @media(prefers-reduced-motion:reduce){.bep-home-mascot,.bep-home-robot-eyes,.bep-home-robot-glow{animation:none!important}}
 
-
-/* Homepage vivante : messages rotatifs et mascotte BEP */
-.welcome{position:relative;isolation:isolate;overflow:hidden}
-.welcome .welcome-dynamic{position:relative;z-index:3;display:flex;align-items:center;min-height:27px;margin-top:12px;padding:6px 11px;width:max-content;max-width:min(72%,440px);border:1px solid rgba(232,198,111,.48);border-radius:999px;background:rgba(5,65,51,.58);color:#f7f4e8;font-size:11px;font-weight:650;letter-spacing:.01em;overflow:hidden}
-.welcome-dynamic-item{position:absolute;left:11px;right:10px;opacity:0;transform:translateY(7px);animation:bepHomeMessage 12s infinite}
-.welcome-dynamic-item:nth-child(1){animation-delay:0s}
-.welcome-dynamic-item:nth-child(2){animation-delay:4s}
-.welcome-dynamic-item:nth-child(3){animation-delay:8s}
-@keyframes bepHomeMessage{0%,4%{opacity:0;transform:translateY(7px)}8%,27%{opacity:1;transform:translateY(0)}33%,100%{opacity:0;transform:translateY(-6px)}}
-.bep-home-mascot{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:none}
-.bep-home-robot{filter:drop-shadow(0 7px 12px rgba(0,0,0,.2))}
-.bep-advice-dock{position:fixed!important;right:max(18px,env(safe-area-inset-right))!important;bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px))!important;z-index:1200!important}
-.bep-advice-robot{animation:bepDockFloat 3.6s ease-in-out infinite;box-shadow:0 8px 28px rgba(18,59,52,.18),0 0 0 0 rgba(23,107,80,.16)}
-.bep-advice-robot>svg{width:42px;height:42px;filter:drop-shadow(0 2px 3px rgba(18,59,52,.14))}
-@keyframes bepDockFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@media(max-width:560px){.welcome .welcome-dynamic{max-width:66%;font-size:10px}.bep-advice-robot{padding:7px 12px 7px 8px;gap:7px}.bep-advice-robot>svg{width:38px;height:38px}}
-@media(prefers-reduced-motion:reduce){.welcome-dynamic-item,.bep-advice-robot{animation:none!important}.welcome-dynamic-item:first-child{position:static;opacity:1;transform:none}}
-
 /* Sélection multiple par appui long — revenus, charges et budgets mensuels */
 .multi-select-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px;margin:10px 0;border:1px solid #cfe4d7;border-radius:12px;background:#f2f8f4;color:var(--forest);font-size:12px;font-weight:700}
 .multi-select-toolbar button{border:1px solid #cfe4d7;border-radius:8px;background:#fff;color:var(--green);padding:8px 10px;font:600 11px 'DM Sans',sans-serif;cursor:pointer}
