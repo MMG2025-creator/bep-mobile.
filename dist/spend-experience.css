@@ -287,3 +287,10 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #budgetModuleIncome .bep-entry-trigger{background:#176b50;border-color:#176b50;color:#fff}
 #budgetModuleIncome .bep-entry-trigger:hover{background:#12583f;border-color:#12583f;color:#fff}
 #budgetModuleIncome .bep-entry-trigger:focus-visible{outline:3px solid #cce8d7;outline-offset:2px}
+
+/* Keep saved income typography identical to saved charges. */
+#budgetModuleIncome .income-saved-details>summary{font-size:16px;line-height:1.4}
+#budgetModuleIncome #incomeRows .rowitem{font-size:14px;line-height:1.45}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
+#budgetModuleIncome #incomeRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
