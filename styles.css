@@ -947,8 +947,8 @@ body.chart-zoom-open{overflow:hidden}
 .savings-movement-form form{margin-bottom:0}
 .savings-history-area{margin-top:18px;padding-top:18px;border-top:1px solid #e8efeb}
 .savings-history-area .savings-operation-list{margin-top:0}
-.savings-page>.savings-objectives-card{order:1}
-.savings-page>.savings-activity-card{order:2}
-.savings-page>.savings-hero-card{order:3}
+.savings-page>.savings-hero-card{order:1}
+.savings-page>.savings-objectives-card{order:2}
+.savings-page>.savings-activity-card{order:3}
 .savings-page>.savings-advisor-card{order:4}
 @media(max-width:420px){.savings-objectives-card,.savings-activity-card{padding:16px}.savings-objective-form,.savings-movement-form{padding:12px}}
