@@ -232,6 +232,7 @@ test("purchase affordability is judged only against remaining available money an
   const server = read("server.js");
   assert.match(server, /zone==="purchases"/);
   assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
+  assert.match(server, /financialPosition:p\.financialPosition/);
   assert.match(server, /la seule référence financière est le montant restant disponible/);
   assert.match(server, /sans bloquer son enregistrement/i);
 });
