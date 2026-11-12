@@ -417,3 +417,19 @@ test("purchase create and edit cleanup never dereference a missing purchaseId fi
     assert.match(css, /#purchases ::selection/);
   }
 });
+
+
+test("long press enables bulk selection for saved charges, incomes and monthly budget lines", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /attachLongPressSelection\("incomeRows"/);
+    assert.match(js, /attachLongPressSelection\("budgetRows"/);
+    assert.match(js, /data-multi-delete/);
+  }
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /function attachMonthLongPress/);
+    assert.match(js, /data-month-row/);
+    assert.match(js, /Retirer les .* lignes sélectionnées/);
+  }
+});
