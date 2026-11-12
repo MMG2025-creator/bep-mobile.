@@ -10,6 +10,8 @@ on:
     branches: [main]
     paths:
       - "server.js"
+      - "lib/bep-financial-*.js"
+      - "tests/bep-financial-intelligence.test.js"
       - "monthly-budget-routes.js"
       - "monthly-budget-ui.js"
       - "app.js"
@@ -22,7 +24,7 @@ on:
       - "docs/**"
       - ".github/workflows/monthly-budget.yml"
   push:
-    branches: [feature/monthly-budget-history]
+    branches: [feature/monthly-budget-history, feature/financial-intelligence-mainline]
     paths:
       - "server.js"
       - "monthly-budget-routes.js"
