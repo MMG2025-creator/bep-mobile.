@@ -69,6 +69,7 @@
   let authEpoch = 0;
   let actualsRequestId = 0;
   let actualsRefreshPending = false;
+  const canMutate = () => Boolean(window.bepSignedIn && navigator.onLine);
   const OFFLINE_USER_KEY = "bep-last-authenticated-user";
   const OFFLINE_CACHE_PREFIX = "bep-monthly-history-cache-v1:";
   function offlineCacheKey() {
@@ -203,9 +204,9 @@
     if (selected && months.some(x => x.monthKey === selected)) select.value = selected;
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
-    $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
+    $("monthlyBudgetCreateForm").hidden = !canMutate();
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
-    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !window.bepSignedIn;
+    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !canMutate();
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
@@ -256,7 +257,7 @@
       '<div class="monthly-budget-row" data-month-row="' + index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
       labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
-      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" || !window.bepSignedIn ? "disabled" : "") + '>Modifier</button>' +
+      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" || !canMutate() ? "disabled" : "") + '>Modifier</button>' +
       '<button type="button" data-remove-month-item="' + index + '" aria-label="Retirer cette ligne" ' +
       (current.status === "closed" || !window.bepSignedIn ? "disabled" : "") + '>×</button></span></div>'
     ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
@@ -295,13 +296,13 @@
     $("monthlyBudgetChargesTotal").textContent = money(sum("charge"));
     $("monthlyBudgetSavingsTotal").textContent = money(sum("savings"));
     $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
-    $("monthlyBudgetSave").hidden = current.status === "closed" || !window.bepSignedIn;
-    $("monthlyBudgetClose").hidden = current.status === "closed" || !window.bepSignedIn;
-    $("monthlyBudgetReopen").hidden = current.status !== "closed" || !window.bepSignedIn;
-    $("monthlyBudgetReason").hidden = current.status !== "closed" || !window.bepSignedIn;
-    $("monthlyBudgetItemForm").hidden = current.status === "closed" || !window.bepSignedIn;
+    $("monthlyBudgetSave").hidden = current.status === "closed" || !canMutate();
+    $("monthlyBudgetClose").hidden = current.status === "closed" || !canMutate();
+    $("monthlyBudgetReopen").hidden = current.status !== "closed" || !canMutate();
+    $("monthlyBudgetReason").hidden = current.status !== "closed" || !canMutate();
+    $("monthlyBudgetItemForm").hidden = current.status === "closed" || !canMutate();
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
-    if (itemTrigger) itemTrigger.hidden = current.status === "closed" || !window.bepSignedIn;
+    if (itemTrigger) itemTrigger.hidden = current.status === "closed" || !canMutate();
   }
   async function loadMonth(monthKey) {
     if (!navigator.onLine || !window.bepSignedIn) { loadCachedMonth(monthKey); return; }
@@ -568,6 +569,14 @@
       renderMonths(); renderActuals(); refresh();
     } else { loadOfflineCache(); setBusy(false); }
   });
-  if (window.bepSignedIn) refresh();
+  window.addEventListener("offline", () => {
+    if (current?.monthKey) loadCachedMonth(current.monthKey);
+    else loadOfflineCache();
+  });
+  window.addEventListener("online", () => {
+    if (window.bepSignedIn) refresh();
+    else loadOfflineCache();
+  });
+  if (window.bepSignedIn && navigator.onLine) refresh();
   else loadOfflineCache();
 })();
