@@ -64,7 +64,7 @@ const radar=document.createElement("section");radar.className="bep-spend-view be
 panel.insertBefore(radar,nav.nextSibling);
 if(entry){
  const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter une dépense";
- const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Trois informations suffisent. Le reste est facultatif.";entry.insertBefore(intro,form);
+ const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Enregistre ici tes achats et dépenses. Ton budget disponible est recalculé après validation.";entry.insertBefore(intro,form);
  const merchantField=$("merchant")?.closest(".field"),cityField=$("city")?.closest(".field"),amountField=$("purchaseAmount")?.closest(".field"),categoryField=$("purchaseCategory")?.closest(".field");
  const psychologyField=$("psychology")?.closest(".field"),needField=$("need")?.closest(".field"),delayField=$("delay")?.closest(".field");
  const oldTwo=cityField?.parentElement?.classList.contains("two")?cityField.parentElement:null;
