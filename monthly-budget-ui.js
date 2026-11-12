@@ -129,12 +129,18 @@
         $("monthlyBudgetItemAmount").value = item.plannedAmount;
         $("monthlyBudgetItemSubmit").textContent = "Enregistrer les modifications";
         $("monthlyBudgetItemCancel").hidden = false;
-        $("monthlyBudgetItemLabel").focus();
+        if (window.BEP_OPEN_ENTRY_DIALOG) window.BEP_OPEN_ENTRY_DIALOG("monthly-item");
+        else $("monthlyBudgetItemLabel").focus();
       };
     });
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
-      button.onclick = () => {
-        items.splice(Number(button.dataset.removeMonthItem), 1);
+      button.onclick = async () => {
+        const index = Number(button.dataset.removeMonthItem);
+        const accepted = window.BEP_CONFIRM_ACTION
+          ? await window.BEP_CONFIRM_ACTION("Cette ligne sera retirée du budget mensuel. Enregistre ensuite le mois pour confirmer la modification.", "Retirer cette ligne")
+          : window.confirm("Retirer cette ligne du budget mensuel ?");
+        if (!accepted) return;
+        items.splice(index, 1);
         editingItemIndex = null;
         $("monthlyBudgetItemForm").reset();
         $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -152,6 +158,8 @@
     $("monthlyBudgetReopen").hidden = current.status !== "closed";
     $("monthlyBudgetReason").hidden = current.status !== "closed";
     $("monthlyBudgetItemForm").hidden = current.status === "closed";
+    const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
+    if (itemTrigger) itemTrigger.hidden = current.status === "closed";
   }
   async function loadMonth(monthKey) {
     const epoch = authEpoch;
