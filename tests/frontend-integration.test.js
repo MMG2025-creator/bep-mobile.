@@ -234,6 +234,7 @@ test("spend navigation switches complete views and keeps purchase history inside
   const js = read("spend-experience.js");
   assert.equal(js, read("dist/spend-experience.js"));
   assert.match(js, /function setTab\(tab\)\{const panel=\$\("purchases"\)/);
+  assert.match(js, /querySelectorAll\(":scope > \\[data-spend-view\\]"/);
   assert.match(js, /const radar=document\.createElement\("section"\)/);
   assert.match(js, /radar\.dataset\.spendView="radar"/);
   assert.match(js, /\[advice,entry,history\]\.forEach\(node=>\{if\(node\)radar\.appendChild\(node\);\}\)/);
