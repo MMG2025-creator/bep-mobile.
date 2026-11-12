@@ -356,3 +356,9 @@ test("BEP advice popup replaces repeated cards and floating quick expense", () =
  assert.ok(!html.includes('id="bepQuickExpense"'));
  for (const id of ["aiHome","aiIncome","aiCharges","aiMonthly","aiSavings","aiPurchases"]) assert.ok(html.includes('id="'+id+'"'));
 });
+
+test("floating advice control reuses the header robot mascot", () => {
+ const html=read("index.html");
+ assert.ok(html.includes('sourceFace.cloneNode(true)'));
+ assert.ok(html.includes('.bep-advice-robot>svg'));
+});
