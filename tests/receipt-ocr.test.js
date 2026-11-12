@@ -69,7 +69,7 @@ test("source and published OCR assets stay synchronized and support generic imag
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=fs.readFileSync(path.join(root,file),"utf8");
-  assert.match(html,/id="receiptFile" type="file" accept="image\/\*"/);
+  assert.match(html,/id="receiptFile" type="file" accept="image\\/\\*,\\.heic,\\.heif"/);
   assert.match(html,/receipt-ocr\.js\?v=2&bep=multi-source-ocr-20261112/);
  }
 });
