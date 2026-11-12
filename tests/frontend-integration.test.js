@@ -86,33 +86,32 @@ test("deleted savings movements are hidden while compensating ledger entries rem
   }
 });
 
-test("legacy module changes notify monthly history only after server persistence", () => {
+test("legacy module changes are persisted locally and queued for conflict-guarded sync", () => {
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
     const start = js.indexOf("function save(){");
-    const end = js.indexOf("\nasync function persistMigratedIncomeState()", start);
+    const end = js.indexOf("\nwindow.BEP_APPLY_MONTHLY_ITEMS", start);
     assert.ok(start >= 0 && end > start, file + " save function is missing");
     const save = js.slice(start, end);
-    const serverWrite = save.indexOf('fetch(API+"/api/data"');
-    const serverConfirm = save.indexOf("dispatchLegacyBudgetChanged()", serverWrite);
-    const failure = save.indexOf(".catch(()=>notify", serverWrite);
-    assert.ok(serverWrite >= 0 && serverConfirm > serverWrite && failure > serverConfirm,
-      file + " must wait for successful legacy-data persistence before syncing monthly history");
+    assert.ok(save.includes('localStorage.setItem(DB,JSON.stringify(state))'));
+    assert.ok(save.includes("window.BEPOffline.enqueue(state)"));
+    assert.ok(save.includes("Données conservées"));
+    assert.ok(js.includes('window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged()'));
   }
 });
 
-test("monthly-to-savings bridge waits for server confirmation before changing local state", () => {
+test("monthly-to-savings bridge commits locally and queues a guarded background sync", () => {
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
     const start = js.indexOf("window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{");
-    const end = js.indexOf("\nasync function persistMigratedIncomeState()", start);
+    const end = js.indexOf("async function persistMigratedIncomeState()", start);
     assert.ok(start >= 0 && end > start, file + " monthly bridge is missing");
     const bridge = js.slice(start, end);
-    const serverWrite = bridge.indexOf('await fetch(API+"/api/data"');
     const localWrite = bridge.indexOf('localStorage.setItem(DB,JSON.stringify(nextState))');
     const stateCommit = bridge.indexOf('state=nextState');
-    assert.ok(serverWrite >= 0 && localWrite > serverWrite && stateCommit > localWrite,
-      file + " must confirm server sync before committing local state");
+    const queueWrite = bridge.indexOf('await window.BEPOffline.enqueue(nextState)');
+    assert.ok(localWrite >= 0 && stateCommit > localWrite && queueWrite > stateCommit,
+      file + " must commit local state before queuing offline sync");
     assert.ok(bridge.includes("const nextIncome=nextIncomes.reduce"),
       file + " must calculate savings rates from the imported monthly income");
   }
