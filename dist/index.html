@@ -317,21 +317,24 @@
     <textarea id="coachPromptInput" rows="2" maxlength="1200" placeholder="Écris ta question ou décris ta situation…" required></textarea>
     <button class="primary" type="submit" aria-label="Envoyer au coach BEP">Envoyer</button>
   </form>
-  <div class="coach-info-panel" aria-label="Informations sur le Coach IA BEP">
-    <section class="coach-info-section">
-      <h3>Fonctionnement du Coach</h3>
-      <p>Le Coach IA BEP s’appuie sur Google Gemini 3.5 Flash (<code>gemini-3.5-flash</code>), un modèle rapide et polyvalent. Les échanges passent par le service sécurisé de BEP : aucune clé API personnelle n’est nécessaire.</p>
-      <p>Si le service Gemini est momentanément indisponible, le moteur local BEP reste disponible.</p>
-    </section>
-    <section class="coach-info-section coach-info-settings">
-      <h3>État du service et réglages</h3>
-  <details class="coach-ai-disclosure">
-    <summary class="coach-privacy coach-ai-summary"><span id="coachAiMode">● Coach BEP · Mode local</span><span class="coach-ai-open-hint">Voir le fonctionnement et les réglages IA <span class="coach-ai-plus" aria-hidden="true">＋</span></span></summary>
+  <details class="coach-info-panel">
+    <summary class="coach-info-summary">
+      <span id="coachAiMode">● Coach BEP · Mode local</span>
+      <span class="coach-info-toggle-label">Fonctionnement et réglages IA <span class="coach-info-plus" aria-hidden="true">＋</span></span>
+    </summary>
+    <div class="coach-info-content">
+      <section class="coach-info-section">
+        <h3>Fonctionnement du Coach</h3>
+        <p>Le Coach IA BEP s’appuie sur Google Gemini 3.5 Flash (<code>gemini-3.5-flash</code>), un modèle rapide et polyvalent. Les échanges passent par le service sécurisé de BEP : aucune clé API personnelle n’est nécessaire.</p>
+        <p>Si le service Gemini est momentanément indisponible, le moteur local BEP reste disponible.</p>
+      </section>
+      <section class="coach-info-section coach-info-settings">
+        <h3>État du service et réglages</h3>
     <article class="card ai-connection-card"><div class="card-head"><div><p class="eyebrow">INTELLIGENCE ARTIFICIELLE</p><h2>Ton Coach IA BEP</h2></div><span class="tag" id="aiConnectionBadge">Coach local</span></div><p class="hint">Le Coach IA BEP intégré est utilisé automatiquement lorsqu’il est disponible. Aucune clé API personnelle ni aucun crédit de fournisseur externe ne sont nécessaires.</p><p class="hint" id="aiConnectionStatus" role="status">Le moteur local reste disponible pendant l'activation du service IA.</p><p class="hint hidden" id="aiQuotaStatus">Le moteur local n’utilise aucun quota API.</p><details id="aiAdvancedSettings" class="ai-advanced-settings" hidden><summary>Connexion d’un fournisseur IA externe (option avancée)</summary><p class="hint">Facultatif : réservé aux utilisateurs qui disposent de leur propre clé API. Les appels seront facturés par le fournisseur choisi. Les données financières envoyées à ce fournisseur lui seront transmises.</p><div class="field"><label for="aiProvider">Fournisseur</label><select id="aiProvider"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="gemini">Google Gemini</option><option value="mistral">Mistral AI</option><option value="openrouter">OpenRouter</option><option value="custom">Autre API compatible OpenAI</option></select></div><div class="field"><label for="aiModel">Modèle</label><input id="aiModel" maxlength="120" placeholder="Nom du modèle" autocomplete="off"></div><div class="field hidden" id="aiEndpointField"><label for="aiEndpoint">URL API compatible OpenAI</label><input id="aiEndpoint" type="url" maxlength="500" placeholder="https://…/v1/chat/completions"></div><div class="field"><label for="aiApiKey">Clé API personnelle</label><input id="aiApiKey" type="password" maxlength="1000" placeholder="Clé API" autocomplete="new-password"></div><div class="ai-connection-actions"><button class="primary" id="saveAiConfigBtn" type="button">Enregistrer et connecter</button><button class="secondary" id="testAiBtn" type="button">Tester la connexion</button></div></details><button class="secondary full hidden" id="disconnectAiBtn" type="button">Déconnecter mon IA personnelle</button></article>
+      </section>
+      <p class="coach-info-legal">Les réponses constituent une aide à la compréhension et ne remplacent pas un avis financier professionnel.</p>
+    </div>
   </details>
-    </section>
-    <p class="coach-info-legal">Les réponses constituent une aide à la compréhension et ne remplacent pas un avis financier professionnel.</p>
-  </div>
 </article>
 </section>
 <section id="settings" class="panel">
