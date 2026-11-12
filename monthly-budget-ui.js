@@ -9,7 +9,7 @@
   let months = [];
   let current = null;
   let items = [];
-  let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+  let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [], savingsOperations: [] };
   let editingItemIndex = null;
   let loading = false;
   let authEpoch = 0;
@@ -20,7 +20,7 @@
       incomes: items.filter(x => x.itemType === "income").map(x => ({ amount: x.plannedAmount })),
       budgets: items.filter(x => x.itemType === "charge").map(x => ({ amount: x.plannedAmount, category: x.category, nature: x.nature })),
       goals: items.filter(x => x.itemType === "savings").map(x => ({ monthly: x.plannedAmount })),
-      expenses: actuals.expenses, monthKey: current?.monthKey
+      expenses: actuals.expenses, savingsOperations: actuals.savingsOperations, monthKey: current?.monthKey
     });
   }
   const monthNow = () => {
@@ -93,15 +93,17 @@
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
+    const hasSavingsMovements = Array.isArray(actuals.savingsOperations) && actuals.savingsOperations.length > 0;
     $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
     $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
-    if (hasActuals) {
+    if (hasActuals || hasSavingsMovements) {
       const position = financialPosition();
       const variance = position.actualImpact;
       const parts = [];
       if (position.overBudgetSpend > 0) parts.push("dépassement des enveloppes variables : " + money(position.overBudgetSpend));
-      if (position.unbudgetedSpend > 0) parts.push("achats hors enveloppe : " + money(position.unbudgetedSpend));
-      $("monthlyBudgetActualVariance").textContent = variance > 0 ? "Rapprochement des achats : " + parts.join(" · ") + "." : "Achats enregistrés couverts par les enveloppes variables identifiées.";
+      if (position.unbudgetedSpend > 0) parts.push("achats hors provision : " + money(position.unbudgetedSpend));
+      if (hasSavingsMovements) parts.push("épargne réellement versée : " + money(position.actualSavingsDeposits) + " · retraits : " + money(position.actualSavingsWithdrawals) + " · prévu : " + money(position.plannedSavings));
+      $("monthlyBudgetActualVariance").textContent = parts.length ? "Rapprochement : " + parts.join(" · ") + "." : "Achats enregistrés couverts par les provisions du budget. Aucun mouvement d’épargne enregistré.";
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
