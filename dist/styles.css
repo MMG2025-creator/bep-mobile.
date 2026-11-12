@@ -1149,3 +1149,28 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .coach-info-settings{margin-top:11px;padding-top:10px;border-top:1px solid #d9e9df}
 .coach-info-panel .ai-connection-card{margin:8px 0 0;padding:12px;background:#fff;border:1px solid #dcebe2;box-shadow:none}
 .coach-info-legal{margin:10px 0 0;padding-top:9px;border-top:1px solid #d9e9df;color:#71877b;font-size:10px;line-height:1.45}
+
+/* Coach BEP — profil d'accompagnement compact et personnalisable */
+.coach-profile-panel{margin:0 0 14px;border:1px solid #dcebe2;border-radius:15px;background:#f6faf7;overflow:hidden}
+.coach-profile-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;cursor:pointer;list-style:none;color:#245c49}
+.coach-profile-summary::-webkit-details-marker{display:none}
+.coach-profile-summary-main{display:flex;align-items:center;gap:10px;min-width:0}
+.coach-profile-spark{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:#e4f1e9;color:#176b50;font-size:19px}
+.coach-profile-summary-main strong,.coach-profile-copy strong{display:block;font:700 12px Manrope,sans-serif}
+.coach-profile-summary-main small{display:block;margin-top:3px;color:#71877b;font-size:10px}
+.coach-profile-chevron{font-size:22px;color:#54836c;transition:transform .18s ease}
+.coach-profile-panel[open] .coach-profile-chevron{transform:rotate(180deg)}
+.coach-profile-content{padding:0 12px 12px;border-top:1px solid #e3eee7}
+.coach-profile-intro{margin:10px 2px;color:#71877b;font-size:11px;line-height:1.5}
+.coach-profile-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.coach-profile-option{position:relative;display:flex;align-items:center;gap:9px;min-width:0;padding:9px;border:1px solid #e1ebe4;border-radius:11px;background:#fff;cursor:pointer;transition:border-color .15s,background .15s}
+.coach-profile-option input{position:absolute;opacity:0;pointer-events:none}
+.coach-profile-option.selected{border-color:#9fcbb2;background:#edf7f0}
+.coach-profile-icon{display:grid;place-items:center;width:31px;height:31px;flex:none;border-radius:9px;background:#f0f4f1;color:#286b50;font-size:19px;font-weight:700}
+.coach-profile-copy{min-width:0;flex:1}
+.coach-profile-copy strong{font-size:10px;line-height:1.35;color:#29483a}
+.coach-profile-copy small{display:block;margin-top:3px;color:#829187;font-size:9px;line-height:1.35}
+.coach-profile-check{display:grid;place-items:center;width:17px;height:17px;flex:none;border:1px solid #cbd9cf;border-radius:50%;color:transparent;font-size:10px}
+.coach-profile-option.selected .coach-profile-check{border-color:#176b50;background:#176b50;color:#fff}
+.coach-profile-saved{margin:9px 2px 0;color:#71877b;font-size:10px}
+@media(max-width:520px){.coach-profile-options{grid-template-columns:1fr}.coach-profile-option{padding:10px}.coach-profile-copy strong{font-size:11px}.coach-profile-copy small{font-size:10px}}
