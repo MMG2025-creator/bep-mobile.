@@ -1,0 +1,49 @@
+name: Purchase entry checks
+
+on:
+  push:
+    branches:
+      - feature/savings-redesign-v1-pr
+    paths:
+      - "app.js"
+      - "dist/app.js"
+      - "spend-experience.js"
+      - "dist/spend-experience.js"
+      - "spend-experience.css"
+      - "dist/spend-experience.css"
+      - "index.html"
+      - "dist/index.html"
+      - "tests/frontend-integration.test.js"
+      - "package.json"
+      - ".github/workflows/purchase-entry.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app.js"
+      - "dist/app.js"
+      - "spend-experience.js"
+      - "dist/spend-experience.js"
+      - "spend-experience.css"
+      - "dist/spend-experience.css"
+      - "index.html"
+      - "dist/index.html"
+      - "tests/frontend-integration.test.js"
+      - "package.json"
+      - ".github/workflows/purchase-entry.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-fund
+      - run: npm audit --omit=dev
+      - run: node --check app.js
+      - run: node --check dist/app.js
+      - run: node --check spend-experience.js
+      - run: node --check dist/spend-experience.js
+      - run: node --test tests/frontend-integration.test.js
