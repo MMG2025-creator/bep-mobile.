@@ -22,7 +22,7 @@ Cette référence est un point de restauration du code et de la configuration de
 
 L'environnement de test est exclusivement :
 
-- Frontend : Render `bep-budget-test`, https://bep-budget-test.onrender.com
+- Frontend : Render `bep-budget-test`, URL canonique de recette https://bep-budget-test.onrender.com/?testMode=1&utm_source=chatgpt.com (URL de base : https://bep-budget-test.onrender.com)
 - Branche frontend : `test/budget-revenus-charges-liste`
 - API utilisée : Render `bep-coach-staging-api`, https://bep-coach-staging-api.onrender.com
 - Branche API existante : `feature/financial-intelligence-engine`
