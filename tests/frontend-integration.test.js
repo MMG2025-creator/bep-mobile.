@@ -244,6 +244,6 @@ test("production API initialization and purchase adviser use a single valid serv
   assert.match(server, /currency CHAR\(3\)[\s\S]*?currency ~ '\^\[A-Z\]\{3\}\$'/);
   assert.match(server, /const purchaseReview=req\.body\?\.intent==="purchase_review"[\s\S]*?const ctx=purchaseReview\?\{resteDisponible/);
   assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
-  assert.match(server, /utilise exclusivement le montant restant disponible/);
+  assert.match(server, /la seule référence financière est le montant restant disponible/);
   assert.match(server, /sans bloquer son enregistrement/i);
 });
