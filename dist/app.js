@@ -11,6 +11,16 @@ function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");if(!t)return;t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4200)}
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
+window.addEventListener("bep:offline-use-remote",event=>{
+ const payload=event.detail?.payload;
+ if(!payload||typeof payload!=="object"||Array.isArray(payload))return;
+ state={...defaults,...payload};
+ if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
+ if(!Array.isArray(state.coachProfile))state.coachProfile=[];
+ migrateIncomeState();
+ try{localStorage.setItem(DB,JSON.stringify(state));render();dispatchLegacyBudgetChanged();notify("Version du compte chargée. Les modifications locales en attente ont été abandonnées.");}
+ catch{render();notify("Version du compte chargée en mémoire, mais son enregistrement local a échoué.");}
+});
 window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged();notify("Synchronisation BEP terminée.")});
 window.addEventListener("bep:offline-sync-error",e=>notify("Synchronisation en attente : "+(e.detail?.message||"connexion indisponible.")));
 function charges(){return state.budgets.reduce((a,b)=>a+Number(b.amount),0)}
@@ -387,30 +397,6 @@ async function prepareReceiptImageForOcr(file){
  return prepareBankImageForOcr(file);
 }
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
-async function buildReceiptDiagnostic(file,error){
- const bytes=new Uint8Array(await file.slice(0,32).arrayBuffer());
- const hex=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join(" ");
- const ascii=Array.from(bytes,b=>b>=32&&b<=126?String.fromCharCode(b):".").join("");
- const brand=bytes.length>=12&&String.fromCharCode(...bytes.slice(4,8))==="ftyp"?String.fromCharCode(...bytes.slice(8,12)):"non détectée";
- const modified=file.lastModified?new Date(file.lastModified).toISOString():"inconnue";
- const ua=navigator.userAgent||"inconnu";
- const browser=/Edg\//.test(ua)?"Edge":/SamsungBrowser\//.test(ua)?"Samsung Internet":/Chrome\//.test(ua)?"Chrome":/Firefox\//.test(ua)?"Firefox":/Version\/.+Safari/.test(ua)?"Safari":"autre navigateur";
- return ["DIAGNOSTIC PHOTO BEP","Nom : "+(file.name||"non fourni"),"Taille : "+file.size+" octets ("+(file.size/1048576).toFixed(2)+" Mo)","Type MIME : "+(file.type||"vide"),"Dernière modification : "+modified,"Signature (32 premiers octets, hex) : "+(hex||"aucune"),"Signature (ASCII) : "+(ascii||"aucune"),"Marque ISO-BMFF : "+brand,"createImageBitmap : "+(typeof createImageBitmap==="function"?"disponible":"indisponible"),"Navigateur : "+browser,"Plateforme : "+(navigator.platform||"non fournie"),"Erreur rencontrée : "+(error?.message||String(error)),"Confidentialité : seules les métadonnées et la signature sont incluses ; aucun pixel ni contenu de la photo n'est transmis."].join("\n");
-}
-async function showReceiptDiagnostic(file,error,status){
- const report=await buildReceiptDiagnostic(file,error);
- status.textContent=(error?.message||"Lecture impossible.")+"\n\n"+report;
- let button=document.getElementById("copyReceiptDiagnostic");
- if(!button){button=document.createElement("button");button.id="copyReceiptDiagnostic";button.type="button";button.className="secondary full";button.textContent="Copier le diagnostic technique";status.after(button)}
- button.onclick=async()=>{
-  try{await navigator.clipboard.writeText(report);button.textContent="Diagnostic copié"}
-  catch{
-   const area=document.createElement("textarea");area.value=report;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();
-   try{document.execCommand("copy");button.textContent="Diagnostic copié"}catch{button.textContent="Copie impossible : sélectionne le texte du diagnostic"}
-   area.remove();
-  }
- };
-}
 async function processReceiptFile(file,input){
  if(!file)return;
  const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
@@ -439,7 +425,7 @@ async function processReceiptFile(file,input){
   receiptCaptureText="Preuve d’achat importée · "+(extracted.merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(extracted.amount)?extracted.amount.toFixed(2)+" €":"montant à vérifier");
   const dateLabel=extracted.date?"Date proposée : "+new Date(extracted.date+"T12:00:00").toLocaleDateString("fr-FR")+(extracted.time?" à "+extracted.time:"")+". ":"Date non identifiée. ";const documentLabels={ticket_caisse:"ticket de caisse",commande_web:"commande web",facture:"facture",releve_bancaire:"relevé bancaire",affichage_ou_borne:"écran ou borne",ecran_ou_document:"écran ou document",inconnu:"support non identifié"};const documentLabel="Support détecté : "+(documentLabels[extracted.documentType]||"support non identifié")+". ";
   status.textContent=documentLabel+(Number.isFinite(extracted.amount)&&extracted.amount>0?"Montant proposé : "+extracted.amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(extracted.merchant?"Enseigne : "+extracted.merchant+". ":"")+(extracted.city?"Ville : "+extracted.city+". ":"")+dateLabel+"Confiance — "+fields+". Vérifie et corrige chaque champ avant d’enregistrer. La photo n’est pas conservée par BEP."+(extracted.ambiguous?" Plusieurs montants ont été détectés : contrôle le total.":"");
- }catch(err){await showReceiptDiagnostic(file,err,status).catch(()=>{status.textContent=(err.message||"Lecture impossible.")+"\nDiagnostic technique indisponible."})}
+ }catch(err){status.textContent=err.message||"Lecture impossible. Saisis les informations manuellement."}
  finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
 }
 if($("receiptFile"))$("receiptFile").onchange=e=>processReceiptFile(e.target.files?.[0],e.target);
