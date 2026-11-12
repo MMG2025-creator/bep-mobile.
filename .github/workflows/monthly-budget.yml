@@ -15,6 +15,10 @@ on:
       - "monthly-budget-routes.js"
       - "monthly-budget-ui.js"
       - "app.js"
+      - "financial-engine.js"
+      - "spend-experience.js"
+      - "tests/frontend-integration.test.js"
+      - "tests/financial-engine.test.js"
       - "dist/**"
       - "index.html"
       - "styles.css"
@@ -71,10 +75,13 @@ jobs:
         run: |
           for file in index.html dist/index.html; do
             grep -Fq './runtime-config.js?v=1' "$file"
-            grep -Fq './app.js?v=97' "$file"
+            grep -Fq './financial-engine.js?v=1' "$file"
+            grep -Fq './app.js?v=100' "$file"
+            grep -Fq './styles.css?v=82' "$file"
+            grep -Fq './monthly-budget-ui.js?v=6' "$file"
             if [ -f spend-experience.js ]; then
               grep -Fq './spend-experience.css?v=5' "$file"
-              grep -Fq './spend-experience.js?v=5' "$file"
+              grep -Fq './spend-experience.js?v=6' "$file"
             fi
           done
       - run: npm run check:monthly-budget
