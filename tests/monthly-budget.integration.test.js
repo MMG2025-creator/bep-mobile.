@@ -92,19 +92,20 @@ if (!databaseUrl) {
           { id: "nov-boundary", at: "2026-10-31T23:30:00.000Z", merchant: "Achat tardif", amount: 25 },
           { id: "nov-1", at: "2026-11-03T10:00:00.000Z", merchant: "Courses", amount: 85, category: "Alimentation" },
           { id: "dec-1", at: "2026-12-01T10:00:00.000Z", merchant: "Train", amount: 45 },
+          { id: "impossible-date", at: "2026-11-31T10:00:00.000Z", merchant: "Date impossible", amount: 999 },
           { id: "bad-date", at: "not-a-date", amount: 999 },
           { at: "2026-11-04T10:00:00.000Z", merchant: "Café", category: "Loisirs", amount: 10 },
           { at: "2026-11-04T10:00:00.000Z", merchant: "Café", category: "Loisirs", amount: 10 }
         ] })]
       );
       const fixture = await pool.query("SELECT payload FROM bep_user_data WHERE user_id=$1", [userA]);
-      assert.equal(fixture.rows[0].payload.expenses.length, 7);
+      assert.equal(fixture.rows[0].payload.expenses.length, 8);
       const actuals = await call(userA, "/months/2026-11/actuals?timeZone=Europe%2FParis");
       assert.equal(actuals.status, 200);
       assert.equal(actuals.data.count, 4, JSON.stringify(actuals.data));
       assert.equal(actuals.data.actualExpenseTotal, "130.00");
       const december = await call(userA, "/months/2026-12/actuals");
-      assert.equal(december.data.actualExpenseTotal, "45.00");
+      assert.equal(december.data.actualExpenseTotal, "45.00", "impossible calendar dates must not roll into another month");
       const otherUser = await call(userB, "/months/2026-11/actuals");
       assert.equal(otherUser.data.count, 0);
       const badZone = await call(userA, "/months/2026-11/actuals?timeZone=Not%2FAZone");
