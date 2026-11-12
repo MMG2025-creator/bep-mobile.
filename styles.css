@@ -1337,3 +1337,49 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions button,
   #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions button{width:28px !important;height:28px !important;min-width:28px !important}
 }
+
+
+/* Saved Budget lists: isolated component, independent from legacy .rowitem/.purchase-row rules. */
+.budget-saved-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  padding:14px 10px !important;
+  border-top:1px solid var(--line) !important;
+  font-size:13px !important;
+  background:transparent;
+}
+.budget-saved-row__main{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  min-width:0 !important;
+  width:100% !important;
+}
+.budget-saved-row__main>span{display:block;min-width:0;overflow-wrap:anywhere}
+.budget-saved-row__main b{display:block;line-height:1.4}
+.budget-saved-row__main small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+.budget-saved-row__actions{
+  display:grid !important;
+  grid-template-columns:max-content 30px 30px !important;
+  align-items:center !important;
+  justify-items:center !important;
+  justify-content:end !important;
+  gap:5px !important;
+  min-width:max-content !important;
+  white-space:nowrap !important;
+}
+.budget-saved-row__actions>b{font-size:13px;white-space:nowrap;text-align:right}
+.budget-saved-row__actions button{width:30px !important;height:30px !important;min-width:30px !important;padding:0 !important;font-size:17px !important}
+.budget-saved-row.is-selected{background:#edf7f1;border-color:#8fc5a7}
+.budget-saved-row.has-multi-check .budget-saved-row__main{gap:8px}
+@media(max-width:640px){
+ .budget-saved-row{grid-template-columns:minmax(0,1fr) max-content !important;gap:7px !important;padding:13px 7px !important}
+ .budget-saved-row__actions{grid-template-columns:max-content 27px 27px !important;gap:3px !important}
+ .budget-saved-row__actions button{width:27px !important;height:27px !important;min-width:27px !important}
+ .budget-saved-row__actions>b{font-size:12px}
+}
