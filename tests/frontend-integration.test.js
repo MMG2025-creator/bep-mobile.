@@ -48,6 +48,8 @@ test("savings objectives and movements tabs are wired in both frontend builds", 
     assert.match(js, /function setSavingsModule\(name\)/);
     assert.match(js, /data-savings-module/);
     assert.match(js, /setSavingsModule\("goals"\)/);
+    assert.match(js, /addEventListener\("keydown"/);
+    assert.match(js, /ArrowRight.*ArrowLeft.*Home.*End/);
   }
   for (const file of ["index.html", "dist/index.html"]) {
     const html = read(file);
