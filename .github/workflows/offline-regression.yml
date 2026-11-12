@@ -5,6 +5,7 @@ on:
       - work/offline-phase4-rebased-20261113
       - work/offline-phase4-canonical-20261113
       - work/offline-conflict-ui-20261113
+      - work/offline-conflict-ui-20261113
       - test/budget-revenus-charges-liste
   pull_request:
     branches:
@@ -18,5 +19,5 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: node --check offline-storage.js && node --check dist/offline-storage.js && node --check monthly-budget-ui.js && node --check dist/monthly-budget-ui.js && node --check sw.js && node --check dist/sw.js
+      - run: node --check offline-storage.js && node --check dist/offline-storage.js && node --check app.js && node --check dist/app.js && node --check monthly-budget-ui.js && node --check dist/monthly-budget-ui.js && node --check sw.js && node --check dist/sw.js
       - run: node --test tests/offline-first.test.js tests/offline-sync-runtime.test.js tests/offline-monthly-budget.test.js
