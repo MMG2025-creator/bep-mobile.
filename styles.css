@@ -889,7 +889,7 @@ body.chart-zoom-open{overflow:hidden}
 @media(max-width:380px){.budget-checkup-row{grid-template-columns:17px minmax(0,1fr) 88px;gap:6px}.budget-checkup-row{font-size:11px}}
 
 /* Dedicated advice cards at the top of the two budget submodules. */
-.budget-module .budget-advisor-card{margin-bottom:22px}
+.budget-advisor-card{margin-bottom:14px}
 
 
 /* Monthly budget history workspace */
