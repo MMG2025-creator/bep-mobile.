@@ -21,7 +21,7 @@ test("published frontend assets are synchronized with source", () => {
       assert.ok(html.includes("./" + asset), file + " must reference " + asset);
     }
   }
-  const assetRefs = file => [...read(file).matchAll(/\.\/(?:runtime-config|financial-engine|app|styles|spend-experience\.css|spend-experience|monthly-budget-ui)\.js?\?v=[^"'&]+/g)].map(match => match[0]);
+  const assetRefs = file => [...read(file).matchAll(/\.\/(?:runtime-config|financial-engine|app|spend-experience|monthly-budget-ui)\.js\?v=[^"'&]+|\.\/(?:styles|spend-experience)\.css\?v=[^"'&]+/g)].map(match => match[0]);
   assert.deepEqual(assetRefs("index.html"), assetRefs("dist/index.html"),
     "source and dist HTML must load the same asset versions");
 });
@@ -176,6 +176,7 @@ test("monthly actual expenses refresh after app state changes and background syn
     assert.ok(start >= 0 && end > start, file + " actuals refresh function is missing");
     const refresh = js.slice(start, end);
     assert.match(refresh, /actualsRequestId/);
+    assert.match(refresh, /actualsRefreshPending/);
     assert.match(refresh, /current\\.monthKey !== monthKey/);
     assert.match(refresh, /renderActuals\\(\\)/);
     assert.doesNotMatch(refresh, /loadMonth\\(/);
