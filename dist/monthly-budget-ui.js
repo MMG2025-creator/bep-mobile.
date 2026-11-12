@@ -160,11 +160,15 @@
       renderMonths();
       renderItems();
       renderActuals();
+      let syncWarning = null;
       if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
-        catch (syncError) { status("Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncError.message, true); }
+        catch (syncError) { syncWarning = syncError.message; }
       }
-      status(current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version);
+      status(syncWarning
+        ? "Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncWarning
+        : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version),
+        Boolean(syncWarning));
     } catch (error) {
       status("Impossible de charger ce mois : " + error.message, true);
     } finally { setBusy(false); }
