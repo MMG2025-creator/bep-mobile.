@@ -332,17 +332,40 @@ let city="";const cm=raw.match(/\\b(?:à|dans la ville de)\\s+([A-ZÀ-Ÿ][\\wÀ-
 let category="";if(/chauss|basket|vêtement|mode|textile|baskets?|sneakers?|tenue|sportwear/i.test(raw))category="Mode";else if(/decathlon|sport|ballon|raquette|fitness/i.test(raw))category="Loisirs";else if(/courses?|supermarch[eé]|aliment|primeur|fruits?|légumes?|boulangerie|boucherie|poissonnerie|épicerie|carrefour|auchan|leclerc|lidl|aldi|monoprix|franprix/i.test(raw))category="Alimentation";else if(/informatique|téléphone|ordinateur|électronique|fnac|darty/i.test(raw))category="Technologie";else if(/maison|meuble|ikea|bricolage|leroy merlin/i.test(raw))category="Maison";else if(/transport|essence|carburant|parking|train|métro/i.test(raw))category="Transport";else if(/beauté|coiffure|parfum|cosmétique|esthétique/i.test(raw))category="Beauté";
 return{label,notes,city,amount,category,need:/pas nécessaire|envie|pas un besoin/i.test(raw)?"no":/besoin|nécessaire/i.test(raw)?"yes":"" ,psychology:/impulsif|sur un coup de tête/i.test(raw)?"impulsive":/pression|stress|fomo/i.test(raw)?"pressure":/envie spontanée/i.test(raw)?"spontaneous":""}
 }
+async function loadHeicDecoder(){
+ if(window.heic2any)return window.heic2any;
+ await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";script.onload=resolve;script.onerror=()=>reject(Error("Le convertisseur HEIC n'a pas pu être chargé."));document.head.appendChild(script)});
+ if(!window.heic2any)throw Error("Le convertisseur HEIC est indisponible.");
+ return window.heic2any;
+}
+function receiptImageFromBlob(blob){
+ return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),img=new Image();img.onload=()=>resolve({image:img,width:img.naturalWidth,height:img.naturalHeight,close:()=>URL.revokeObjectURL(url)});img.onerror=()=>{URL.revokeObjectURL(url);reject(Error("Le navigateur ne sait pas décoder ce format d'image."))};img.src=url});
+}
+async function decodeReceiptImage(file){
+ const isHeic=/heic|heif/i.test((file.type||"")+" "+(file.name||""));
+ if(window.createImageBitmap){try{return await createImageBitmap(file)}catch(nativeError){if(!isHeic)try{return await receiptImageFromBlob(file)}catch(imageError){}}}
+ if(isHeic){
+  const converter=await loadHeicDecoder();
+  const converted=await converter({blob:file,toType:"image/jpeg",quality:.92});
+  const jpeg=Array.isArray(converted)?converted[0]:converted;
+  if(!jpeg)throw Error("La conversion HEIC n'a produit aucune image.");
+  if(window.createImageBitmap)return await createImageBitmap(jpeg);
+  return await receiptImageFromBlob(jpeg);
+ }
+ return await receiptImageFromBlob(file);
+}
 async function prepareReceiptImageForOcr(file){
- if(!window.createImageBitmap||!document.createElement("canvas").getContext)throw Error("Ce navigateur ne peut pas préparer cette image pour la lecture. Essaie une image JPG ou PNG.");
+ if(!document.createElement("canvas").getContext)throw Error("Ce navigateur ne peut pas préparer cette image pour la lecture.");
  let bitmap;
  try{
-  bitmap=await createImageBitmap(file);
+  bitmap=await decodeReceiptImage(file);
+  if(!bitmap.width||!bitmap.height)throw Error("L'image décodée ne contient aucune dimension valide.");
   const maxSide=1800,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
   const canvas=document.createElement("canvas");
   canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
   const ctx=canvas.getContext("2d");if(!ctx)throw Error("Préparation de l'image impossible.");
   ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.filter="grayscale(100%) contrast(115%)";ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  ctx.filter="grayscale(100%) contrast(115%)";ctx.drawImage(bitmap.image||bitmap,0,0,canvas.width,canvas.height);
   const dataUrl=canvas.toDataURL("image/jpeg",.86);
   if(!dataUrl||!dataUrl.startsWith("data:image/jpeg;base64,"))throw Error("Conversion de l'image impossible.");
   canvas.width=1;canvas.height=1;return dataUrl;
@@ -355,7 +378,7 @@ async function processReceiptFile(file,input){
  const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
  let worker;
  try{
-  if(!/^image\/[a-z0-9.+-]+$/i.test(file.type))throw Error("Format non pris en charge. Importe une image lisible par ton navigateur.");
+  if(!(/^image\/[a-z0-9.+-]+$/i.test(file.type)||/\.(?:heic|heif)$/i.test(file.name||"")))throw Error("Format non pris en charge. Importe une image JPG, PNG, WebP ou HEIC.");
   if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Limite : 12 Mo.");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
