@@ -403,3 +403,17 @@ test("purchase can be saved without a merchant label", () => {
     assert.match(js, /label:purchaseLabel/);
   }
 });
+
+
+test("purchase create and edit cleanup never dereference a missing purchaseId field", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /if\(\$\("purchaseId"\)\)\$\("purchaseId"\)\.value=""/);
+    assert.match(js, /const purchaseLabel=label\|\|category\|\|"Achat"/);
+  }
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    const css = read(file);
+    assert.match(css, /\.bep-spend-score\[hidden\]\{display:none!important\}/);
+    assert.match(css, /#purchases ::selection/);
+  }
+});
