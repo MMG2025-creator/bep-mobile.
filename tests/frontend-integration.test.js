@@ -14,20 +14,16 @@ test("published frontend assets are synchronized with source", () => {
   assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
   assert.equal(read("styles.css"), read("dist/styles.css"));
   assert.equal(read("app.js"), read("dist/app.js"));
-  assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
-  assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
-  assert.ok(read("index.html").includes("./financial-engine.js?v=1"));
-  assert.ok(read("index.html").includes("./app.js?v=85"));
-  assert.ok(read("dist/index.html").includes("./financial-engine.js?v=1"));
-  assert.ok(read("dist/index.html").includes("./app.js?v=85"));
-  assert.ok(read("index.html").includes("./styles.css?v=85"));
-  assert.ok(read("dist/index.html").includes("./styles.css?v=85"));
-  assert.ok(read("index.html").includes("./spend-experience.css?v=16"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=13"));
-  assert.ok(read("index.html").includes("./spend-experience.js?v=12"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=10"));
-  assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=8"));
-  assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=8"));
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    for (const asset of ["runtime-config.js?v=1", "financial-engine.js?v=1", "app.js?v=86",
+      "styles.css?v=85", "spend-experience.css?v=21", "spend-experience.js?v=15", "monthly-budget-ui.js?v=8"]) {
+      assert.ok(html.includes("./" + asset), file + " must reference " + asset);
+    }
+  }
+  const assetRefs = file => [...read(file).matchAll(/\.\/(?:runtime-config|financial-engine|app|styles|spend-experience\.css|spend-experience|monthly-budget-ui)\.js?\?v=[^"'&]+/g)].map(match => match[0]);
+  assert.deepEqual(assetRefs("index.html"), assetRefs("dist/index.html"),
+    "source and dist HTML must load the same asset versions");
 });
 
 test("monthly history and savings DOM references exist in both HTML builds", () => {
@@ -169,6 +165,24 @@ test("missing actual expenses are not displayed or compared as zero spending", (
     assert.ok(renderer.indexOf("if (hasActuals)") < renderer.indexOf("const variance ="),
       file + " must calculate a variance only when actual purchases exist");
   }
+});
+
+
+test("monthly actual expenses refresh after app state changes and background sync without replacing planned edits", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    const start = js.indexOf("async function refreshActuals()");
+    const end = js.indexOf("\\n  async function refresh()", start);
+    assert.ok(start >= 0 && end > start, file + " actuals refresh function is missing");
+    const refresh = js.slice(start, end);
+    assert.match(refresh, /actualsRequestId/);
+    assert.match(refresh, /current\\.monthKey !== monthKey/);
+    assert.match(refresh, /renderActuals\\(\\)/);
+    assert.doesNotMatch(refresh, /loadMonth\\(/);
+    assert.match(js, /addEventListener\\("bep:state-rendered", refreshActuals\\)/);
+    assert.match(js, /addEventListener\\("bep:offline-synced", refreshActuals\\)/);
+  }
+  assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
 });
 
 test("monthly save distinguishes a persisted snapshot from a failed module sync", () => {
