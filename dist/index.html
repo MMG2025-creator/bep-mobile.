@@ -15,7 +15,7 @@
 @keyframes bep-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#bepStartupLoader .bep-spinner{animation-duration:1.8s}}
 </style>
-<link rel="stylesheet" href="./spend-experience.css?v=6&bep=20261112">
+<link rel="stylesheet" href="./spend-experience.css?v=8&bep=20261112">
 <style id="pwa-install-style">
 .pwa-install-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 13px;border:1px solid #176b50;border-radius:999px;background:#176b50;color:#fff;font:600 13px/1.2 inherit;white-space:nowrap;cursor:pointer}
 .pwa-install-btn:hover{background:#125b43}
@@ -184,7 +184,7 @@
       <button class="primary full" type="submit">Ajouter les revenus sélectionnés</button>
     </form>
   </details>
-</section><div id="incomeRows" class="rows"></div><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></article>
+</section><details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><div id="incomeRows" class="rows"></div></details><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter une source de revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
 <article class="card"><div class="card-head"><div><h2>Mes charges</h2><p class="hint">Centralise tes charges fixes, variables et échéances mensuelles.</p></div><span class="tag">Mensuel</span></div><div class="income-total"><span>Total des charges nettes</span><strong id="chargesTotal">0,00 €</strong></div><section class="budget-checkup card" aria-labelledby="budgetCheckupTitle">
@@ -379,5 +379,5 @@
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=6"></script>
 <script src="./pwa.js?v=10"></script>
-<script src="./spend-experience.js?v=7&bep=20261112"></script>
+<script src="./spend-experience.js?v=8&bep=20261112"></script>
 </body></html>

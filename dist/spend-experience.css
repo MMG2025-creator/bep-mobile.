@@ -183,3 +183,12 @@
 @media(max-width:480px){.bep-entry-dialog .bep-quick-expense-body{padding:12px 14px max(18px,env(safe-area-inset-bottom))}.bep-entry-trigger{min-height:50px}}
 /* The global expense shortcut is hidden throughout the Budget workspace. */
 body:has(#budget.active) #bepQuickExpense{display:none!important}
+
+/* Saved income sources: compact collapsible section in Budget > Income. */
+.income-saved-details{margin:14px 0;border:1px solid #dce9e1;border-radius:16px;background:#fff;overflow:hidden}
+.income-saved-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:14px 16px;list-style:none;font-weight:800;cursor:pointer}
+.income-saved-details>summary::-webkit-details-marker{display:none}
+.income-saved-toggle{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e8f3ee;color:#176b50;font-size:22px;line-height:1;flex:0 0 30px}
+.income-saved-details[open] .income-saved-toggle{transform:rotate(45deg)}
+.income-saved-details>#incomeRows{padding:0 14px 12px}
+.income-saved-details>#incomeRows:empty{padding:0}
