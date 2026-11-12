@@ -392,3 +392,14 @@ test("homepage hero includes the animated BEP robot mascot", () => {
     assert.match(css, /prefers-reduced-motion:reduce/);
   }
 });
+
+
+test("purchase can be saved without a merchant label", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /const label=\$\("merchant"\)\?\.value\.trim\(\)\|\|""/);
+    assert.match(js, /const purchaseLabel=label\|\|category\|\|"Achat"/);
+    assert.doesNotMatch(js, /if\(!label\)return notify\("Décris brièvement ton achat/);
+    assert.match(js, /label:purchaseLabel/);
+  }
+});
