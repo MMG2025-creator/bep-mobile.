@@ -235,6 +235,7 @@
       months = [data.budget, ...months.filter(x => x.monthKey !== monthKey)].sort((a, b) => b.monthKey.localeCompare(a.monthKey));
       await loadMonth(monthKey);
       status(data.created ? "Mois créé. Les valeurs copiées sont indépendantes." : "Ce mois existait déjà ; aucune duplication effectuée.");
+      window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"monthly-create"}}));
     } catch (error) { status("Création impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
@@ -258,6 +259,7 @@
     $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
     $("monthlyBudgetItemCancel").hidden = true;
     renderItems();
+    window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"monthly-item"}}));
   };
   $("monthlyBudgetItemCancel").onclick = () => {
     editingItemIndex = null;
