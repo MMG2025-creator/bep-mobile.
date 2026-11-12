@@ -924,3 +924,31 @@ body.chart-zoom-open{overflow:hidden}
 @media(max-width:680px){#savings.savings-page{display:flex;flex-direction:column;gap:12px}#savings.savings-page>*{width:100%;margin:0}.savings-disclosure>summary{padding:15px 16px}.savings-disclosure-body{padding:0 16px 16px}}
 
 .savings-operation-list .savings-delete-button{width:auto;min-width:0;height:30px;padding:0 10px;border-color:#e7c9c4;border-radius:999px;font:700 10px Manrope,sans-serif;white-space:nowrap}.savings-operation-list .savings-delete-button:hover{background:#fff5f3}
+
+/* BEP Épargne — parcours centré sur la création et l'atteinte d'un objectif */
+#savings.savings-page{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+#savings.savings-page>*{width:100%;margin:0;min-width:0}
+.savings-objectives-card,.savings-activity-card{padding:20px;border:1px solid #e4ece7;border-radius:20px;background:#fff;box-shadow:0 5px 16px #163b2d0a}
+.savings-objective-heading,.savings-activity-heading{margin:0 0 18px}
+.savings-objective-heading .eyebrow,.savings-activity-heading .eyebrow,.savings-subsection-heading .eyebrow{margin:0 0 6px;color:#789487;font-size:9px;letter-spacing:1.4px;font-weight:800}
+.savings-objective-heading h2,.savings-activity-heading h2{margin:0 0 7px;font:800 19px/1.25 Manrope,sans-serif;color:#17382e;letter-spacing:-.025em}
+.savings-objective-heading>p:last-child,.savings-activity-heading>p:last-child{margin:0;color:#71827a;font-size:12px;line-height:1.5}
+.savings-objective-form{padding:16px;border-radius:15px;background:#f7faf8}
+.savings-objective-form .savings-recommendation{margin-top:0}
+.savings-objective-form #savingsForm{margin-bottom:0}
+.savings-objective-form .savings-submit{margin-top:8px}
+.savings-goals-area{margin-top:20px;padding-top:18px;border-top:1px solid #e8efeb}
+.savings-subsection-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+.savings-subsection-heading h3{margin:0;font:750 15px Manrope,sans-serif;color:#17382e}
+.savings-goals-area .savings-goal-grid{margin-top:0}
+.savings-activity-heading{margin-bottom:16px}
+.savings-movement-form{padding:16px;border-radius:15px;background:#f7faf8}
+.savings-movement-form>p{margin-top:0}
+.savings-movement-form form{margin-bottom:0}
+.savings-history-area{margin-top:18px;padding-top:18px;border-top:1px solid #e8efeb}
+.savings-history-area .savings-operation-list{margin-top:0}
+.savings-page>.savings-objectives-card{order:1}
+.savings-page>.savings-activity-card{order:2}
+.savings-page>.savings-hero-card{order:3}
+.savings-page>.savings-advisor-card{order:4}
+@media(max-width:420px){.savings-objectives-card,.savings-activity-card{padding:16px}.savings-objective-form,.savings-movement-form{padding:12px}}
