@@ -1174,3 +1174,5 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .coach-profile-option.selected .coach-profile-check{border-color:#176b50;background:#176b50;color:#fff}
 .coach-profile-saved{margin:9px 2px 0;color:#71877b;font-size:10px}
 @media(max-width:520px){.coach-profile-options{grid-template-columns:1fr}.coach-profile-option{padding:10px}.coach-profile-copy strong{font-size:11px}.coach-profile-copy small{font-size:10px}}
+
+.home-financial-detail{margin:10px 0 0;color:var(--muted,#64748b);font-size:.82rem;line-height:1.45}
