@@ -346,13 +346,13 @@
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <div id="bepAdviceDock" class="bep-advice-dock">
   <button type="button" id="bepAdviceRobot" class="bep-advice-robot" aria-label="Ouvrir le conseil BEP" aria-expanded="false">
-    <span class="bep-advice-robot-face" aria-hidden="true">●</span><span class="bep-advice-robot-label">Conseil BEP</span>
+    <svg class="bep-robot-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 7V3m-3 0h6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="3" r="2.4" fill="#e8b94f"/><rect x="8" y="11" width="32" height="27" rx="9" fill="#eaf5ef" stroke="#126b50" stroke-width="2.6"/><path d="M8 20H4v10h4m32-10h4v10h-4" fill="none" stroke="#126b50" stroke-width="2.6" stroke-linejoin="round"/><circle cx="18" cy="23" r="2.5" fill="#126b50"/><circle cx="30" cy="23" r="2.5" fill="#126b50"/><path d="M18 31c2.1 2.2 9.9 2.2 12 0" fill="none" stroke="#126b50" stroke-width="2.3" stroke-linecap="round"/><path d="M16 41h16" stroke="#e8b94f" stroke-width="2.6" stroke-linecap="round"/></svg><span class="bep-advice-robot-label">Conseil BEP</span>
   </button>
 </div>
 <dialog id="bepAdviceDialog" class="bep-advice-dialog" aria-labelledby="bepAdviceTitle">
   <section class="bep-advice-window">
     <header class="bep-advice-head">
-      <div class="bep-advice-identity"><span class="bep-advice-avatar" aria-hidden="true">●</span><div><h2 id="bepAdviceTitle">Conseil BEP</h2><span id="bepAdviceContext">Accueil</span></div></div>
+      <div class="bep-advice-identity"><svg class="bep-robot-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 7V3m-3 0h6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="3" r="2.4" fill="#e8b94f"/><rect x="8" y="11" width="32" height="27" rx="9" fill="#eaf5ef" stroke="#126b50" stroke-width="2.6"/><path d="M8 20H4v10h4m32-10h4v10h-4" fill="none" stroke="#126b50" stroke-width="2.6" stroke-linejoin="round"/><circle cx="18" cy="23" r="2.5" fill="#126b50"/><circle cx="30" cy="23" r="2.5" fill="#126b50"/><path d="M18 31c2.1 2.2 9.9 2.2 12 0" fill="none" stroke="#126b50" stroke-width="2.3" stroke-linecap="round"/><path d="M16 41h16" stroke="#e8b94f" stroke-width="2.6" stroke-linecap="round"/></svg><div><h2 id="bepAdviceTitle">Conseil BEP</h2><span id="bepAdviceContext">Accueil</span></div></div>
       <div class="bep-advice-controls"><button type="button" id="bepAdviceMinimize" aria-label="Réduire le conseil">−</button><button type="button" id="bepAdviceClose" aria-label="Fermer le conseil">×</button></div>
     </header>
     <div class="bep-advice-content">
@@ -381,7 +381,7 @@
  document.getElementById("bepAdviceMinimize").addEventListener("click",close);
  dialog.addEventListener("click",e=>{if(e.target===dialog)close()});
  window.BEP_OPEN_ADVICE=open;
- const head=document.getElementById("bepCoachMascot");const sourceFace=head?.querySelector("svg");if(sourceFace){const face=sourceFace.cloneNode(true);face.setAttribute("aria-hidden","true");robot.querySelector(".bep-advice-robot-face")?.replaceWith(face)}if(head){head.onclick=e=>{e.preventDefault();open()};head.setAttribute("aria-label","Ouvrir le conseil BEP")}
+ 
 })();
 </script>
 
