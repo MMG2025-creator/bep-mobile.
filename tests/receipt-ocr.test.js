@@ -61,6 +61,9 @@ test("source and published OCR assets stay synchronized and support generic imag
   assert.match(js,/Support détecté/);
   assert.ok(js.includes("return prepareBankImageForOcr(file)"),"receipt OCR must reuse bank image preparation");
   assert.ok(js.includes("async function decodeBankImageForOcr"));
+  assert.ok(js.includes("async function buildReceiptDiagnostic(file,error)"),"receipt failures must expose local file diagnostics");
+  assert.ok(js.includes("copyReceiptDiagnostic"),"the diagnostic report must be copyable from the phone");
+  assert.ok(js.includes("32 premiers octets"),"the diagnostic must include a short binary signature without uploading image pixels");
   assert.ok(js.includes("ftyp"),"HEIC must also be detected by file signature");
   assert.ok(js.includes("async function isSupportedReceiptImage(file)"),"mobile uploads must validate image content when MIME metadata is missing");
   assert.ok(js.includes('bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff'),"JPEG signature must be accepted even when Android reports a generic MIME type");
