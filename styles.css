@@ -922,3 +922,5 @@ body.chart-zoom-open{overflow:hidden}
 .savings-disclosure-body{padding:0 18px 18px}
 .savings-disclosure:focus-within>summary{outline:2px solid #5b9a7a;outline-offset:-3px;border-radius:12px}
 @media(max-width:680px){#savings.savings-page{display:flex;flex-direction:column;gap:12px}#savings.savings-page>*{width:100%;margin:0}.savings-disclosure>summary{padding:15px 16px}.savings-disclosure-body{padding:0 16px 16px}}
+
+.savings-operation-list .savings-delete-button{width:auto;min-width:0;height:30px;padding:0 10px;border-color:#e7c9c4;border-radius:999px;font:700 10px Manrope,sans-serif;white-space:nowrap}.savings-operation-list .savings-delete-button:hover{background:#fff5f3}
