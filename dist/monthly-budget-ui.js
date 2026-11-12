@@ -20,12 +20,37 @@
     if (!toolbar) { toolbar = document.createElement("div"); toolbar.id = "monthlyBudgetItemsBulkToolbar"; toolbar.className = "multi-select-toolbar hidden"; container.before(toolbar); }
     toolbar.classList.toggle("hidden", !monthSelectionMode);
     toolbar.innerHTML = monthSelectionMode ? '<span>' + monthSelection.size + ' ligne(s) sélectionnée(s)</span><button type="button" data-month-all>Tout sélectionner</button><button type="button" data-month-delete>Supprimer la sélection</button><button type="button" data-month-cancel>Annuler</button>' : "";
-    if (!monthSelectionMode) rows.forEach(row => { row.classList.remove("is-selected"); row.querySelector("[data-month-check]")?.remove(); });
-    if (monthSelectionMode) rows.forEach(row => {
-      const index = Number(row.dataset.monthRow); row.classList.toggle("is-selected", monthSelection.has(index));
+    rows.forEach(row => {
+      const index = Number(row.dataset.monthRow);
+      row.classList.toggle("is-selected", monthSelectionMode && monthSelection.has(index));
       let check = row.querySelector("[data-month-check]");
-      if (!check) { check = document.createElement("input"); check.type = "checkbox"; check.dataset.monthCheck = ""; check.className = "multi-select-check"; check.setAttribute("aria-label", "Sélectionner cette ligne"); row.prepend(check); }
-      check.checked = monthSelection.has(index); check.onchange = () => { if (check.checked) monthSelection.add(index); else monthSelection.delete(index); attachMonthLongPress(); };
+      if (monthSelectionMode) {
+        if (!check) { check = document.createElement("input"); check.type = "checkbox"; check.dataset.monthCheck = ""; check.className = "multi-select-check"; check.setAttribute("aria-label", "Sélectionner cette ligne"); row.prepend(check); }
+        check.checked = monthSelection.has(index);
+        check.onchange = () => { if (check.checked) monthSelection.add(index); else monthSelection.delete(index); attachMonthLongPress(); };
+      } else check?.remove();
+      if (row.dataset.monthLongPressBound === "1") return;
+      row.dataset.monthLongPressBound = "1";
+      let timer = null;
+      const clear = () => { if (timer) clearTimeout(timer); timer = null; };
+      const start = event => {
+        if (event.target.closest("button,input") || current?.status !== "open" || event.button === 2) return;
+        clear();
+        timer = setTimeout(() => { timer = null; monthSelectionMode = true; monthSelection.add(index); attachMonthLongPress(); }, 600);
+      };
+      row.addEventListener("pointerdown", start, { passive: true });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(type => row.addEventListener(type, clear, { passive: true }));
+      row.addEventListener("contextmenu", event => event.preventDefault());
+      row.addEventListener("click", event => {
+        if (!monthSelectionMode || event.target.closest("button,input")) return;
+        event.preventDefault(); event.stopPropagation();
+        if (monthSelection.has(index)) monthSelection.delete(index); else monthSelection.add(index);
+        attachMonthLongPress();
+      });
+      row.querySelectorAll("button").forEach(button => {
+        const original = button.onclick;
+        button.onclick = event => { if (monthSelectionMode) { event.preventDefault(); event.stopPropagation(); return; } original?.call(button,event); };
+      });
     });
     toolbar.querySelector("[data-month-all]")?.addEventListener("click", () => { if (monthSelection.size === rows.length) monthSelection.clear(); else rows.forEach(row => monthSelection.add(Number(row.dataset.monthRow))); attachMonthLongPress(); });
     toolbar.querySelector("[data-month-cancel]")?.addEventListener("click", () => { monthSelection.clear(); monthSelectionMode = false; attachMonthLongPress(); });
@@ -37,14 +62,7 @@
       $("monthlyBudgetItemForm").reset(); $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne"; $("monthlyBudgetItemCancel").hidden = true; renderItems();
       status("Lignes retirées. Enregistre ce mois pour confirmer les modifications.");
     });
-    rows.forEach(row => {
-      let timer = null; const start = event => { if (event.target.closest("button,input") || current?.status !== "open") return; timer = setTimeout(() => { monthSelectionMode = true; monthSelection.add(Number(row.dataset.monthRow)); attachMonthLongPress(); }, 550); };
-      const clear = () => { if (timer) clearTimeout(timer); timer = null; };
-      row.addEventListener("pointerdown", start); ["pointerup","pointerleave","pointercancel"].forEach(type => row.addEventListener(type, clear)); row.addEventListener("contextmenu", event => event.preventDefault());
-      row.querySelectorAll("button").forEach(button => { const original = button.onclick; button.onclick = event => { if (monthSelectionMode) { event.preventDefault(); event.stopPropagation(); return; } original?.call(button,event); }; });
-    });
   }
-
   let loading = false;
   let authEpoch = 0;
 
@@ -127,6 +145,10 @@
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
+    const monthLabel = current?.monthKey
+      ? new Date(current.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
+      : "du mois";
+    $("monthlyBudgetActualHeading").textContent = "Mes dépenses de " + monthLabel;
     $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
     $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
     if (hasActuals) {
@@ -139,11 +161,12 @@
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
-    $("monthlyBudgetActualItems").innerHTML = actuals.expenses.length ? actuals.expenses.slice(0, 12).map(x =>
+    const monthExpenses = Array.isArray(actuals.expenses) ? actuals.expenses.slice().sort((a, b) => new Date(b.at) - new Date(a.at)) : [];
+    $("monthlyBudgetActualItems").innerHTML = monthExpenses.length ? monthExpenses.map(x =>
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.amount) + '</b></div>'
-    ).join("") : '<p class="empty">Aucun achat enregistré pour ce mois.</p>';
+    ).join("") : '<p class="empty">Aucune dépense enregistrée pour ce mois.</p>';
   }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
