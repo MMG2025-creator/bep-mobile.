@@ -65,4 +65,6 @@ jobs:
           node-version: "20"
       - run: npm install --no-fund
       - run: npm audit --omit=dev
+      - run: cmp -s app.js dist/app.js
+      - run: cmp -s index.html dist/index.html
       - run: npm run check:monthly-budget
