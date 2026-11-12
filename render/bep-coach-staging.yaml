@@ -42,7 +42,6 @@ services:
     name: bep-coach-staging
     runtime: static
     plan: free
-    region: frankfurt
     branch: feature/financial-intelligence-engine
     buildCommand: printf 'window.BEP_API_BASE = "https://bep-coach-staging-api.onrender.com";\\n' > dist/runtime-config.js
     staticPublishPath: dist
