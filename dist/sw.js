@@ -1,5 +1,7 @@
 "use strict";
-const CACHE_NAME="bep-shell-v1";
+const CACHE_NAME="bep-shell-v2";
+const RUNTIME_CACHE="bep-runtime-v1";
+const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
   "./",
   "./index.html",
@@ -9,6 +11,7 @@ const APP_SHELL=[
   "./auth-recovery.css",
   "./spend-experience.css",
   "./runtime-config.js",
+  "./offline-storage.js",
   "./financial-engine.js",
   "./app.js",
   "./auth-recovery.js",
@@ -35,7 +38,11 @@ self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET")return;
   const url=new URL(request.url);
-  if(url.origin!==self.location.origin||url.pathname.startsWith("/api/"))return;
+  if(url.origin!==self.location.origin){
+    if(OFFLINE_CDN_HOSTS.has(url.hostname))event.respondWith((async()=>{const cache=await caches.open(RUNTIME_CACHE),cached=await cache.match(request);if(cached)return cached;try{const response=await fetch(request);if(response&&response.ok)await cache.put(request,response.clone());return response}catch(error){return cached||Response.error()}})());
+    return;
+  }
+  if(url.pathname.startsWith("/api/"))return;
   if(request.mode==="navigate"){
     event.respondWith((async()=>{
       try{
