@@ -17,10 +17,10 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./app.js?v=96"));
   assert.ok(read("index.html").includes("./styles.css?v=78"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=78"));
-  assert.ok(read("index.html").includes("./spend-experience.css?v=3"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=3"));
-  assert.ok(read("index.html").includes("./spend-experience.js?v=3"));
-  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=3"));
+  assert.ok(read("index.html").includes("./spend-experience.css?v=4"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=4"));
+  assert.ok(read("index.html").includes("./spend-experience.js?v=4"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=4"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=5"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
 });
