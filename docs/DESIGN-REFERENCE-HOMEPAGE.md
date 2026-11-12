@@ -40,6 +40,16 @@ Fichiers publiés :
 
 La version de `ui-polish.css` appelée par la homepage est `v=3`.
 
+### Snapshot de référence validé en production — 12 novembre 2026
+
+Le propriétaire confirme que cette homepage est la référence fixe de BEP. Le snapshot de production validé inclut également le masquage du bloc « Ma situation mensuelle » sur l'accueil, tout en conservant la section « Analyse financière » et ses graphiques.
+
+- Commit de restauration du hero canonique et de l'état homepage : [ff5d5ee601eaa4a38cd9379d9bf2b477da147e9d](https://github.com/MMG2025-creator/bep-mobile./commit/ff5d5ee601eaa4a38cd9379d9bf2b477da147e9d).
+- Déploiement Render : `dep-dbr2ad17lnhs73a50qq0` — statut `live`.
+- URL de production : https://bep-mobile.onrender.com.
+
+Toute modification future de la homepage doit partir de ce snapshot et préserver cette direction visuelle, sauf demande explicite contraire.
+
 ## Validation
 
 Le propriétaire a explicitement confirmé : « C'est bon, la home est fixée » et demandé d'enregistrer cette home et ce visuel comme référence BEP, sans en vouloir d'autre.
