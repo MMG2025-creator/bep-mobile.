@@ -231,3 +231,15 @@ test("purchase affordability is judged only against remaining available money an
   assert.match(server, /utilise exclusivement le montant restant disponible/);
   assert.match(server, /ne bloque jamais la saisie ou l'enregistrement/i);
 });
+
+
+test("production API initialization and purchase adviser use a single valid server definition", () => {
+  const server = read("server.js");
+  assert.equal((server.match(/function auth\(req,res,next\)/g)||[]).length, 1);
+  assert.equal((server.match(/app\.listen/g)||[]).length, 1);
+  assert.match(server, /currency CHAR\(3\)[\s\S]*?currency ~ '\^\[A-Z\]\{3\}\$'/);
+  assert.match(server, /const ctx=zone==="purchases"[\s\S]*?resteDisponible/);
+  assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
+  assert.match(server, /utilise exclusivement le montant restant disponible/);
+  assert.match(server, /ne bloque jamais la saisie ou l'enregistrement de l'achat/i);
+});
