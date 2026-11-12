@@ -183,14 +183,21 @@ app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.item
 app.use("/api/budgets",createMonthlyBudgetRouter({pool,auth}));
 app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT payload,updated_at FROM bep_user_data WHERE user_id=$1",[req.session.user.id]);res.json(r.rows[0]||{payload:{income:0,budgets:[],expenses:[],goals:[]}})});
 app.put("/api/data",auth,async(req,res)=>{
- const p=req.body;
- if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000)return res.status(400).json({error:"INVALID_PAYLOAD"});
+ const offlineSync=req.body?.__bepOfflineSync===true;
+ const base=offlineSync?req.body?.base:null;
+ const p=offlineSync?req.body?.payload:req.body;
+ if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000||
+    (offlineSync&&(!base||typeof base!=="object"||Array.isArray(base)||JSON.stringify(base).length>500000)))return res.status(400).json({error:"INVALID_PAYLOAD"});
  const client=await pool.connect();
  try{
   await client.query("BEGIN");
   await client.query("INSERT INTO bep_user_data(user_id) VALUES($1) ON CONFLICT(user_id) DO NOTHING",[req.session.user.id]);
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
+  if(offlineSync){
+   const canonical=value=>Array.isArray(value)?"["+value.map(canonical).join(",")+"]":value&&typeof value==="object"?"{"+Object.keys(value).sort().map(key=>JSON.stringify(key)+":"+canonical(value[key])).join(",")+"}":JSON.stringify(value);
+   if(canonical(previous)!==canonical(base)){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_CONFLICT"});}
+  }
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
   const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
   if(!Array.isArray(suppliedOps)||suppliedOps.length>5000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});}
