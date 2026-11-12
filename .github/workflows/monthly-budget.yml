@@ -69,6 +69,7 @@ jobs:
           node-version: "20"
       - run: npm install --no-fund
       - run: npm audit --omit=dev
+      - run: node --test tests/coach-ai-regression.test.js
       - run: cmp -s app.js dist/app.js
       - run: cmp -s monthly-budget-ui.js dist/monthly-budget-ui.js
       - run: cmp -s styles.css dist/styles.css
@@ -101,5 +102,4 @@ jobs:
               sort
           }
           diff -u <(extract_assets index.html) <(extract_assets dist/index.html)
-      - run: node --test tests/coach-ai-regression.test.js
       - run: npm run check:monthly-budget
