@@ -254,7 +254,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       rows.sort((a, b) => b.at.localeCompare(a.at));
       const savingsOperations = Array.isArray(payload.savingsOperations) ? payload.savingsOperations.filter(op => {
         if (!op || typeof op !== "object" || !["deposit", "withdrawal"].includes(op.type) ||
-            typeof op.date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(op.date) || op.date.slice(0, 7) !== monthKey) return false;
+            typeof op.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(op.date) || op.date.slice(0, 7) !== monthKey) return false;
         const amount = Number(op.amount);
         return Number.isFinite(amount) && amount > 0 && amount <= MAX_AMOUNT;
       }).map(op => ({ id: typeof op.id === "string" ? op.id : null, type: op.type,
