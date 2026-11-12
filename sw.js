@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v8";
+const CACHE_NAME="bep-shell-v9";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
@@ -10,6 +10,7 @@ const APP_SHELL=[
   "./ui-polish.css",
   "./auth-recovery.css",
   "./spend-experience.css",
+  "./spend-clean-ui.css",
   "./runtime-config.js",
   "./offline-storage.js",
   "./financial-engine.js",
@@ -19,6 +20,7 @@ const APP_SHELL=[
   "./monthly-budget-ui.js",
   "./pwa.js",
   "./spend-experience.js",
+  "./spend-clean-ui.js",
   "./icons/bep-icon.svg"
 ];
 self.addEventListener("install",event=>{
@@ -57,7 +59,7 @@ self.addEventListener("fetch",event=>{
     return;
   }
   event.respondWith((async()=>{
-    const cached=await caches.match(request);
+    const cached=await caches.match(request,{ignoreSearch:true});
     if(cached)return cached;
     try{
       const response=await fetch(request);
