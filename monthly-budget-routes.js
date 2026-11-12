@@ -15,6 +15,18 @@ function validMonth(value) {
   return year >= 2000 && year <= 2099;
 }
 
+function monthKeyFromDate(value) {
+  if (value instanceof Date) {
+    if (!Number.isFinite(value.getTime())) return null;
+    return String(value.getFullYear()) + "-" + String(value.getMonth() + 1).padStart(2, "0");
+  }
+  if (typeof value === "string") {
+    const match = /^(\\d{4})-(\\d{2})/.exec(value);
+    return match ? match[1] + "-" + match[2] : null;
+  }
+  return null;
+}
+
 function monthKeyAt(timestamp, timeZone = "UTC") {
   const date = new Date(timestamp);
   if (!Number.isFinite(date.getTime())) return null;
@@ -61,7 +73,7 @@ function totals(items) {
 
 function snapshot(budget, items) {
   return {
-    monthKey: String(budget.month_key).slice(0, 7),
+    monthKey: monthKeyFromDate(budget.month_key),
     status: budget.status,
     currency: budget.currency,
     version: Number(budget.version),
@@ -87,7 +99,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       );
       res.setHeader("Cache-Control", "no-store");
       res.json({ months: result.rows.map(x => ({
-        monthKey: String(x.month_key).slice(0, 7), status: x.status,
+        monthKey: monthKeyFromDate(x.month_key), status: x.status,
         version: Number(x.version), plannedIncomeTotal: x.planned_income_total,
         plannedChargesTotal: x.planned_charges_total, plannedSavingsTotal: x.planned_savings_total
       })) });
@@ -346,4 +358,4 @@ function createMonthlyBudgetRouter({ pool, auth }) {
   return router;
 }
 
-module.exports = { createMonthlyBudgetRouter, validMonth, validateItems, totals, monthKeyAt };
+module.exports = { createMonthlyBudgetRouter, validMonth, validateItems, totals, monthKeyAt, monthKeyFromDate };
