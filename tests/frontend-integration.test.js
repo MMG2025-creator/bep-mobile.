@@ -376,3 +376,19 @@ test("header coach shortcut is removed and popup advice uses larger typography",
  assert.ok(html.includes('id="bepAdviceRobot"'));
  assert.match(css,/\.bep-advice-content \.ai-advice\{font-size:23px;line-height:1\.7;font-weight:500\}/);
 });
+
+
+test("homepage hero includes the animated BEP robot mascot", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.match(html, /class="bep-home-mascot"/);
+    assert.match(html, /class="bep-home-robot"/);
+    assert.match(html, /class="bep-home-robot-eyes"/);
+  }
+  for (const file of ["styles.css", "dist/styles.css"]) {
+    const css = read(file);
+    assert.match(css, /@keyframes bepHomeFloat/);
+    assert.match(css, /@keyframes bepHomeBlink/);
+    assert.match(css, /prefers-reduced-motion:reduce/);
+  }
+});
