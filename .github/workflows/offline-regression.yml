@@ -5,6 +5,7 @@ on:
       - work/offline-phase4-rebased-20261113
       - work/offline-phase4-canonical-20261113
       - work/offline-conflict-ui-20261113
+      - work/offline-conflict-ui-rebased-20261113
       - work/offline-conflict-ui-20261113
       - test/budget-revenus-charges-liste
   pull_request:
