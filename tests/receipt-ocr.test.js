@@ -62,6 +62,10 @@ test("source and published OCR assets stay synchronized and support generic imag
   assert.ok(js.includes("return prepareBankImageForOcr(file)"),"receipt OCR must reuse bank image preparation");
   assert.ok(js.includes("async function decodeBankImageForOcr"));
   assert.ok(js.includes("ftyp"),"HEIC must also be detected by file signature");
+  assert.ok(js.includes("async function isSupportedReceiptImage(file)"),"mobile uploads must validate image content when MIME metadata is missing");
+  assert.ok(js.includes('bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff'),"JPEG signature must be accepted even when Android reports a generic MIME type");
+  assert.ok(js.includes('String.fromCharCode(...bytes.slice(8,12))==="WEBP"'),"WebP signature must be detected from file bytes");
+  assert.ok(js.includes("if(!await isSupportedReceiptImage(file))"),"receipt import must use content-aware format detection");
   assert.ok(js.includes("await isHeicReceiptImage(file)"),"HEIC file signature must bypass generic MIME rejection");
   assert.ok(js.includes("heic2any@0.0.4"));
   assert.ok(js.includes("imageOrientation:\"from-image\""),"mobile decoding should honor image orientation");
