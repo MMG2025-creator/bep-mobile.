@@ -81,6 +81,7 @@
 <div class="home-budget-metric"><span>Mes charges</span><strong id="homeTotalCharges">0,00 €</strong></div>
 <div class="home-budget-metric home-budget-available"><span>Reste disponible</span><strong id="homeAvailable">0,00 €</strong></div>
 </div>
+<p id="homeFinancialDetail" class="home-financial-detail">Épargne prévue et dépenses hors enveloppe prises en compte.</p>
 <button type="button" class="secondary full home-budget-link" data-goto="budget">Gérer mon budget</button>
 </article>
 <article class="card ai-card"><div class="coach-robot-wrap"><svg class="coach-robot" viewBox="0 0 120 130" role="img" aria-label="Robot coach BEP"><defs><linearGradient id="robotShell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbd8d2"/></linearGradient><linearGradient id="robotGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe8a0"/><stop offset="1" stop-color="#b9872c"/></linearGradient></defs><ellipse cx="60" cy="119" rx="37" ry="7" fill="#dce8e2"/><path d="M60 12V4m-7 0h14" stroke="#c69b43" stroke-width="3" stroke-linecap="round"/><path d="M27 54c0-22 14-35 33-35s33 13 33 35v31c0 13-12 23-33 23S27 98 27 85Z" fill="url(#robotShell)" stroke="#9eb6aa" stroke-width="2"/><rect x="20" y="45" width="80" height="53" rx="23" fill="#123b34" stroke="url(#robotGold)" stroke-width="4"/><rect x="29" y="53" width="62" height="37" rx="16" fill="#061f1c"/><circle cx="46" cy="71" r="5" fill="#00e0a1"/><circle cx="74" cy="71" r="5" fill="#00e0a1"/><path d="M43 81q17 9 34 0" stroke="#4be7b8" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M21 57h-9v22h9m78-22h9v22h-9" fill="none" stroke="url(#robotGold)" stroke-width="5" stroke-linecap="round"/><path d="M43 107v8m34-8v8" stroke="#9eb6aa" stroke-width="5" stroke-linecap="round"/></svg></div><div class="coach-copy"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label" id="coachBadge"><span class="pin">●</span> Coach local</span></div><p id="aiHome" class="ai-advice">Analyse de ta situation financière en cours…</p></div></article>
@@ -362,7 +363,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="./runtime-config.js?v=1"></script>
-<script src="./app.js?v=99"></script>
+<script src="./financial-engine.js?v=1"></script>
+<script src="./app.js?v=100"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=5"></script>
 <script src="./pwa.js?v=9"></script>
