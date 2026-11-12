@@ -228,3 +228,21 @@ test("purchase form title follows edit, cancel and new-purchase states", () => {
     assert.match(js, /onclick=\(\)=>\{editingPurchaseId=null;setPurchaseFormTitle\(false\)/);
   }
 });
+
+
+test("spend navigation switches complete views and keeps purchase history inside Mes achats", () => {
+  const js = read("spend-experience.js");
+  assert.equal(js, read("dist/spend-experience.js"));
+  assert.match(js, /function setTab\(tab\)\{const panel=\$\("purchases"\)/);
+  assert.match(js, /const radar=document\.createElement\("section"\)/);
+  assert.match(js, /radar\.dataset\.spendView="radar"/);
+  assert.match(js, /\[advice,entry,history\]\.forEach\(node=>\{if\(node\)radar\.appendChild\(node\);\}\)/);
+  assert.match(js, /radar\.insertBefore\(score,entry\?\.nextSibling\|\|null\)/);
+  assert.match(js, /panel\.insertBefore\(challenge,radar\.nextSibling\)/);
+  assert.match(js, /panel\.insertBefore\(balance,challenge\.nextSibling\)/);
+  assert.match(js, /setTab\("radar"\)/);
+  assert.match(js, /ArrowRight.*ArrowLeft.*Home.*End/);
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    assert.match(read(file), /#purchases \.bep-spend-view\[hidden\]\{display:none!important\}/);
+  }
+});
