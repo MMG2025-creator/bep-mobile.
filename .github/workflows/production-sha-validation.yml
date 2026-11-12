@@ -1,0 +1,93 @@
+name: Production SHA validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: "Exact commit SHA to validate"
+        required: true
+        type: string
+        default: "83dd5d9973d57b625ee1c4a8b1e79293aec60138"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/production-sha-validation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-sha-validation-${{ github.event.inputs.commit_sha || github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bep_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bep_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/bep_test
+    steps:
+      - name: Validate requested commit SHA
+        shell: bash
+        env:
+          REQUESTED_SHA: ${{ github.event.inputs.commit_sha || github.event.pull_request.head.sha }}
+        run: |
+          [[ "$REQUESTED_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || { echo "Invalid 40-character commit SHA"; exit 1; }
+          echo "VALIDATION_SHA=$REQUESTED_SHA" >> "$GITHUB_ENV"
+
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VALIDATION_SHA }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --no-fund
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+      - name: Verify frontend bundle parity
+        run: cmp -s app.js dist/app.js
+
+      - name: Check server syntax
+        run: node --check server.js
+
+      - name: Check frontend entrypoint assets
+        run: |
+          for file in index.html dist/index.html; do
+            grep -Fq './runtime-config.js?v=1' "$file"
+            grep -Fq './financial-engine.js?v=1' "$file"
+            grep -Fq './app.js?v=101' "$file"
+            grep -Fq './styles.css?v=82' "$file"
+            grep -Fq './monthly-budget-ui.js?v=6' "$file"
+            if [ -f spend-experience.js ]; then
+              grep -Fq './spend-experience.css?v=6' "$file"
+              grep -Fq './spend-experience.js?v=7' "$file"
+            fi
+          done
+
+      - name: Run complete Node test suite
+        run: npm test
+
+      - name: Run monthly budget and financial integration checks
+        run: npm run check:monthly-budget
