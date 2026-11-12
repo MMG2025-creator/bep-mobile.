@@ -13,8 +13,10 @@ test("published frontend assets are synchronized with source", () => {
   assert.equal(read("styles.css"), read("dist/styles.css"));
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
-  assert.ok(read("index.html").includes("./app.js?v=97"));
-  assert.ok(read("dist/index.html").includes("./app.js?v=97"));
+  assert.ok(read("index.html").includes("./financial-engine.js?v=1"));
+  assert.ok(read("index.html").includes("./app.js?v=98"));
+  assert.ok(read("dist/index.html").includes("./financial-engine.js?v=1"));
+  assert.ok(read("dist/index.html").includes("./app.js?v=98"));
   assert.ok(read("index.html").includes("./styles.css?v=81"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=81"));
   assert.ok(read("index.html").includes("./spend-experience.css?v=5"));
@@ -31,7 +33,7 @@ test("monthly history and savings DOM references exist in both HTML builds", () 
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, file + " contains duplicate IDs");
     const required = [
-      "monthlyHistoryCard", "monthlyBudgetMonth", "monthlyBudgetActualTotal", "monthlyBudgetActualVariance",
+      "homeFinancialDetail", "monthlyHistoryCard", "monthlyBudgetMonth", "monthlyBudgetActualTotal", "monthlyBudgetActualVariance",
       "monthlyBudgetItemSubmit", "monthlyBudgetItemCancel", "monthlyBudgetItems",
       "savingsCapital", "savingsGoalCards", "savingsOperationForm",
       "savingsRewards", "savingsRewardsTitle", "savingsModuleGoals", "savingsModuleMovements", "customSavingsRate", "goalsList"
