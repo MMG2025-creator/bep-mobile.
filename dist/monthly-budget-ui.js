@@ -11,6 +11,39 @@
   let items = [];
   let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
   let editingItemIndex = null;
+  let monthSelectionMode = false;
+  const monthSelection = new Set();
+  function attachMonthLongPress() {
+    const container = $("monthlyBudgetItems"); if (!container) return;
+    const rows = Array.from(container.querySelectorAll("[data-month-row]"));
+    let toolbar = $("monthlyBudgetItemsBulkToolbar");
+    if (!toolbar) { toolbar = document.createElement("div"); toolbar.id = "monthlyBudgetItemsBulkToolbar"; toolbar.className = "multi-select-toolbar hidden"; container.before(toolbar); }
+    toolbar.classList.toggle("hidden", !monthSelectionMode);
+    toolbar.innerHTML = monthSelectionMode ? '<span>' + monthSelection.size + ' ligne(s) sélectionnée(s)</span><button type="button" data-month-all>Tout sélectionner</button><button type="button" data-month-delete>Supprimer la sélection</button><button type="button" data-month-cancel>Annuler</button>' : "";
+    if (monthSelectionMode) rows.forEach(row => {
+      const index = Number(row.dataset.monthRow); row.classList.toggle("is-selected", monthSelection.has(index));
+      let check = row.querySelector("[data-month-check]");
+      if (!check) { check = document.createElement("input"); check.type = "checkbox"; check.dataset.monthCheck = ""; check.className = "multi-select-check"; check.setAttribute("aria-label", "Sélectionner cette ligne"); row.prepend(check); }
+      check.checked = monthSelection.has(index); check.onchange = () => { if (check.checked) monthSelection.add(index); else monthSelection.delete(index); attachMonthLongPress(); };
+    });
+    toolbar.querySelector("[data-month-all]")?.addEventListener("click", () => { if (monthSelection.size === rows.length) monthSelection.clear(); else rows.forEach(row => monthSelection.add(Number(row.dataset.monthRow))); attachMonthLongPress(); });
+    toolbar.querySelector("[data-month-cancel]")?.addEventListener("click", () => { monthSelection.clear(); monthSelectionMode = false; attachMonthLongPress(); });
+    toolbar.querySelector("[data-month-delete]")?.addEventListener("click", async () => {
+      if (!monthSelection.size || current?.status !== "open") return;
+      const accepted = window.BEP_CONFIRM_ACTION ? await window.BEP_CONFIRM_ACTION("Retirer les " + monthSelection.size + " lignes sélectionnées de ce mois ?", "Suppression multiple") : window.confirm("Retirer les lignes sélectionnées de ce mois ?");
+      if (!accepted) return;
+      items = items.filter((_, index) => !monthSelection.has(index)); monthSelection.clear(); monthSelectionMode = false; editingItemIndex = null;
+      $("monthlyBudgetItemForm").reset(); $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne"; $("monthlyBudgetItemCancel").hidden = true; renderItems();
+      status("Lignes retirées. Enregistre ce mois pour confirmer les modifications.");
+    });
+    rows.forEach(row => {
+      let timer = null; const start = event => { if (event.target.closest("button,input") || current?.status !== "open") return; timer = setTimeout(() => { monthSelectionMode = true; monthSelection.add(Number(row.dataset.monthRow)); attachMonthLongPress(); }, 550); };
+      const clear = () => { if (timer) clearTimeout(timer); timer = null; };
+      row.addEventListener("pointerdown", start); ["pointerup","pointerleave","pointercancel"].forEach(type => row.addEventListener(type, clear)); row.addEventListener("contextmenu", event => event.preventDefault());
+      row.querySelectorAll("button").forEach(button => { const original = button.onclick; button.onclick = event => { if (monthSelectionMode) { event.preventDefault(); event.stopPropagation(); return; } original?.call(button,event); }; });
+    });
+  }
+
   let loading = false;
   let authEpoch = 0;
 
@@ -114,7 +147,7 @@
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
     $("monthlyBudgetItems").innerHTML = items.length ? items.map((x, index) =>
-      '<div class="monthly-budget-row"><span><b>' + escapeHtml(x.label) + '</b><small>' +
+      '<div class="monthly-budget-row" data-month-row="' + index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
       labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
       '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
@@ -135,6 +168,7 @@
         else $("monthlyBudgetItemLabel").focus();
       };
     });
+    attachMonthLongPress();
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
       button.onclick = async () => {
         const index = Number(button.dataset.removeMonthItem);
@@ -174,7 +208,7 @@
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
       actuals = actualData;
-      editingItemIndex = null;
+      editingItemIndex = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
       $("monthlyBudgetItemCancel").hidden = true;
