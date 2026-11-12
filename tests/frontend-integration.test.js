@@ -318,3 +318,10 @@ test("income dialog trigger buttons use the requested labels", () => {
   assert.ok(js.includes('["income-checkup","Faire le point sur mes revenus","Faire le point sur mes revenus","#incomeCheckupDetails"]'));
   assert.ok(!js.includes('["income","Ajouter une source de revenu","Ajouter une source de revenu","#incomeEditorDetails"]'));
 });
+
+test("saved income typography matches saved charges", () => {
+  const css = read("spend-experience.css");
+  assert.match(css, /#budgetModuleIncome \.income-saved-details>summary\{font-size:16px;line-height:1\.4\}/);
+  assert.match(css, /#budgetModuleIncome #incomeRows \.rowitem\{font-size:14px;line-height:1\.45\}/);
+  assert.match(css, /#budgetModuleIncome #incomeRows \.rowitem>b\{font-size:14px;line-height:1\.4;font-weight:700\}/);
+});
