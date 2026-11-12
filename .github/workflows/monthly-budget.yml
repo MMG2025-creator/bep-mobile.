@@ -19,6 +19,7 @@ on:
       - "database/migrations/**"
       - "tests/monthly-budget*.test.js"
       - "package.json"
+      - "docs/**"
       - ".github/workflows/monthly-budget.yml"
   push:
     branches: [feature/monthly-budget-history]
@@ -33,6 +34,7 @@ on:
       - "database/migrations/**"
       - "tests/**"
       - "package.json"
+      - "docs/**"
       - ".github/workflows/monthly-budget.yml"
 
 jobs:
