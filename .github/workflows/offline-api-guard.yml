@@ -1,0 +1,20 @@
+name: BEP staging offline API guard
+on:
+  push:
+    branches:
+      - work/offline-api-guard-20261113
+      - feature/financial-intelligence-engine
+  pull_request:
+    branches:
+      - feature/financial-intelligence-engine
+jobs:
+  offline-api-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: node --check server.js
+      - run: node --test tests/offline-sync-api.test.js
