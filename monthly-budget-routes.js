@@ -21,7 +21,7 @@ function monthKeyFromDate(value) {
     return String(value.getFullYear()) + "-" + String(value.getMonth() + 1).padStart(2, "0");
   }
   if (typeof value === "string") {
-    const match = /^(\\d{4})-(\\d{2})/.exec(value);
+    const match = /^(\d{4})-(\d{2})/.exec(value);
     return match ? match[1] + "-" + match[2] : null;
   }
   return null;
