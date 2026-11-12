@@ -333,19 +333,20 @@ let category="";if(/chauss|basket|vêtement|mode|textile|baskets?|sneakers?|tenu
 return{label,notes,city,amount,category,need:/pas nécessaire|envie|pas un besoin/i.test(raw)?"no":/besoin|nécessaire/i.test(raw)?"yes":"" ,psychology:/impulsif|sur un coup de tête/i.test(raw)?"impulsive":/pression|stress|fomo/i.test(raw)?"pressure":/envie spontanée/i.test(raw)?"spontaneous":""}
 }
 async function prepareReceiptImageForOcr(file){
- if(!window.createImageBitmap||!document.createElement("canvas").getContext)return file;
+ if(!window.createImageBitmap||!document.createElement("canvas").getContext)throw Error("Ce navigateur ne peut pas préparer cette image pour la lecture. Essaie une image JPG ou PNG.");
  let bitmap;
  try{
   bitmap=await createImageBitmap(file);
   const maxSide=1800,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
   const canvas=document.createElement("canvas");
   canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
-  const ctx=canvas.getContext("2d");if(!ctx)return file;
+  const ctx=canvas.getContext("2d");if(!ctx)throw Error("Préparation de l'image impossible.");
   ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.filter="grayscale(100%) contrast(115%)";ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",.82));
-  canvas.width=1;canvas.height=1;return blob||file;
- }catch{return file}
+  const dataUrl=canvas.toDataURL("image/jpeg",.86);
+  if(!dataUrl||!dataUrl.startsWith("data:image/jpeg;base64,"))throw Error("Conversion de l'image impossible.");
+  canvas.width=1;canvas.height=1;return dataUrl;
+ }catch(error){throw Error("Impossible de préparer la photo pour l'OCR : "+(error&&error.message?error.message:"format d'image non pris en charge"))}
  finally{bitmap?.close?.()}
 }
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
