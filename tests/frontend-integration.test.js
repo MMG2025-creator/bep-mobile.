@@ -104,7 +104,7 @@ test("monthly-to-savings bridge commits locally and queues a guarded background 
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
     const start = js.indexOf("window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{");
-    const end = js.indexOf("\\nasync function persistMigratedIncomeState()", start);
+    const end = js.indexOf("async function persistMigratedIncomeState()", start);
     assert.ok(start >= 0 && end > start, file + " monthly bridge is missing");
     const bridge = js.slice(start, end);
     const localWrite = bridge.indexOf('localStorage.setItem(DB,JSON.stringify(nextState))');
