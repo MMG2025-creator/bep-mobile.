@@ -41,3 +41,20 @@ test("monthly and savings scripts use the configured API and shared budget bridg
     assert.ok(js.includes("function renderSavingsExperience()"), file + " lacks savings experience");
   }
 });
+
+test("monthly-to-savings bridge waits for server confirmation before changing local state", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    const start = js.indexOf("window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{");
+    const end = js.indexOf("\nasync function persistMigratedIncomeState()", start);
+    assert.ok(start >= 0 && end > start, file + " monthly bridge is missing");
+    const bridge = js.slice(start, end);
+    const serverWrite = bridge.indexOf('await fetch(API+"/api/data"');
+    const localWrite = bridge.indexOf('localStorage.setItem(DB,JSON.stringify(nextState))');
+    const stateCommit = bridge.indexOf('state=nextState');
+    assert.ok(serverWrite >= 0 && localWrite > serverWrite && stateCommit > localWrite,
+      file + " must confirm server sync before committing local state");
+    assert.ok(bridge.includes("const nextIncome=nextIncomes.reduce"),
+      file + " must calculate savings rates from the imported monthly income");
+  }
+});
