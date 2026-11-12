@@ -1252,6 +1252,11 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   min-width:0;
   padding:16px 0;
 }
+.saved-selectable-list .saved-income-row.has-multi-check,
+.saved-selectable-list .saved-charge-row.has-multi-check{
+  grid-template-columns:24px minmax(0,1fr) auto auto;
+}
+.saved-selectable-list .multi-select-check{margin:0}
 .saved-selectable-list .saved-income-row>span:first-child,
 .saved-selectable-list .saved-charge-row>span:first-child{min-width:0;overflow-wrap:anywhere}
 .saved-selectable-list .saved-income-row>span:first-child>b,
@@ -1263,6 +1268,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:390px){
   .saved-selectable-list .saved-income-row,
   .saved-selectable-list .saved-charge-row{gap:7px;padding:15px 0}
+  .saved-selectable-list .saved-income-row.has-multi-check,
+  .saved-selectable-list .saved-charge-row.has-multi-check{grid-template-columns:22px minmax(0,1fr) auto auto}
   .saved-selectable-list .saved-row-amount{font-size:12px}
   .saved-selectable-list .record-actions{gap:4px}
   .saved-selectable-list .record-action{width:28px;height:28px;min-width:28px}
