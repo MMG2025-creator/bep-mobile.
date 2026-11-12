@@ -66,6 +66,7 @@ jobs:
       - run: npm install --no-fund
       - run: npm audit --omit=dev
       - run: cmp -s app.js dist/app.js
+      - run: node --check server.js
       - name: Verify frontend entrypoint asset references
         run: |
           for file in index.html dist/index.html; do
