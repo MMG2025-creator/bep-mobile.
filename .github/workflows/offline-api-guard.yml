@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - work/offline-api-guard-20261113
+      - work/offline-api-response-20261113
       - feature/financial-intelligence-engine
   pull_request:
     branches:
