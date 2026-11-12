@@ -247,3 +247,15 @@ test("production API initialization and purchase adviser use a single valid serv
   assert.match(server, /la seule référence financière est le montant restant disponible/);
   assert.match(server, /sans bloquer son enregistrement/i);
 });
+
+
+test("income entry actions mount as native modal dialogs with valid ID selectors", () => {
+  const js = read("spend-experience.js");
+  const css = read("spend-experience.css");
+  assert.match(js, /\["income"[^\]]+"#incomeEditorDetails"\]/);
+  assert.match(js, /\["income-checkup"[^\]]+"#incomeCheckupDetails"\]/);
+  assert.match(js, /document\.querySelector\(selector\)/);
+  assert.match(js, /dialog\.showModal\(\)/);
+  assert.match(css, /#budgetModuleIncome \.income-card/);
+  assert.match(css, /#budgetModuleIncome \.bep-entry-dialog/);
+});
