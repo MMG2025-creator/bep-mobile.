@@ -208,7 +208,10 @@
     if (first) {
       payload.items = legacyItems();
       if (payload.items.length > 200) return status("Le budget actuel contient plus de 200 lignes. Réduis-le ou importe-le par lots après contrôle.", true);
-      if (!payload.items.length && !window.confirm("Aucun revenu, charge ou objectif n’a été trouvé dans le budget actuel. Créer un mois vide ?")) return;
+      const confirmation = payload.items.length
+        ? "Importer " + payload.items.length + " lignes de ton budget actuel dans " + monthKey + " ? Cette copie sera indépendante ; tes données actuelles ne seront pas supprimées."
+        : "Aucun revenu, charge ou objectif n’a été trouvé dans le budget actuel. Créer un mois vide ?";
+      if (!window.confirm(confirmation)) return;
     }
     setBusy(true);
     try {
