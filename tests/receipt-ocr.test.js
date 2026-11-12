@@ -62,6 +62,7 @@ test("source and published OCR assets stay synchronized and support generic imag
   assert.ok(js.includes("return prepareBankImageForOcr(file)"),"receipt OCR must reuse bank image preparation");
   assert.ok(js.includes("async function decodeBankImageForOcr"));
   assert.ok(js.includes("ftyp"),"HEIC must also be detected by file signature");
+  assert.ok(js.includes("await isHeicReceiptImage(file)"),"HEIC file signature must bypass generic MIME rejection");
   assert.ok(js.includes("heic2any@0.0.4"));
   assert.match(js,/worker\\.recognize\\(ocrImage\\)/);
   assert.doesNotMatch(js,/canvas\\.toBlob/);
