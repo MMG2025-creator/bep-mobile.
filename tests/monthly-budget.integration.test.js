@@ -84,6 +84,51 @@ if (!databaseUrl) {
       assert.equal(own.data.budget.items.length, 3);
     });
 
+    await t.test("monthly read remains snapshot-consistent during a concurrent update", async () => {
+      const originalConnect = pool.connect.bind(pool);
+      let signalReadPaused, releaseRead;
+      const readPaused = new Promise(resolve => { signalReadPaused = resolve; });
+      const continueRead = new Promise(resolve => { releaseRead = resolve; });
+      let pausedOnce = false;
+      pool.connect = async () => {
+        const client = await originalConnect();
+        const query = client.query.bind(client);
+        client.query = async (...args) => {
+          const result = await query(...args);
+          const sql = typeof args[0] === "string" ? args[0] : args[0]?.text || "";
+          if (!pausedOnce && sql.includes("SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date") && !sql.includes("FOR UPDATE")) {
+            pausedOnce = true;
+            signalReadPaused();
+            await continueRead;
+          }
+          return result;
+        };
+        return client;
+      };
+      try {
+        const reading = call(userA, "/months/2026-11");
+        await readPaused;
+        const updated = await call(userA, "/months/2026-11", "PUT", {
+          expectedVersion: 1,
+          items: [
+            { itemType: "income", label: "Salaire", plannedAmount: 3000 },
+            { itemType: "charge", label: "Loyer modifié", plannedAmount: 1000 },
+            { itemType: "savings", label: "Épargne", plannedAmount: 300 }
+          ]
+        });
+        assert.equal(updated.status, 200);
+        releaseRead();
+        const read = await reading;
+        assert.equal(read.status, 200);
+        assert.equal(read.data.budget.version, 1);
+        assert.equal(read.data.budget.items.find(x => x.itemType === "charge").label, "Loyer");
+        assert.equal(read.data.budget.plannedChargesTotal, "1000.00");
+      } finally {
+        releaseRead();
+        pool.connect = originalConnect;
+      }
+    });
+
     await t.test("actual expenses are assigned by their transaction date and deduplicated", async () => {
       await pool.query(
         "INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb)",
