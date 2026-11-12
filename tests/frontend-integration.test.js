@@ -203,30 +203,26 @@ test("budget advice stays above the income, charges and monthly budget navigatio
 });
 
 
-test("expenses module exposes only Mes achats and opens the purchase form in a modal", () => {
-  for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
-    const js = read(file);
-    assert.match(js, /trigger\.id="bepOpenPurchase"/);
-    assert.match(js, /textContent="Mes achats"/);
-    assert.match(js, /dialog\.id="bepPurchaseDialog"/);
-    assert.match(js, /dialog\.showModal\(\)/);
-    assert.match(js, /window\.BEP_OPEN_PURCHASE_DIALOG=open/);
-    assert.doesNotMatch(js, /data-spend-tab="challenges"/);
-    assert.doesNotMatch(js, /data-spend-view="balance"/);
-  }
+test("challenge catalogue offers twenty selectable challenges with persistent personal selection", () => {
+  const js = read("spend-experience.js");
+  assert.equal(js, read("dist/spend-experience.js"));
+  assert.equal((js.match(/\{id:"[a-z-]+",icon:/g)||[]).length, 20);
+  assert.match(js, /SELECT_KEY="bep-spend-selected-challenges-v1"/);
+  assert.match(js, /Choisir les défis que je veux relever/);
+  assert.match(js, /localStorage\.setItem\(SELECT_KEY,JSON\.stringify\(selected\)\)/);
   for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
-    const css = read(file);
-    assert.match(css, /#purchases \.bep-purchases-trigger/);
-    assert.match(css, /background:#176b50/);
+    assert.match(read(file), /\.bep-spend-challenge-picker/);
+    assert.match(read(file), /\.bep-spend-challenge-grid-inner/);
   }
 });
 
 test("purchase affordability is judged only against remaining available money and never blocks saving", () => {
   const spend = read("spend-experience.js");
   assert.equal(spend, read("dist/spend-experience.js"));
-  assert.match(spend, /dialog\.id="bepPurchaseDialog"/);
-  assert.match(spend, /window\.addEventListener\("bep:expense-saved",close\)/);
-  assert.match(spend, /mountFinancialEntryDialogs\(\)/);
+  assert.match(spend, /function currentBudgetState\(\)/);
+  assert.match(spend, /budget\.exceeds/);
+  assert.match(spend, /Hors budget : vigilance/);
+  assert.match(spend, /Tu peux l'enregistrer, mais sois vigilant/);
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
     assert.match(js, /intent:"purchase_review"/);
