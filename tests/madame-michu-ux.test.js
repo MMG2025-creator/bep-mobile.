@@ -48,3 +48,39 @@ test("source and published assets remain synchronized", () => {
   assert.equal(read("app.js"), read("dist/app.js"));
   assert.equal(read("spend-experience.js"), read("dist/spend-experience.js"));
 });
+
+
+test("daily expense capture opens in an accessible dialog and reuses the existing form", () => {
+  for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
+    const js = read(file);
+    assert.match(js, /bepQuickExpenseDialog/);
+    assert.match(js, /dialog\.showModal\(\)/);
+    assert.match(js, /bep:expense-saved/);
+    assert.match(js, /appendChild\(entry\)/);
+  }
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    const css = read(file);
+    assert.match(css, /\.bep-quick-expense-dialog::backdrop/);
+    assert.match(css, /\.bep-quick-expense-body/);
+  }
+});
+
+test("coach mascot is visible and heavy OCR libraries no longer block initial load", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.match(html, /id="bepCoachMascot"/);
+    assert.match(html, /id="bepQuickExpense"/);
+    assert.doesNotMatch(html, /<script src="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js/);
+    assert.doesNotMatch(html, /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/tesseract\.js/);
+    assert.match(html, /\[BEP performance\]/);
+    assert.match(html, /spend-experience\.css\?v=6/);
+    assert.match(html, /spend-experience\.js\?v=7/);
+  }
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /async function loadPdfJs/);
+    assert.match(js, /async function loadTesseract/);
+    assert.match(js, /bep:expense-saved/);
+    assert.equal(js, read(file === "app.js" ? "dist/app.js" : "app.js"));
+  }
+});
