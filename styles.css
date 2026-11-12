@@ -952,3 +952,12 @@ body.chart-zoom-open{overflow:hidden}
 .savings-page>.savings-objectives-card{order:3}
 .savings-page>.savings-activity-card{order:4}
 @media(max-width:420px){.savings-objectives-card,.savings-activity-card{padding:16px}.savings-objective-form,.savings-movement-form{padding:12px}}
+
+/* Navigation à deux rubriques de l'espace Épargne */
+.savings-module-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px;width:100%}
+.savings-module-tab{width:100%;min-width:0;min-height:60px;padding:12px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--forest);font:700 14px Manrope,sans-serif;line-height:1.25;box-shadow:0 2px 8px rgba(17,48,36,.04);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px}
+.savings-module-tab svg{width:19px;height:19px;flex:0 0 19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.savings-module-tab.active{background:var(--forest);border-color:var(--forest);color:#fff;box-shadow:0 4px 12px rgba(16,46,41,.12)}
+.savings-module[hidden]{display:none!important}
+.savings-module .card{margin-bottom:0}
+@media(max-width:380px){.savings-module-nav{gap:8px}.savings-module-tab{font-size:13px;padding:10px 6px;min-height:56px;gap:6px}.savings-module-tab svg{width:17px;height:17px;flex-basis:17px}}
