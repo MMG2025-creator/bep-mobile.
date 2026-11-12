@@ -15,8 +15,8 @@ test("published frontend assets are synchronized with source", () => {
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("index.html").includes("./app.js?v=93"));
   assert.ok(read("dist/index.html").includes("./app.js?v=93"));
-  assert.ok(read("index.html").includes("./styles.css?v=78"));
-  assert.ok(read("dist/index.html").includes("./styles.css?v=78"));
+  assert.ok(read("index.html").includes("./styles.css?v=79"));
+  assert.ok(read("dist/index.html").includes("./styles.css?v=79"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=5"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
 });
