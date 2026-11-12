@@ -961,3 +961,9 @@ body.chart-zoom-open{overflow:hidden}
 .savings-module[hidden]{display:none!important}
 .savings-module .card{margin-bottom:0}
 @media(max-width:380px){.savings-module-nav{gap:8px}.savings-module-tab{font-size:13px;padding:10px 6px;min-height:56px;gap:6px}.savings-module-tab svg{width:17px;height:17px;flex-basis:17px}}
+
+/* Keep capital and BEP advice above the savings tab navigation */
+#savings.savings-page>.savings-hero-card{order:1}
+#savings.savings-page>.savings-advisor-card{order:2}
+#savings.savings-page>.savings-module-nav{order:3}
+#savings.savings-page>.savings-module{order:4}
