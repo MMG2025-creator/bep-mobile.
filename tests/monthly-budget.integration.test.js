@@ -131,6 +131,8 @@ if (!databaseUrl) {
         expectedVersion: 1, items: []
       });
       assert.equal(stale.status, 409);
+      const invalidCloseReason = await call(userA, "/months/2026-12/close", "POST", { expectedVersion: 2, reason: { unsafe: true } });
+      assert.equal(invalidCloseReason.status, 400);
       const close = await call(userA, "/months/2026-12/close", "POST", { expectedVersion: 2 });
       assert.equal(close.status, 200);
       const update = await call(userA, "/months/2026-12", "PUT", {
