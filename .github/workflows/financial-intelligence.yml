@@ -1,0 +1,29 @@
+name: BEP Financial Intelligence
+on:
+  pull_request:
+    paths:
+      - "server.js"
+      - "lib/bep-financial-*.js"
+      - "coach-exchange.js"
+      - "dist/coach-exchange.js"
+      - "tests/bep-financial-intelligence.test.js"
+      - "package.json"
+      - ".github/workflows/financial-intelligence.yml"
+  push:
+    branches:
+      - feature/financial-intelligence-engine
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: node --check server.js
+      - run: node --check lib/bep-financial-intelligence.js
+      - run: node --check lib/bep-financial-knowledge-seed.js
+      - run: node --check coach-exchange.js
+      - run: node --check dist/coach-exchange.js
+      - run: node --test tests/bep-financial-intelligence.test.js
