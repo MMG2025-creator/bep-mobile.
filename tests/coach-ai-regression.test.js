@@ -101,7 +101,7 @@ test("purchase review preserves an unknown available balance as null", () => {
 
 test("knowledge import is bounded and personal knowledge retrieval is user-scoped", () => {
   assert.match(server, /items\.length>100/);
-  assert.match(server, /detail\.slice\(0,1500\)/);
+  assert.match(server, /String\(x\?\.detail\|\|""\)\.trim\(\)\.slice\(0,1500\)/);
   const intelligence = read("lib/bep-financial-intelligence.js");
   assert.match(intelligence, /WHERE user_id=\$1 AND review_status='accepted'/);
 });
