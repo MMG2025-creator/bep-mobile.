@@ -61,10 +61,13 @@ const advice=panel.querySelector(".ai-card");
 const history=$( "purchaseRows" )?.closest("article.card");
 const radar=document.createElement("section");radar.className="bep-spend-view bep-spend-radar";radar.dataset.spendView="radar";radar.id="bepSpendRadar";
 [advice,entry,history].forEach(node=>{if(node)radar.appendChild(node);});
+const addButton=document.createElement("button");addButton.type="button";addButton.id="bepAddPurchase";addButton.className="bep-spend-add-button";addButton.textContent="Ajouter une charge";
+if(entry)radar.insertBefore(addButton,entry);
+if(history){const oldTitle=history.querySelector("h2");const details=document.createElement("details");details.className="bep-spend-history-details";const summary=document.createElement("summary");summary.textContent="Historique des achats";details.appendChild(summary);[...history.childNodes].forEach(node=>{if(node!==oldTitle)details.appendChild(node)});oldTitle?.remove();history.appendChild(details);}
 panel.insertBefore(radar,nav.nextSibling);
 if(entry){
- const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter une dépense";
- const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Enregistre ici tes achats et dépenses. Ton budget disponible est recalculé après validation.";entry.insertBefore(intro,form);
+ const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter un achat";
+ const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Saisis le montant de ton achat. BEP mettra à jour tes dépenses après validation."entry.insertBefore(intro,form);
  const merchantField=$("merchant")?.closest(".field"),cityField=$("city")?.closest(".field"),amountField=$("purchaseAmount")?.closest(".field"),categoryField=$("purchaseCategory")?.closest(".field");
  const psychologyField=$("psychology")?.closest(".field"),needField=$("need")?.closest(".field"),delayField=$("delay")?.closest(".field");
  const oldTwo=cityField?.parentElement?.classList.contains("two")?cityField.parentElement:null;
@@ -83,7 +86,7 @@ if(entry){
  if(oldTwo&&oldTwo.children.length===0)oldTwo.remove();
  const actions=form.querySelector(".purchase-actions"),note=document.createElement("p");note.className="bep-spend-form-note";note.textContent="Tes réponses détaillées permettent à BEP d’affiner son conseil. Tu peux les renseigner maintenant ou plus tard.";
  form.insertBefore(quick,form.firstChild);
- if(actions){form.insertBefore(advanced,actions);actions.querySelector("#purchaseSubmit").textContent="Enregistrer ma dépense";actions.classList.add("bep-spend-submit-row")}
+ if(actions){form.insertBefore(advanced,actions);actions.querySelector("#purchaseSubmit").textContent="+ Ajouter une charge";actions.classList.add("bep-spend-submit-row")}
  form.appendChild(note);
  const amount=$("purchaseAmount");if(amount){amount.placeholder="0,00";amount.setAttribute("aria-label","Montant de la dépense en euros")}
  chips.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const input=$("purchaseCategory");if(!input)return;input.value=b.dataset.spendCategory;input.dataset.autoSuggested="0";input.dispatchEvent(new Event("input",{bubbles:true}));chips.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b))}));
@@ -92,18 +95,18 @@ if(entry){
 }
 radar.insertBefore(score,entry?.nextSibling||null);panel.insertBefore(challenge,radar.nextSibling);panel.insertBefore(balance,challenge.nextSibling);
 nav.querySelectorAll("button").forEach((b,index)=>{b.addEventListener("click",()=>setTab(b.dataset.spendTab));b.addEventListener("keydown",event=>{if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key))return;event.preventDefault();const tabs=[...nav.querySelectorAll("button")];const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;tabs[next].click();tabs[next].focus();});});
-function mountQuickExpenseModal(panel,entry){
+function mountQuickExpenseModal(panel,entry,trigger){
  if(!panel||!entry||$("bepQuickExpenseDialog"))return;
  const dialog=document.createElement("dialog");dialog.id="bepQuickExpenseDialog";dialog.className="bep-quick-expense-dialog";dialog.setAttribute("aria-labelledby","bepQuickExpenseTitle");
- dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE RAPIDE</p><h2 id="bepQuickExpenseTitle">Ajouter une dépense</h2><p>Quelques secondes suffisent.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';
+ dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE RAPIDE</p><h2 id="bepQuickExpenseTitle">Ajouter un achat</h2><p>Quelques secondes suffisent.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';
  panel.appendChild(dialog);dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
  const open=()=>{if(dialog.open)return;$("purchaseSubmit")?.classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");dialog.showModal();setTimeout(()=>$("purchaseAmount")?.focus(),80)};
  const close=()=>{if(dialog.open)dialog.close()};
  window.BEP_OPEN_PURCHASE_DIALOG=open;
- $("bepQuickExpense")?.addEventListener("click",open);
+ trigger?.addEventListener("click",open);
  dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);
  dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
- dialog.addEventListener("close",()=>{$("bepQuickExpense")?.focus()});
+ dialog.addEventListener("close",()=>{trigger?.focus()});
  window.addEventListener("bep:expense-saved",close);
 }
 
@@ -130,7 +133,7 @@ function mountFinancialConfirmDialog(){
  });
 }
 
-mountQuickExpenseModal(panel,entry);
+mountQuickExpenseModal(panel,entry,addButton);
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
 form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
