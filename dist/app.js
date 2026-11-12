@@ -351,27 +351,42 @@ let aiConnection={configured:false,provider:"",model:"",mode:"local",personal:fa
 const AI_ENABLED_KEY="bep-external-ai-enabled-v1";let aiCoachEnabled=false;try{localStorage.removeItem(AI_ENABLED_KEY)}catch{}
 async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const sr=await fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"});
- const status=sr.ok?await sr.json():{available:false,mode:"local",used:0,limit:60};
- aiConnection={configured:!!status.available,mode:status.mode==="bep"?"bep":"local",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false};
- const active=aiConnection.mode==="bep";
+ if(!sr.ok)throw Error("HTTP "+sr.status);
+ const status=await sr.json(),active=!!status.available;
+ aiConnection={configured:active,mode:active?"bep":"local",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
  const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach local';
- const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● Coach IA BEP intégré · Service BEP": "● Moteur BEP local · Tes données restent dans ton espace BEP";
- const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le Coach IA BEP intégré est actif. Les requêtes passent par le service BEP : aucune clé API personnelle ni facturation de tokens à ton compte.":"Le moteur local BEP est actif. Le service IA intégré est momentanément indisponible ; les réponses locales restent disponibles.";
- const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota du service BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci. Aucun crédit API personnel n'est utilisé.":"Aucun quota API personnel n'est utilisé en mode local.";quotaLabel.classList.toggle("hidden",!active)}
- const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Coach IA BEP":"Coach local";
+ const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Moteur local BEP · IA externe non configurée";
+ const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le fournisseur IA intégré n'est pas disponible. Le moteur local reste accessible, sans génération Gemini.";
+ const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Mode local : aucune requête externe consommée.";quotaLabel.classList.remove("hidden")}
+ const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"IA configurée":"Mode local";
  const disconnect=$("disconnectAiBtn");if(disconnect)disconnect.classList.add("hidden");
  const advanced=$("aiAdvancedSettings");if(advanced){advanced.hidden=true;advanced.classList.add("hidden")}
- const coachMode=$("coachAiMode");if(coachMode)coachMode.innerHTML=active?"<span>●</span> Coach IA BEP · Intégré et actif":"<span>●</span> Coach BEP · Mode local";
- }catch{aiConnection={configured:false,mode:"local",personal:false,used:0,limit:60};}}
+ const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent=active?"● Coach IA BEP configuré · "+aiConnection.provider:"● Coach BEP · Mode local";
+ }catch(e){aiConnection={configured:false,mode:"unavailable",provider:"",model:"",personal:false,used:0,limit:60};const label=$("aiConnectionStatus");if(label)label.textContent="Impossible de vérifier le service IA. Réessaie dans un instant. ("+e.message+")";const badge=$("aiConnectionBadge");if(badge)badge.textContent="Service indisponible";}}
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
- if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();
+ if(window.bepSignedIn&&(!aiConnection.mode||aiConnection.mode==="unavailable"))await loadAiConnection();
  if(window.bepSignedIn&&aiConnection?.mode==="bep"){
-  addCoachMessage("coach","Le Coach IA BEP prépare sa réponse…");const log=$("coachChatLog"),last=log?.lastElementChild;
-  try{const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext()})}),d=await r.json();if(!r.ok)throw Error(d.message||"IA indisponible.");const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
-   const tokens=Number(d.usage?.total_tokens)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
-  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach IA BEP est momentanément indisponible. "+coachReply(value)+" (Détail : "+e.message+")"}
- }else addCoachMessage("coach",coachReply(value));
+  addCoachMessage("coach","Le Coach IA BEP interroge le fournisseur…");const log=$("coachChatLog"),last=log?.lastElementChild;
+  try{
+   const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext()})}),d=await r.json();
+   if(!r.ok)throw Error(d.message||"IA indisponible.");
+   const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
+   if(d.intelligence){
+    const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
+    const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
+    trace.push(sources.length+" source(s) récupérée(s)");
+    if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));
+    const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");(c.dataWarnings||[]).forEach(w=>trace.push("Alerte données : "+w));
+    const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
+   }
+   const tokens=Number(d.usage?.total_tokens||d.usage?.totalTokenCount)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
+  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le fournisseur IA n’a pas répondu correctement. Aucune réponse locale n’a été substituée. Détail : "+e.message}
+ }else if(!window.bepSignedIn||aiConnection?.mode==="local"){
+  addCoachMessage("coach",coachReply(value));
+ }else{
+  addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");
+ }
 }
 $("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;submitCoachQuestion(value);input.value="";input.focus()};
 document.querySelectorAll("[data-coach-prompt]").forEach(button=>button.addEventListener("click",()=>{const input=$("coachPromptInput");input.value=button.dataset.coachPrompt||"";input.focus()}));
