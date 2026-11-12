@@ -339,3 +339,12 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 /* Keep a hidden score hidden even though the score component has display:grid. */
 #purchases .bep-spend-score[hidden]{display:none!important}
 #purchases ::selection{background:#ccefe0;color:#123b34}
+
+/* Long-press multi-selection for saved income, charges and monthly lines */
+.multi-select-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:8px 0;border:1px solid #dce9df;border-radius:12px;background:#f4faf6;color:#174f3c;font-size:12px;font-weight:700}
+.multi-select-toolbar.hidden{display:none!important}
+.multi-select-toolbar button{border:1px solid #cbded1;border-radius:9px;background:#fff;color:#175b43;padding:7px 10px;font:600 12px inherit;cursor:pointer}
+.multi-select-toolbar button[data-multi-delete],.multi-select-toolbar button[data-month-delete]{background:#176b50;border-color:#176b50;color:#fff}
+.multi-select-check{width:18px;height:18px;flex:0 0 auto;margin:0 10px 0 0;accent-color:#176b50}
+#incomeRows .rowitem.is-selected,#budgetRows .rowitem.is-selected,#monthlyBudgetItems .monthly-budget-row.is-selected{background:#eef8f1;outline:1px solid #a9d6ba}
+#incomeRows .rowitem,#budgetRows .rowitem,#monthlyBudgetItems .monthly-budget-row{touch-action:pan-y;user-select:none;-webkit-user-select:none}
