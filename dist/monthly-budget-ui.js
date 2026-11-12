@@ -145,6 +145,10 @@
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
+    const monthLabel = current?.monthKey
+      ? new Date(current.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
+      : "du mois";
+    $("monthlyBudgetActualHeading").textContent = "Mes dépenses de " + monthLabel;
     $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
     $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
     if (hasActuals) {
@@ -157,11 +161,12 @@
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
-    $("monthlyBudgetActualItems").innerHTML = actuals.expenses.length ? actuals.expenses.slice(0, 12).map(x =>
+    const monthExpenses = Array.isArray(actuals.expenses) ? actuals.expenses.slice().sort((a, b) => new Date(b.at) - new Date(a.at)) : [];
+    $("monthlyBudgetActualItems").innerHTML = monthExpenses.length ? monthExpenses.map(x =>
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.amount) + '</b></div>'
-    ).join("") : '<p class="empty">Aucun achat enregistré pour ce mois.</p>';
+    ).join("") : '<p class="empty">Aucune dépense enregistrée pour ce mois.</p>';
   }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
