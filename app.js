@@ -21,16 +21,21 @@ window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const savingsRows=monthlyItems.filter(x=>x.itemType==="savings");
   const activeIds=new Set(savingsRows.map(x=>x.sourceItemId||x.id).filter(Boolean));
   const archived=previousGoals.filter(g=>g&&typeof g==="object"&&(g.archivedAt||!activeIds.has(g.id))).map(g=>g.archivedAt?g:{...g,archivedAt:new Date().toISOString()});
-  state.incomes=monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"}));
-  state.budgets=monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0}));
-  state.goals=[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(totalIncome()?Number(x.plannedAmount)/totalIncome()*100:0),duration:Number(x.metadata?.duration)||3}))];
-  syncIncomeTotal();
-  try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){throw Error("Impossible de synchroniser le budget local.")};
-  render();
+  const nextState={
+    ...state,
+    incomes:monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"})),
+    budgets:monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0})),
+    goals:[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(totalIncome()?Number(x.plannedAmount)/totalIncome()*100:0),duration:Number(x.metadata?.duration)||3}))]
+  };
+  nextState.income=nextState.incomes.reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0);
   if(window.bepSignedIn){
-    const response=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});
+    const response=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(nextState)});
     if(!response.ok)throw Error("La synchronisation du budget courant vers les données BEP a échoué.");
   }
+  try{localStorage.setItem(DB,JSON.stringify(nextState))}
+  catch(e){throw Error("Le serveur a été synchronisé, mais l’enregistrement local a échoué. Recharge les données depuis ton compte.")};
+  state=nextState;
+  render();
   return true;
 };
 async function persistMigratedIncomeState(){const migrated=migrateIncomeState();localStorage.setItem(DB,JSON.stringify(state));if(migrated&&window.bepSignedIn){const r=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});if(!r.ok)throw Error("La migration des revenus n’a pas pu être sauvegardée sur le serveur.")}}
