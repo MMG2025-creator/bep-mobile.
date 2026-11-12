@@ -30,7 +30,7 @@ test("offline startup preserves local data for a previously authenticated user",
 test("service worker caches app shell and approved local OCR dependencies",()=>{
  for(const file of ["sw.js","dist/sw.js"]){
   const js=read(file);
-  assert.match(js,/bep-shell-v2/);
+  assert.match(js,/bep-shell-v8/);
   assert.match(js,/offline-storage\.js/);
   assert.match(js,/cdn\.jsdelivr\.net/);
   assert.match(js,/tessdata\.projectnaptha\.com/);
