@@ -1239,3 +1239,31 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .multi-select-toolbar [data-multi-delete],.multi-select-toolbar [data-month-delete]{background:var(--green);border-color:var(--green);color:#fff}
 .multi-select-check{width:19px;height:19px;flex:none;margin:0 9px 0 0;accent-color:var(--green)}
 .rowitem[data-multi-row],.monthly-budget-row[data-month-row]{user-select:none;-webkit-user-select:none;touch-action:pan-y}
+
+
+/* Listes de revenus et charges : consigne de sélection et lecture alignée sur l'historique des achats */
+.saved-list-longpress-hint{margin:8px 0 4px;line-height:1.45}
+.saved-selectable-list .saved-income-row,
+.saved-selectable-list .saved-charge-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  padding:16px 0;
+}
+.saved-selectable-list .saved-income-row>span:first-child,
+.saved-selectable-list .saved-charge-row>span:first-child{min-width:0;overflow-wrap:anywhere}
+.saved-selectable-list .saved-income-row>span:first-child>b,
+.saved-selectable-list .saved-charge-row>span:first-child>b{display:block;line-height:1.35}
+.saved-selectable-list .saved-income-row>span:first-child>small,
+.saved-selectable-list .saved-charge-row>span:first-child>small{line-height:1.45}
+.saved-selectable-list .saved-row-amount{white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
+.saved-selectable-list .record-actions{gap:7px;flex-wrap:nowrap}
+@media(max-width:390px){
+  .saved-selectable-list .saved-income-row,
+  .saved-selectable-list .saved-charge-row{gap:7px;padding:15px 0}
+  .saved-selectable-list .saved-row-amount{font-size:12px}
+  .saved-selectable-list .record-actions{gap:4px}
+  .saved-selectable-list .record-action{width:28px;height:28px;min-width:28px}
+}
