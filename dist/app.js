@@ -231,6 +231,13 @@ const savingsRoot=document.getElementById("savings");
 if(savingsRoot){
  savingsRoot.querySelectorAll(".savings-module-tab[data-savings-module]").forEach(button=>{
   button.addEventListener("click",()=>setSavingsModule(button.dataset.savingsModule));
+  button.addEventListener("keydown",event=>{
+   if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key))return;
+   event.preventDefault();
+   const next=event.key==="Home"?"goals":event.key==="End"?"movements":event.key==="ArrowRight"?(button.dataset.savingsModule==="goals"?"movements":"goals"):(button.dataset.savingsModule==="goals"?"movements":"goals");
+   setSavingsModule(next);
+   root.querySelector('[data-savings-module="'+next+'"]')?.focus();
+  });
  });
  setSavingsModule("goals");
 }
