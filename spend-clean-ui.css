@@ -1,32 +1,30 @@
-/* BEP — clean Expenses screen, isolated redesign */
-#purchases.bep-spend-clean{display:flex!important;flex-direction:column;gap:14px;min-width:0;padding:0;background:transparent}
-#purchases.bep-spend-clean>.bep-spend-hero{width:100%;margin:0;box-sizing:border-box}
-#purchases.bep-spend-clean .bep-spend-clean-intro{display:none}
-#purchases.bep-spend-clean .bep-spend-clean-actions{width:100%;margin:0}
-#purchases.bep-spend-clean #bepAddPurchase{display:flex;width:100%;min-height:56px;align-items:center;justify-content:center;border:0;border-radius:14px;background:#176b50;color:#fff;font:800 15px/1.2 Manrope,"DM Sans",sans-serif;box-shadow:0 8px 18px #173c2918;cursor:pointer;transition:transform .15s,background .15s}
-#purchases.bep-spend-clean #bepAddPurchase:hover{background:#125b43}
-#purchases.bep-spend-clean #bepAddPurchase:active{transform:translateY(1px)}
-#purchases.bep-spend-clean #bepAddPurchase:focus-visible{outline:3px solid #e8c66f;outline-offset:3px}
-#purchases.bep-spend-clean .bep-spend-clean-history{width:100%;min-width:0}
-#purchases.bep-spend-clean .bep-spend-clean-history>article.card{margin:0;padding:14px 16px;border:1px solid #e0ebe3;border-radius:20px;background:#fff;box-shadow:0 3px 12px #173c2909}
-#purchases.bep-spend-clean .bep-spend-clean-details{margin:0;border:0;background:transparent}
-#purchases.bep-spend-clean .bep-spend-clean-details>summary{display:flex;min-height:48px;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px;color:#173a32;font:800 15px/1.3 Manrope,"DM Sans",sans-serif;cursor:pointer;list-style:none}
-#purchases.bep-spend-clean .bep-spend-clean-details>summary::-webkit-details-marker{display:none}
-#purchases.bep-spend-clean .bep-spend-clean-details>summary:after{content:"+";display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:#eaf6ef;color:#176b50;font:700 19px/1 "DM Sans",sans-serif}
-#purchases.bep-spend-clean .bep-spend-clean-details[open]>summary:after{content:"−"}
-#purchases.bep-spend-clean .bep-spend-clean-details[open]>summary{padding-bottom:12px;border-bottom:1px solid #e7eee9}
-#purchases.bep-spend-clean .bep-spend-clean-details #purchaseRows{padding-top:12px}
-#purchases.bep-spend-clean .bep-spend-clean-details #purchaseRows:empty:after{content:"Tes achats enregistrés apparaîtront ici.";display:block;padding:14px 2px;color:#71847a;font-size:13px}
-#purchases.bep-spend-clean .bep-spend-clean-history .card-head{display:none}
-#purchases.bep-spend-clean .bep-spend-clean-history .bep-spend-history-details{display:block}
-@media(max-width:600px){
- #purchases.bep-spend-clean{gap:12px}
- #purchases.bep-spend-clean .bep-spend-hero{padding:18px;border-radius:20px}
- #purchases.bep-spend-clean .bep-spend-hero-main{grid-template-columns:minmax(0,1fr) 88px;gap:8px}
- #purchases.bep-spend-clean .bep-spend-mascot{width:86px;height:86px}
- #purchases.bep-spend-clean .bep-spend-stats{gap:6px}
- #purchases.bep-spend-clean .bep-spend-stat{padding:9px 8px}
- #purchases.bep-spend-clean .bep-spend-stat span{font-size:9px}
- #purchases.bep-spend-clean .bep-spend-stat strong{font-size:15px}
- #purchases.bep-spend-clean .bep-spend-clean-history>article.card{padding:12px 14px}
-}
+#purchases.bep-expenses-page{display:flex!important;flex-direction:column;gap:22px;min-width:0;padding:0!important;background:transparent!important}
+#purchases.bep-expenses-page .bep-expenses-hero{padding:30px;border:1px solid #e1ebe4;border-radius:26px;background:linear-gradient(120deg,#eff8f3,#f5f7fc 55%,#fff8e7);box-shadow:0 8px 26px #173c2909}
+#purchases.bep-expenses-page .bep-expenses-heading{position:relative;max-width:760px;padding-right:125px}
+#purchases.bep-expenses-page .bep-expenses-eyebrow{display:block;margin-bottom:8px;color:#397b62;font:800 11px/1.3 Manrope,"DM Sans",sans-serif;letter-spacing:.12em;text-transform:uppercase}
+#purchases.bep-expenses-page .bep-expenses-heading h1{margin:0;color:#173f35;font:800 clamp(26px,4vw,38px)/1.12 Manrope,"DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-heading p{max-width:560px;margin:10px 0 0;color:#5d766c;font:400 15px/1.6 "DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-heading .bep-spend-mascot{position:absolute;right:0;top:0;width:104px;height:104px}
+#purchases.bep-expenses-page .bep-expenses-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:24px}
+#purchases.bep-expenses-page .bep-expenses-stats article{display:flex;min-height:86px;flex-direction:column;justify-content:center;gap:7px;padding:15px 18px;border:1px solid #dce9e0;border-radius:17px;background:#ffffffd9}
+#purchases.bep-expenses-page .bep-expenses-stats span{color:#6b8177;font:500 12px/1.3 "DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-stats strong{color:#175c45;font:800 clamp(18px,2.4vw,25px)/1.1 Manrope,"DM Sans",sans-serif;font-variant-numeric:tabular-nums}
+#purchases.bep-expenses-page #bepAddPurchase{display:flex;width:100%;min-height:58px;align-items:center;justify-content:center;border:0;border-radius:17px;background:#176b50;color:white;font:800 16px/1.2 Manrope,"DM Sans",sans-serif;box-shadow:0 7px 18px #173c2918;cursor:pointer}
+#purchases.bep-expenses-page #bepAddPurchase:hover{background:#125b43}
+#purchases.bep-expenses-page .bep-expenses-history{min-width:0;padding:22px;border:1px solid #e0ebe3;border-radius:22px;background:white;box-shadow:0 4px 16px #173c2908}
+#purchases.bep-expenses-page .bep-expenses-section-title h2{margin:0;color:#173f35;font:800 20px/1.25 Manrope,"DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-section-title p{margin:6px 0 16px;color:#71847a;font:400 13px/1.5 "DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-history-card{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#purchases.bep-expenses-page .bep-expenses-history-card .card-head,#purchases.bep-expenses-page .bep-expenses-history-card h2{display:none!important}
+#purchases.bep-expenses-page .bep-expenses-details{display:block;margin:0;border:0;background:transparent}
+#purchases.bep-expenses-page .bep-expenses-details>summary{display:none}
+#purchases.bep-expenses-page #purchaseRows{display:flex;flex-direction:column;gap:8px;padding:0}
+#purchases.bep-expenses-page #purchaseRows .purchase-row{display:flex;min-width:0;align-items:center;justify-content:space-between;gap:14px;padding:15px 16px;border:1px solid #e8eee9;border-radius:15px;background:#fbfdfb}
+#purchases.bep-expenses-page #purchaseRows .purchase-row-main{min-width:0;flex:1}
+#purchases.bep-expenses-page #purchaseRows .purchase-row-main b{display:block;overflow-wrap:anywhere;color:#254c3e;font-weight:750}
+#purchases.bep-expenses-page #purchaseRows .purchase-row-main small{display:block;margin-top:5px;color:#7b8d84;font-size:12px}
+#purchases.bep-expenses-page #purchaseRows .purchase-row-actions{display:flex;flex:0 0 auto;align-items:center;gap:10px}
+#purchases.bep-expenses-page #purchaseRows .purchase-row-actions>b{color:#294d40;font-weight:800;font-variant-numeric:tabular-nums}
+#purchases.bep-expenses-page #purchaseRows .record-action{width:34px;height:34px;border-radius:10px}
+#purchases.bep-expenses-page #purchaseRows .purchase-row.is-selected{border-color:#2c8b68;background:#eef8f1}
+@media(max-width:640px){#purchases.bep-expenses-page{gap:14px}#purchases.bep-expenses-page .bep-expenses-hero{padding:19px;border-radius:20px}#purchases.bep-expenses-page .bep-expenses-heading{padding-right:78px}#purchases.bep-expenses-page .bep-expenses-heading .bep-spend-mascot{width:70px;height:70px}#purchases.bep-expenses-page .bep-expenses-heading p{font-size:13px}#purchases.bep-expenses-page .bep-expenses-stats{gap:7px;margin-top:18px}#purchases.bep-expenses-page .bep-expenses-stats article{min-height:72px;padding:10px 8px}#purchases.bep-expenses-page .bep-expenses-stats span{font-size:10px}#purchases.bep-expenses-page .bep-expenses-stats strong{font-size:16px}#purchases.bep-expenses-page .bep-expenses-history{padding:14px;border-radius:18px}#purchases.bep-expenses-page #purchaseRows .purchase-row{gap:7px;padding:12px 9px}#purchases.bep-expenses-page #purchaseRows .purchase-row-actions{gap:5px}#purchases.bep-expenses-page #purchaseRows .purchase-row-actions>b{font-size:12px}}
