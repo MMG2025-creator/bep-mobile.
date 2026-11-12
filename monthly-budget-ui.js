@@ -15,6 +15,14 @@
   let authEpoch = 0;
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
+  function financialPosition() {
+    return window.BEPFinancialEngine.calculate({
+      incomes: items.filter(x => x.itemType === "income").map(x => ({ amount: x.plannedAmount })),
+      budgets: items.filter(x => x.itemType === "charge").map(x => ({ amount: x.plannedAmount, category: x.category, nature: x.nature })),
+      goals: items.filter(x => x.itemType === "savings").map(x => ({ monthly: x.plannedAmount })),
+      expenses: actuals.expenses, monthKey: current?.monthKey
+    });
+  }
   const monthNow = () => {
     const d = new Date();
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
@@ -86,10 +94,12 @@
     $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
     $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
     if (hasActuals) {
-      const plannedCharges = items.filter(x => x.itemType === "charge").reduce((sum, x) => sum + Number(x.plannedAmount || 0), 0);
-      const variance = Number(actuals.actualExpenseTotal || 0) - plannedCharges;
-      const varianceLabel = variance > 0 ? "dépassement constaté" : variance < 0 ? "sous le prévisionnel" : "au niveau du prévisionnel";
-      $("monthlyBudgetActualVariance").textContent = "Achats enregistrés : " + varianceLabel + " de " + money(Math.abs(variance)) + " par rapport aux charges prévues.";
+      const position = financialPosition();
+      const variance = position.actualImpact;
+      const parts = [];
+      if (position.overBudgetSpend > 0) parts.push("dépassement des enveloppes variables : " + money(position.overBudgetSpend));
+      if (position.unbudgetedSpend > 0) parts.push("achats hors enveloppe : " + money(position.unbudgetedSpend));
+      $("monthlyBudgetActualVariance").textContent = variance > 0 ? "Rapprochement des achats : " + parts.join(" · ") + "." : "Achats enregistrés couverts par les enveloppes variables identifiées.";
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
@@ -136,7 +146,7 @@
     $("monthlyBudgetIncomeTotal").textContent = money(sum("income"));
     $("monthlyBudgetChargesTotal").textContent = money(sum("charge"));
     $("monthlyBudgetSavingsTotal").textContent = money(sum("savings"));
-    $("monthlyBudgetRemaining").textContent = money(sum("income") - sum("charge") - sum("savings"));
+    $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
     $("monthlyBudgetSave").hidden = current.status === "closed";
     $("monthlyBudgetClose").hidden = current.status === "closed";
     $("monthlyBudgetReopen").hidden = current.status !== "closed";
