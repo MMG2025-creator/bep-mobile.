@@ -289,3 +289,10 @@ button:disabled, [aria-disabled="true"] {
 .home-coach-card .home-coach-link span{font-size:13px;color:inherit}
 .home-coach-card .home-coach-link:hover:not(:disabled){background:#e3f1e7;border-color:#b9d8c4;color:#125640}
 .home-coach-card .home-coach-link:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+
+
+/* Mobile-first charts: explanatory paragraphs below the plot are intentionally hidden */
+@media(max-width:600px){
+  .chart-carousel .chart-note{display:none}
+  .chart-carousel .chart-empty{min-height:120px;padding:16px 12px;font-size:11px;line-height:1.45}
+}
