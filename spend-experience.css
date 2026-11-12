@@ -166,3 +166,18 @@
 .bep-quick-expense-body .bep-spend-advanced-body .field{margin:0}
 .bep-quick-expense-body .bep-spend-submit-row{display:grid;gap:8px;margin-top:14px}
 .bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{width:100%;min-height:54px;border-radius:14px;font-size:16px;font-weight:800}
+
+.bep-entry-trigger{margin:12px 0;min-height:48px;font-size:15px}
+.bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+.bep-entry-dialog .bep-quick-expense-body>details{display:block!important}
+.bep-entry-dialog .bep-entry-summary-hidden{display:none!important}
+.bep-entry-dialog .bep-quick-expense-body form{display:grid;gap:13px}
+.bep-entry-dialog .bep-quick-expense-body .field{margin:0}
+.bep-entry-dialog .bep-quick-expense-body input:not([type=checkbox]),.bep-entry-dialog .bep-quick-expense-body select,.bep-entry-dialog .bep-quick-expense-body textarea{min-height:48px;font-size:16px}
+.bep-entry-dialog .bep-quick-expense-body button[type=submit]{min-height:52px;font-size:15px}
+.bep-entry-dialog .bep-quick-expense-body .budget-checkup-group{margin:12px 0}
+.bep-entry-dialog .bep-quick-expense-body .budget-checkup-row{padding:12px 8px;gap:10px}
+.bep-receipt-capture{padding:12px;border:1px dashed #a9cdb5;border-radius:14px;background:#f5faf6}
+.bep-receipt-capture input[type=file]{width:100%;min-height:48px;font-size:14px}
+.bep-receipt-capture .hint{margin:8px 0 0;font-size:13px;line-height:1.45}
+@media(max-width:480px){.bep-entry-dialog .bep-quick-expense-body{padding:12px 14px max(18px,env(safe-area-inset-bottom))}.bep-entry-trigger{min-height:50px}}
