@@ -1,34 +1,11 @@
-(()=>{"use strict";
-function rebuild(){
- const panel=document.getElementById("purchases");
- if(!panel||panel.dataset.cleanSpendReady==="1")return;
- const hero=panel.querySelector("#bepSpendExperience");
- const add=panel.querySelector("#bepAddPurchase");
- const history=panel.querySelector(".bep-spend-history-details")?.closest("article.card");
- if(!hero||!add||!history)return;
- const dialogs=[...panel.querySelectorAll("dialog")];
- dialogs.forEach(dialog=>document.body.appendChild(dialog));
- panel.replaceChildren();
- panel.className="panel active bep-spend-clean";
- panel.dataset.cleanSpendReady="1";
- const intro=document.createElement("div");
- intro.className="bep-spend-clean-intro";
- intro.textContent="Chaque achat est enregistré et retrouvé dans ton historique.";
- const actions=document.createElement("section");
- actions.className="bep-spend-clean-actions";
- add.setAttribute("aria-label","Ajouter un achat");
- actions.appendChild(add);
- const historySection=document.createElement("section");
- historySection.className="bep-spend-clean-history";
- history.setAttribute("aria-label","Historique des achats");
- const details=history.querySelector("details");
- if(details){details.open=false;details.classList.add("bep-spend-clean-details");}
- historySection.appendChild(history);
- panel.append(hero,intro,actions,historySection);
- panel.querySelectorAll(".bep-spend-view,.bep-spend-nav,.bep-spend-score").forEach(el=>el.remove());
- const trigger=()=>window.BEP_OPEN_PURCHASE_DIALOG?.();
- add.addEventListener("click",trigger);
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",rebuild,{once:true});else rebuild();
-window.addEventListener("bep:app-ready",rebuild,{once:true});
-})();
+(()=>{"use strict";const $=id=>document.getElementById(id);const eur=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(n);
+function metrics(){const rows=[...($("purchaseRows")?.querySelectorAll(".purchase-row")||[])],now=new Date(),data=rows.map(r=>({amount:+r.dataset.amount||0,date:r.dataset.date||"",psych:r.dataset.psychology||""})).filter(x=>{const d=new Date(x.date);return x.date&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});const put=(id,v)=>{const e=$(id);if(e)e.textContent=v};put("bepSpendMonthTotal",eur(data.reduce((s,x)=>s+x.amount,0)));put("bepSpendMonthCount",data.length+" achat"+(data.length>1?"s":""));const n=data.filter(x=>["impulsive","pressure"].includes(x.psych)).length;put("bepSpendMonthDecisions",n+" achat"+(n>1?"s":""))}
+function build(){const p=$("purchases");if(!p||p.dataset.cleanSpendReady==="2")return;const old=p.querySelector("#bepSpendExperience"),add=p.querySelector("#bepAddPurchase"),history=$("purchaseRows")?.closest("article.card");if(!old||!add||!history)return;
+const mascot=old.querySelector(".bep-spend-mascot")?.cloneNode(true);p.querySelectorAll("dialog").forEach(d=>document.body.appendChild(d));
+const hero=document.createElement("section");hero.className="bep-expenses-hero";const head=document.createElement("div");head.className="bep-expenses-heading";head.innerHTML='<span class="bep-expenses-eyebrow">MON QUOTIDIEN · BEP</span><h1>Mes dépenses</h1><p>Tous tes achats au même endroit. Suis tes dépenses et garde une vision claire de ton mois.</p>';if(mascot)head.append(mascot);
+const stats=document.createElement("div");stats.className="bep-expenses-stats";stats.innerHTML='<article><span>Dépenses du mois</span><strong id="bepSpendMonthTotal">0,00 €</strong></article><article><span>Achats enregistrés</span><strong id="bepSpendMonthCount">0 achat</strong></article><article><span>Sous impulsion</span><strong id="bepSpendMonthDecisions">0 achat</strong></article>';hero.append(head,stats);
+const action=document.createElement("section");action.className="bep-expenses-action";add.textContent="+ Ajouter un achat";action.append(add);
+const wrap=document.createElement("section");wrap.className="bep-expenses-history";const title=document.createElement("div");title.className="bep-expenses-section-title";title.innerHTML='<span class="bep-expenses-eyebrow">SUIVI</span><h2>Historique des achats</h2><p>Retrouve, modifie ou supprime tes achats.</p>';wrap.append(title);
+history.classList.add("bep-expenses-history-card");const details=history.querySelector("details");if(details){details.open=true;details.classList.add("bep-expenses-details")}wrap.append(history);
+p.replaceChildren(hero,action,wrap);p.className="panel active bep-expenses-page";p.dataset.cleanSpendReady="2";metrics();const list=$("purchaseRows");if(list)new MutationObserver(metrics).observe(list,{childList:true,subtree:true,attributes:true});["bep:state-rendered","bep:expense-saved","pageshow"].forEach(e=>window.addEventListener(e,metrics))}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",build,{once:true});else build();window.addEventListener("bep:app-ready",build)})();
