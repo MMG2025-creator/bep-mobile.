@@ -337,18 +337,67 @@ if($("receiptFile"))$("receiptFile").onchange=async e=>{const file=e.target.file
 let purchaseSelectionMode=false,purchaseSelection=new Set(),suppressPurchaseClick=false;
 let incomeSelectionMode=false,incomeSelection=new Set(),budgetSelectionMode=false,budgetSelection=new Set();
 function attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label){
- const container=$(containerId);if(!container)return;const rows=Array.from(container.querySelectorAll("[data-multi-row]"));
- const active=kind==="income"?incomeSelectionMode:budgetSelectionMode;let toolbar=document.getElementById(containerId+"BulkToolbar");
+ const container=$(containerId);if(!container)return;
+ const rows=Array.from(container.querySelectorAll("[data-multi-row]"));
+ const active=kind==="income"?incomeSelectionMode:budgetSelectionMode;
+ let toolbar=document.getElementById(containerId+"BulkToolbar");
  if(!toolbar){toolbar=document.createElement("div");toolbar.id=containerId+"BulkToolbar";toolbar.className="multi-select-toolbar hidden";container.before(toolbar)}
- toolbar.classList.toggle("hidden",!active);toolbar.innerHTML=active?'<span>'+selection.size+' '+label+' sélectionné(s)</span><button type="button" data-multi-all>Tout sélectionner</button><button type="button" data-multi-delete>Supprimer la sélection</button><button type="button" data-multi-cancel>Annuler</button>':"";
- if(!active)rows.forEach(row=>{row.classList.remove("is-selected");row.querySelector("[data-multi-check]")?.remove()});
- if(active)rows.forEach(row=>{const id=row.dataset.multiRow;row.classList.toggle("is-selected",selection.has(id));let check=row.querySelector("[data-multi-check]");if(!check){check=document.createElement("input");check.type="checkbox";check.dataset.multiCheck="";check.className="multi-select-check";check.setAttribute("aria-label","Sélectionner");row.prepend(check)}check.checked=selection.has(id);check.onchange=()=>{if(check.checked)selection.add(id);else selection.delete(id);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)}});
- toolbar.querySelector("[data-multi-all]")?.addEventListener("click",()=>{if(selection.size===rows.length)selection.clear();else rows.forEach(row=>selection.add(row.dataset.multiRow));attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)});
- toolbar.querySelector("[data-multi-cancel]")?.addEventListener("click",()=>{selection.clear();modeSetter(false);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)});
- toolbar.querySelector("[data-multi-delete]")?.addEventListener("click",async()=>{if(!selection.size)return;const accepted=window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION("Supprimer les "+selection.size+" "+label+" sélectionné(s) ?","Suppression multiple"):confirm("Supprimer les "+selection.size+" "+label+" sélectionné(s) ?");if(!accepted)return;removeSelected(new Set(selection));selection.clear();modeSetter(false);render()});
- rows.forEach(row=>{let timer=null;const start=e=>{if(e.target.closest("button,input"))return;timer=setTimeout(()=>{modeSetter(true);selection.add(row.dataset.multiRow);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)},550)};const clear=()=>{if(timer)clearTimeout(timer);timer=null};row.addEventListener("pointerdown",start);["pointerup","pointerleave","pointercancel"].forEach(type=>row.addEventListener(type,clear));row.addEventListener("contextmenu",e=>e.preventDefault());row.querySelectorAll("button").forEach(b=>{const original=b.onclick;b.onclick=e=>{if(kind==="income"?incomeSelectionMode:budgetSelectionMode){e.preventDefault();e.stopPropagation();return}original?.call(b,e)}})});
+ toolbar.classList.toggle("hidden",!active);
+ toolbar.innerHTML=active?'<span>'+selection.size+' '+label+' sélectionné(s)</span><button type="button" data-multi-all>Tout sélectionner</button><button type="button" data-multi-delete>Supprimer la sélection</button><button type="button" data-multi-cancel>Annuler</button>':"";
+ rows.forEach(row=>{
+  const id=row.dataset.multiRow;
+  row.classList.toggle("is-selected",active&&selection.has(id));
+  let check=row.querySelector("[data-multi-check]");
+  if(active){
+   if(!check){check=document.createElement("input");check.type="checkbox";check.dataset.multiCheck="";check.className="multi-select-check";check.setAttribute("aria-label","Sélectionner");row.prepend(check)}
+   check.checked=selection.has(id);
+   check.onchange=()=>{if(check.checked)selection.add(id);else selection.delete(id);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label)};
+  }else check?.remove();
+  if(row.dataset.multiBound==="1")return;
+  row.dataset.multiBound="1";
+  let timer=null,startedAt=0;
+  const clear=()=>{if(timer){clearTimeout(timer);timer=null}};
+  const start=e=>{
+   if(e.target.closest("button,input")||e.button===2)return;
+   clear();startedAt=Date.now();
+   timer=setTimeout(()=>{
+    timer=null;modeSetter(true);selection.add(id);
+    attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label);
+   },600);
+  };
+  row.addEventListener("pointerdown",start,{passive:true});
+  row.addEventListener("pointerup",clear,{passive:true});
+  row.addEventListener("pointercancel",clear,{passive:true});
+  row.addEventListener("pointerleave",clear,{passive:true});
+  row.addEventListener("contextmenu",e=>e.preventDefault());
+  row.addEventListener("click",e=>{
+   if(!(kind==="income"?incomeSelectionMode:budgetSelectionMode)||e.target.closest("button,input"))return;
+   e.preventDefault();e.stopPropagation();
+   if(selection.has(id))selection.delete(id);else selection.add(id);
+   attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label);
+  });
+  row.querySelectorAll("button").forEach(button=>{
+   const original=button.onclick;
+   button.onclick=e=>{
+    if(kind==="income"?incomeSelectionMode:budgetSelectionMode){e.preventDefault();e.stopPropagation();return}
+    original?.call(button,e);
+   };
+  });
+ });
+ toolbar.querySelector("[data-multi-all]")?.addEventListener("click",()=>{
+  if(selection.size===rows.length)selection.clear();else rows.forEach(row=>selection.add(row.dataset.multiRow));
+  attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label);
+ });
+ toolbar.querySelector("[data-multi-cancel]")?.addEventListener("click",()=>{
+  selection.clear();modeSetter(false);attachLongPressSelection(containerId,kind,selection,modeSetter,removeSelected,label);
+ });
+ toolbar.querySelector("[data-multi-delete]")?.addEventListener("click",async()=>{
+  if(!selection.size)return;
+  const accepted=window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION("Supprimer les "+selection.size+" "+label+" sélectionné(s) ?","Suppression multiple"):confirm("Supprimer les "+selection.size+" "+label+" sélectionné(s) ?");
+  if(!accepted)return;
+  removeSelected(new Set(selection));selection.clear();modeSetter(false);render();
+ });
 }
-
 let editingPurchaseId=null;
 function setPurchaseFormTitle(isEditing){
  const entry=document.querySelector(".purchase-entry-card");
