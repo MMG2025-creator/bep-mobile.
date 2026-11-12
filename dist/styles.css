@@ -1118,3 +1118,16 @@ body.chart-zoom-open{overflow:hidden}
 .coach-ai-disclosure>.ai-connection-card{margin-top:0;border-top:0;border-radius:0 0 16px 16px;animation:coachAiReveal .22s ease-out}
 @keyframes coachAiReveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:520px){.coach-ai-disclosure>.coach-ai-summary{align-items:flex-start;flex-direction:column;gap:5px}.coach-ai-open-hint{font-size:11px}}
+
+/* Coach BEP — informations Gemini regroupées dans le panneau vert sous Envoyer */
+.coach-info-panel{margin-top:12px;padding:13px 14px;border:1px solid #d9ebe1;border-radius:13px;background:#f1f8f4;color:#28634e}
+.coach-info-section h3{margin:0 0 6px;font:700 12px Manrope,sans-serif;color:#245c49}
+.coach-info-section p{margin:0 0 6px;font-size:11px;line-height:1.5;color:#536e61}
+.coach-info-section p:last-child{margin-bottom:0}
+.coach-info-section code{font-size:10px;color:#245c49}
+.coach-info-settings{margin-top:11px;padding-top:10px;border-top:1px solid #d9e9df}
+.coach-info-panel .coach-ai-disclosure{margin:0}
+.coach-info-panel .coach-ai-summary{padding:0;border:0;background:transparent;color:#28634e;font-size:11px}
+.coach-info-panel .coach-ai-summary .coach-ai-open-hint{margin-left:auto;font-size:10px}
+.coach-info-panel .ai-connection-card{margin:10px 0 0;padding:12px;background:#fff;border:1px solid #dcebe2;box-shadow:none}
+.coach-info-legal{margin:10px 0 0;padding-top:9px;border-top:1px solid #d9e9df;color:#71877b;font-size:10px;line-height:1.45}
