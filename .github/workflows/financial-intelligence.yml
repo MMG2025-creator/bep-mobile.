@@ -22,8 +22,12 @@ jobs:
           node-version: 20
       - run: npm install
       - run: node --check server.js
+      - run: node --check app.js
+      - run: node --check dist/app.js
+      - run: node --check monthly-budget-routes.js
       - run: node --check lib/bep-financial-intelligence.js
       - run: node --check lib/bep-financial-knowledge-seed.js
       - run: node --check coach-exchange.js
       - run: node --check dist/coach-exchange.js
       - run: node --test tests/bep-financial-intelligence.test.js
+      - run: npm test
