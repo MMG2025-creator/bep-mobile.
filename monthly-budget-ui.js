@@ -205,7 +205,7 @@
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
-    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
+    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !window.bepSignedIn;
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
@@ -301,7 +301,7 @@
     $("monthlyBudgetReason").hidden = current.status !== "closed" || !window.bepSignedIn;
     $("monthlyBudgetItemForm").hidden = current.status === "closed" || !window.bepSignedIn;
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
-    if (itemTrigger) itemTrigger.hidden = current.status === "closed";
+    if (itemTrigger) itemTrigger.hidden = current.status === "closed" || !window.bepSignedIn;
   }
   async function loadMonth(monthKey) {
     if (!navigator.onLine || !window.bepSignedIn) { loadCachedMonth(monthKey); return; }
@@ -562,8 +562,11 @@
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
     actualsRequestId++;
-    if (window.bepSignedIn) refresh();
-    else { loadOfflineCache(); setBusy(false); }
+    if (window.bepSignedIn) {
+      months = []; current = null; items = []; auditEntries = []; auditUnavailable = false;
+      actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
+      renderMonths(); renderActuals(); refresh();
+    } else { loadOfflineCache(); setBusy(false); }
   });
   if (window.bepSignedIn) refresh();
   else loadOfflineCache();
