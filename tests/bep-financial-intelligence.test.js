@@ -71,3 +71,8 @@ test("simple financial questions are routed to structured data before any Gemini
 test("Gemini is disabled until zero-billing is confirmed and protected by user and global caps",()=>{
  const src=read("server.js");assert.match(src,/BEP_AI_ZERO_BILLING_CONFIRMED!=="true"/);assert.match(src,/BEP_AI_FREE_MONTHLY_LIMIT[^\n]*\|\|10/);assert.match(src,/BEP_AI_GLOBAL_MONTHLY_LIMIT[^\n]*\|\|250/);assert.match(src,/bep_ai_global_usage/);
 });
+
+test("the explicit Gemini test endpoint consumes the same guarded quota",()=>{
+ const src=read("server.js"),i=src.indexOf('app.post("/api/ai/test"'),j=src.indexOf('app.get("/api/ai/status"',i);
+ assert.ok(i>=0&&j>i);const route=src.slice(i,j);assert.match(route,/consumeBepAiQuota/);assert.match(route,/releaseBepAiQuota/);
+});
