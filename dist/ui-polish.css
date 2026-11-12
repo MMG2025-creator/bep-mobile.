@@ -269,3 +269,23 @@ button:disabled, [aria-disabled="true"] {
 .chart-carousel .chart-empty{min-height:155px;padding:22px 18px;line-height:1.65;font-size:12px;white-space:normal;text-wrap:pretty}
 .capacity-chart .chart-note{max-width:64ch}
 @media(max-width:390px){.chart-carousel .chart-note{font-size:10.5px;line-height:1.65}.chart-carousel .chart-empty{padding:18px 12px}}
+
+
+/* Coach Home CTA: light, readable green treatment (avoid green-on-green) */
+.home-coach-card .home-coach-link,
+.home-coach-card button.primary.home-coach-link{
+  min-height:36px;
+  margin-top:8px;
+  padding:7px 11px;
+  border:1px solid #cfe5d6;
+  border-radius:10px;
+  background:#edf7f0;
+  color:#176b50;
+  box-shadow:none;
+  font-size:11px;
+  font-weight:700;
+  line-height:1.25;
+}
+.home-coach-card .home-coach-link span{font-size:13px;color:inherit}
+.home-coach-card .home-coach-link:hover:not(:disabled){background:#e3f1e7;border-color:#b9d8c4;color:#125640}
+.home-coach-card .home-coach-link:active:not(:disabled){transform:translateY(1px);box-shadow:none}
