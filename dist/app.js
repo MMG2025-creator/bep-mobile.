@@ -354,7 +354,7 @@ async function processReceiptFile(file,input){
  const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
  let worker;
  try{
-  if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw Error("Format non pris en charge. Utilise une photo JPG, PNG ou WebP.");
+  if(!/^image\/[a-z0-9.+-]+$/i.test(file.type))throw Error("Format non pris en charge. Importe une image lisible par ton navigateur.");
   if(file.size>12*1024*1024)throw Error("Photo trop volumineuse (plus de 12 Mo). Limite : 12 Mo.");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
