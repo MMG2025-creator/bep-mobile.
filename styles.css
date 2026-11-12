@@ -1407,3 +1407,12 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .savings-operation-row .savings-delete-button{min-width:76px;min-height:32px;padding:5px 9px;white-space:nowrap;font-size:11px;line-height:1}
 .savings-operation-row.is-cancelled{opacity:.65}
 @media(max-width:420px){.savings-operation-list{padding:0 9px}.savings-operation-row{grid-template-columns:minmax(0,1fr) max-content max-content;gap:6px;padding:11px 0}.savings-operation-main>b{font-size:11px}.savings-operation-row .savings-operation-amount{font-size:11px}.savings-operation-row .savings-delete-button{min-width:66px;min-height:30px;padding:4px 7px;font-size:10px}}
+
+/* Final sizing guard for savings history rows: override legacy oversized action styles. */
+.savings-history-details>.savings-subsection-heading{width:100%;box-sizing:border-box}
+.savings-history-chevron{display:inline-flex!important;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#edf5f0;color:#176b52;font-size:20px!important;font-weight:700;line-height:1}
+.savings-operation-list{box-sizing:border-box;width:100%;min-width:0}
+.savings-operation-row{box-sizing:border-box;width:100%;grid-template-columns:minmax(0,1fr) minmax(76px,max-content) 76px;min-width:0;overflow:hidden}
+.savings-operation-row>*{min-width:0}
+.savings-operation-row .savings-delete-button{box-sizing:border-box!important;width:76px!important;min-width:76px!important;max-width:76px!important;height:32px!important;min-height:32px!important;padding:4px 5px!important;margin:0!important;font-size:11px!important;line-height:1!important;font-weight:600!important;white-space:nowrap!important;text-align:center!important;border-radius:8px!important}
+@media(max-width:520px){.savings-operation-row{grid-template-columns:minmax(0,1fr) minmax(70px,max-content) 68px;gap:5px}.savings-operation-row .savings-delete-button{width:68px!important;min-width:68px!important;max-width:68px!important;font-size:10px!important}}
