@@ -16,8 +16,8 @@ test("offline monthly history is explicitly read-only and does not call the API"
  const source=read("monthly-budget-ui.js");
  const offlineRead=source.indexOf('if (!navigator.onLine || !window.bepSignedIn) { loadCachedMonth(monthKey); return; }');
  assert.ok(offlineRead>=0);
- const saveHidden=source.indexOf('$("monthlyBudgetSave").hidden = current.status === "closed" || !window.bepSignedIn;');
- const formHidden=source.indexOf('$("monthlyBudgetItemForm").hidden = current.status === "closed" || !window.bepSignedIn;');
+ const saveHidden=source.indexOf('$("monthlyBudgetSave").hidden = current.status === "closed" || !canMutate();');
+ const formHidden=source.indexOf('$("monthlyBudgetItemForm").hidden = current.status === "closed" || !canMutate();');
  assert.ok(saveHidden>=0&&formHidden>=0);
  assert.match(source,/Mode hors ligne : historique consultable en lecture seule/);
 });
