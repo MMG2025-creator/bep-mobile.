@@ -15,7 +15,7 @@ test("offline sync is account-scoped and refuses to overwrite a changed remote s
  assert.match(js,/hasKnownUser\(\)\)return false/);
  assert.match(js,/stable\(remote\)!==stable\(pending\.base\)/);
  assert.match(js,/bep:offline-conflict/);
- assert.match(js,/await clear\(QUEUE_KEY\)/);
+ assert.match(js,/await clear\(queueKey\(\)\)/);
  const conflict=js.indexOf('if(stable(remote)!==stable(pending.base))');
  const put=js.indexOf('method:"PUT"',conflict);
  assert.ok(conflict>=0&&put>conflict,"remote comparison must happen before any PUT");
