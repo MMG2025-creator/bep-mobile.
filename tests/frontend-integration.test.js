@@ -206,9 +206,9 @@ test("budget advice stays above the income, charges and monthly budget navigatio
 test("expenses module exposes only Mes achats and opens the purchase form in a modal", () => {
   for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
     const js = read(file);
-    assert.match(js, /id="bepOpenPurchase"/);
+    assert.match(js, /trigger\.id="bepOpenPurchase"/);
     assert.match(js, /textContent="Mes achats"/);
-    assert.match(js, /id="bepPurchaseDialog"/);
+    assert.match(js, /dialog\.id="bepPurchaseDialog"/);
     assert.match(js, /dialog\.showModal\(\)/);
     assert.match(js, /window\.BEP_OPEN_PURCHASE_DIALOG=open/);
     assert.doesNotMatch(js, /data-spend-tab="challenges"/);
