@@ -335,3 +335,26 @@ button.primary, button.secondary, button.danger {
 @media (prefers-reduced-motion: reduce) {
   .toast { transition: none; }
 }
+
+/* Correctif de largeur du message rotatif sous les pastilles */
+.welcome-playful .welcome-dynamic{display:block!important;width:min(100%,420px)!important;min-width:220px;min-height:30px!important;height:30px;position:relative;margin-top:10px;padding:7px 11px;overflow:hidden;border:1px solid rgba(57,128,91,.2);border-radius:999px;background:rgba(223,247,231,.72);color:#315e48;font-size:10px;line-height:14px}
+.welcome-playful .welcome-dynamic-item{display:block;left:11px;right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.welcome-playful{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 116px;align-items:center;gap:8px;min-height:0!important;max-height:none!important;padding:18px 18px 16px;margin:8px 0 15px;overflow:hidden;color:#1b3028;background:radial-gradient(circle at 8% 100%,rgba(182,239,202,.48),transparent 38%),linear-gradient(115deg,#effcf4 0%,#f3fbff 57%,#fff8e9 100%);border:1px solid #dcefe3;border-radius:24px;box-shadow:0 7px 20px rgba(37,112,72,.075)}
+.welcome.welcome-playful:after{display:none}
+.welcome-playful .welcome-copy{position:relative;z-index:1;min-width:0}
+.welcome-playful .eyebrow{margin:0;color:#39805b;font-size:9px;line-height:1.4;letter-spacing:1.45px;font-weight:800}
+.welcome-playful .eyebrow span{color:#e2ad32;font-size:13px;margin-left:3px}
+.welcome-playful h1{position:relative;z-index:1;max-width:none;margin:8px 0;color:#1b3028;font:800 clamp(22px,5.5vw,32px)/1.13 Manrope,sans-serif;letter-spacing:-.045em}
+.welcome-playful h1 span{position:relative;display:inline-block;color:#27834f}
+.welcome-playful h1 span:after{content:"";position:absolute;left:2%;right:2%;bottom:-5px;height:5px;border-radius:50%;border-bottom:3px solid #f0c64f;transform:rotate(-1.8deg)}
+.welcome-playful .sub{max-width:none;margin:12px 0 0;color:#536b60;font-size:12px;line-height:1.5}
+.welcome-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+.welcome-pill{display:inline-flex;align-items:center;gap:6px;min-height:31px;padding:6px 10px;border-radius:999px;color:#20392e;font-size:10px;line-height:1;font-weight:750;white-space:nowrap}
+.welcome-pill svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.welcome-pill-plan{background:#dff7e7}.welcome-pill-save{background:#e1f2ff}.welcome-pill-grow{background:#ffe8ef}
+.welcome-mascot{position:relative;z-index:1;display:grid;place-items:center;align-self:stretch;min-width:0}
+.welcome-bot{display:block;width:100%;max-width:126px;height:auto;overflow:visible;filter:drop-shadow(0 7px 7px rgba(35,112,70,.12));animation:welcomeBotFloat 3.8s ease-in-out infinite}
+@keyframes welcomeBotFloat{0%,100%{transform:translateY(2px) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
+@media(max-width:390px){.welcome.welcome-playful{grid-template-columns:minmax(0,1fr) 82px;gap:2px;padding:15px 13px 14px;border-radius:21px}.welcome-playful .eyebrow{font-size:8px;letter-spacing:1px}.welcome-playful h1{font-size:clamp(20px,6.1vw,24px);margin:8px 0}.welcome-playful .sub{font-size:11px;line-height:1.4}.welcome-pills{gap:5px;margin-top:11px}.welcome-pill{min-height:28px;padding:6px 8px;font-size:9px;gap:4px}.welcome-pill svg{width:12px;height:12px}.welcome-bot{max-width:88px}}
+@media(min-width:600px){.welcome.welcome-playful{grid-template-columns:minmax(0,1fr) 132px;padding:21px 24px 19px}.welcome-playful .sub{font-size:13px}.welcome-pill{font-size:11px;padding:7px 11px}.welcome-bot{max-width:140px}}
+@media(prefers-reduced-motion:reduce){.welcome-bot{animation:none}}
