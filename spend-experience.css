@@ -192,3 +192,37 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 .income-saved-details[open] .income-saved-toggle{transform:rotate(45deg)}
 .income-saved-details>#incomeRows{padding:0 14px 12px}
 .income-saved-details>#incomeRows:empty{padding:0}
+
+
+/* Budget > Revenus: compact hierarchy and real action buttons. */
+#budgetModuleIncome .income-card{display:grid;gap:12px;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fff;box-shadow:0 5px 18px #173c2908}
+#budgetModuleIncome .income-card>.card-head{margin:0;align-items:flex-start}
+#budgetModuleIncome .income-card>.card-head h2{margin:0 0 4px;font-size:20px;letter-spacing:-.35px}
+#budgetModuleIncome .income-card>.card-head .hint{margin:0;font-size:13px;line-height:1.45}
+#budgetModuleIncome .income-total{margin:0;padding:14px 16px;border:1px solid #d8e9df;border-radius:14px;background:#eaf5ef}
+#budgetModuleIncome .income-total strong{font-size:clamp(22px,4vw,27px);letter-spacing:-.5px}
+#budgetModuleIncome .income-checkup{margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
+#budgetModuleIncome .income-checkup-head{margin:0 0 12px}
+#budgetModuleIncome .income-checkup-head h3{margin:8px 0 6px;font-size:16px;line-height:1.3}
+#budgetModuleIncome .income-checkup-head .hint{margin:0;font-size:13px;line-height:1.55}
+#budgetModuleIncome .income-checkup>details{margin:0}
+#budgetModuleIncome .bep-entry-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:0;padding:0 15px;border:1px solid #dce9e1;border-radius:12px;background:#edf6f0;color:#176b50;font-size:13px;font-weight:800;text-align:left;box-shadow:none}
+#budgetModuleIncome .bep-entry-trigger:hover{background:#e2f0e7}
+#budgetModuleIncome .income-saved-details{margin:0;border-radius:14px}
+#budgetModuleIncome .income-saved-details>summary{min-height:50px;padding:10px 14px;font-size:14px}
+#budgetModuleIncome #incomeEditorDetails{margin:0;border:0;background:transparent}
+#budgetModuleIncome #incomeEditorDetails>summary{display:none!important}
+#budgetModuleIncome .bep-entry-dialog{width:min(92vw,560px)}
+#budgetModuleIncome .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+#budgetModuleIncome .bep-entry-dialog .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
+#budgetModuleIncome .bep-entry-dialog .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
+#budgetModuleIncome .bep-entry-dialog .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
+#budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
+#budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
+#budgetModuleIncome .bep-entry-dialog .income-form{gap:12px}
+@media(max-width:560px){
+ #budgetModuleIncome .income-card{padding:15px;gap:10px}
+ #budgetModuleIncome .income-checkup{padding:13px}
+ #budgetModuleIncome .bep-entry-dialog .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}
+ #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{grid-column:2}
+}
