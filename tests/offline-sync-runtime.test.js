@@ -44,8 +44,8 @@ test("an enqueue during PUT is preserved and rebased instead of being deleted",a
   if(runtimeHolder.puts===1){
    await runtimeHolder.runtime.window.BEPOffline.enqueue({value:2});
   }
-  runtimeHolder.remote=body.payload;
-  return {ok:true,status:200,json:async()=>({ok:true})};
+  runtimeHolder.remote={...body.payload,canonical:true};
+  return {ok:true,status:200,json:async()=>({ok:true,payload:runtimeHolder.remote})};
  };
  const runtime=createRuntime(fetchImpl);runtimeHolder.runtime=runtime;
  const offline=runtime.window.BEPOffline;
@@ -57,6 +57,7 @@ test("an enqueue during PUT is preserved and rebased instead of being deleted",a
  const pending=await offline.readPending();
  assert.equal(pending.payload.value,2);
  assert.equal(pending.base.value,1,"the second snapshot must use the first committed snapshot as its new baseline");
+ assert.equal(pending.base.canonical,true,"the baseline must use the exact server-confirmed normalized payload");
  assert.equal(runtimeHolder.puts,1);
  assert.equal(await offline.flush(),true);
  assert.equal(await offline.readPending(),null);
