@@ -88,7 +88,7 @@ test("coach mascot is visible and heavy OCR libraries no longer block initial lo
 
 test("financial entry forms open in accessible dialogs", () => {
   const spend=read("spend-experience.js");assert.equal(spend,read("dist/spend-experience.js"));
-  for(const id of ["income","income-checkup","charge","charge-checkup","savings-goal","savings-movement","monthly-create","monthly-item"])assert.ok(spend.includes('"'+id+'"'));
+  for(const id of ["income","income-checkup","charge","charge-checkup","savings-goal","savings-movement","monthly-create","monthly-item","profile"])assert.ok(spend.includes('"'+id+'"'));
   assert.match(spend,/mountQuickExpenseModal\(panel,entry\)/);assert.match(spend,/mountFinancialEntryDialogs\(\)/);assert.match(spend,/dialog\.showModal\(\)/);assert.match(spend,/dialog\.addEventListener\("close",\(\)=>trigger\.focus\(\)\)/);
   for(const file of ["app.js","dist/app.js"]){const js=read(file);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("income"\)/);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("charge"\)/);assert.match(js,/BEP_OPEN_ENTRY_DIALOG\("savings-goal"\)/);assert.match(js,/bep:entry-saved/)}
 });
