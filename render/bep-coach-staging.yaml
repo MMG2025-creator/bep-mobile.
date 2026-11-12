@@ -1,0 +1,44 @@
+databases:
+  - name: bep-preproduction-db
+    databaseName: bep_preproduction_db
+    user: bep_preproduction_db_user
+    plan: basic_256mb
+    region: frankfurt
+
+services:
+  - type: web
+    name: bep-coach-staging-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: feature/financial-intelligence-engine
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bep-preproduction-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: BEP_AI_ENCRYPTION_KEY
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        value: https://bep-coach-staging.onrender.com
+      - key: BEP_FINANCIAL_INTELLIGENCE_ENABLED
+        value: "true"
+      - key: BEP_AI_PROVIDER
+        value: gemini
+      - key: BEP_AI_MODEL
+        value: gemini-2.5-flash
+      - key: BEP_AI_FREE_MONTHLY_LIMIT
+        value: "60"
+  - type: web
+    name: bep-coach-staging
+    runtime: static
+    plan: free
+    region: frankfurt
+    branch: feature/financial-intelligence-engine
+    buildCommand: printf 'window.BEP_API_BASE = "https://bep-coach-staging-api.onrender.com";\\n' > dist/runtime-config.js
+    staticPublishPath: dist
