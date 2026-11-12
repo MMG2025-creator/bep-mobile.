@@ -78,8 +78,8 @@ test("coach mascot is visible and heavy OCR libraries no longer block initial lo
     assert.doesNotMatch(html, /<script src="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js/);
     assert.doesNotMatch(html, /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/tesseract\.js/);
     assert.match(html, /\[BEP performance\]/);
-    assert.match(html, /spend-experience\.css\?v=8/);
-    assert.match(html, /spend-experience\.js\?v=8/);
+    assert.match(html, /spend-experience\.css\?v=9/);
+    assert.match(html, /spend-experience\.js\?v=9/);
   }
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
