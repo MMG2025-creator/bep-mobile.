@@ -22,3 +22,11 @@ test("legacy direct data writes remain supported beside the offline envelope",()
  const route=server.slice(server.indexOf('app.put("/api/data"'),server.indexOf('app.put("/api/data"')+1200);
  assert.match(route,/const p=offlineSync\?req\.body\?\.payload:req\.body/);
 });
+
+test("offline sync returns the exact canonical snapshot committed to the database",()=>{
+ const start=server.indexOf('app.put("/api/data"');
+ const route=server.slice(start,start+14000);
+ const commit=route.indexOf('await client.query("COMMIT")');
+ const response=route.indexOf('res.json({ok:true,updatedAt:new Date().toISOString(),payload:safe})');
+ assert.ok(commit>=0&&response>commit,"the client must receive the persisted snapshot, not its unnormalized input");
+});
