@@ -12,7 +12,7 @@ test("offline sync writes validate the baseline inside the same database transac
  const lock=route.indexOf('SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE');
  const compare=route.indexOf('canonical(previous)!==canonical(base)');
  const reject=route.indexOf('res.status(409).json({error:"OFFLINE_CONFLICT"})');
- const update=route.indexOf('UPDATE bep_user_data');
+ const update=route.indexOf('INSERT INTO bep_user_data(user_id,payload)');
  assert.ok(begin>=0&&lock>begin&&compare>lock&&reject>compare&&update>reject,
   "the locked current snapshot must be compared before any database update");
  assert.match(route,/__bepOfflineSync===true/);
