@@ -301,3 +301,9 @@ test("Budget income and charges copy is concrete and action-oriented", () => {
   assert.ok(html.includes("Vérifier mes sources de revenus"));
   assert.ok(html.includes("Vérifier mes charges"));
 });
+
+test("income action captions appear below their green buttons", () => {
+  const html = read("index.html");
+  assert.ok(html.includes('class="hint income-action-caption">Faire le point sur mes revenus</p>'));
+  assert.ok(html.includes('class="hint income-action-caption">+ Ajouter un revenu</p>'));
+});
