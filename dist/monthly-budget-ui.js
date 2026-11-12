@@ -573,10 +573,6 @@
     if (current?.monthKey) loadCachedMonth(current.monthKey);
     else loadOfflineCache();
   });
-  window.addEventListener("online", () => {
-    if (window.bepSignedIn) refresh();
-    else loadOfflineCache();
-  });
   if (window.bepSignedIn && navigator.onLine) refresh();
   else loadOfflineCache();
 })();
