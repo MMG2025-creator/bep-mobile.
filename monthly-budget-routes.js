@@ -211,7 +211,10 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       for (const expense of expenses) {
         if (!expense || typeof expense !== "object" || Array.isArray(expense)) continue;
         const at = typeof expense.at === "string" ? expense.at : "";
-        if (!/^\d{4}-\d{2}-\d{2}T/.test(at) || !Number.isFinite(Date.parse(at))) continue;
+        const datePart = /^(\\d{4})-(\\d{2})-(\\d{2})T/.exec(at);
+        if (!datePart || !Number.isFinite(Date.parse(at))) continue;
+        const year = Number(datePart[1]), month = Number(datePart[2]), day = Number(datePart[3]);
+        if (month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) continue;
         if (monthKeyAt(at, timeZone) !== monthKey) continue;
         if (expense.amount == null || !["number", "string"].includes(typeof expense.amount) || (typeof expense.amount === "string" && !expense.amount.trim())) continue;
         const amount = Number(expense.amount);
