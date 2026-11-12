@@ -193,7 +193,8 @@ if (!databaseUrl) {
       assert.equal(audit.data.entries.length, 1);
       assert.equal(audit.data.entries[0].reason, "Correction validée");
       const foreignAudit = await call(userB, "/months/2026-12/audit");
-      assert.equal(foreignAudit.status, 404);
+      assert.equal(foreignAudit.status, 200);
+      assert.equal(foreignAudit.data.entries.length, 0);
       const invalidReason = await call(userA, "/months/2026-12/reopen", "POST", { expectedVersion: 4, reason: { unsafe: true } });
       assert.equal(invalidReason.status, 400);
     });
