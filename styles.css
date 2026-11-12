@@ -1254,3 +1254,34 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{gap:7px}
  .saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{gap:5px}
 }
+
+/* Revenus et charges : même grille externe que #purchaseRows, prix ancré à droite */
+.saved-income-row,.saved-charge-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  padding:16px 0;
+}
+.saved-income-row .purchase-row-main,.saved-charge-row .purchase-row-main{
+  min-width:0;width:100%;flex:1;
+}
+.saved-income-row .purchase-row-main>span:not(.purchase-select-check),
+.saved-charge-row .purchase-row-main>span:not(.purchase-select-check){
+  min-width:0;overflow-wrap:anywhere;
+}
+.saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{
+  display:grid;grid-template-columns:auto 32px 32px;align-items:center;
+  justify-items:center;gap:7px;flex-wrap:nowrap;justify-content:end;min-width:max-content;
+}
+.saved-income-row .purchase-row-actions>b,.saved-charge-row .purchase-row-actions>b{white-space:nowrap;font-size:13px}
+.saved-income-row .purchase-row-actions button,.saved-charge-row .purchase-row-actions button{
+  width:32px;height:32px;min-width:32px;padding:0;font-size:17px;
+}
+@media(max-width:390px){
+  .saved-income-row,.saved-charge-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+  .saved-income-row .purchase-row-actions,.saved-charge-row .purchase-row-actions{grid-template-columns:auto 28px 28px;gap:4px}
+  .saved-income-row .purchase-row-actions button,.saved-charge-row .purchase-row-actions button{width:28px;height:28px;min-width:28px}
+  .saved-income-row .purchase-row-actions>b,.saved-charge-row .purchase-row-actions>b{font-size:12px}
+}
