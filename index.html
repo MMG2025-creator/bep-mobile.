@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=72"><link rel="stylesheet" href="./ui-polish.css?v=1">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=75"><link rel="stylesheet" href="./ui-polish.css?v=1">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./coach-exchange.css?v=1">
@@ -70,6 +70,41 @@
 <div class="privacy-note">🔒 Tes données sont enregistrées dans ton espace personnel et synchronisées avec ton compte.</div>
 </section>
 <section id="budget" class="panel">
+<article class="card monthly-history-card" id="monthlyHistoryCard">
+  <div class="card-head"><div><p class="eyebrow">HISTORIQUE BUDGÉTAIRE</p><h2>Mes budgets mensuels</h2><p class="hint">Chaque mois conserve sa propre photographie. Une modification ne réécrit pas les mois précédents.</p></div><span class="tag">Historique</span></div>
+  <p id="monthlyBudgetStatus" class="monthly-budget-status" role="status" aria-live="polite">Connecte-toi pour consulter ton historique mensuel.</p>
+  <div id="monthlyBudgetNoMonth" hidden><p class="hint">Aucun mois n’est encore enregistré dans le nouvel historique. Le premier mois peut reprendre une seule fois les revenus, charges et objectifs actuellement enregistrés.</p></div>
+  <form id="monthlyBudgetCreateForm" class="monthly-budget-create" hidden>
+    <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required></div>
+    <button class="secondary full" type="submit">Créer le mois</button>
+  </form>
+  <div id="monthlyBudgetWorkspace" hidden>
+    <div class="field"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="monthly-budget-metrics">
+      <div><span>Revenus prévus</span><strong id="monthlyBudgetIncomeTotal">0,00 €</strong></div>
+      <div><span>Charges prévues</span><strong id="monthlyBudgetChargesTotal">0,00 €</strong></div>
+      <div><span>Épargne prévue</span><strong id="monthlyBudgetSavingsTotal">0,00 €</strong></div>
+      <div><span>Disponible prévisionnel</span><strong id="monthlyBudgetRemaining">0,00 €</strong></div>
+    </div>
+    <div class="monthly-budget-actuals"><span>Dépenses réellement enregistrées ce mois</span><strong id="monthlyBudgetActualTotal">—</strong><small id="monthlyBudgetActualCount">Chargement des achats datés…</small><small id="monthlyBudgetActualVariance">Écart avec les charges prévues : —</small><div id="monthlyBudgetActualItems"></div></div>
+    <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
+    <form id="monthlyBudgetItemForm" class="monthly-budget-item-form">
+      <h3>Ajouter une ligne</h3>
+      <div class="field"><label for="monthlyBudgetItemType">Type</label><select id="monthlyBudgetItemType"><option value="income">Revenu</option><option value="charge">Charge</option><option value="savings">Épargne</option></select></div>
+      <div class="field"><label for="monthlyBudgetItemLabel">Libellé</label><input id="monthlyBudgetItemLabel" maxlength="160" required></div>
+      <div class="field"><label for="monthlyBudgetItemCategory">Catégorie (facultatif)</label><input id="monthlyBudgetItemCategory" maxlength="80"></div>
+      <div class="field"><label for="monthlyBudgetItemAmount">Montant mensuel (€)</label><input id="monthlyBudgetItemAmount" type="number" min="0" max="999999999999.99" step="0.01" required></div>
+      <button id="monthlyBudgetItemSubmit" class="secondary full" type="submit">Ajouter la ligne</button>
+      <button id="monthlyBudgetItemCancel" class="secondary full" type="button" hidden>Annuler la modification</button>
+    </form>
+    <button id="monthlyBudgetSave" class="primary full" type="button">Enregistrer ce mois</button>
+    <div class="monthly-budget-close-actions">
+      <button id="monthlyBudgetClose" class="secondary full" type="button">Clôturer le mois</button>
+      <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500"></div>
+      <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
+    </div>
+  </div>
+</article>
 <div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
 <button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
 <button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
@@ -172,12 +207,51 @@
 </div>
 <div id="budgetWarning"></div>
 </section>
-<section id="savings" class="panel">
-<article class="card ai-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiSavings" class="ai-advice">Analyse de ton effort d’épargne en cours…</p></article>
+<section id="savings" class="panel savings-page">
+<article class="savings-hero-card">
+    <div class="savings-hero-top"><div><p class="savings-overline">MON CAPITAL ÉPARGNÉ</p><p class="savings-capital" id="savingsCapital">0,00 €</p><p class="savings-subline" id="savingsCapitalSub">Aucun versement enregistré pour le moment</p></div><div class="savings-ring" id="savingsRing" role="img" aria-label="Progression de l'objectif global"><div><strong id="savingsProgress">0 %</strong><small>de l'objectif</small></div></div></div>
+    <div class="savings-target-row"><span>Objectif global</span><strong id="savingsTarget">Non défini</strong></div>
+    <div class="savings-progress-track"><span id="savingsProgressBar"></span></div>
+    <div class="savings-progress-foot"><span id="savingsProgressLabel">Crée ton premier objectif</span><span id="savingsRemaining"></span></div>
+    <div class="savings-hero-stats"><div><small>Versements nets ce mois</small><strong id="savingsMonthNet">0 €</strong></div><div><small>Objectifs actifs</small><strong id="savingsGoalCount">0</strong></div><div><small>Régularité</small><strong id="savingsStreak">0 mois</strong></div></div>
+  </article>
+<article class="card ai-card savings-advisor-card"><div class="ai-card-head"><h2>Ton conseil Épargne BEP</h2><span class="ai-label">Analyse budget</span></div><p id="aiSavings" class="ai-advice">Analyse de ta capacité d'épargne en cours…</p><p class="savings-advisor-foot" id="savingsAdvisorFoot">BEP s'appuie sur tes revenus et charges enregistrés.</p></article>
+<div class="savings-module-nav" role="tablist" aria-label="Rubriques de l’épargne">
+  <button type="button" class="savings-module-tab active" role="tab" aria-selected="true" aria-controls="savingsModuleGoals" data-savings-module="goals"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg><span>Mes objectifs</span></button>
+  <button type="button" class="savings-module-tab" role="tab" aria-selected="false" aria-controls="savingsModuleMovements" data-savings-module="movements"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg><span>Mes mouvements</span></button>
+</div>
+<div id="savingsModuleGoals" class="savings-module" role="tabpanel">
+<article class="card savings-objectives-card"><header class="savings-objective-heading"><p class="eyebrow">COMMENCER ICI</p><h2>Créer un objectif d’épargne</h2><p>Définis ce que tu veux financer. BEP t’aide ensuite à suivre tes versements et ta progression.</p></header><div class="savings-objective-form">
+    
+    <div class="savings-recommendation"><div><span class="savings-reco-label">SUGGESTION BEP</span><strong id="savingsSuggestedRate">—</strong><small id="savingsSuggestedAmount">Renseigne ton budget pour calculer ta suggestion.</small></div><span class="savings-reco-tag" id="savingsRecoTag">Personnalisée</span></div>
+    <form id="savingsForm">
+      <div class="field"><label for="goalName">Nom de ton objectif</label><input id="goalName" maxlength="50" placeholder="Ex. Fonds de sécurité"></div>
+      <div class="field"><label>Choisis ton taux d'épargne</label><div class="savings-rate-options" role="group" aria-label="Taux d'épargne"><button type="button" data-rate-choice="suggested" class="active">BEP</button><button type="button" data-rate-choice="5">5 %</button><button type="button" data-rate-choice="10">10 %</button><button type="button" data-rate-choice="15">15 %</button><button type="button" data-rate-choice="20">20 %</button></div><select id="savingsRate" class="savings-rate-native" aria-label="Taux d'épargne" tabindex="-1" aria-hidden="true"><option value="suggested">Suggestion BEP</option><option value="5">5 %</option><option value="10">10 %</option><option value="15">15 %</option><option value="20">20 %</option></select></div>
+      <div class="field savings-custom-rate"><label for="customSavingsRate">Ou définir un taux personnalisé (%)</label><input id="customSavingsRate" type="number" min="1" max="100" step="1" placeholder="Ex. 12"></div>
+      <div class="field"><label for="duration">Durée de ton engagement</label><select id="duration"><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select></div>
+      <div class="calculation savings-calculation" id="savingsPreview">Renseigne d'abord ton budget.</div>
+      <button class="primary full savings-submit" id="savingsSubmit">Créer mon objectif</button>
+    </form>
+  </div><section class="savings-goals-area"><div class="savings-subsection-heading"><div><p class="eyebrow">MES PROJETS</p><h3>Mes objectifs</h3></div><span class="savings-count" id="savingsGoalCountBadge">0</span></div><div id="savingsGoalCards" class="savings-goal-grid"></div><div id="goalsList" class="savings-legacy-list" hidden></div></section></article>
+<section class="savings-rewards-panel" aria-labelledby="savingsRewardsTitle">
+  <div class="savings-rewards-heading"><div><span class="savings-rewards-picto" aria-hidden="true">★</span><div><p class="eyebrow">PROGRESSION</p><h3 id="savingsRewardsTitle">Mes récompenses</h3></div></div><p>Chaque étape compte. La régularité et les efforts réalisés font progresser ton parcours.</p></div>
+  <div id="savingsRewards" class="savings-rewards-grid" aria-live="polite"></div>
+</section>
+</div>
+<div id="savingsModuleMovements" class="savings-module" role="tabpanel" hidden>
+<article class="card savings-activity-card"><header class="savings-activity-heading"><p class="eyebrow">SUIVRE MON OBJECTIF</p><h2>Mes mouvements</h2><p>Enregistre les versements et les retraits réellement effectués sur tes coffres.</p></header><section class="savings-movement-form"><p class="muted">Note les versements et retraits que tu effectues réellement. BEP ne déplace pas l'argent et ne se connecte pas à ta banque.</p>
+    <form id="savingsOperationForm"><div class="two"><div class="field"><label for="savingsOperationType">Opération</label><select id="savingsOperationType"><option value="deposit">Versement</option><option value="withdrawal">Retrait</option></select></div><div class="field"><label for="savingsOperationDate">Date</label><input id="savingsOperationDate" type="date" required></div></div>
+      <div class="field"><label for="savingsOperationGoal">Coffre concerné</label><select id="savingsOperationGoal" required><option value="">Choisis un coffre</option></select></div>
+      <div class="field"><label for="savingsOperationAmount">Montant (€)</label><input id="savingsOperationAmount" type="number" min="0.01" step="0.01" required placeholder="0,00"></div>
+      <button type="submit" class="primary full">Enregistrer le mouvement</button><p class="hint" id="savingsOperationStatus" role="status"></p>
+    </form>
+  </section><section class="savings-history-area"><div class="savings-subsection-heading"><div><p class="eyebrow">SUIVI</p><h3>Historique des mouvements</h3></div></div><div id="savingsOperationRows" class="savings-operation-list"></div></section></article>
+</div>
 
-<article class="card"><h2>Programmer ton épargne</h2><p class="muted">Un engagement réaliste, compatible avec ton reste disponible. BEP ne bloque pas ton argent.</p>
-<form id="savingsForm"><div class="field"><label>Nom du projet (facultatif)</label><input id="goalName" maxlength="50" placeholder="Ex. Fonds de sécurité"></div><div class="field"><label>Taux d'épargne</label><select id="savingsRate"><option value="suggested">Suggestion BEP</option><option value="5">5 %</option><option value="10">10 %</option><option value="15">15 %</option><option value="20">20 %</option></select><small id="suggestion" class="hint"></small></div><div class="field"><label>Durée</label><select id="duration"><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select></div><div class="calculation" id="savingsPreview">Renseigne d'abord ton budget.</div><button class="primary">Enregistrer mon engagement</button></form></article>
-<article class="card"><h2>Mes engagements</h2><div id="goalsList" class="empty">Aucun objectif enregistré.</div></article>
+
+
+
+
 </section>
 <section id="purchases" class="panel"><article class="card ai-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiPurchases" class="ai-advice">Conseil avant dépense en cours…</p></article><article class="card purchase-entry-card"><h2>Enregistrer un achat</h2><form id="purchaseForm"><div class="field"><label>Enseigne ou libellé (facultatif)</label><input id="merchant" maxlength="70" placeholder="Ex. Carrefour, primeur, boulangerie..."></div><div class="two"><div class="field"><label>Ville (facultatif)</label><input id="city" maxlength="60" placeholder="Proposée si enseigne identifiable"></div><div class="field"><label>Montant (€) <span class="required-mark">• obligatoire</span></label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0"></div></div><div class="field"><label>Type d’achat <span class="required-mark">• obligatoire</span></label><input id="purchaseCategory" type="text" list="purchaseNatureSuggestions" required maxlength="80" autocomplete="off" placeholder="Ex. alimentation, chaussures, sport…"><div id="purchaseNaturePanel" class="nature-suggestions hidden" role="listbox"></div><datalist id="purchaseNatureSuggestions"><option value="Alimentation"></option><option value="Vêtements et chaussures"></option><option value="Chaussures de sport"></option><option value="Équipement sportif"></option><option value="Électronique et informatique"></option><option value="Électroménager"></option><option value="Maison et décoration"></option><option value="Bricolage et jardin"></option><option value="Transport et carburant"></option><option value="Beauté et hygiène"></option><option value="Santé et pharmacie"></option><option value="Loisirs et culture"></option><option value="Restaurant et sorties"></option><option value="Autre"></option></datalist></div><div class="field"><label>Comment décris-tu ton état au moment de l’achat ?</label><select id="psychology"><option value="reflective">Réfléchi et calme</option><option value="spontaneous">Envie spontanée</option><option value="impulsive">Impulsif / difficile à différer</option><option value="pressure">Sous pression / FOMO</option></select></div><div class="field"><label>Est-ce un besoin réel ?</label><select id="need"><option value="yes">Oui</option><option value="uncertain">Je ne suis pas sûr</option><option value="no">Non, c'est une envie</option></select></div><div class="field"><label>Quand envisages-tu l'achat ?</label><select id="delay"><option value="now">Maintenant</option><option value="24h">Après 24 heures</option><option value="7d">Après 7 jours</option><option value="already_done">Achat déjà effectué</option></select></div><div class="purchase-actions"><button class="primary" id="purchaseSubmit" type="submit"><svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat</button><button class="primary hidden" id="purchaseNew" type="button"><svg class="new-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg> Nouvel achat</button><button type="button" class="secondary hidden" id="cancelEdit">Annuler la modification</button></div></form><div id="purchaseAdvice" class="advice hidden" aria-live="polite"></div></article><article class="card"><h2>Historique des achats</h2><div id="purchaseBulkToolbar" class="purchase-bulk-toolbar hidden"><span id="purchaseSelectionCount">0 achat sélectionné</span><div><button type="button" class="secondary" id="selectAllPurchases">Tout sélectionner</button><button type="button" class="secondary" id="cancelPurchaseSelection">Annuler</button><button type="button" class="primary" id="deleteSelectedPurchases" disabled>Supprimer la sélection</button></div></div><p class="hint purchase-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="purchaseRows" class="rows empty">Aucun achat enregistré.</div></article>
 </section>
@@ -224,8 +298,10 @@
 <div id="toast" class="toast" role="status"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="./app.js?v=88"></script>
+<script src="./runtime-config.js?v=1"></script>
+<script src="./app.js?v=92"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./coach-exchange.js?v=1" defer></script>
+<script src="./monthly-budget-ui.js?v=5"></script>
 <script src="./pwa.js?v=9"></script>
 </body></html>
