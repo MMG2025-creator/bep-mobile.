@@ -226,3 +226,19 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
  #budgetModuleIncome .bep-entry-dialog .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}
  #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{grid-column:2}
 }
+
+
+/* Budget > Mes revenus: paired actions, then full-width saved sources. */
+#budgetModuleIncome .income-actions-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#budgetModuleIncome .income-actions-grid>.income-checkup,#budgetModuleIncome .income-manual-entry{min-width:0;margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
+#budgetModuleIncome .income-checkup-head{margin:0 0 14px}
+#budgetModuleIncome .income-checkup-head h3,#budgetModuleIncome .income-manual-entry h3{margin:8px 0 6px;font-size:16px;line-height:1.35}
+#budgetModuleIncome .income-manual-entry>.hint{margin:0 0 14px;font-size:13px;line-height:1.5}
+#budgetModuleIncome .income-manual-entry #incomeEditorDetails{margin:0;border:0;background:transparent}
+#budgetModuleIncome .income-manual-entry .bep-entry-trigger{margin-top:14px}
+#budgetModuleIncome #incomeRows .rowitem{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto) auto;align-items:center;column-gap:14px}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child{min-width:0}
+#budgetModuleIncome #incomeRows .rowitem>span:first-child b,#budgetModuleIncome #incomeRows .rowitem>span:first-child small{display:block;overflow-wrap:anywhere}
+#budgetModuleIncome #incomeRows .rowitem> b{min-width:112px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#budgetModuleIncome #incomeRows .record-actions{display:flex;justify-content:flex-end;gap:6px}
+@media(max-width:640px){#budgetModuleIncome .income-actions-grid{grid-template-columns:1fr}#budgetModuleIncome #incomeRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
