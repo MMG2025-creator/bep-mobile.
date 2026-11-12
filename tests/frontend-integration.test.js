@@ -224,7 +224,7 @@ test("expenses module exposes only Mes achats and opens the purchase form in a m
 test("purchase affordability is judged only against remaining available money and never blocks saving", () => {
   const spend = read("spend-experience.js");
   assert.equal(spend, read("dist/spend-experience.js"));
-  assert.match(spend, /id="bepPurchaseDialog"/);
+  assert.match(spend, /dialog\.id="bepPurchaseDialog"/);
   assert.match(spend, /window\.addEventListener\("bep:expense-saved",close\)/);
   assert.match(spend, /mountFinancialEntryDialogs\(\)/);
   for (const file of ["app.js", "dist/app.js"]) {
