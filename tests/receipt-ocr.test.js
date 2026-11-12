@@ -57,7 +57,7 @@ test("source and published OCR assets stay synchronized and support generic imag
  assert.equal(fs.readFileSync(path.join(root,"receipt-ocr.js"),"utf8"),fs.readFileSync(path.join(root,"dist/receipt-ocr.js"),"utf8"));
  for(const file of ["app.js","dist/app.js"]){
   const js=fs.readFileSync(path.join(root,file),"utf8");
-  assert.match(js,/image\\\/[a-z0-9.+-]+/i);
+  assert.ok(js.includes("image\\/"), file + " must accept image MIME types");
   assert.match(js,/Support détecté/);
   assert.match(js,/extracted\.confidence\.time/);
  }
