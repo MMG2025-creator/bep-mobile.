@@ -74,16 +74,31 @@ jobs:
       - run: cmp -s styles.css dist/styles.css
       - run: node --check server.js
       - name: Verify frontend entrypoint asset references
+        shell: bash
         run: |
+          assets=(
+            runtime-config.js
+            financial-engine.js
+            offline-storage.js
+            app.js
+            styles.css
+            monthly-budget-ui.js
+            spend-experience.css
+            spend-experience.js
+          )
           for file in index.html dist/index.html; do
-            grep -Fq './runtime-config.js?v=1' "$file"
-            grep -Fq './financial-engine.js?v=1' "$file"
-            grep -Fq './app.js?v=85' "$file"
-            grep -Fq './styles.css?v=85' "$file"
-            grep -Fq './monthly-budget-ui.js?v=8' "$file"
-            if [ -f spend-experience.js ]; then
-              grep -Fq './spend-experience.css?v=20' "$file"
-              grep -Fq './spend-experience.js?v=14' "$file"
-            fi
+            for asset in "${assets[@]}"; do
+              grep -Fq "./${asset}?v=" "$file" || {
+                echo "Missing versioned asset reference: $asset in $file"
+                exit 1
+              }
+            done
           done
+
+          extract_assets() {
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)[.](js|css)[?]v=[^"]+"' "$1" |
+              sed -E 's/^[^"]*"//; s/"$//' |
+              sort
+          }
+          diff -u <(extract_assets index.html) <(extract_assets dist/index.html)
       - run: npm run check:monthly-budget
