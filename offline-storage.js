@@ -159,7 +159,7 @@ async function refreshAuthAndSync(){
 async function resolveConflict(choice){
  if(choice!=="local"&&choice!=="remote")return false;
  if(!navigator.onLine||!window.bepSignedIn)return false;
- const user=identity(),key=queueKey(user),api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+ const user=identity(),key=queueKey(user),api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
  try{
   const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});
   if(!response.ok)throw Error("Lecture de la version du compte impossible ("+response.status+")");
