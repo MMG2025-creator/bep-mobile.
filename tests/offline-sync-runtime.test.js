@@ -94,3 +94,36 @@ test("an atomic server-side conflict response preserves the pending snapshot",as
  assert.equal(puts,1);
  assert.equal((await offline.readPending()).payload.value,1);
 });
+
+test("choosing the account version clears the local queue and applies the remote snapshot",async()=>{
+ const runtime=createRuntime(async()=>({ok:true,status:200,json:async()=>({payload:{value:9,remote:true}})}));
+ const offline=runtime.window.BEPOffline;
+ offline.markKnownUser("user-a");
+ await offline.setBaseline({value:0});
+ await offline.enqueue({value:1});
+ runtime.navigator.onLine=true;runtime.window.bepSignedIn=true;
+ let selected=null;
+ runtime.window.addEventListener("bep:offline-use-remote",event=>{selected=event.detail.payload});
+ assert.equal(await offline.resolveConflict("remote"),true);
+ assert.equal(await offline.readPending(),null);
+ assert.equal(JSON.stringify(selected),JSON.stringify({value:9,remote:true}));
+});
+test("choosing local changes rebases on the latest account snapshot before PUT",async()=>{
+ let remote={value:9,remote:true},putBody=null;
+ const runtime=createRuntime(async(url,options={})=>{
+  if((options.method||"GET")==="GET")return {ok:true,status:200,json:async()=>({payload:remote})};
+  putBody=JSON.parse(options.body);
+  remote={value:1,canonical:true};
+  return {ok:true,status:200,json:async()=>({ok:true,payload:remote})};
+ });
+ const offline=runtime.window.BEPOffline;
+ offline.markKnownUser("user-a");
+ await offline.setBaseline({value:0});
+ await offline.enqueue({value:1});
+ runtime.navigator.onLine=true;runtime.window.bepSignedIn=true;
+ assert.equal(await offline.resolveConflict("local"),true);
+ assert.equal(putBody.base.value,9);
+ assert.equal(putBody.base.remote,true);
+ assert.equal(putBody.payload.value,1);
+ assert.equal(await offline.readPending(),null);
+});
