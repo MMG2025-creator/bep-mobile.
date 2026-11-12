@@ -413,6 +413,7 @@ test("purchase can be saved without a merchant label", () => {
     const js = read(file);
     assert.match(js, /const label=\$\("merchant"\)\?\.value\.trim\(\)\|\|""/);
     assert.match(js, /const purchaseLabel=label\|\|category\|\|"Achat"/);
+    assert.ok(js.indexOf('$("purchaseCategory").required=false;') < js.indexOf('$("purchaseForm").onsubmit=e=>'));
     assert.doesNotMatch(js, /if\(!label\)return notify\("Décris brièvement ton achat/);
     assert.match(js, /label:purchaseLabel/);
   }
