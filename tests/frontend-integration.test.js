@@ -70,7 +70,7 @@ test("savings objectives and movements tabs are wired in both frontend builds", 
 test("deleted savings movements are hidden while compensating ledger entries remain internal", () => {
   for (const file of ["app.js", "dist/app.js"]) {
     const js = read(file);
-    assert.match(js, /const cancelledIds=new Set\(ops\.filter\(o=>o\.reversalOf\)/);
+    assert.match(js, /cancelledIds=new Set\(ops\.filter\(o=>o\.reversalOf\)/);
     assert.match(js, /visibleOps=ops\.filter\(o=>!o\.reversalOf&&!cancelledIds\.has\(o\.id\)\)/);
     assert.match(js, /Supprimer ce mouvement de l'historique/);
     assert.match(js, /savings-delete-button/);
