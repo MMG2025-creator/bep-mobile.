@@ -1383,3 +1383,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .budget-saved-row__actions button{width:27px !important;height:27px !important;min-width:27px !important}
  .budget-saved-row__actions>b{font-size:12px}
 }
+
+
+/* Keep the purchase module strictly scoped to its own navigation page. */
+#purchases.panel:not(.active){display:none !important}
+#purchases.panel.active{display:block}
