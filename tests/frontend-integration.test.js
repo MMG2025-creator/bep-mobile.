@@ -193,3 +193,23 @@ test("budget advice stays above the income, charges and monthly budget navigatio
     assert.match(js, /zone:id==="monthly"\?"budget":id/);
   }
 });
+
+test("purchase entry keeps the core flow reliable and avoids inline voice prompts", () => {
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /const targets=\[\$\("goalName"\)\]/);
+    assert.match(js, /Décris brièvement ton achat/);
+    assert.match(js, /const category=\$\("purchaseCategory"\)\.value\.trim\(\)\|\|"Autre"/);
+    assert.match(js, /if\(save\(\)===false\)\{state\.expenses=beforeExpenses;return\}/);
+    assert.match(js, /const rules=\[/);
+    assert.doesNotMatch(js, /const m=merchant\.value\.toLowerCase\(\)/);
+  }
+  assert.equal(read("spend-experience.js"), read("dist/spend-experience.js"));
+  assert.equal(read("spend-experience.css"), read("dist/spend-experience.css"));
+  for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
+    const js = read(file);
+    assert.match(js, /Qu’as-tu acheté/);
+    assert.match(js, /Catégorie proposée par BEP/);
+    assert.match(js, /purchaseCategory"\)\.required=false/);
+  }
+});
