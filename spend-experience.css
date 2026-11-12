@@ -282,3 +282,8 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
 .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
 @media(max-width:560px){.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{grid-column:2}}
+
+/* Budget > Mes revenus: match the solid green action buttons used in Mes charges. */
+#budgetModuleIncome .bep-entry-trigger{background:#176b50;border-color:#176b50;color:#fff}
+#budgetModuleIncome .bep-entry-trigger:hover{background:#12583f;border-color:#12583f;color:#fff}
+#budgetModuleIncome .bep-entry-trigger:focus-visible{outline:3px solid #cce8d7;outline-offset:2px}
