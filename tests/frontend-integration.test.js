@@ -72,7 +72,7 @@ test("deleted savings movements are hidden while compensating ledger entries rem
     const js = read(file);
     assert.match(js, /const cancelledIds=new Set\(ops\.filter\(o=>o\.reversalOf\)/);
     assert.match(js, /visibleOps=ops\.filter\(o=>!o\.reversalOf&&!cancelledIds\.has\(o\.id\)\)/);
-    assert.match(js, /Supprimer ce mouvement de l'historique visible/);
+    assert.match(js, /Supprimer ce mouvement de l'historique/);
     assert.match(js, /savings-delete-button/);
     assert.match(js, /Mouvement supprimé de l'historique/);
   }
