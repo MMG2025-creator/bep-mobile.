@@ -30,11 +30,11 @@ if(entry){
  const amountWrap=document.createElement("div");amountWrap.className="bep-spend-amount-field";
  if(amountField){amountField.classList.add("bep-spend-amount");amountWrap.appendChild(amountField)}
  const basics=document.createElement("div");basics.className="bep-spend-basics";
- if(merchantField){const l=merchantField.querySelector("label");if(l)l.textContent="Libellé ou enseigne";$("merchant").placeholder="Ex. Courses, restaurant, essence…";basics.appendChild(merchantField)}
- if(categoryField){const l=categoryField.querySelector("label");if(l)l.textContent="Catégorie";basics.appendChild(categoryField)}
+ if(merchantField){const l=merchantField.querySelector("label");if(l)l.textContent="Qu’as-tu acheté ?";$("merchant").placeholder="Ex. courses alimentaires, chaussures…";$("merchant").required=true;basics.appendChild(merchantField)}
+ if(categoryField){const l=categoryField.querySelector("label");if(l)l.textContent="Catégorie proposée par BEP";$("purchaseCategory").required=false;$("purchaseCategory").placeholder="Suggestion automatique";basics.appendChild(categoryField)}
  quick.append(amountWrap,basics);
- const chips=document.createElement("div");chips.className="bep-spend-category-chips";chips.setAttribute("aria-label","Catégories rapides");chips.innerHTML=['Alimentation','Transport','Restaurant','Maison','Shopping','Santé'].map((x,i)=>'<button type="button" data-spend-category="'+x+'">'+['🥑','🚗','☕','🏠','🛍️','✚'][i]+' '+x+'</button>').join("");
- if(categoryField)categoryField.appendChild(chips);
+ const chips=document.createElement("div");chips.className="bep-spend-category-chips";chips.setAttribute("aria-label","Catégories rapides");chips.innerHTML=['Alimentation','Transport et carburant','Restaurant et sorties','Maison et décoration','Vêtements et chaussures','Santé et pharmacie'].map((x,i)=>'<button type="button" data-spend-category="'+x+'">'+['🥑','🚗','☕','🏠','🛍️','✚'][i]+' '+x+'</button>').join("");
+ if(categoryField){const hint=document.createElement("small");hint.className="bep-spend-auto-hint";hint.textContent="BEP propose une catégorie à partir de ta description. Tu peux la modifier.";categoryField.appendChild(hint);categoryField.appendChild(chips)}
  const advanced=document.createElement("details");advanced.className="bep-spend-advanced";advanced.innerHTML='<summary><span>Personnaliser mon analyse</span><small>Facultatif · 3 questions</small></summary><div class="bep-spend-advanced-body"></div>';
  const advancedBody=advanced.querySelector(".bep-spend-advanced-body");
  [cityField,psychologyField,needField,delayField].forEach(el=>{if(el)advancedBody.appendChild(el)});
@@ -44,7 +44,7 @@ if(entry){
  if(actions){form.insertBefore(advanced,actions);actions.querySelector("#purchaseSubmit").textContent="Enregistrer ma dépense";actions.classList.add("bep-spend-submit-row")}
  form.appendChild(note);
  const amount=$("purchaseAmount");if(amount){amount.placeholder="0,00";amount.setAttribute("aria-label","Montant de la dépense en euros")}
- chips.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const input=$("purchaseCategory");if(!input)return;input.value=b.dataset.spendCategory;input.dispatchEvent(new Event("input",{bubbles:true}));chips.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b))}));
+ chips.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const input=$("purchaseCategory");if(!input)return;input.value=b.dataset.spendCategory;input.dataset.autoSuggested="0";input.dispatchEvent(new Event("input",{bubbles:true}));chips.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b))}));
  if(amount)amount.addEventListener("input",()=>{updateScore();const s=$("bepSpendScore");if(s)s.hidden=!(Number(amount.value)>0)});
  const category=$("purchaseCategory");if(category)category.addEventListener("input",()=>chips.querySelectorAll("button").forEach(b=>b.classList.toggle("selected",b.dataset.spendCategory.toLowerCase()===category.value.toLowerCase())));
 }
