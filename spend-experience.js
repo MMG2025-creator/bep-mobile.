@@ -74,14 +74,15 @@ if(entry){
  const amountWrap=document.createElement("div");amountWrap.className="bep-spend-amount-field";
  if(amountField){amountField.classList.add("bep-spend-amount");amountWrap.appendChild(amountField)}
  const basics=document.createElement("div");basics.className="bep-spend-basics";
- if(merchantField){$("merchant").required=false;$("merchant").value="";merchantField.remove()}
+ if(cityField)cityField.remove();
+ if(merchantField){const merchantLabel=merchantField.querySelector("label");if(merchantLabel)merchantLabel.textContent="Commerçant / enseigne (facultatif)";$("merchant").required=false;$("merchant").placeholder="Ex. Carrefour, boulangerie, pharmacie…";}
  if(categoryField){const l=categoryField.querySelector("label");if(l)l.textContent="Catégorie proposée par BEP";$("purchaseCategory").required=false;$("purchaseCategory").placeholder="Suggestion automatique";basics.appendChild(categoryField)}
  quick.append(amountWrap,basics);
  const chips=document.createElement("div");chips.className="bep-spend-category-chips";chips.setAttribute("aria-label","Catégories rapides");chips.innerHTML=['Alimentation','Transport et carburant','Restaurant et sorties','Maison et décoration','Vêtements et chaussures','Santé et pharmacie'].map((x,i)=>'<button type="button" data-spend-category="'+x+'">'+['🥑','🚗','☕','🏠','🛍️','✚'][i]+' '+x+'</button>').join("");
  if(categoryField){const hint=document.createElement("small");hint.className="bep-spend-auto-hint";hint.textContent="BEP propose une catégorie à partir de ta description. Tu peux la modifier.";categoryField.appendChild(hint);categoryField.appendChild(chips)}
  const advanced=document.createElement("details");advanced.className="bep-spend-advanced";advanced.innerHTML='<summary><span>Personnaliser mon analyse</span><small> · Facultatif · 3 questions</small></summary><div class="bep-spend-advanced-body"></div>';
  const advancedBody=advanced.querySelector(".bep-spend-advanced-body");
- [cityField,psychologyField,needField,delayField].forEach(el=>{if(el)advancedBody.appendChild(el)});
+ [merchantField,psychologyField,needField,delayField].forEach(el=>{if(el)advancedBody.appendChild(el)});
  if(oldTwo&&oldTwo.children.length===0)oldTwo.remove();
  const actions=form.querySelector(".purchase-actions"),note=document.createElement("p");note.className="bep-spend-form-note";note.textContent="Tes réponses détaillées permettent à BEP d’affiner son conseil. Tu peux les renseigner maintenant ou plus tard.";
  form.insertBefore(quick,form.firstChild);
