@@ -21,13 +21,15 @@ window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const savingsRows=monthlyItems.filter(x=>x.itemType==="savings");
   const activeIds=new Set(savingsRows.map(x=>x.sourceItemId||x.id).filter(Boolean));
   const archived=previousGoals.filter(g=>g&&typeof g==="object"&&(g.archivedAt||!activeIds.has(g.id))).map(g=>g.archivedAt?g:{...g,archivedAt:new Date().toISOString()});
+  const nextIncomes=monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"}));
+  const nextIncome=nextIncomes.reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0);
   const nextState={
     ...state,
-    incomes:monthlyItems.filter(x=>x.itemType==="income").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,type:x.category||"Autre revenu",amount:Number(x.plannedAmount)||0,source:"monthly-history"})),
+    incomes:nextIncomes,
     budgets:monthlyItems.filter(x=>x.itemType==="charge").map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),label:x.label,category:x.category||"Autres dépenses",nature:x.nature||"unspecified",amount:Number(x.plannedAmount)||0})),
-    goals:[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(totalIncome()?Number(x.plannedAmount)/totalIncome()*100:0),duration:Number(x.metadata?.duration)||3}))]
+    goals:[...archived,...savingsRows.map(x=>({id:x.sourceItemId||x.id||crypto.randomUUID(),name:x.label,monthly:Number(x.plannedAmount)||0,rate:Number(x.metadata?.rate)||(nextIncome?Number(x.plannedAmount)/nextIncome*100:0),duration:Number(x.metadata?.duration)||3}))]
   };
-  nextState.income=nextState.incomes.reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0);
+  nextState.income=nextIncome;
   if(window.bepSignedIn){
     const response=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(nextState)});
     if(!response.ok)throw Error("La synchronisation du budget courant vers les données BEP a échoué.");
