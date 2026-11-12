@@ -349,13 +349,13 @@ if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"
 if($("selectAllPurchases"))$("selectAllPurchases").onclick=()=>{const items=(state.expenses||[]);if(items.length&&purchaseSelection.size===items.length)purchaseSelection.clear();else items.forEach(p=>purchaseSelection.add(p.id));render()};if($("cancelPurchaseSelection"))$("cancelPurchaseSelection").onclick=()=>{purchaseSelectionMode=false;purchaseSelection.clear();render()};if($("deleteSelectedPurchases"))$("deleteSelectedPurchases").onclick=async()=>{const ids=new Set(purchaseSelection);if(!ids.size)return;if(!(await (window.BEP_CONFIRM_ACTION?window.BEP_CONFIRM_ACTION("Cette action supprimera "+ids.size+" achat(s), sans modifier les revenus ni les charges.","Supprimer la sélection"):Promise.resolve(confirm("Supprimer définitivement les "+ids.size+" achats sélectionnés ? Cette action ne modifiera pas le budget ni les revenus.")))))return;state.expenses=(state.expenses||[]).filter(p=>!ids.has(p.id));if(ids.has(editingPurchaseId))cancelPurchaseEdit();purchaseSelection.clear();purchaseSelectionMode=false;save();notify(ids.size+" achat(s) supprimé(s)")};
 $("purchaseForm").onsubmit=e=>{
  e.preventDefault();
- const label=$("merchant").value.trim();
+ const label=$("merchant")?.value.trim()||"";
  const amount=Number($("purchaseAmount").value);
- if(!label)return notify("Décris brièvement ton achat pour que BEP puisse le classer.");
  if(!Number.isFinite(amount)||amount<=0||amount>999999999999.99)return notify("Le montant doit être supérieur à zéro et rester dans la limite autorisée.");
- const category=$("purchaseCategory").value.trim()||"Autre";
+ const category=$("purchaseCategory")?.value.trim()||"Autre";
+ const purchaseLabel=label||category||"Achat";
  const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};
- const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label,notes:$("purchaseNotes")?.value.trim()||"",city:$("city").value.trim(),amount,category,psychology:$("psychology").value,moodAfter:$("moodAfter")?.value||"",need:$("need").value,delay:$("delay").value,at:editingPurchaseId?(previous.at||new Date().toISOString()):new Date().toISOString()};
+ const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:editingPurchaseId?(previous.at||new Date().toISOString()):new Date().toISOString()};
  const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice();
  if(wasEditing)state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x);else state.expenses.unshift(p);
  if(save()===false){state.expenses=beforeExpenses;return}
