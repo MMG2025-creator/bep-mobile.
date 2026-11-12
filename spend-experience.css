@@ -335,3 +335,7 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 
 /* Remove the redundant secondary action from the simplified purchase flow. */
 #purchases #purchaseNew{display:none!important}
+
+/* Keep a hidden score hidden even though the score component has display:grid. */
+#purchases .bep-spend-score[hidden]{display:none!important}
+#purchases ::selection{background:#ccefe0;color:#123b34}
