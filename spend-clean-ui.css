@@ -29,8 +29,11 @@
 #purchases.bep-expenses-page #purchaseRows .purchase-row.is-selected{border-color:#2c8b68;background:#eef8f1}
 @media(max-width:640px){#purchases.bep-expenses-page{gap:14px}#purchases.bep-expenses-page .bep-expenses-hero{padding:19px;border-radius:20px}#purchases.bep-expenses-page .bep-expenses-heading{padding-right:78px}#purchases.bep-expenses-page .bep-expenses-heading .bep-spend-mascot{width:70px;height:70px}#purchases.bep-expenses-page .bep-expenses-heading p{font-size:13px}#purchases.bep-expenses-page .bep-expenses-stats{gap:7px;margin-top:18px}#purchases.bep-expenses-page .bep-expenses-stats article{min-height:72px;padding:10px 8px}#purchases.bep-expenses-page .bep-expenses-stats span{font-size:10px}#purchases.bep-expenses-page .bep-expenses-stats strong{font-size:16px}#purchases.bep-expenses-page .bep-expenses-history{padding:14px;border-radius:18px}#purchases.bep-expenses-page #purchaseRows .purchase-row{gap:7px;padding:12px 9px}#purchases.bep-expenses-page #purchaseRows .purchase-row-actions{gap:5px}#purchases.bep-expenses-page #purchaseRows .purchase-row-actions>b{font-size:12px}}
 /* Accessible expand/collapse control for purchase history */
-#purchases.bep-expenses-page .bep-expenses-history-toggle{display:inline-flex;align-items:center;gap:9px;margin:0 0 14px;padding:9px 13px;border:1px solid #dce9e0;border-radius:12px;background:#f5faf6;color:#246448;font:700 13px/1.2 "DM Sans",sans-serif;cursor:pointer}
-#purchases.bep-expenses-page .bep-expenses-history-toggle:hover{background:#edf6ef}
-#purchases.bep-expenses-page .bep-expenses-chevron{display:inline-block;font-size:18px;line-height:1;transition:transform .18s ease}
-#purchases.bep-expenses-page .bep-expenses-history-toggle[aria-expanded="true"] .bep-expenses-chevron{transform:rotate(180deg)}
 #purchases.bep-expenses-page .bep-expenses-history-card[hidden]{display:none!important}
+
+/* Match the compact plus/minus disclosure control used in Revenues and Charges. */
+#purchases.bep-expenses-page .bep-expenses-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#purchases.bep-expenses-page .bep-expenses-section-title>span,#purchases.bep-expenses-page .bep-expenses-section-title>h2,#purchases.bep-expenses-page .bep-expenses-section-title>p{flex-basis:100%}
+#purchases.bep-expenses-page .bep-expenses-section-title{flex-wrap:wrap}
+#purchases.bep-expenses-page .bep-expenses-history-toggle{display:grid;place-items:center;width:42px;height:42px;min-width:42px;padding:0;margin:0 0 12px;border:0;border-radius:50%;background:#e8f3ee;color:#176b50;font:400 25px/1 "DM Sans",sans-serif;cursor:pointer;flex:0 0 42px}
+#purchases.bep-expenses-page .bep-expenses-history-toggle:hover{background:#dceee5}
