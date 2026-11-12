@@ -60,6 +60,9 @@ test("source and published OCR assets stay synchronized and support generic imag
   assert.ok(js.includes("image\\/"), file + " must accept image MIME types");
   assert.match(js,/Support détecté/);
   assert.ok(js.includes('canvas.toDataURL("image/jpeg",.86)'));
+  assert.ok(js.includes("loadHeicDecoder"));
+  assert.ok(js.includes("heic2any@0.0.4"));
+  assert.ok(js.includes("decodeReceiptImage"));
   assert.match(js,/worker\.recognize\(ocrImage\)/);
   assert.doesNotMatch(js,/canvas\.toBlob/);
   assert.match(js,/extracted\.confidence\.time/);
