@@ -271,16 +271,26 @@
   </div>
 
   
-  <div class="coach-focus">
-    <h3>Que souhaites-tu travailler ?</h3>
-    <div class="coach-quick-actions">
-      <button type="button" class="coach-quick" data-coach-prompt="Aide-moi à mieux maîtriser mon budget.">Maîtriser mon budget</button>
-      <button type="button" class="coach-quick" data-coach-prompt="Comment développer mon épargne sans fragiliser mon budget ?">Développer mon épargne</button>
-      <button type="button" class="coach-quick" data-coach-prompt="J'ai envie de faire un achat. Aide-moi à prendre du recul.">Éviter un achat impulsif</button>
-      <button type="button" class="coach-quick" data-coach-prompt="Je me sens sous pression à cause de l'argent. Aide-moi à clarifier ma décision.">Décider sans pression</button>
-      <button type="button" class="coach-quick" data-coach-prompt="Aide-moi à avancer vers mes objectifs financiers.">Atteindre mes objectifs</button>
+  <details class="coach-profile-panel" id="coachProfilePanel">
+    <summary class="coach-profile-summary">
+      <span class="coach-profile-summary-main"><span class="coach-profile-spark" aria-hidden="true">✦</span><span><strong>Personnaliser mon accompagnement</strong><small id="coachProfileCount">Aucune thématique sélectionnée</small></span></span>
+      <span class="coach-profile-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="coach-profile-content">
+      <p class="coach-profile-intro">Choisis les sujets sur lesquels tu souhaites recevoir des conseils. Tu peux en sélectionner plusieurs et modifier tes choix à tout moment.</p>
+      <div class="coach-profile-options">
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="budget"><span class="coach-profile-icon" aria-hidden="true">◫</span><span class="coach-profile-copy"><strong>Gérer mon budget</strong><small>Équilibrer mes revenus et mes charges</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="spending"><span class="coach-profile-icon" aria-hidden="true">⌁</span><span class="coach-profile-copy"><strong>Maîtriser mes dépenses</strong><small>Repérer les dérives et les économies possibles</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="savings"><span class="coach-profile-icon" aria-hidden="true">◉</span><span class="coach-profile-copy"><strong>Développer mon épargne</strong><small>Construire une réserve et épargner régulièrement</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="goals"><span class="coach-profile-icon" aria-hidden="true">◎</span><span class="coach-profile-copy"><strong>Atteindre mes objectifs</strong><small>Préparer mes projets et mes achats importants</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="income"><span class="coach-profile-icon" aria-hidden="true">↗</span><span class="coach-profile-copy"><strong>Améliorer mes revenus</strong><small>Mieux comprendre et optimiser mes ressources</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="debt"><span class="coach-profile-icon" aria-hidden="true">▤</span><span class="coach-profile-copy"><strong>Réduire mes dettes</strong><small>Maîtriser mes crédits et remboursements</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="planning"><span class="coach-profile-icon" aria-hidden="true">▦</span><span class="coach-profile-copy"><strong>Anticiper les imprévus</strong><small>Prévoir les dépenses à venir</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="learning"><span class="coach-profile-icon" aria-hidden="true">◇</span><span class="coach-profile-copy"><strong>Comprendre mes finances</strong><small>Apprendre et progresser à mon rythme</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+      </div>
+      <p class="coach-profile-saved" id="coachProfileSaved" role="status" aria-live="polite">Tes choix seront enregistrés dans ton profil BEP.</p>
     </div>
-  </div>
+  </details>
   <div id="coachChatLog" class="coach-chat-log" aria-live="polite">
     <div class="coach-message coach-message-bot"><strong>Coach BEP</strong><p>Je peux t'aider à lire ton budget, comprendre tes habitudes de dépenses et définir une prochaine action réaliste. Par quoi veux-tu commencer ?</p></div>
   </div>
