@@ -142,7 +142,7 @@ Do not drop the new tables as an automatic rollback. If the application release 
 
 ## Acceptance checklist
 
-- [x] Latest pull-request CI run passes on the exact PR head SHA `34dca953ede35b277e0de58448778dc43b624bc2`.
+- [x] Latest pull-request CI run passes on the exact PR head SHA `444b197e9848d6eef8b004a0edd496ac6185d5af`.
 - [x] PostgreSQL integration tests apply the real migration in an isolated schema.
 - [x] Cross-user isolation, unauthenticated access, invalid payloads and invalid timezones are covered.
 - [x] Month creation, idempotency, copy independence, version conflicts, closure/reopening and audit are covered.
@@ -154,5 +154,7 @@ Do not drop the new tables as an automatic rollback. If the application release 
 - [x] Missing actual purchases display as `Non renseigné`; no variance is calculated without actual data.
 - [ ] Existing `/api/data` compatibility has not yet had an authenticated end-to-end browser acceptance test.
 - [ ] Authenticated browser acceptance on the intended deployment target.
-- [ ] Production backup and restore readiness confirmed before production migration.
+- [x] Production backup, isolated restore-drill, migration, deployment, stop/rollback and evidence-recording procedures documented.
+- [ ] A real production backup has been created, transferred to approved off-host storage, checksum-verified and successfully restored to an isolated database.
+- [ ] Production backup and restore readiness signed off before production migration.
 - [ ] Final release decision recorded before merge/deploy.
