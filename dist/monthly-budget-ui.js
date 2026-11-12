@@ -88,6 +88,8 @@
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
+    const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
+    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
   }
   function renderActuals() {
     const hasActuals = Number(actuals.count) > 0;
@@ -129,12 +131,18 @@
         $("monthlyBudgetItemAmount").value = item.plannedAmount;
         $("monthlyBudgetItemSubmit").textContent = "Enregistrer les modifications";
         $("monthlyBudgetItemCancel").hidden = false;
-        $("monthlyBudgetItemLabel").focus();
+        if (window.BEP_OPEN_ENTRY_DIALOG) window.BEP_OPEN_ENTRY_DIALOG("monthly-item");
+        else $("monthlyBudgetItemLabel").focus();
       };
     });
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
-      button.onclick = () => {
-        items.splice(Number(button.dataset.removeMonthItem), 1);
+      button.onclick = async () => {
+        const index = Number(button.dataset.removeMonthItem);
+        const accepted = window.BEP_CONFIRM_ACTION
+          ? await window.BEP_CONFIRM_ACTION("Cette ligne sera retirée du budget mensuel. Enregistre ensuite le mois pour confirmer la modification.", "Retirer cette ligne")
+          : window.confirm("Retirer cette ligne du budget mensuel ?");
+        if (!accepted) return;
+        items.splice(index, 1);
         editingItemIndex = null;
         $("monthlyBudgetItemForm").reset();
         $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -152,6 +160,8 @@
     $("monthlyBudgetReopen").hidden = current.status !== "closed";
     $("monthlyBudgetReason").hidden = current.status !== "closed";
     $("monthlyBudgetItemForm").hidden = current.status === "closed";
+    const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
+    if (itemTrigger) itemTrigger.hidden = current.status === "closed";
   }
   async function loadMonth(monthKey) {
     const epoch = authEpoch;
@@ -226,7 +236,10 @@
       const confirmation = payload.items.length
         ? "Importer " + payload.items.length + " lignes de ton budget actuel dans " + monthKey + " ? Cette copie sera indépendante ; tes données actuelles ne seront pas supprimées."
         : "Aucun revenu, charge ou objectif n’a été trouvé dans le budget actuel. Créer un mois vide ?";
-      if (!window.confirm(confirmation)) return;
+      const accepted = window.BEP_CONFIRM_ACTION
+        ? await window.BEP_CONFIRM_ACTION(confirmation, "Confirmer la création du mois")
+        : window.confirm(confirmation);
+      if (!accepted) return;
     }
     setBusy(true);
     try {
