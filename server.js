@@ -19,11 +19,28 @@ app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
 app.use(express.json({limit:"1mb"}));
+const localRateBuckets=new Map();
+function applyLocalRateLimit({req,res,next,windowMs,max,scope,now=Date.now()}){
+ const windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
+ const ip=String(req.ip||req.socket.remoteAddress||"unknown");
+ const key=scope+":"+crypto.createHash("sha256").update(ip).digest("hex");
+ const previous=localRateBuckets.get(key);
+ const count=previous&&previous.windowStart===windowStart?previous.count+1:1;
+ localRateBuckets.set(key,{windowStart,count,expiresAt:resetAt});
+ if(localRateBuckets.size>5000){for(const [bucket,value] of localRateBuckets){if(value.expiresAt<=now)localRateBuckets.delete(bucket)}}
+ const remaining=Math.max(0,max-count),retryAfter=Math.max(1,Math.ceil((resetAt-now)/1000));
+ res.setHeader("RateLimit-Limit",String(max));res.setHeader("RateLimit-Remaining",String(remaining));res.setHeader("RateLimit-Reset",String(retryAfter));
+ res.setHeader("X-RateLimit-Mode","local-fallback");
+ if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED"})}
+ return next();
+}
 function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
- if(!pool)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
+ // Health probes must remain available while diagnosing the shared limiter/database.
+ if(scope==="api"&&req.method==="GET"&&req.path==="/health")return next();
  const now=Date.now(),windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
  const ip=String(req.ip||req.socket.remoteAddress||"unknown");
  const key=crypto.createHash("sha256").update(scope+":"+ip).digest("hex");
+ if(!pool)return applyLocalRateLimit({req,res,next,windowMs,max,scope,now});
  try{
   const result=await pool.query(
    "INSERT INTO bep_rate_limits(bucket_key,window_start_ms,request_count,expires_at) VALUES($1,$2,1,to_timestamp(($2::bigint+$3::bigint)/1000.0)) ON CONFLICT(bucket_key) DO UPDATE SET request_count=CASE WHEN bep_rate_limits.window_start_ms=EXCLUDED.window_start_ms THEN bep_rate_limits.request_count+1 ELSE 1 END,window_start_ms=EXCLUDED.window_start_ms,expires_at=EXCLUDED.expires_at RETURNING request_count",
@@ -34,7 +51,10 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
   if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED"})}
   if(Math.random()<0.01)pool.query("DELETE FROM bep_rate_limits WHERE expires_at<NOW()").catch(e=>console.error("Rate limit cleanup failed",e.message));
   next();
- }catch(e){console.error("Shared rate limiter unavailable",e.message);return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"})}
+ }catch(e){
+  console.error("Shared rate limiter unavailable; using bounded per-instance fallback",e.code||e.message);
+  return applyLocalRateLimit({req,res,next,windowMs,max,scope,now});
+ }
 }}
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
 app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
