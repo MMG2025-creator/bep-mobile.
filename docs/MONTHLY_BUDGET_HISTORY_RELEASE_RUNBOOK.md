@@ -39,9 +39,11 @@ Do not run DDL from application startup. Do not execute the migration before the
 - No earlier months are fabricated or backfilled.
 - New months copy the latest earlier snapshot as independent line items.
 - Planned income, charges and savings remain distinct.
-- Actual purchases are assigned by their real `at` timestamp in the user's IANA timezone.
+- Actual purchases are assigned by their real `at` timestamp in the user's IANA timezone; impossible calendar dates are rejected rather than normalized into another month.
 - Duplicate non-empty IDs within `expenses[]` are counted once. Purchases without IDs are kept as separate entries; identical timestamps/merchant/amounts alone are not enough evidence to collapse two real purchases.
 - `transactions[]` is not imported into actual expenses until its relationship to `expenses[]` is established; this avoids double counting.
+- Manual monthly lines are retained when Revenus/Charges/Épargne changes synchronize legacy-managed rows.
+- The monthly-to-savings bridge confirms the server write before committing the new state to local storage; a failed secondary sync is reported separately from a successfully saved monthly snapshot.
 - Closing a month prevents edits. Reopening requires a reason and writes an audit entry.
 - Stale writes are rejected using the version number.
 
@@ -59,7 +61,8 @@ Do not drop the new tables as an automatic rollback. If the application release 
 - [ ] PostgreSQL integration tests apply the real migration in an isolated schema.
 - [ ] Cross-user isolation, unauthenticated access, invalid payloads and invalid timezones are covered.
 - [ ] Month creation, idempotency, copy independence, version conflicts, closure/reopening and audit are covered.
-- [ ] Actual-expense timezone boundary and deduplication are covered.
+- [ ] Actual-expense timezone boundary, duplicate-ID deduplication and impossible calendar dates are covered.
+- [ ] Manual monthly rows survive legacy-module synchronization, and local state is not committed before server confirmation.
 - [ ] Root/dist JavaScript, HTML and CSS assets are synchronized.
 - [ ] Savings ledger and current-month cross-module synchronization are reviewed and tested.
 - [ ] Existing `/api/data` compatibility is checked.
