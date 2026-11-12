@@ -103,7 +103,7 @@
       if (position.overBudgetSpend > 0) parts.push("dépassement des enveloppes variables : " + money(position.overBudgetSpend));
       if (position.unbudgetedSpend > 0) parts.push("achats hors provision : " + money(position.unbudgetedSpend));
       if (hasSavingsMovements) parts.push("épargne réellement versée : " + money(position.actualSavingsDeposits) + " · retraits : " + money(position.actualSavingsWithdrawals) + " · prévu : " + money(position.plannedSavings));
-      $("monthlyBudgetActualVariance").textContent = parts.length ? "Rapprochement : " + parts.join(" · ") + "." : "Achats enregistrés couverts par les provisions du budget. Aucun mouvement d’épargne enregistré.";
+      $("monthlyBudgetActualVariance").textContent = parts.length ? "Rapprochement : " + parts.join(" · ") + "." : hasSavingsMovements ? "Mouvements d’épargne rapprochés des objectifs mensuels." : "Achats enregistrés couverts par les provisions du budget.";
     } else {
       $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
     }
@@ -111,7 +111,11 @@
       '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
       new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.amount) + '</b></div>'
-    ).join("") : '<p class="empty">Aucun achat enregistré pour ce mois.</p>';
+    ).join("") + (actuals.savingsOperations || []).slice(0, 12).map(op =>
+      '<div class="monthly-budget-actual-row"><span>' + (op.type === "deposit" ? "Versement épargne" : "Retrait épargne") + '<small>' +
+      new Date(op.date + "T12:00:00").toLocaleDateString("fr-FR") + (op.reversalOf ? " · écriture corrective" : "") +
+      '</small></span><b>' + (op.type === "deposit" ? "+" : "−") + money(op.amount) + '</b></div>'
+    ).join("") : '<p class="empty">Aucun achat ni mouvement d’épargne enregistré pour ce mois.</p>';
   }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
