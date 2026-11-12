@@ -94,7 +94,7 @@ renderCoachProfile();
 
 async function recordAdvice(id){
  const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
- if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&aiConnection?.mode==="bep")){target.textContent=makeAdvice(id);return}
+ if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode))){target.textContent=makeAdvice(id);return}
  const context=currentFinancialContext(),fingerprint=JSON.stringify({zone:id,context,provider:aiConnection.provider,model:aiConnection.model});
  if(adviceFingerprints[id]===fingerprint&&target.textContent!=="Ton IA analyse ta situation financière…")return;
  adviceFingerprints[id]=fingerprint;
@@ -111,7 +111,7 @@ async function recordAdvice(id){
   try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
  }catch(e){if(adviceRequestIds[id]===requestId){delete adviceFingerprints[id];target.textContent="Le conseil IA est momentanément indisponible. "+(e.message||"Réessaie dans quelques instants.")}}
 }
-function renderAI(){const panel=document.querySelector(".panel.active")?.id;const ids=panel==="budget"?[activeBudgetModule]:panel==="home"?["home"]:panel==="savings"?["savings"]:panel==="purchases"?["purchases"]:[];if(window.bepSignedIn&&aiConnection?.mode==="bep"){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
+function renderAI(){const panel=document.querySelector(".panel.active")?.id;const ids=panel==="budget"?[activeBudgetModule]:panel==="home"?["home"]:panel==="savings"?["savings"]:panel==="purchases"?["purchases"]:[];if(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode)){ids.forEach(id=>recordAdvice(id));return}ids.forEach(id=>{const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(target)target.textContent=makeAdvice(id)})}
 function renderAIUsage(){const count=$("aiRequestCount");if(!count)return;count.textContent=Number(aiUsage.requests)||0;$("aiTokenCount").textContent=(Number(aiUsage.estimatedTokens)||0).toLocaleString("fr-FR");$("aiLatency").textContent=(aiUsage.requests?Math.round((Number(aiUsage.totalMs)||0)/aiUsage.requests):0)+" ms";$("aiCost").textContent="0,00 €"}
 const VALID_PANEL_IDS=new Set(["home","budget","savings","purchases","coach","settings"]);function getSavedTab(){try{const id=localStorage.getItem(ACTIVE_TAB_KEY);return VALID_PANEL_IDS.has(id)&&document.getElementById(id)?.classList.contains("panel")?id:"home"}catch{return "home"}}function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
@@ -423,21 +423,21 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const sr=await fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"});
  if(!sr.ok)throw Error("HTTP "+sr.status);
  const status=await sr.json(),active=!!status.available;
- aiConnection={configured:active,mode:active?"bep":"local",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
- const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach local';
- const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Moteur local BEP · IA externe non configurée";
- const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le fournisseur IA intégré n'est pas disponible. Le moteur local reste accessible, sans génération Gemini.";
- const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Mode local : aucune requête externe consommée.";quotaLabel.classList.remove("hidden")}
- const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"IA configurée":"Mode local";
+ aiConnection={configured:active,mode:active?"bep":"structured",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
+ const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach BEP structuré';
+ const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · Gemini sous verrou gratuit";
+ const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Gemini est verrouillé tant que le fonctionnement sans facturation du projet Google n'est pas confirmé.";
+ const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Base BEP : conseils structurés sans appel Gemini.";quotaLabel.classList.remove("hidden")}
+ const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Gemini gratuit":"BEP structuré";
  const disconnect=$("disconnectAiBtn");if(disconnect)disconnect.classList.add("hidden");
  const advanced=$("aiAdvancedSettings");if(advanced){advanced.hidden=true;advanced.classList.add("hidden")}
- const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent=active?"● Coach IA BEP configuré · "+aiConnection.provider:"● Coach BEP · Mode local";
+ const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent=active?"● Coach IA BEP configuré · "+aiConnection.provider:"● Coach BEP structuré";
  }catch(e){aiConnection={configured:false,mode:"unavailable",provider:"",model:"",personal:false,used:0,limit:60};const label=$("aiConnectionStatus");if(label)label.textContent="Impossible de vérifier le service IA. Réessaie dans un instant. ("+e.message+")";const badge=$("aiConnectionBadge");if(badge)badge.textContent="Service indisponible";}}
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
  if(window.bepSignedIn&&(!aiConnection.mode||aiConnection.mode==="unavailable"))await loadAiConnection();
- if(window.bepSignedIn&&aiConnection?.mode==="bep"){
-  addCoachMessage("coach","Le Coach IA BEP interroge le fournisseur…");const log=$("coachChatLog"),last=log?.lastElementChild;
+ if(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode)){
+  addCoachMessage("coach",aiConnection.mode==="bep"?"Le Coach BEP analyse ta demande…":"Le moteur financier BEP analyse ta demande…");const log=$("coachChatLog"),last=log?.lastElementChild;
   try{
    const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext(),coachProfile:state.coachProfile||[]})}),d=await r.json();
    if(!r.ok)throw Error(d.message||"IA indisponible.");
@@ -452,7 +452,7 @@ async function submitCoachQuestion(question){
    }
    const tokens=Number(d.usage?.total_tokens||d.usage?.totalTokenCount)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
   }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le fournisseur IA n’a pas répondu correctement. Aucune réponse locale n’a été substituée. Détail : "+e.message}
- }else if(!window.bepSignedIn||aiConnection?.mode==="local"){
+ }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
   addCoachMessage("coach",coachReply(value));
  }else{
   addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");

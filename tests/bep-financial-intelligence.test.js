@@ -1,4 +1,8 @@
 "use strict";
+const fs=require("node:fs");
+const path=require("node:path");
+const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
+
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge}=require("../lib/bep-financial-intelligence");
@@ -54,4 +58,21 @@ test("personal knowledge retrieval is scoped to the authenticated user and accep
  assert.deepEqual(userQuery.params,["user-123"]);
  assert.match(userQuery.sql,/review_status='accepted'/);
  assert.ok(docs.some(x=>x.slug==="user-7"));
+});
+
+test("automatic advice uses structured rules and never calls Gemini",()=>{
+ const src=read("server.js"),start=src.indexOf('app.post("/api/ai/advice"'),end=src.indexOf('app.post("/api/ai/chat"');
+ assert.ok(start>=0&&end>start);assert.match(src,/function structuredAdvice\(zone,p\)/);assert.doesNotMatch(src.slice(start,end),/invokeAi\(/);
+});
+test("simple financial questions are routed to structured data before any Gemini call",()=>{
+ const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat"'),end=src.indexOf('app.get("/api/coach/knowledge"');
+ const route=src.slice(start,end);assert.ok(route.indexOf("routeStructuredQuestion")<route.indexOf("userAi("));
+});
+test("Gemini is disabled until zero-billing is confirmed and protected by user and global caps",()=>{
+ const src=read("server.js");assert.match(src,/BEP_AI_ZERO_BILLING_CONFIRMED!=="true"/);assert.match(src,/BEP_AI_FREE_MONTHLY_LIMIT[^\n]*\|\|10/);assert.match(src,/BEP_AI_GLOBAL_MONTHLY_LIMIT[^\n]*\|\|250/);assert.match(src,/bep_ai_global_usage/);
+});
+
+test("the explicit Gemini test endpoint consumes the same guarded quota",()=>{
+ const src=read("server.js"),i=src.indexOf('app.post("/api/ai/test"'),j=src.indexOf('app.get("/api/ai/status"',i);
+ assert.ok(i>=0&&j>i);const route=src.slice(i,j);assert.match(route,/consumeBepAiQuota/);assert.match(route,/releaseBepAiQuota/);
 });
