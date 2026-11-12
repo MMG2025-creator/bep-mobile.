@@ -80,8 +80,8 @@ jobs:
             grep -Fq './styles.css?v=82' "$file"
             grep -Fq './monthly-budget-ui.js?v=6' "$file"
             if [ -f spend-experience.js ]; then
-              grep -Fq './spend-experience.css?v=9' "$file"
-              grep -Fq './spend-experience.js?v=9' "$file"
+              grep -Fq './spend-experience.css?v=10' "$file"
+              grep -Fq './spend-experience.js?v=10' "$file"
             fi
           done
       - run: npm run check:monthly-budget
