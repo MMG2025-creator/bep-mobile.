@@ -1,0 +1,26 @@
+name: Savings security checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "security/**", "feature/savings-redesign-v1-pr"]
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run regression tests
+        run: npm test
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
