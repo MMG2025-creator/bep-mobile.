@@ -1,0 +1,4 @@
+/* Preview-only: public read-only entry, no account gate */
+body:has(#authGate[hidden]) .app{display:block!important}
+#authGate:not([hidden]){display:none!important}
+body:after{content:"PRÉVISUALISATION — données de démonstration locales";position:fixed;z-index:99999;right:12px;bottom:10px;padding:7px 11px;border:1px solid #dbe8df;border-radius:999px;background:#fff;color:#176b50;font:600 10px/1.2 Manrope,"DM Sans",sans-serif;box-shadow:0 3px 12px #173c2918;pointer-events:none}
