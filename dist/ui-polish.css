@@ -225,3 +225,9 @@ button:disabled, [aria-disabled="true"] {
 .home-coach-card .ai-advice{margin-top:10px}
 @media(max-width:390px){.home-budget-cta{min-height:43px;padding:10px 12px;font-size:11px}.home-snapshot-grid{gap:7px}.home-snapshot-card{padding:11px 10px}.home-section-heading{align-items:flex-start;flex-direction:column;gap:7px}}
 @media(min-width:600px){.home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Place the budget link below the four financial indicators */
+.home-section-heading{align-items:flex-start}
+.home-budget-action-row{display:flex;justify-content:flex-end;margin-top:11px}
+.home-budget-cta{min-height:38px;padding:8px 13px;border-radius:11px;font-size:11px;gap:7px;box-shadow:0 3px 9px rgba(23,107,80,.12)}
+.home-budget-cta span{font-size:14px}
