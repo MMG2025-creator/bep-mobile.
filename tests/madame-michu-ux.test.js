@@ -28,6 +28,12 @@ test("budget modules do not expose an expense shortcut", () => {
     assert.match(html, /ui-polish\\.css\\?v=[23]/);
   }
 });
+test("global expense shortcut is hidden while any Budget module is active", () => {
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    assert.match(read(file), /body:has\\(#budget\\.active\\) #bepQuickExpense\\{display:none!important\\}/);
+  }
+});
+
 test("expense entry explains its effect on the real-time available budget", () => {
   for (const file of ["spend-experience.js", "dist/spend-experience.js"]) {
     const js = read(file);
