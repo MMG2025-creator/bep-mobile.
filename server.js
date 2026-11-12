@@ -3,6 +3,7 @@ const express=require("express"),session=require("express-session"),PgSession=re
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
+const {parseExplicitAvailable,formatEuro}=require("./lib/bep-coach-intent");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null;
@@ -194,6 +195,8 @@ app.post("/api/ai/advice",auth,async(req,res)=>{let quota=null;try{
  }catch(e){if(quota)await releaseBepAiQuota(req.session.user.id,quota.month).catch(()=>{});res.status(400).json({message:e.message||"Conseil IA indisponible."})}});
 app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  const q=String(req.body?.question||"").trim();if(!q||q.length>4000)return res.status(400).json({message:"Question invalide."});
+ const explicitCalculation=parseExplicitAvailable(q);
+ if(explicitCalculation){const {income,charges,available}=explicitCalculation;res.setHeader("Cache-Control","no-store");return res.json({answer:"Pour ce scénario, le disponible est de "+formatEuro(available)+". Calcul : "+formatEuro(income)+" de revenus − "+formatEuro(charges)+" de charges = "+formatEuro(available)+". Ces montants sont ceux de ton hypothèse, ils ne remplacent pas ton budget enregistré.",mode:"deterministic_calculation",calculation:explicitCalculation,intelligence:{enabled:FINANCIAL_INTELLIGENCE_ENABLED,version:FINANCIAL_INTELLIGENCE_VERSION,knowledge:[],context:{dataWarnings:[]}}});}
  const {cfg,key,mode}=await userAi(req.session.user.id);if(mode==="bep")quota=await consumeBepAiQuota(req.session.user.id);
  const p=req.body?.financialContext||{},ctx={revenus:Number(p.income)||0,sourcesRevenus:Array.isArray(p.incomes)?p.incomes.slice(0,30):[],charges:Number(p.charges)||0,resteDisponible:Number(p.available)||0,postes:Array.isArray(p.budgets)?p.budgets.slice(0,40):[],objectifs:Array.isArray(p.goals)?p.goals.slice(0,20):[],depenses:Array.isArray(p.expenses)?p.expenses.slice(0,30):[]};
  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:FINANCIAL_INTELLIGENCE_ENABLED});
