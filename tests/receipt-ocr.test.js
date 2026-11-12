@@ -59,7 +59,7 @@ test("source and published OCR assets stay synchronized and support generic imag
   const js=fs.readFileSync(path.join(root,file),"utf8");
   assert.ok(js.includes("image\\/"), file + " must accept image MIME types");
   assert.match(js,/Support détecté/);
-  assert.match(js,/canvas\.toDataURL\("image\\/jpeg",\.86\)/);
+  assert.ok(js.includes('canvas.toDataURL("image/jpeg",.86)'));
   assert.match(js,/worker\.recognize\(ocrImage\)/);
   assert.doesNotMatch(js,/canvas\.toBlob/);
   assert.match(js,/extracted\.confidence\.time/);
