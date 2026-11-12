@@ -302,8 +302,12 @@ test("Budget income and charges copy is concrete and action-oriented", () => {
   assert.ok(html.includes("Vérifier mes charges"));
 });
 
-test("income action captions appear below their green buttons", () => {
+
+test("income button labels use the requested wording without extra captions", () => {
   const html = read("index.html");
-  assert.ok(html.includes('class="hint income-action-caption">Faire le point sur mes revenus</p>'));
-  assert.ok(html.includes('class="hint income-action-caption">+ Ajouter un revenu</p>'));
+  assert.ok(html.includes('<summary class="budget-checkup-summary">Faire le point sur mes revenus</summary>'));
+  assert.ok(html.includes('<summary>+ Ajouter un revenu</summary>'));
+  assert.ok(!html.includes("income-action-caption"));
+  assert.ok(!html.includes("Vérifier mes sources de revenus"));
+  assert.ok(!html.includes("+ Ajouter une source de revenu</summary>"));
 });
