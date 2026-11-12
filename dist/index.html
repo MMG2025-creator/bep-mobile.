@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=82"><link rel="stylesheet" href="./ui-polish.css?v=3">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=82"><link rel="stylesheet" href="./ui-polish.css?v=2">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=3">
@@ -47,36 +47,7 @@
 <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
 <text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="bepCoachMascot" class="bep-coach-mascot" aria-label="Ouvrir le Coach BEP" title="Parler au Coach BEP"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 7V3m-5 0h10" stroke="#c49a42" stroke-width="3" stroke-linecap="round"/><rect x="12" y="12" width="40" height="43" rx="15" fill="#f8fbf8" stroke="#b9d3c2" stroke-width="2"/><rect x="9" y="23" width="46" height="27" rx="11" fill="#173f35" stroke="#d7b65e" stroke-width="2.5"/><circle cx="23" cy="35" r="3" fill="#76e3b7"/><circle cx="41" cy="35" r="3" fill="#76e3b7"/><path d="M24 43q8 5 16 0" stroke="#76e3b7" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.75 14 4l2.35-.35 1.05 2.1 2.2 1.05-.35 2.35L20.5 12l-1.25 2 .35 2.35-2.1 1.05-1.05 2.2-2.35-.35L12 20.5l-2-1.25-2.35.35-1.05-2.1-2.2-1.05.35-2.35L3.5 12l1.25-2-.35-2.35 2.1-1.05 1.05-2.2 2.35.35L12 2.75Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.65"/></svg></button></div></header>
 <main>
-<section class="welcome welcome-playful" aria-labelledby="welcomeTitle">
-  <div class="welcome-copy">
-    <p class="eyebrow">TON ESPACE POUR AVANCER <span aria-hidden="true">✦</span></p>
-    <h1 id="welcomeTitle">La maîtrise précède<br><span>la croissance.</span></h1>
-    <p class="sub">Chaque petit pas compte. Avance à ton rythme.</p>
-    <div class="welcome-pills" aria-label="Les étapes BEP">
-      <span class="welcome-pill welcome-pill-plan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="m12 12 7-7m-3 0h3v3"/></svg>Planifier</span>
-      <span class="welcome-pill welcome-pill-save"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V12M10 19V8M16 19V4M22 19V2"/></svg>Épargner</span>
-      <span class="welcome-pill welcome-pill-grow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M9 5h10v10"/></svg>Progresser</span>
-    </div>
-  </div>
-  <div class="welcome-mascot" aria-hidden="true">
-    <svg class="welcome-bot" viewBox="0 0 160 170" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="80" cy="158" rx="48" ry="7" fill="#b9d9c8" opacity=".45"/>
-      <path d="M36 83 18 70q-8-6-12 2-3 7 5 13l22 18M124 83l18-13q8-6 12 2 3 7-5 13l-22 18" fill="none" stroke="#238653" stroke-width="11" stroke-linecap="round"/>
-      <path d="M52 112v23m56-23v23" stroke="#238653" stroke-width="12" stroke-linecap="round"/>
-      <rect x="39" y="94" width="82" height="57" rx="24" fill="#fff" stroke="#d4e8dc" stroke-width="3"/>
-      <rect x="61" y="111" width="38" height="24" rx="8" fill="#e9f8ef"/>
-      <path d="M68 129v-7m10 7v-12m10 12v-17" stroke="#25965b" stroke-width="4" stroke-linecap="round"/>
-      <path d="M80 12c-25 0-43 17-43 41v19c0 23 18 39 43 39s43-16 43-39V53c0-24-18-41-43-41Z" fill="#fff" stroke="#d4e8dc" stroke-width="3"/>
-      <path d="M34 54h-8v24h10m88-24h8v24h-10" fill="#d9f3e3" stroke="#238653" stroke-width="4" stroke-linejoin="round"/>
-      <rect x="47" y="38" width="66" height="47" rx="19" fill="#123f35"/>
-      <path d="M62 57v5m35-5v5" stroke="#a8f0c2" stroke-width="5" stroke-linecap="round"/>
-      <path d="M68 71q12 12 24 0" fill="none" stroke="#75dfa0" stroke-width="3.5" stroke-linecap="round"/>
-      <path d="M80 10V4m-6 0h12" stroke="#e4b94e" stroke-width="3" stroke-linecap="round"/>
-      <path d="m17 35 5-7m-9 1 4-2m121 12 6-6m-3 13 6-2" stroke="#e8b94d" stroke-width="3.5" stroke-linecap="round"/>
-      <circle cx="132" cy="24" r="5" fill="#f6d96d"/><path d="M20 112h8m-4-4v8" stroke="#5bbd83" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
-</section>
+<section class="welcome"><p class="eyebrow">BUILD <i>•</i> EARN <i>•</i> PRESERVE</p><h1>La maîtrise précède<br>la <span>croissance.</span></h1><p class="sub">Chaque décision compte. Ton capital mérite une stratégie.</p><div class="hero-growth" aria-hidden="true"><i></i><i></i><i></i></div></section>
 <nav class="tabs" aria-label="Navigation">
 <button class="tab active home-tab" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Accueil</span></button><button class="tab" data-tab="budget"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 9h18M16 14h2"/></svg><span>Budget</span></button><button class="tab" data-tab="savings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9c1-3 4-5 8-5 5 0 8 3 8 7s-3 8-9 8c-4 0-7-2-8-5H2v-4h3Z"/><path d="M8 8h.01M17 8h.01M10 14c2 1 4 1 6 0M21 10l2-2M7 18l-1 3"/></svg><span>Épargne</span></button><button class="tab" data-tab="purchases"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="8" cy="7" rx="5" ry="2"/><path d="M3 7v5c0 1 2 2 5 2s5-1 5-2V7M13 10c0 1 2 2 5 2s4-1 4-2-2-2-4-2-5 1-5 2Zm0 0v5c0 1 2 2 5 2s4-1 4-2v-5M3 12v5c0 1 2 2 5 2s5-1 5-2v-5"/></svg><span>Dépenses</span></button><button class="tab coach-tab" data-tab="coach"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg><span>Coach BEP</span></button>
 </nav>
@@ -91,7 +62,7 @@
 <p id="homeFinancialDetail" class="home-financial-detail">Épargne prévue et dépenses hors enveloppe prises en compte.</p>
 <button type="button" class="secondary full home-budget-link" data-goto="budget">Gérer mon budget</button>
 </article>
-<article class="card ai-card"><div class="coach-robot-wrap"><svg class="coach-robot" viewBox="0 0 120 130" role="img" aria-label="Robot coach BEP"><defs><linearGradient id="robotShell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbd8d2"/></linearGradient><linearGradient id="robotGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe8a0"/><stop offset="1" stop-color="#b9872c"/></linearGradient></defs><ellipse cx="60" cy="119" rx="37" ry="7" fill="#dce8e2"/><path d="M60 12V4m-7 0h14" stroke="#c69b43" stroke-width="3" stroke-linecap="round"/><path d="M27 54c0-22 14-35 33-35s33 13 33 35v31c0 13-12 23-33 23S27 98 27 85Z" fill="url(#robotShell)" stroke="#9eb6aa" stroke-width="2"/><rect x="20" y="45" width="80" height="53" rx="23" fill="#123b34" stroke="url(#robotGold)" stroke-width="4"/><rect x="29" y="53" width="62" height="37" rx="16" fill="#061f1c"/><circle cx="46" cy="71" r="5" fill="#00e0a1"/><circle cx="74" cy="71" r="5" fill="#00e0a1"/><path d="M43 81q17 9 34 0" stroke="#4be7b8" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M21 57h-9v22h9m78-22h9v22h-9" fill="none" stroke="url(#robotGold)" stroke-width="5" stroke-linecap="round"/><path d="M43 107v8m34-8v8" stroke="#9eb6aa" stroke-width="5" stroke-linecap="round"/></svg></div><div class="coach-copy"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label" id="coachBadge"><span class="pin">●</span> Coach local</span></div><p id="aiHome" class="ai-advice">Analyse de ta situation financière en cours…</p></div></article>
+
 
 <section class="chart-grid" aria-label="Visualisations financières">
 <article id="chartCarousel" class="card chart-card chart-carousel">
@@ -108,12 +79,7 @@
 </section>
 <section id="budget" class="panel">
 
-<article class="card ai-card budget-advisor-card" id="budgetAdvisorCard">
-<div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div>
-<p id="aiIncome" class="ai-advice" data-budget-advice="income">Analyse de tes sources de revenus en cours…</p>
-<p id="aiCharges" class="ai-advice" data-budget-advice="charges" hidden>Analyse de tes charges et des oublis possibles en cours…</p>
-<p id="aiMonthly" class="ai-advice" data-budget-advice="monthly" hidden>Analyse de ton budget mensuel en cours…</p>
-</article>
+
 <div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
 <button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
 <button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
@@ -264,7 +230,7 @@
 <div id="budgetWarning"></div>
 </section>
 <section id="savings" class="panel savings-page">
-<article class="card ai-card savings-advisor-card"><div class="ai-card-head"><h2>Ton conseil Épargne BEP</h2><span class="ai-label">Analyse budget</span></div><p id="aiSavings" class="ai-advice">Analyse de ta capacité d'épargne en cours…</p><p class="savings-advisor-foot" id="savingsAdvisorFoot">BEP s'appuie sur tes revenus et charges enregistrés.</p></article>
+
 <article class="savings-hero-card">
     <div class="savings-hero-top"><div><p class="savings-overline">MON CAPITAL ÉPARGNÉ</p><p class="savings-capital" id="savingsCapital">0,00 €</p><p class="savings-subline" id="savingsCapitalSub">Aucun versement enregistré pour le moment</p></div><div class="savings-ring" id="savingsRing" role="img" aria-label="Progression de l'objectif global"><div><strong id="savingsProgress">0 %</strong><small>de l'objectif</small></div></div></div>
     <div class="savings-target-row"><span>Objectif global</span><strong id="savingsTarget">Non défini</strong></div>
@@ -309,7 +275,7 @@
 
 
 </section>
-<section id="purchases" class="panel"><article class="card ai-card"><div class="ai-card-head"><h2>Conseil BEP</h2><span class="ai-label">Coach local</span></div><p id="aiPurchases" class="ai-advice">Conseil avant dépense en cours…</p></article><article class="card purchase-entry-card"><h2>Enregistrer un achat</h2><form id="purchaseForm"><div class="field"><label>Enseigne ou libellé (facultatif)</label><input id="merchant" maxlength="70" placeholder="Ex. Carrefour, primeur, boulangerie..."></div><div class="field bep-receipt-capture"><label for="receiptFile">Photographier un ticket ou importer une capture d’écran</label><input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><p id="receiptStatus" class="hint" role="status" aria-live="polite">BEP lit le ticket sur ton appareil et propose le montant et l’enseigne. Tu vérifies avant l’enregistrement.</p></div><div class="two"><div class="field"><label>Ville (facultatif)</label><input id="city" maxlength="60" placeholder="Proposée si enseigne identifiable"></div><div class="field"><label>Montant (€) <span class="required-mark">• obligatoire</span></label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0"></div></div><div class="field"><label>Type d’achat <span class="required-mark">• obligatoire</span></label><input id="purchaseCategory" type="text" list="purchaseNatureSuggestions" required maxlength="80" autocomplete="off" placeholder="Ex. alimentation, chaussures, sport…"><div id="purchaseNaturePanel" class="nature-suggestions hidden" role="listbox"></div><datalist id="purchaseNatureSuggestions"><option value="Alimentation"></option><option value="Vêtements et chaussures"></option><option value="Chaussures de sport"></option><option value="Équipement sportif"></option><option value="Électronique et informatique"></option><option value="Électroménager"></option><option value="Maison et décoration"></option><option value="Bricolage et jardin"></option><option value="Transport et carburant"></option><option value="Beauté et hygiène"></option><option value="Santé et pharmacie"></option><option value="Loisirs et culture"></option><option value="Restaurant et sorties"></option><option value="Autre"></option></datalist></div><div class="field"><label>Comment décris-tu ton état au moment de l’achat ?</label><select id="psychology"><option value="reflective">Réfléchi et calme</option><option value="spontaneous">Envie spontanée</option><option value="impulsive">Impulsif / difficile à différer</option><option value="pressure">Sous pression / FOMO</option></select></div><div class="field"><label>Est-ce un besoin réel ?</label><select id="need"><option value="yes">Oui</option><option value="uncertain">Je ne suis pas sûr</option><option value="no">Non, c'est une envie</option></select></div><div class="field"><label>Quand envisages-tu l'achat ?</label><select id="delay"><option value="now">Maintenant</option><option value="24h">Après 24 heures</option><option value="7d">Après 7 jours</option><option value="already_done">Achat déjà effectué</option></select></div><div class="purchase-actions"><button class="primary" id="purchaseSubmit" type="submit"><svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat</button><button class="primary hidden" id="purchaseNew" type="button"><svg class="new-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg> Nouvel achat</button><button type="button" class="secondary hidden" id="cancelEdit">Annuler la modification</button></div></form><div id="purchaseAdvice" class="advice hidden" aria-live="polite"></div></article><article class="card"><h2>Historique des achats</h2><div id="purchaseBulkToolbar" class="purchase-bulk-toolbar hidden"><span id="purchaseSelectionCount">0 achat sélectionné</span><div><button type="button" class="secondary" id="selectAllPurchases">Tout sélectionner</button><button type="button" class="secondary" id="cancelPurchaseSelection">Annuler</button><button type="button" class="primary" id="deleteSelectedPurchases" disabled>Supprimer la sélection</button></div></div><p class="hint purchase-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="purchaseRows" class="rows empty">Aucun achat enregistré.</div></article>
+<section id="purchases" class="panel"><article class="card purchase-entry-card"><h2>Enregistrer un achat</h2><form id="purchaseForm"><div class="field"><label>Enseigne ou libellé (facultatif)</label><input id="merchant" maxlength="70" placeholder="Ex. Carrefour, primeur, boulangerie..."></div><div class="field bep-receipt-capture"><label for="receiptFile">Photographier un ticket ou importer une capture d’écran</label><input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><p id="receiptStatus" class="hint" role="status" aria-live="polite">BEP lit le ticket sur ton appareil et propose le montant et l’enseigne. Tu vérifies avant l’enregistrement.</p></div><div class="two"><div class="field"><label>Ville (facultatif)</label><input id="city" maxlength="60" placeholder="Proposée si enseigne identifiable"></div><div class="field"><label>Montant (€) <span class="required-mark">• obligatoire</span></label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0"></div></div><div class="field"><label>Type d’achat <span class="required-mark">• obligatoire</span></label><input id="purchaseCategory" type="text" list="purchaseNatureSuggestions" required maxlength="80" autocomplete="off" placeholder="Ex. alimentation, chaussures, sport…"><div id="purchaseNaturePanel" class="nature-suggestions hidden" role="listbox"></div><datalist id="purchaseNatureSuggestions"><option value="Alimentation"></option><option value="Vêtements et chaussures"></option><option value="Chaussures de sport"></option><option value="Équipement sportif"></option><option value="Électronique et informatique"></option><option value="Électroménager"></option><option value="Maison et décoration"></option><option value="Bricolage et jardin"></option><option value="Transport et carburant"></option><option value="Beauté et hygiène"></option><option value="Santé et pharmacie"></option><option value="Loisirs et culture"></option><option value="Restaurant et sorties"></option><option value="Autre"></option></datalist></div><div class="field"><label>Comment décris-tu ton état au moment de l’achat ?</label><select id="psychology"><option value="reflective">Réfléchi et calme</option><option value="spontaneous">Envie spontanée</option><option value="impulsive">Impulsif / difficile à différer</option><option value="pressure">Sous pression / FOMO</option></select></div><div class="field"><label>Est-ce un besoin réel ?</label><select id="need"><option value="yes">Oui</option><option value="uncertain">Je ne suis pas sûr</option><option value="no">Non, c'est une envie</option></select></div><div class="field"><label>Quand envisages-tu l'achat ?</label><select id="delay"><option value="now">Maintenant</option><option value="24h">Après 24 heures</option><option value="7d">Après 7 jours</option><option value="already_done">Achat déjà effectué</option></select></div><div class="purchase-actions"><button class="primary" id="purchaseSubmit" type="submit"><svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat</button><button class="primary hidden" id="purchaseNew" type="button"><svg class="new-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg> Nouvel achat</button><button type="button" class="secondary hidden" id="cancelEdit">Annuler la modification</button></div></form><div id="purchaseAdvice" class="advice hidden" aria-live="polite"></div></article><article class="card"><h2>Historique des achats</h2><div id="purchaseBulkToolbar" class="purchase-bulk-toolbar hidden"><span id="purchaseSelectionCount">0 achat sélectionné</span><div><button type="button" class="secondary" id="selectAllPurchases">Tout sélectionner</button><button type="button" class="secondary" id="cancelPurchaseSelection">Annuler</button><button type="button" class="primary" id="deleteSelectedPurchases" disabled>Supprimer la sélection</button></div></div><p class="hint purchase-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="purchaseRows" class="rows empty">Aucun achat enregistré.</div></article>
 </section>
 <section id="coach" class="panel">
 <article class="card coach-card coach-workspace">
@@ -378,7 +344,47 @@
 </div>
 <div id="chartZoom" class="chart-zoom" hidden role="dialog" aria-modal="true" aria-labelledby="chartZoomTitle"><div class="chart-zoom-panel"><div class="chart-zoom-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartZoomTitle">Graphique</h2><span id="chartZoomPeriod" class="chart-period"></span></div><button type="button" id="chartZoomClose" class="chart-zoom-close" aria-label="Fermer le graphique agrandi">×</button></div><div id="chartZoomBody" class="chart-zoom-body"></div><p id="chartZoomDetail" class="chart-zoom-detail" aria-live="polite">Sélectionne une part ou une barre pour voir le détail.</p></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<button type="button" id="bepQuickExpense" class="bep-quick-expense" aria-haspopup="dialog"><span aria-hidden="true">＋</span> Ajouter une dépense</button>
+<div id="bepAdviceDock" class="bep-advice-dock">
+  <button type="button" id="bepAdviceRobot" class="bep-advice-robot" aria-label="Ouvrir le conseil BEP" aria-expanded="false">
+    <span class="bep-advice-robot-face" aria-hidden="true">●</span><span class="bep-advice-robot-label">Conseil BEP</span>
+  </button>
+</div>
+<dialog id="bepAdviceDialog" class="bep-advice-dialog" aria-labelledby="bepAdviceTitle">
+  <section class="bep-advice-window">
+    <header class="bep-advice-head">
+      <div class="bep-advice-identity"><span class="bep-advice-avatar" aria-hidden="true">●</span><div><h2 id="bepAdviceTitle">Conseil BEP</h2><span id="bepAdviceContext">Accueil</span></div></div>
+      <div class="bep-advice-controls"><button type="button" id="bepAdviceMinimize" aria-label="Réduire le conseil">−</button><button type="button" id="bepAdviceClose" aria-label="Fermer le conseil">×</button></div>
+    </header>
+    <div class="bep-advice-content">
+      <span class="ai-label" id="bepAdviceBadge">Coach local</span>
+      <p id="aiHome" class="ai-advice">Analyse de ta situation financière en cours…</p>
+      <p id="aiIncome" class="ai-advice" data-budget-advice="income" hidden>Analyse de tes sources de revenus en cours…</p>
+      <p id="aiCharges" class="ai-advice" data-budget-advice="charges" hidden>Analyse de tes charges et des oublis possibles en cours…</p>
+      <p id="aiMonthly" class="ai-advice" data-budget-advice="monthly" hidden>Analyse de ton budget mensuel en cours…</p>
+      <p id="aiSavings" class="ai-advice" hidden>Analyse de ta capacité d'épargne en cours…</p>
+      <p id="savingsAdvisorFoot" class="savings-advisor-foot" hidden>BEP s'appuie sur tes revenus et charges enregistrés.</p>
+      <p id="aiPurchases" class="ai-advice" hidden>Conseil avant dépense en cours…</p>
+    </div>
+  </section>
+</dialog>
+<script>
+(function(){
+ const dialog=document.getElementById("bepAdviceDialog"),robot=document.getElementById("bepAdviceRobot"),dock=document.getElementById("bepAdviceDock");
+ if(!dialog||!robot||!dock)return;
+ const ids={home:"aiHome",budget:{income:"aiIncome",charges:"aiCharges",monthly:"aiMonthly"},savings:"aiSavings",purchases:"aiPurchases"};
+ const labels={home:"Accueil",income:"Budget · Mes revenus",charges:"Budget · Mes charges",monthly:"Budget · Budgets mensuels",savings:"Épargne",purchases:"Dépenses"};
+ function context(){const panel=document.querySelector(".panel.active")?.id||"home";return panel==="budget"?(document.querySelector("[data-budget-module].active")?.dataset.budgetModule||"income"):panel}
+ function open(){const c=context(),key=typeof c==="string"?c:c;const targetId=typeof ids[key]==="string"?ids[key]:ids.budget[c]||ids.budget.income;dialog.querySelectorAll(".bep-advice-content .ai-advice,.bep-advice-content .savings-advisor-foot").forEach(el=>el.hidden=el.id!==targetId&&!(key==="savings"&&el.id==="savingsAdvisorFoot"));document.getElementById("bepAdviceContext").textContent=labels[key]||"Votre situation";dialog.showModal();robot.setAttribute("aria-expanded","true");if(typeof window.recordAdvice==="function")window.recordAdvice(key)}
+ function close(){dialog.close();robot.setAttribute("aria-expanded","false")}
+ robot.addEventListener("click",()=>dialog.open?close():open());
+ document.getElementById("bepAdviceClose").addEventListener("click",close);
+ document.getElementById("bepAdviceMinimize").addEventListener("click",close);
+ dialog.addEventListener("click",e=>{if(e.target===dialog)close()});
+ window.BEP_OPEN_ADVICE=open;
+ const head=document.getElementById("bepCoachMascot");if(head){head.onclick=e=>{e.preventDefault();open()};head.setAttribute("aria-label","Ouvrir le conseil BEP")}
+})();
+</script>
+
 <script>
 (function(){window.__bepStartupMetrics={started:performance.now()};const report=()=>{const nav=performance.getEntriesByType("navigation")[0],loader=document.getElementById("bepStartupLoader");if(!loader||loader.hidden){const metrics={domContentLoaded:nav?Math.round(nav.domContentLoadedEventEnd):null,windowLoad:nav?Math.round(nav.loadEventEnd):null,appReady:Math.round(performance.now())};console.info("[BEP performance]",metrics);window.__bepStartupMetrics={...metrics,reported:true};return true}return false};const watch=()=>{const loader=document.getElementById("bepStartupLoader");if(!loader)return;if(!report()){const observer=new MutationObserver(()=>{if(report())observer.disconnect()});observer.observe(loader,{attributes:true,attributeFilter:["hidden"]})}};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();if("PerformanceObserver"in window){try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(e.duration>80)console.info("[BEP long task]",Math.round(e.duration)+" ms")}).observe({type:"longtask",buffered:true})}catch{}}})();
 </script>
