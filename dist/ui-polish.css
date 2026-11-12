@@ -395,3 +395,26 @@ button.primary, button.secondary, button.danger {
  .chart-carousel .chart-empty{min-height:120px;padding:16px 12px;font-size:11px;line-height:1.45}
 }
 @media(min-width:600px){.home-financial-snapshot .home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+
+/* Correctif ferme : grille financière 2 x 2 sur mobile */
+@media(max-width:767px){
+  .home-financial-snapshot .home-budget-metrics.home-snapshot-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+    align-items:stretch;
+    width:100%;
+  }
+  .home-financial-snapshot .home-snapshot-card{
+    width:auto!important;
+    min-width:0;
+    grid-column:auto!important;
+  }
+}
+@media(min-width:768px){
+  .home-financial-snapshot .home-budget-metrics.home-snapshot-grid{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
