@@ -272,3 +272,13 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
 #budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
 @media(max-width:640px){#budgetModuleCharges .charges-actions-grid{grid-template-columns:1fr}#budgetModuleCharges .charges-card{padding:15px;gap:10px}#budgetModuleCharges .charges-actions-grid>.charges-checkup,#budgetModuleCharges .charges-manual-entry{padding:13px}#budgetModuleCharges .charges-card #budgetRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
+
+/* Charge dialogs are mounted at document level; scope their contents by form. */
+.bep-entry-dialog:has(#budgetCheckupForm){width:min(92vw,560px)}
+.bep-entry-dialog:has(#budgetCheckupForm) .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
+.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
+.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
+.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
+.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
+@media(max-width:560px){.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{grid-column:2}}
