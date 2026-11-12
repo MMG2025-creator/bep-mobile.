@@ -37,9 +37,9 @@ test("service worker caches app shell and approved local OCR dependencies",()=>{
   assert.match(js,/caches\.open\(RUNTIME_CACHE\)/);
  }
 });
-test("offline capture never sends receipt images and remains local OCR",()=>{
- const js=read("app.js");
- assert.match(js,/window\.Tesseract\.recognize\(file,"fra\+eng"/);
- assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);
- assert.doesNotMatch(js,/fetch\([^)]*receiptFile/);
+test("receipt parsing uses the local helper and does not upload receipt images",()=>{
+ const app=read("app.js"),parser=read("receipt-ocr.js");
+ assert.match(parser,/root\.BEPReceiptOCR=api/);
+ assert.doesNotMatch(parser,/fetch\(/);
+ assert.doesNotMatch(app,/fetch\([^)]*receiptFile/);
 });
