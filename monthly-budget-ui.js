@@ -260,7 +260,10 @@
       status(syncWarning
         ? "Budget mensuel enregistré · version " + current.version + ". Synchronisation des autres modules à reprendre : " + syncWarning
         : "Budget enregistré · version " + current.version, Boolean(syncWarning));
-      await refreshMonthListOnly();
+      try { await refreshMonthListOnly(); }
+      catch (refreshError) {
+        status("Budget mensuel enregistré · version " + current.version + ". Actualisation de la liste des mois impossible : " + refreshError.message, true);
+      }
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
