@@ -1176,3 +1176,17 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:520px){.coach-profile-options{grid-template-columns:1fr}.coach-profile-option{padding:10px}.coach-profile-copy strong{font-size:11px}.coach-profile-copy small{font-size:10px}}
 
 .home-financial-detail{margin:10px 0 0;color:var(--muted,#64748b);font-size:.82rem;line-height:1.45}
+
+/* Contextual BEP advice assistant */
+.bep-advice-dock{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px));z-index:1200}
+.bep-advice-robot{display:flex;align-items:center;gap:9px;border:1px solid #b9d8c9;border-radius:999px;padding:9px 15px 9px 10px;background:#fff;color:#126b50;box-shadow:0 8px 28px #123b3426;font:700 13px inherit;cursor:pointer}
+.bep-advice-robot-face,.bep-advice-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#e8f4ee;color:#087b58;font-size:22px}
+.bep-advice-dialog{position:fixed;inset:auto 18px 84px auto;margin:0;padding:0;border:0;border-radius:22px;background:transparent;width:min(470px,calc(100vw - 28px));max-width:none;max-height:min(72vh,620px);overflow:visible}
+.bep-advice-dialog::backdrop{background:#102b241f}
+.bep-advice-window{overflow:hidden;border:1px solid #d5e7dc;border-radius:22px;background:#fff;box-shadow:0 18px 55px #102b2430}
+.bep-advice-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;background:#eaf5ef;border-bottom:1px solid #d5e7dc}
+.bep-advice-identity{display:flex;align-items:center;gap:12px}.bep-advice-identity h2{margin:0;font-size:20px}.bep-advice-identity span:not(.bep-advice-avatar){font-size:13px;color:#557466}
+.bep-advice-controls{display:flex;gap:7px}.bep-advice-controls button{width:36px;height:36px;border:1px solid #c9ded2;border-radius:50%;background:#fff;color:#176b50;font-size:22px;cursor:pointer}
+.bep-advice-content{padding:23px 22px 26px}.bep-advice-content .ai-advice{font-size:18px;line-height:1.65;color:#233d33;margin:14px 0 0}.bep-advice-content .ai-label{font-size:12px}
+@media(max-width:560px){.bep-advice-dialog{inset:auto 10px calc(76px + env(safe-area-inset-bottom)) 10px;width:auto;max-height:68vh}.bep-advice-content{padding:19px 18px 22px}.bep-advice-content .ai-advice{font-size:17px}}
+@media(prefers-reduced-motion:no-preference){.bep-advice-robot{transition:transform .18s,box-shadow .18s}.bep-advice-robot:hover{transform:translateY(-2px);box-shadow:0 12px 30px #123b3433}}
