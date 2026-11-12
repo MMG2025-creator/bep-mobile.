@@ -14,7 +14,7 @@ function available(){return totalIncome()-charges()}
 function rate(excludeGoalId){const committed=(state.goals||[]).filter(g=>!g.archivedAt&&g.id!==excludeGoalId).reduce((n,g)=>n+Math.max(0,Number(g.monthly)||0),0),free=Math.max(0,available()-committed),r=totalIncome()?free/totalIncome()*100:0;return r<5?0:r<15?5:r<25?10:r<35?15:20}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function dispatchLegacyBudgetChanged(){window.dispatchEvent(new CustomEvent("bep:legacy-budget-changed",{detail:{income:state.income,incomes:state.incomes,budgets:state.budgets,goals:state.goals}}))}
-function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return}render();if(window.bepSignedIn)fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);dispatchLegacyBudgetChanged()}).catch(()=>notify("Données conservées sur cet appareil, mais synchronisation serveur échouée. Vérifie ta connexion."));else dispatchLegacyBudgetChanged()}
+function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return false}render();if(window.bepSignedIn)fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);dispatchLegacyBudgetChanged()}).catch(()=>notify("Données conservées sur cet appareil, mais synchronisation serveur échouée. Vérifie ta connexion."));else dispatchLegacyBudgetChanged();return true}
 window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const d=new Date(),localMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
   if(monthKey!==localMonth||!Array.isArray(monthlyItems))return false;
@@ -247,19 +247,47 @@ function preview(){const suggested=rate(editingGoalId),selected=$("savingsRate")
 function advice(p){if(p.delay==="already_done")return["Achat déjà effectué.","Cette dépense est enregistrée dans ton suivi. Vérifie simplement son montant et sa catégorie.","La dépense est-elle correctement classée ?"];if(p.psychology==="pressure"||p.psychology==="impulsive")return["Attention à la pression émotionnelle.","Une envie urgente n'est pas une obligation. Fais une pause avant de décider.","Si cette offre disparaissait demain, en aurais-tu toujours besoin ?"];if(p.need==="no")return["Distingue envie et besoin.","Vérifie que cet achat ne fragilise pas une priorité.","Quel poste budgétaire acceptera cette dépense ?"];if(p.need==="uncertain")return["Laisse la décision décanter.","Attendre 24 heures aide à vérifier l'utilité réelle.","Peux-tu décrire l'usage concret ?"];return["Décision réfléchie.","Vérifie que le montant entre dans l'enveloppe prévue.","Cet achat respecte-t-il ton plan du mois ?"]}
 let activePurchaseMode="manual",captureSource="manual",voiceRecognition=null,receiptCaptureText="",voiceCaptureText="";
 function setPurchaseMode(mode){activePurchaseMode=mode;captureSource=mode;const form=$("purchaseForm");if(form)form.classList.remove("hidden");}
-function setupInlineVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;const targets=[$("merchant"),$("purchaseNotes"),$("city"),$("purchaseAmount"),$("goalName")].filter(Boolean);targets.forEach(field=>{if(field.dataset.voiceReady)return;field.dataset.voiceReady="1";const wrap=document.createElement("div");wrap.className="voice-field-wrap";field.parentNode.insertBefore(wrap,field);wrap.appendChild(field);const button=document.createElement("button");button.type="button";button.className="field-mic";button.setAttribute("aria-label","Dicter dans ce champ");button.title="Dicter dans ce champ";button.textContent="";const indicator=document.createElement("span");indicator.className="recording-indicator hidden";indicator.innerHTML='<i></i><b>Enregistrement en cours</b>';wrap.append(button,indicator);let recognition=null,finalText="";button.addEventListener("click",()=>{if(recognition){recognition.stop();return}recognition=new SR();recognition.lang="fr-FR";recognition.continuous=true;recognition.interimResults=true;finalText=field.value.trim();button.classList.add("recording");button.textContent="STOP";button.setAttribute("aria-label","Arrêter la dictée");button.title="Arrêter la dictée";indicator.classList.remove("hidden");let interim="";recognition.onresult=e=>{interim="";for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i],part=(result[0]?.transcript||"").trim();if(!part)continue;if(result.isFinal){if(part&&!finalText.toLowerCase().endsWith(part.toLowerCase()))finalText=(finalText+" "+part).trim()}else interim=part}const spokenValue=(finalText+" "+interim).trim().replace(/\s+/g," ");if(field.id==="purchaseAmount"){const numeric=spokenValue.match(/\d+(?:[,.]\d{1,2})?/);if(numeric)field.value=numeric[0].replace(",",".");else{const words=spokenValue.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/euros?|eur|balles/g," ").replace(/-/g," ").trim().split(/\s+/);const units={zero:0,un:1,une:1,deux:2,trois:3,quatre:4,cinq:5,six:6,sept:7,huit:8,neuf:9,dix:10,onze:11,douze:12,treize:13,quatorze:14,quinze:15,seize:16,vingt:20,trente:30,quarante:40,cinquante:50,soixante:60,cent:100,cents:100};let part=0;words.forEach(w=>{if(units[w]===100)part=Math.max(1,part)*100;else if(units[w]!==undefined)part+=units[w]});if(part)field.value=String(part)}}else field.value=spokenValue;field.dispatchEvent(new Event("input",{bubbles:true}))};recognition.onerror=e=>{indicator.querySelector("b").textContent=e.error==="not-allowed"?"Autorisation microphone refusée":"Problème de reconnaissance"};recognition.onend=()=>{recognition=null;button.classList.remove("recording");button.textContent="";button.setAttribute("aria-label","Dicter dans ce champ");button.title="Dicter dans ce champ";indicator.classList.add("hidden")};try{recognition.start()}catch(e){recognition=null;button.classList.remove("recording");button.textContent="";indicator.classList.add("hidden")}})})}
+function setupInlineVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;const targets=[$("goalName")].filter(Boolean);targets.forEach(field=>{if(field.dataset.voiceReady)return;field.dataset.voiceReady="1";const wrap=document.createElement("div");wrap.className="voice-field-wrap";field.parentNode.insertBefore(wrap,field);wrap.appendChild(field);const button=document.createElement("button");button.type="button";button.className="field-mic";button.setAttribute("aria-label","Dicter dans ce champ");button.title="Dicter dans ce champ";button.textContent="";const indicator=document.createElement("span");indicator.className="recording-indicator hidden";indicator.innerHTML='<i></i><b>Enregistrement en cours</b>';wrap.append(button,indicator);let recognition=null,finalText="";button.addEventListener("click",()=>{if(recognition){recognition.stop();return}recognition=new SR();recognition.lang="fr-FR";recognition.continuous=true;recognition.interimResults=true;finalText=field.value.trim();button.classList.add("recording");button.textContent="STOP";button.setAttribute("aria-label","Arrêter la dictée");button.title="Arrêter la dictée";indicator.classList.remove("hidden");let interim="";recognition.onresult=e=>{interim="";for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i],part=(result[0]?.transcript||"").trim();if(!part)continue;if(result.isFinal){if(part&&!finalText.toLowerCase().endsWith(part.toLowerCase()))finalText=(finalText+" "+part).trim()}else interim=part}const spokenValue=(finalText+" "+interim).trim().replace(/\s+/g," ");if(field.id==="purchaseAmount"){const numeric=spokenValue.match(/\d+(?:[,.]\d{1,2})?/);if(numeric)field.value=numeric[0].replace(",",".");else{const words=spokenValue.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/euros?|eur|balles/g," ").replace(/-/g," ").trim().split(/\s+/);const units={zero:0,un:1,une:1,deux:2,trois:3,quatre:4,cinq:5,six:6,sept:7,huit:8,neuf:9,dix:10,onze:11,douze:12,treize:13,quatorze:14,quinze:15,seize:16,vingt:20,trente:30,quarante:40,cinquante:50,soixante:60,cent:100,cents:100};let part=0;words.forEach(w=>{if(units[w]===100)part=Math.max(1,part)*100;else if(units[w]!==undefined)part+=units[w]});if(part)field.value=String(part)}}else field.value=spokenValue;field.dispatchEvent(new Event("input",{bubbles:true}))};recognition.onerror=e=>{indicator.querySelector("b").textContent=e.error==="not-allowed"?"Autorisation microphone refusée":"Problème de reconnaissance"};recognition.onend=()=>{recognition=null;button.classList.remove("recording");button.textContent="";button.setAttribute("aria-label","Dicter dans ce champ");button.title="Dicter dans ce champ";indicator.classList.add("hidden")};try{recognition.start()}catch(e){recognition=null;button.classList.remove("recording");button.textContent="";indicator.classList.add("hidden")}})})}
 function setupPlaceSuggestions(){
-const merchant=$("merchant"),city=$("city"),category=$("purchaseCategory");
-if(!merchant||!city)return;
-// No external lookup is required: the user can enter any brand and any French city.
-merchant.setAttribute("autocomplete","organization");
-merchant.setAttribute("spellcheck","false");
-merchant.placeholder="Ex. Boulanger, Darty, Carrefour…";
-city.setAttribute("autocomplete","address-level2");
-city.placeholder="Ex. Gennevilliers, Paris…";
-const inferCategory=()=>{if(!category||category.value.trim())return;const m=merchant.value.toLowerCase(),n=$("purchaseNotes")?.value.toLowerCase()||"";if(/carrefour|auchan|leclerc|lidl|aldi|intermarch|primeur|boulangerie|aliment|courses/.test(m+" "+n))category.value="Alimentation";else if(/boulanger|darty|fnac|informatique|ordinateur|telephone|électronique/.test(m+" "+n))category.value="Technologie";else if(/decathlon|basket|raquette|fitness|sport/.test(m+" "+n))category.value="Loisirs";else if(/ikea|leroy merlin|meuble|maison/.test(m+" "+n))category.value="Maison";else if(/zara|uniqlo|kiabi|chaussure|vêtement/.test(m+" "+n))category.value="Mode"};
-merchant.addEventListener("change",inferCategory);
-$("purchaseNotes")?.addEventListener("change",inferCategory);
+const description=$("merchant"),city=$("city"),category=$("purchaseCategory");
+if(!description)return;
+description.setAttribute("autocomplete","off");
+description.setAttribute("spellcheck","true");
+description.placeholder="Ex. courses alimentaires, chaussures, essence…";
+if(city){city.setAttribute("autocomplete","address-level2");city.placeholder="Facultatif";}
+if(!category)return;
+const normalize=value=>String(value||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const rules=[
+["Chaussures de sport",/\b(chaussures? de sport|baskets?|sneakers?|running|crampons)\b/],
+["Alimentation",/\b(courses?|alimentation|alimentaire|fruits?|legumes?|primeur|boulangerie|boucherie|poissonnerie|epicerie|supermarche)\b/],
+["Restaurant et sorties",/\b(restaurant|resto|dejeuner|diner|cafe|bar|livraison|uber eats|deliveroo|brunch)\b/],
+["Transport et carburant",/\b(essence|carburant|gazole|diesel|peage|parking|navigo|metro|train|bus|taxi|uber|transport)\b/],
+["Vêtements et chaussures",/\b(vetement|chaussure|pantalon|robe|manteau|chemise|tee shirt|t shirt|jean|pull)\b/],
+["Électronique et informatique",/\b(telephone|smartphone|ordinateur|pc|tablette|ecran|informatique|electronique|console|casque audio)\b/],
+["Électroménager",/\b(refrigerateur|frigo|lave linge|lave vaisselle|four|aspirateur|micro ondes|electromenager)\b/],
+["Maison et décoration",/\b(meuble|canape|lit|matelas|decoration|linge de maison|vaisselle|luminaire)\b/],
+["Bricolage et jardin",/\b(bricolage|peinture|outillage|outil|jardin|plante|tondeuse|quincaillerie)\b/],
+["Santé et pharmacie",/\b(pharmacie|medicament|ordonnance|consultation|medecin|dentiste|optique|soin medical)\b/],
+["Beauté et hygiène",/\b(cosmetique|maquillage|parfum|shampooing|coiffure|hygiene|creme|savon)\b/],
+["Loisirs et culture",/\b(cinema|concert|spectacle|musee|livre|jeu video|loisir|culture|sport|fitness|abonnement streaming)\b/],
+["Fournitures et papeterie",/\b(cahier|stylo|papier|cartouche|fourniture|papeterie|impression)\b/],
+["Animaux",/\b(croquettes?|veterinaire|animal|litiere)\b/]
+];
+let autoWriting=false;
+const suggest=()=>{
+ const text=normalize(description.value);
+ if(!text){if(category.dataset.autoSuggested==="1"){category.value="";delete category.dataset.autoSuggested;category.dispatchEvent(new Event("input",{bubbles:true}))}return}
+ const match=rules.find(([,pattern])=>pattern.test(text));
+ if(!match){if(category.dataset.autoSuggested==="1"){category.value="";delete category.dataset.autoSuggested;category.dispatchEvent(new Event("input",{bubbles:true}))}return}
+ if(category.value.trim()&&category.dataset.autoSuggested!=="1")return;
+ category.value=match[0];category.dataset.autoSuggested="1";autoWriting=true;
+ category.dispatchEvent(new Event("input",{bubbles:true}));autoWriting=false;
+};
+category.addEventListener("input",()=>{if(!autoWriting)category.dataset.autoSuggested="0"});
+category.addEventListener("change",()=>{category.dataset.autoSuggested="0"});
+description.addEventListener("input",suggest);
+description.addEventListener("change",suggest);
+suggest();
 }
 function setupPurchaseNatureSuggestions(){
 const input=$("purchaseCategory"),panel=$("purchaseNaturePanel");if(!input||!panel)return;
@@ -286,32 +314,56 @@ if($("receiptFile"))$("receiptFile").onchange=async e=>{const file=e.target.file
 
 let purchaseSelectionMode=false,purchaseSelection=new Set(),suppressPurchaseClick=false;
 let editingPurchaseId=null;
-function editPurchase(id){const p=state.expenses.find(x=>x.id===id);if(!p)return;editingPurchaseId=id;if($("purchaseId"))$("purchaseId").value=id;if($("merchant"))$("merchant").value=p.label||"";if($("purchaseNotes"))$("purchaseNotes").value=p.notes||"";if($("city"))$("city").value=p.city||"";if($("purchaseAmount"))$("purchaseAmount").value=p.amount??"";if($("purchaseCategory")){$("purchaseCategory").value=p.category||"";$("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}))}if($("psychology"))$("psychology").value=p.psychology||"reflective";if($("moodAfter"))$("moodAfter").value=p.moodAfter||"neutral";if($("need"))$("need").value=p.need||"yes";if($("delay"))$("delay").value=p.delay||"now";if($("purchaseSubmit")){$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer les modifications';$("purchaseSubmit").classList.remove("hidden")}if($("purchaseNew"))$("purchaseNew").classList.add("hidden");if($("cancelEdit"))$("cancelEdit").classList.remove("hidden");setPurchaseMode("manual");$("purchaseForm")?.scrollIntoView({behavior:"smooth",block:"center"})}
-function cancelPurchaseEdit(){editingPurchaseId=null;$("purchaseForm").reset();$("purchaseId").value="";$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("purchaseSubmit").classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");$("cancelEdit").classList.add("hidden")}
-if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"))$("purchaseNew").onclick=()=>{editingPurchaseId=null;$("purchaseForm").reset();$("purchaseId").value="";$("purchaseSubmit").classList.remove("hidden");$("purchaseNew").classList.add("hidden");$("cancelEdit").classList.add("hidden");$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("merchant")?.focus()};
+function setPurchaseFormTitle(isEditing){
+ const entry=document.querySelector(".purchase-entry-card");
+ const heading=entry?.querySelector("h2");
+ const intro=entry?.querySelector(".bep-spend-form-intro");
+ if(heading)heading.textContent=isEditing?"Modifier ma dépense":"Ajouter une dépense";
+ if(intro)intro.textContent=isEditing?"Modifie les informations de ton achat puis enregistre les changements.":"Trois informations suffisent. Le reste est facultatif.";
+}
+function editPurchase(id){const p=state.expenses.find(x=>x.id===id);if(!p)return;editingPurchaseId=id;setPurchaseFormTitle(true);if($("purchaseId"))$("purchaseId").value=id;if($("merchant"))$("merchant").value=p.label||"";if($("purchaseNotes"))$("purchaseNotes").value=p.notes||"";if($("city"))$("city").value=p.city||"";if($("purchaseAmount"))$("purchaseAmount").value=p.amount??"";if($("purchaseCategory")){$("purchaseCategory").value=p.category||"";$("purchaseCategory").dispatchEvent(new Event("input",{bubbles:true}))}if($("psychology"))$("psychology").value=p.psychology||"reflective";if($("moodAfter"))$("moodAfter").value=p.moodAfter||"neutral";if($("need"))$("need").value=p.need||"yes";if($("delay"))$("delay").value=p.delay||"now";if($("purchaseSubmit")){$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer les modifications';$("purchaseSubmit").classList.remove("hidden")}if($("purchaseNew"))$("purchaseNew").classList.add("hidden");if($("cancelEdit"))$("cancelEdit").classList.remove("hidden");setPurchaseMode("manual");$("purchaseForm")?.scrollIntoView({behavior:"smooth",block:"center"})}
+function cancelPurchaseEdit(){editingPurchaseId=null;setPurchaseFormTitle(false);$("purchaseForm").reset();$("purchaseId").value="";$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("purchaseSubmit").classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");$("cancelEdit").classList.add("hidden")}
+if($("cancelEdit"))$("cancelEdit").onclick=cancelPurchaseEdit;if($("purchaseNew"))$("purchaseNew").onclick=()=>{editingPurchaseId=null;setPurchaseFormTitle(false);$("purchaseForm").reset();$("purchaseId").value="";$("purchaseSubmit").classList.remove("hidden");$("purchaseNew").classList.add("hidden");$("cancelEdit").classList.add("hidden");$("purchaseSubmit").innerHTML='<svg class="save-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h12l3.25 3.25v13.25H3.75V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M7.5 3.75v6h8v-6M7.5 20.25v-7h9v7"/></svg> Enregistrer l’achat';$("merchant")?.focus()};
 if($("selectAllPurchases"))$("selectAllPurchases").onclick=()=>{const items=(state.expenses||[]);if(items.length&&purchaseSelection.size===items.length)purchaseSelection.clear();else items.forEach(p=>purchaseSelection.add(p.id));render()};if($("cancelPurchaseSelection"))$("cancelPurchaseSelection").onclick=()=>{purchaseSelectionMode=false;purchaseSelection.clear();render()};if($("deleteSelectedPurchases"))$("deleteSelectedPurchases").onclick=()=>{const ids=new Set(purchaseSelection);if(!ids.size)return;if(!confirm("Supprimer définitivement les "+ids.size+" achats sélectionnés ? Cette action ne modifiera pas le budget ni les revenus."))return;state.expenses=(state.expenses||[]).filter(p=>!ids.has(p.id));if(ids.has(editingPurchaseId))cancelPurchaseEdit();purchaseSelection.clear();purchaseSelectionMode=false;save();notify(ids.size+" achat(s) supprimé(s)")};
-$("purchaseForm").onsubmit=e=>{e.preventDefault();let amount=+$("purchaseAmount").value;if(!$("purchaseCategory").value)return notify("Le type d’achat est obligatoire.");if(!Number.isFinite(amount)||amount<=0)return notify("Le montant est obligatoire et doit être supérieur à zéro.");const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(voiceCaptureText?"voice":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(voiceCaptureText||receiptCaptureText||$("purchaseDescription")?.value||""),label:$("merchant").value.trim(),notes:$("purchaseNotes")?.value.trim()||"",city:$("city").value.trim(),amount,category:$("purchaseCategory").value,psychology:$("psychology").value,moodAfter:$("moodAfter")?.value||"",need:$("need").value,delay:$("delay").value,at:editingPurchaseId?(state.expenses.find(x=>x.id===editingPurchaseId)?.at||new Date().toISOString()):new Date().toISOString()};const wasEditing=Boolean(editingPurchaseId);if(wasEditing){state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x)}else state.expenses.unshift(p);save();showPurchaseAdvice(p);cancelPurchaseEdit();$("purchaseSubmit").classList.add("hidden");$("purchaseNew")?.classList.remove("hidden");notify(wasEditing?"Achat modifié":"Achat enregistré")};
+$("purchaseForm").onsubmit=e=>{
+ e.preventDefault();
+ const label=$("merchant").value.trim();
+ const amount=Number($("purchaseAmount").value);
+ if(!label)return notify("Décris brièvement ton achat pour que BEP puisse le classer.");
+ if(!Number.isFinite(amount)||amount<=0||amount>999999999999.99)return notify("Le montant doit être supérieur à zéro et rester dans la limite autorisée.");
+ const category=$("purchaseCategory").value.trim()||"Autre";
+ const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};
+ const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):"manual",captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label,notes:$("purchaseNotes")?.value.trim()||"",city:$("city").value.trim(),amount,category,psychology:$("psychology").value,moodAfter:$("moodAfter")?.value||"",need:$("need").value,delay:$("delay").value,at:editingPurchaseId?(previous.at||new Date().toISOString()):new Date().toISOString()};
+ const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice();
+ if(wasEditing)state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x);else state.expenses.unshift(p);
+ if(save()===false){state.expenses=beforeExpenses;return}
+ showPurchaseAdvice(p);cancelPurchaseEdit();$("purchaseSubmit").classList.add("hidden");$("purchaseNew")?.classList.remove("hidden");notify(wasEditing?"Achat modifié":"Achat enregistré");
+};
 
 
 async function showPurchaseAdvice(p){
  const target=$("purchaseAdvice");if(!target)return;
- const local=advice(p);
+ const local=advice(p),financialContext=currentFinancialContext(),available=Number(financialContext.available),amount=Number(p.amount)||0;
+ const availableKnown=Number.isFinite(available),overBudget=availableKnown&&amount>available;
+ const budgetWarning=overBudget?(available<0
+  ? "Attention : ton montant restant disponible est déjà négatif ("+money(available)+"). Cet achat de "+money(amount)+" aggraverait le dépassement. Il est hors budget."
+  : "Attention : cet achat de "+money(amount)+" dépasse le montant restant disponible de "+money(available)+" de "+money(amount-available)+". Il est hors budget."): "";
  target.classList.remove("hidden");
- target.textContent="Préparation du conseil BEP…";
+ target.textContent=budgetWarning||"Préparation du conseil BEP…";
  if(aiCoachEnabled&&window.bepSignedIn&&aiConnection?.personal){
-  const question="Analyse cet achat enregistré et donne un conseil personnalisé, concret et non moralisateur. Libellé : "+(p.merchant||p.category||"Achat")+". Montant : "+money(p.amount)+". Catégorie : "+(p.category||"non précisée")+". État déclaré : "+p.psychology+". Besoin réel : "+p.need+". Délai : "+p.delay+". Réponds en trois parties courtes : lecture de la décision, impact/prudence budgétaire à partir des données, une question utile.";
+  const question="Analyse cet achat enregistré et donne un conseil personnalisé, concret et non moralisateur. Libellé : "+(p.merchant||p.category||"Achat")+". Montant : "+money(p.amount)+". Montant restant disponible avant cet achat : "+(availableKnown?money(available):"non renseigné")+". "+(overBudget?"ALERTE : le montant dépasse le disponible ; indique clairement que cet achat est hors budget et invite à la prudence, sans bloquer son enregistrement. ":"")+"Catégorie : "+(p.category||"non précisée")+". État déclaré : "+p.psychology+". Besoin réel : "+p.need+". Délai : "+p.delay+". Pour juger l'abordabilité, utilise exclusivement le montant restant disponible, sans recalculer à partir des revenus, charges, épargne ou objectifs. Réponds en trois parties courtes : lecture de la décision, impact/prudence budgétaire, une question utile.";
   try{
    const started=performance.now();
-   const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,financialContext:currentFinancialContext()})});
+   const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,intent:"purchase_review",financialContext:{available:availableKnown?available:null}})});
    const d=await r.json();if(!r.ok)throw Error(d.message||"Conseil IA indisponible.");
-   target.textContent=d.answer;
+   target.textContent=(budgetWarning?budgetWarning+" ":"")+d.answer;
    const elapsed=Math.max(0,performance.now()-started),tokens=Number(d.usage?.total_tokens)||Math.max(1,Math.ceil(String(d.answer||"").length/4));
    aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;aiUsage.totalMs=(Number(aiUsage.totalMs)||0)+elapsed;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
    return;
-  }catch(e){target.textContent="Le conseil IA est indisponible. Conseil local : "+local.join(" ")+" "+(e.message||"")}
+  }catch(e){target.textContent=(budgetWarning?budgetWarning+" ":"")+"Le conseil IA est indisponible. Conseil local : "+local.join(" ")+" "+(e.message||"")}
   return;
  }
- target.innerHTML="<strong>"+esc(local[0])+"</strong>"+esc(local[1])+"<br><br><b>Question BEP :</b> "+esc(local[2]);
+ target.innerHTML=(budgetWarning?"<strong>"+esc(budgetWarning)+"</strong><br><br>":"")+"<strong>"+esc(local[0])+"</strong>"+esc(local[1])+"<br><br><b>Question BEP :</b> "+esc(local[2]);
 }
 function coachReply(question){
  const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
