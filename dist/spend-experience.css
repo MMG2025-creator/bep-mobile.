@@ -332,3 +332,6 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 .bep-quick-expense-dialog .bep-quick-expense-body .bep-spend-amount label{font-size:15px;font-weight:800}
 .bep-quick-expense-dialog .bep-quick-expense-body #purchaseAmount{min-height:58px;font-size:22px;font-weight:800}
 @media(max-width:480px){.bep-spend-add-button{min-height:54px;font-size:16px}.bep-spend-history-details>summary{min-height:52px}}
+
+/* Remove the redundant secondary action from the simplified purchase flow. */
+#purchases #purchaseNew{display:none!important}
