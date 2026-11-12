@@ -5,8 +5,8 @@ const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)&&!isStandalone();
 const refresh=()=>{
   if(!button)return;
+  if(isStandalone()){button.hidden=true;return;}
   button.hidden=false;
-  if(isStandalone()){button.textContent="BEP installée";button.disabled=true;button.setAttribute("aria-label","BEP est déjà installée");return;}
   button.disabled=false;
   button.textContent="Installer BEP";
   button.setAttribute("aria-label","Installer BEP sur cet appareil");
