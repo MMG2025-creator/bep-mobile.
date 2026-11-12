@@ -25,12 +25,12 @@ test("budget modules do not expose an expense shortcut", () => {
     assert.doesNotMatch(html, /class="budget-quick-actions"/);
     assert.doesNotMatch(html, /data-goto="purchases">Enregistrer une dépense/);
     assert.match(html, /aria-live="polite" aria-atomic="true"/);
-    assert.match(html, /ui-polish\\.css\\?v=[23]/);
+    assert.match(html, /ui-polish\.css\?v=[23]/);
   }
 });
 test("global expense shortcut is hidden while any Budget module is active", () => {
   for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
-    assert.match(read(file), /body:has\\(#budget\\.active\\) #bepQuickExpense\\{display:none!important\\}/);
+    assert.ok(read(file).includes("body:has(#budget.active) #bepQuickExpense{display:none!important}"));
   }
 });
 
