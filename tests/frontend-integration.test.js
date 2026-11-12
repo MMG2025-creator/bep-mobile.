@@ -311,3 +311,10 @@ test("income button labels use the requested wording without extra captions", ()
   assert.ok(!html.includes("Vérifier mes sources de revenus"));
   assert.ok(!html.includes("+ Ajouter une source de revenu</summary>"));
 });
+
+test("income dialog trigger buttons use the requested labels", () => {
+  const js = read("spend-experience.js");
+  assert.ok(js.includes('["income","+ Ajouter un revenu","+ Ajouter un revenu","#incomeEditorDetails"]'));
+  assert.ok(js.includes('["income-checkup","Faire le point sur mes revenus","Faire le point sur mes revenus","#incomeCheckupDetails"]'));
+  assert.ok(!js.includes('["income","Ajouter une source de revenu","Ajouter une source de revenu","#incomeEditorDetails"]'));
+});
