@@ -121,13 +121,15 @@ async function flush(){
   });
   if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"remote-changed"}}));return false}
   if(!saved.ok)throw Error("Synchronisation refusée ("+saved.status+")");
-  await setBaselineFor(user,pending.payload);
+  const savedData=await saved.json().catch(()=>({}));
+  const committedPayload=savedData.payload&&typeof savedData.payload==="object"&&!Array.isArray(savedData.payload)?savedData.payload:pending.payload;
+  await setBaselineFor(user,committedPayload);
   await serializeQueue(async()=>{
    const latest=await read(key);
    if(!latest)return;
    if(Number(latest.revision)===Number(pending.revision)){await clear(key);return}
    if(Number(latest.revision)>Number(pending.revision)){
-    latest.base=JSON.parse(JSON.stringify(pending.payload));
+    latest.base=JSON.parse(JSON.stringify(committedPayload));
     await write(key,latest);
    }
   });
