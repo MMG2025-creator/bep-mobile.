@@ -1217,3 +1217,18 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .bep-advice-robot{min-height:56px;min-width:56px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto;position:relative;z-index:1}
 .bep-advice-robot>*{pointer-events:none;user-select:none;-webkit-user-select:none}
 .bep-advice-robot-label{display:block;white-space:nowrap}
+
+/* Animated BEP mascot restored to the homepage hero */
+.welcome{position:relative;isolation:isolate;overflow:hidden;padding-right:34%;min-height:190px}
+.welcome .eyebrow,.welcome h1,.welcome .sub{position:relative;z-index:2}
+.welcome .sub{max-width:75%}
+.hero-growth{right:6%;width:28%;opacity:.32;z-index:0}
+.bep-home-mascot{position:absolute;z-index:1;right:7%;top:50%;width:clamp(88px,19vw,132px);height:clamp(96px,21vw,142px);transform:translateY(-45%);display:grid;place-items:center;animation:bepHomeFloat 3.8s ease-in-out infinite;filter:drop-shadow(0 9px 15px rgba(0,0,0,.22))}
+.bep-home-robot{width:100%;height:100%;overflow:visible}
+.bep-home-robot-eyes{transform-origin:60px 71px;animation:bepHomeBlink 4.8s infinite}
+.bep-home-robot-glow{position:absolute;z-index:-1;width:75%;height:68%;border-radius:50%;background:radial-gradient(circle,rgba(42,221,167,.24),rgba(42,221,167,0) 72%);animation:bepHomePulse 3.8s ease-in-out infinite}
+@keyframes bepHomeFloat{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@keyframes bepHomeBlink{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.12)}}
+@keyframes bepHomePulse{0%,100%{opacity:.45;scale:.9}50%{opacity:1;scale:1.12}}
+@media(max-width:430px){.welcome{min-height:210px;padding:21px 31% 22px 21px}.welcome h1{max-width:100%;font-size:29px}.welcome .sub{max-width:100%;font-size:12px}.bep-home-mascot{right:3%;width:29%;height:120px}.hero-growth{right:2%;width:30%;height:92px;opacity:.2}}
+@media(prefers-reduced-motion:reduce){.bep-home-mascot,.bep-home-robot-eyes,.bep-home-robot-glow{animation:none!important}}
