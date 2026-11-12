@@ -234,7 +234,10 @@
       const confirmation = payload.items.length
         ? "Importer " + payload.items.length + " lignes de ton budget actuel dans " + monthKey + " ? Cette copie sera indépendante ; tes données actuelles ne seront pas supprimées."
         : "Aucun revenu, charge ou objectif n’a été trouvé dans le budget actuel. Créer un mois vide ?";
-      if (!window.confirm(confirmation)) return;
+      const accepted = window.BEP_CONFIRM_ACTION
+        ? await window.BEP_CONFIRM_ACTION(confirmation, "Confirmer la création du mois")
+        : window.confirm(confirmation);
+      if (!accepted) return;
     }
     setBusy(true);
     try {
