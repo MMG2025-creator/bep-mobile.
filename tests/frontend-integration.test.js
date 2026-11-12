@@ -13,10 +13,14 @@ test("published frontend assets are synchronized with source", () => {
   assert.equal(read("styles.css"), read("dist/styles.css"));
   assert.ok(read("index.html").includes("./runtime-config.js?v=1"));
   assert.ok(read("dist/index.html").includes("./runtime-config.js?v=1"));
-  assert.ok(read("index.html").includes("./app.js?v=93"));
-  assert.ok(read("dist/index.html").includes("./app.js?v=93"));
+  assert.ok(read("index.html").includes("./app.js?v=97"));
+  assert.ok(read("dist/index.html").includes("./app.js?v=97"));
   assert.ok(read("index.html").includes("./styles.css?v=81"));
   assert.ok(read("dist/index.html").includes("./styles.css?v=81"));
+  assert.ok(read("index.html").includes("./spend-experience.css?v=5"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.css?v=5"));
+  assert.ok(read("index.html").includes("./spend-experience.js?v=5"));
+  assert.ok(read("dist/index.html").includes("./spend-experience.js?v=5"));
   assert.ok(read("index.html").includes("./monthly-budget-ui.js?v=5"));
   assert.ok(read("dist/index.html").includes("./monthly-budget-ui.js?v=5"));
 });
@@ -192,4 +196,38 @@ test("budget advice stays above the income, charges and monthly budget navigatio
     assert.match(js, /data-budget-advice/);
     assert.match(js, /zone:id==="monthly"\?"budget":id/);
   }
+});
+
+
+test("challenge catalogue offers twenty selectable challenges with persistent personal selection", () => {
+  const js = read("spend-experience.js");
+  assert.equal(js, read("dist/spend-experience.js"));
+  assert.equal((js.match(/\{id:"[a-z-]+",icon:/g)||[]).length, 20);
+  assert.match(js, /SELECT_KEY="bep-spend-selected-challenges-v1"/);
+  assert.match(js, /Choisir les défis que je veux relever/);
+  assert.match(js, /localStorage\.setItem\(SELECT_KEY,JSON\.stringify\(selected\)\)/);
+  for (const file of ["spend-experience.css", "dist/spend-experience.css"]) {
+    assert.match(read(file), /\.bep-spend-challenge-picker/);
+    assert.match(read(file), /\.bep-spend-challenge-grid-inner/);
+  }
+});
+
+test("purchase affordability is judged only against remaining available money and never blocks saving", () => {
+  const spend = read("spend-experience.js");
+  assert.equal(spend, read("dist/spend-experience.js"));
+  assert.match(spend, /function currentBudgetState\(\)/);
+  assert.match(spend, /budget\.exceeds/);
+  assert.match(spend, /Hors budget : vigilance/);
+  assert.match(spend, /Tu peux l'enregistrer, mais sois vigilant/);
+  for (const file of ["app.js", "dist/app.js"]) {
+    const js = read(file);
+    assert.match(js, /intent:"purchase_review"/);
+    assert.match(js, /Montant restant disponible avant cet achat/);
+    assert.match(js, /dépasse le montant restant disponible/);
+  }
+  const server = read("server.js");
+  assert.match(server, /zone==="purchases"/);
+  assert.match(server, /purchaseReview=req\.body\?\.intent==="purchase_review"/);
+  assert.match(server, /utilise exclusivement le montant restant disponible/);
+  assert.match(server, /ne bloque jamais la saisie ou l'enregistrement/i);
 });
