@@ -34,7 +34,7 @@ test("explicit logout and account deletion clear the remembered offline identity
 test("offline restoration requires a known identity and a valid local snapshot",()=>{
  const js=read("app.js");
  assert.ok(js.includes('const localSnapshotRaw=localStorage.getItem(DB)'));
- assert.ok(js.includes('hasSnapshot:!!localSnapshot'));
+ assert.ok(js.includes('hasSnapshot:hasUsableSnapshot'));
  assert.ok(js.includes('const showOfflineSnapshot=()=>'));
  assert.ok(js.includes('if(showOfflineSnapshot())return'));
  assert.ok(js.includes('window.bepOfflineMode=true'));
@@ -57,6 +57,13 @@ test("startup mode matrix covers online, logged out, unauthorized, no-cache and 
  };
  vm.runInNewContext(read("offline-storage.js"),context);
  const decide=context.window.BEPOffline.resolveStartupMode;
+ const usable=context.window.BEPOffline.hasUsableSnapshot;
+ assert.equal(usable(null),false);
+ assert.equal(usable({}),false);
+ assert.equal(usable({income:0,incomes:[],budgets:[],goals:[],expenses:[],transactions:[],savingsOperations:[]}),false);
+ assert.equal(usable({income:1250}),true);
+ assert.equal(usable({budgets:[{amount:900}]}),true);
+ assert.equal(usable({transactions:[{amount:-12}]}),true);
  const cases=[
   [true,true,"authenticated","online"],
   [false,false,"authenticated","online"],
