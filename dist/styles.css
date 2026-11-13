@@ -1577,3 +1577,10 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
     will-change:auto;
   }
 }
+/* Settings panel is an exclusive view; the same header control swaps person/cross in place. */
+.app.settings-open .tabs,.app.settings-open .tabs[hidden]{display:none!important}
+.topbar .settings-icon-btn{position:relative;display:grid!important;place-items:center!important;overflow:hidden}
+.topbar .settings-icon-btn .settings-person-icon{display:block!important;grid-area:1/1;width:22px;height:22px}
+.topbar .settings-icon-btn .settings-close-icon{display:none!important;grid-area:1/1;width:22px;height:22px}
+.topbar .settings-icon-btn[aria-expanded="true"] .settings-person-icon{display:none!important}
+.topbar .settings-icon-btn[aria-expanded="true"] .settings-close-icon{display:block!important}
