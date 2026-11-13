@@ -177,6 +177,18 @@ test("monthly budget is isolated from real expenses and global refresh events", 
   }
 });
 
+test("monthly budget item edits retain stable identity and never fall back to add", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /let editingItemId = null/);
+    assert.match(js, /editingItemId = item\.clientId/);
+    assert.match(js, /clientId: crypto\.randomUUID\(\)/);
+    assert.match(js, /items\.findIndex\(x => x\.clientId === editingItemId\)/);
+    assert.match(js, /if \(targetIndex < 0\)[\s\S]*?Recharge le mois avant de réessayer/);
+    assert.doesNotMatch(js, /editingItemIndex/);
+  }
+});
+
 test("monthly save distinguishes a persisted snapshot from a failed module sync", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
