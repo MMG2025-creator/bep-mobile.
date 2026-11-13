@@ -17,6 +17,7 @@
 .settings-section-heading .hint{margin:3px 0 0;font-size:12px;line-height:1.4}
 .settings-button-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
 .settings-disclosure{min-width:0;border:0}
+.settings-disclosure[open]{grid-column:1/-1}
 .settings-action-button{display:flex;align-items:center;gap:11px;min-height:76px;width:100%;padding:13px;border:1px solid #dce8e1;border-radius:14px;background:#f6faf7;color:#10372f;text-align:left;cursor:pointer;list-style:none;transition:background .16s,border-color .16s,transform .16s}
 .settings-action-button::-webkit-details-marker{display:none}
 .settings-action-button::marker{content:""}
@@ -57,7 +58,7 @@
  .settings-card{padding:15px;border-radius:16px}
  .settings-page-heading h1{font-size:21px}
  .settings-section-heading h2{font-size:17px}
- .settings-button-grid{gap:8px}
+ .settings-button-grid{grid-template-columns:1fr;gap:8px}
  .settings-action-button{min-height:82px;gap:8px;padding:10px}
  .settings-action-icon{flex-basis:33px;width:33px;height:33px}
  .settings-action-copy strong{font-size:12px}
