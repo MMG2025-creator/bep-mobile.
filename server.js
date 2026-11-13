@@ -248,7 +248,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const treasurySource=rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
   const overdraftLimit=Number(treasurySource.overdraftLimit);
   const validUntil=String(treasurySource.validUntil||"");
-  const validDate=!validUntil||(/^\\d{4}-\\d{2}-\\d{2}$/.test(validUntil)&&!Number.isNaN(Date.parse(validUntil+"T00:00:00Z"))&&new Date(validUntil+"T00:00:00Z").toISOString().slice(0,10)===validUntil);
+  const validDate=!validUntil||(/^\d{4}-\d{2}-\d{2}$/.test(validUntil)&&!Number.isNaN(Date.parse(validUntil+"T00:00:00Z"))&&new Date(validUntil+"T00:00:00Z").toISOString().slice(0,10)===validUntil);
   if(!Number.isFinite(overdraftLimit)||overdraftLimit<0||overdraftLimit>1000000||!validDate){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_TREASURY"});}
   const treasury={overdraftLimit,validUntil};
   const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000),coachProfile,treasury};
