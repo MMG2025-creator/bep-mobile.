@@ -15,7 +15,7 @@ test("agent remains disabled by default and fails closed without separate billin
 });
 test("agent enables only with its dedicated key and explicit zero-billing confirmation",()=>{
  const c=readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"});
- assert.equal(c.enabled,true);assert.equal(c.model,"gemini-2.5-flash");assert.equal(c.maxCallsPerDay,8);
+ assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
 });
 test("daily Gemini call quota is bounded",()=>{
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"500"}).maxCallsPerDay,50);
