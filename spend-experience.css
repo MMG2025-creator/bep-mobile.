@@ -617,3 +617,43 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
     font-size:15px;
   }
 }
+
+/* Charges assistant: exact row proportions and typography parity with Mes revenus. */
+@media(max-width:560px){
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{
+    display:grid;
+    grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);
+    grid-template-rows:auto;
+    align-items:center;
+    gap:10px;
+    padding:10px 8px;
+    font-size:12px;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>input[type=checkbox]{
+    grid-column:1;
+    grid-row:1;
+    width:17px;
+    height:17px;
+    margin:0;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>span{
+    grid-column:2;
+    grid-row:1;
+    display:block;
+    min-width:0;
+    color:#263b32;
+    font-size:14px;
+    line-height:1.4;
+    visibility:visible;
+    opacity:1;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>input[data-checkup-amount]{
+    grid-column:3;
+    grid-row:1;
+    width:100%;
+    min-width:0;
+    min-height:40px;
+    box-sizing:border-box;
+    font-size:14px;
+  }
+}
