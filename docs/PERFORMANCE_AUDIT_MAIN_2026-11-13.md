@@ -128,7 +128,7 @@ Date : 2026-11-13
  
 ### Analyse des autres modules
 - `spend-experience.js` n'est pas différé : il installe les dialogues partagés utilisés aussi par les parcours Revenus, Charges, Épargne et Profil, et définit notamment `BEP_OPEN_ENTRY_DIALOG` et `BEP_CONFIRM_ACTION`. Le charger uniquement à l'ouverture de Dépenses casserait des parcours hors Dépenses.
-- `spend-clean-ui.js` n'est pas encore différé : il transforme le panneau Dépenses et dépend du DOM construit par `spend-experience.js`. Il faut ajouter un signal d'activation explicite et vérifier le cas où Dépenses est l'onglet restauré au démarrage avant de le déplacer.
+- `spend-clean-ui.js` est désormais chargé à la demande lors de la première ouverture de Dépenses. Un observateur de classe active couvre aussi le cas où Dépenses est restauré comme onglet initial. Le module reste dépendant de `spend-experience.js`, conservé en chargement initial ; le chargeur mutualise les demandes et permet une nouvelle tentative après échec.
 - Le Coach et les calculs principaux d'Épargne sont intégrés à `app.js`, qui contient aussi l'authentification, le rendu et les formulaires de base. Les extraire en bloc serait risqué sans refactorisation des dépendances et tests de non-régression. Aucune extraction hasardeuse n'a été faite.
 
 ### Vérifications statiques effectuées / limites
@@ -142,3 +142,11 @@ Date : 2026-11-13
 - La branche a divergé depuis le début des travaux : elle contient 10 commits propres et se trouve 6 commits derrière `main`.
 - Les 6 commits apparus sur `main` concernent des ajustements récents de l'interface d'authentification (`index.html`, `dist/index.html`, `auth-page.css` et `dist/auth-page.css`).
 - Les changements de performance restent isolés. Ne pas fusionner cette branche avant d'avoir réintégré ces 6 commits récents et contrôlé les deux index pour éviter d'écraser les ajustements d'authentification.
+
+
+### Phase 3 — interface Dépenses différée
+- Retrait du chargement initial de `spend-clean-ui.js` dans les deux index.
+- Chargement à la première ouverture de Dépenses, avec détection de l'onglet actif restauré au démarrage.
+- Le module `spend-experience.js` reste chargé initialement car il gère les dialogues partagés pour les autres rubriques.
+- Version d'URL du module différé : `v=6`.
+- Cette optimisation ne déplace ni le formulaire d'achat, ni les événements métier, ni le code OCR ; elle retarde uniquement la construction de la couche de présentation Dépenses.
