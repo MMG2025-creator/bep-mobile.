@@ -33,7 +33,7 @@ on:
       - "docs/**"
       - ".github/workflows/monthly-budget.yml"
   push:
-    branches: [feature/monthly-budget-history, feature/financial-intelligence-mainline]
+    branches: [feature/monthly-budget-history, feature/financial-intelligence-mainline, feature/single-active-session]
     paths:
       - "server.js"
       - "monthly-budget-routes.js"
