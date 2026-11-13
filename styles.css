@@ -925,8 +925,10 @@ body.chart-zoom-open{overflow:hidden}
 
 
 .monthly-budget-row-actions{display:flex;align-items:center;gap:5px}
-.monthly-budget-row-actions button:first-child{width:auto;padding:0 8px;font-size:10px}
-.monthly-budget-row-actions button:last-child{flex:0 0 30px}
+.monthly-budget-row-actions .record-action{width:30px;height:30px;flex:0 0 30px;padding:0;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:17px;line-height:1}
+.monthly-budget-row-actions .edit-action{color:var(--forest)}
+.monthly-budget-row-actions .delete-action{color:var(--red)}
+.monthly-budget-row-actions .record-action:disabled{opacity:.45;cursor:not-allowed}
 
 /* Savings experience V1 — additive, isolated page styles */
 .savings-page{--sv-forest:#10382f;--sv-green:#176b50;--sv-mint:#eaf5ef;--sv-gold:#d8b86a}
