@@ -1480,3 +1480,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .monthly-budget-actuals>summary>b{font-size:13px;color:var(--forest);white-space:nowrap}
 .monthly-budget-actuals>#monthlyBudgetActualImpact,.monthly-budget-actuals>#monthlyBudgetActualError,.monthly-budget-actuals>#monthlyBudgetActualRows{margin-left:12px;margin-right:12px}
 .monthly-budget-actuals>#monthlyBudgetActualRows{padding-bottom:10px}
+
+/* Reserve a dedicated right gutter for the accordion chevron; keep the amount clear of it */
+.monthly-budget-actuals>summary{padding:12px 48px 12px 12px!important;}
+.monthly-budget-actuals>summary>b{flex:0 0 auto;margin-right:2px;white-space:nowrap;}
+.monthly-budget-actuals>summary>span{min-width:0;}
