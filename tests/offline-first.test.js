@@ -43,3 +43,16 @@ test("offline capture never sends receipt images and remains local OCR",()=>{
  assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);
  assert.doesNotMatch(js,/fetch\([^)]*receiptFile/);
 });
+
+test("monthly budget history is cached per authenticated user for offline read-only access",()=>{
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.match(js,/bep-monthly-history-cache-v1/);
+ assert.match(js,/monthly-history:" \+ user/);
+ assert.match(js,/cached\?\.budgets\?\[monthKey\]/);
+ assert.match(js,/navigator\.onLine/);
+ assert.match(js,/Lecture seule/);
+ assert.match(js,/Hydrate every month snapshot/);
+ assert.match(js,/La création d’un budget mensuel nécessite une connexion/);
+ assert.match(js,/L’enregistrement d’un budget mensuel nécessite une connexion/);
+});
