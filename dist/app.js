@@ -790,12 +790,12 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
    showLogin("Ce navigateur est associé à un autre compte. Connecte-toi pour charger les données de ce compte.");
    return;
   }
-  if(window.BEPOffline)window.BEPOffline.markKnownUser(identity);
   window.bepSignedIn=true;window.bepOfflineMode=false;
   const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
   if(dataResponse.status===401||dataResponse.status===403){showLogin("L’accès aux données a été refusé. Reconnecte-toi pour ouvrir ton espace.");return}
   if(!dataResponse.ok)throw Error("Données du compte momentanément indisponibles ("+dataResponse.status+").");
   let remote=await dataResponse.json();
+  if(window.BEPOffline)window.BEPOffline.markKnownUser(identity);
   const pending=window.BEPOffline?await window.BEPOffline.readPending():null;
   if(pending){
    const synced=await window.BEPOffline.flush();
