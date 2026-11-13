@@ -41,6 +41,22 @@ test("monthly budget reads actual expenses without syncing or mutating legacy mo
   }
 });
 
+test("monthly budget row actions use accessible pencil and cross icons", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /class="record-action edit-action" data-edit-month-item=/);
+    assert.match(js, /aria-label="Modifier cette ligne" title="Modifier"/);
+    assert.match(js, /class="record-action delete-action" data-remove-month-item=/);
+    assert.match(js, /aria-label="Supprimer cette ligne" title="Supprimer"/);
+    assert.doesNotMatch(js, />Modifier<\\/button>/);
+  }
+  for (const file of ["styles.css", "dist/styles.css"]) {
+    const css = read(file);
+    assert.match(css, /monthly-budget-row-actions \\.record-action/);
+  }
+  assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
+});
+
 test("monthly history and savings DOM references exist in both HTML builds", () => {
   for (const file of ["index.html", "dist/index.html"]) {
     const html = read(file);

@@ -155,8 +155,8 @@
         ' <small>' + rows.length + ' ligne(s)</small></span><b>' + money(total) + '</b></summary><div class="monthly-budget-group-rows">' +
         (rows.length ? rows.map(x => '<div class="monthly-budget-row" data-month-row="' + x.index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
           (x.category ? escapeHtml(x.category) : labels[type]) + '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
-          '<button type="button" data-edit-month-item="' + x.index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
-          '<button type="button" data-remove-month-item="' + x.index + '" aria-label="Retirer cette ligne" ' +
+          '<button type="button" class="record-action edit-action" data-edit-month-item="' + x.index + '" aria-label="Modifier cette ligne" title="Modifier" ' + (current.status === "closed" ? "disabled" : "") + '>✎</button>' +
+          '<button type="button" class="record-action delete-action" data-remove-month-item="' + x.index + '" aria-label="Supprimer cette ligne" title="Supprimer" ' +
           (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>').join("") : '<p class="empty">Aucune ligne' +
           (query ? ' correspondant à la recherche.' : '.') + '</p>') + '</div></details>';
     }).join("");
