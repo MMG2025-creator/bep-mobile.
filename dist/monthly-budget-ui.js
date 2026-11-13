@@ -9,6 +9,8 @@
   let months = [];
   let current = null;
   let items = [];
+  let actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 };
+  let actualsError = "";
   let editingItemId = null;
   let monthSelectionMode = false;
   const monthSelection = new Set();
@@ -71,7 +73,7 @@
       incomes: items.filter(x => x.itemType === "income").map(x => ({ amount: x.plannedAmount })),
       budgets: items.filter(x => x.itemType === "charge").map(x => ({ amount: x.plannedAmount, category: x.category, nature: x.nature })),
       goals: items.filter(x => x.itemType === "savings").map(x => ({ monthly: x.plannedAmount })),
-      expenses: [], monthKey: current?.monthKey
+      expenses: actuals.expenses || [], monthKey: current?.monthKey, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
   }
   const monthNow = () => {
@@ -143,15 +145,22 @@
     if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
   }
   function renderItems() {
-    const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
-    $("monthlyBudgetItems").innerHTML = items.length ? items.map((x, index) =>
-      '<div class="monthly-budget-row" data-month-row="' + index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
-      labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
-      '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
-      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
-      '<button type="button" data-remove-month-item="' + index + '" aria-label="Retirer cette ligne" ' +
-      (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>'
-    ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
+    const labels = { income: "Revenus prévus", charge: "Charges prévues", savings: "Épargne prévue" };
+    const query = String($("monthlyBudgetSearch")?.value || "").trim().toLocaleLowerCase("fr-FR");
+    const sections = ["income", "charge", "savings"].map(type => {
+      const rows = items.map((x, index) => ({ ...x, index })).filter(x => x.itemType === type &&
+        (!query || (x.label + " " + (x.category || "")).toLocaleLowerCase("fr-FR").includes(query)));
+      const total = rows.reduce((n, x) => n + Number(x.plannedAmount || 0), 0);
+      return '<details class="monthly-budget-group" ' + (query || type === "charge" ? "open" : "") + '><summary><span>' + labels[type] +
+        ' <small>' + rows.length + ' ligne(s)</small></span><b>' + money(total) + '</b></summary><div class="monthly-budget-group-rows">' +
+        (rows.length ? rows.map(x => '<div class="monthly-budget-row" data-month-row="' + x.index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
+          (x.category ? escapeHtml(x.category) : labels[type]) + '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
+          '<button type="button" data-edit-month-item="' + x.index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
+          '<button type="button" data-remove-month-item="' + x.index + '" aria-label="Retirer cette ligne" ' +
+          (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>').join("") : '<p class="empty">Aucune ligne' +
+          (query ? ' correspondant à la recherche.' : '.') + '</p>') + '</div></details>';
+    }).join("");
+    $("monthlyBudgetItems").innerHTML = sections || '<p class="empty">Aucune ligne dans ce mois.</p>';
     $("monthlyBudgetItems").querySelectorAll("[data-edit-month-item]").forEach(button => {
       button.onclick = () => {
         const item = items[Number(button.dataset.editMonthItem)];
@@ -187,7 +196,20 @@
     $("monthlyBudgetIncomeTotal").textContent = money(sum("income"));
     $("monthlyBudgetChargesTotal").textContent = money(sum("charge"));
     $("monthlyBudgetSavingsTotal").textContent = money(sum("savings"));
-    $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
+    const position = financialPosition();
+    $("monthlyBudgetRemaining").textContent = money(position.available);
+    $("monthlyBudgetActualTotal").textContent = money(position.actualExpenseTotal);
+    $("monthlyBudgetActualCount").textContent = position.expenseCount + " dépense(s) réelle(s)";
+    $("monthlyBudgetActualImpact").textContent = "Impact sur le disponible : " + money(position.actualImpact);
+    $("monthlyBudgetActualError").hidden = !actualsError;
+    $("monthlyBudgetActualError").textContent = actualsError;
+    const actualRows = (actuals.expenses || []).filter(x => !query || (x.label + " " + (x.category || "")).toLocaleLowerCase("fr-FR").includes(query));
+    $("monthlyBudgetActualRows").innerHTML = actualRows.length ? actualRows.map(x =>
+      '<div class="monthly-budget-actual-row"><span><b>' + escapeHtml(x.label || "Dépense") + '</b><small>' +
+      escapeHtml(x.category || "Sans catégorie") + ' · ' + new Date(x.at).toLocaleDateString("fr-FR") +
+      '</small></span><b>' + money(x.amount) + '</b></div>').join("") : '<p class="empty">' +
+      (query ? "Aucune dépense correspondant à la recherche." : "Aucune dépense réelle enregistrée pour ce mois.") + '</p>';
+    if (query) $("monthlyBudgetActuals").open = true;
     $("monthlyBudgetSave").hidden = current.status === "closed";
     $("monthlyBudgetClose").hidden = current.status === "closed";
     $("monthlyBudgetReopen").hidden = current.status !== "closed";
@@ -200,8 +222,15 @@
     const epoch = authEpoch;
     setBusy(true);
     try {
-      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
+      const timeZone = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Paris");
+      const [data, actualData] = await Promise.all([
+        api("/api/budgets/months/" + encodeURIComponent(monthKey)),
+        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + timeZone)
+          .catch(error => ({ __error: error.message, expenses: [], actualExpenseTotal: "0.00", count: 0 }))
+      ]);
       if (epoch !== authEpoch || !window.bepSignedIn) return;
+      actuals = actualData;
+      actualsError = actualData.__error ? "Dépenses réelles indisponibles : " + actualData.__error : "";
       current = data.budget;
       editingItemId = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
@@ -229,7 +258,7 @@
       renderMonths();
       if (months.length) await loadMonth(months[0].monthKey);
       else {
-        current = null; items = []; renderMonths();
+        current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths();
         status("Aucun historique mensuel. Crée le premier mois à partir de ton budget actuel.");
       }
     } catch (error) {
@@ -240,6 +269,7 @@
   }
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
+  $("monthlyBudgetSearch").oninput = () => { if (current) renderItems(); };
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
     if (loading) return;
@@ -373,7 +403,7 @@
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
     if (window.bepSignedIn) refresh();
-    else { months = []; current = null; items = []; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    else { months = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   if (window.bepSignedIn) refresh();
 })();
