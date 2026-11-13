@@ -98,3 +98,7 @@
 .auth-gate .auth-card .auth-forgot-link{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-height:34px!important;margin:8px auto 0!important;text-align:center!important}
 .auth-gate .auth-card #authMessage:empty{display:none!important}
 @media(max-width:480px){.auth-gate .auth-card{padding:18px 16px 18px!important}.auth-gate .auth-brand-banner{margin-bottom:16px!important}.auth-gate .auth-switch{margin-bottom:15px!important}.auth-gate .google-login{margin-bottom:15px!important}.auth-gate .auth-card label{margin:12px 0!important}}
+
+/* Auth visibility guard: the advice robot must never appear over the signed-out gate. */
+body:has(#authGate:not([hidden])) #bepAdviceDock,
+body:has(#authGate:not([hidden])) #bepAdviceRobot{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
