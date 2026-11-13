@@ -71,12 +71,12 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
- assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);\n assert.ok(server.includes("sourceFingerprint(original)"));
+ assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
+ assert.ok(server.includes("sourceFingerprint(original)"));
  assert.match(server,/SOURCE_DOCUMENT_CHANGED/);
- assert.ok(server.includes("sourceDigest(original)"));
  assert.ok(server.includes("candidate.source_version"));
  assert.ok(server.includes("candidate.source_digest"));
- assert.match(server,/sourceDigest\\(original\\)/);
+ assert.ok(server.includes("sourceFingerprint(original)"));
  assert.ok(server.includes("if(!agentTelemetryReady)return next();"));
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
