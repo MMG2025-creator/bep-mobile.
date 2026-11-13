@@ -477,5 +477,5 @@
     if (window.bepSignedIn) refresh();
     else { months = []; current = null; items = []; actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] }; renderMonths(); renderActuals(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
-  if (window.bepSignedIn) refresh();
+  window.BEP_MONTHLY_UI_READY = () => { if (window.bepSignedIn) refresh(); };
 })();
