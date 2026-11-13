@@ -390,9 +390,17 @@
         }
       }
     } catch (error) {
-      status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
-        ? "Historique indisponible : migration non appliquée ou base temporairement inaccessible."
-        : "Historique temporairement indisponible : " + error.message, true);
+      const cached = await readHistoryCache();
+      if (cached && Array.isArray(cached.months) && cached.months.length) {
+        months = cached.months;
+        renderMonths();
+        await loadMonth(months[0].monthKey);
+        status("Serveur indisponible : dernière photographie du budget mensuel affichée en lecture seule.", true);
+      } else {
+        status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
+          ? "Historique indisponible : migration non appliquée ou base temporairement inaccessible."
+          : error.message || "Historique temporairement indisponible.", true);
+      }
     } finally { setBusy(false); applyOfflineReadOnly(); }
   }
 
