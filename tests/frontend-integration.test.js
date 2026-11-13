@@ -48,7 +48,7 @@ test("monthly budget row actions use accessible pencil and cross icons", () => {
     assert.match(js, /aria-label="Modifier cette ligne" title="Modifier"/);
     assert.match(js, /class="record-action delete-action" data-remove-month-item=/);
     assert.match(js, /aria-label="Supprimer cette ligne" title="Supprimer"/);
-    assert.doesNotMatch(js, />Modifier<\\/button>/);
+    assert.doesNotMatch(js, />Modifier<\/button>/);
   }
   for (const file of ["styles.css", "dist/styles.css"]) {
     const css = read(file);
