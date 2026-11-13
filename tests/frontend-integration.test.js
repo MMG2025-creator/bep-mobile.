@@ -170,18 +170,16 @@ test("monthly load preserves a failed cross-module sync warning", () => {
   }
 });
 
-test("missing actual expenses are not displayed or compared as zero spending", () => {
+test("monthly budget is isolated from real expenses and global refresh events", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
-    const start = js.indexOf("function renderActuals()");
-    const end = js.indexOf("\n  function renderItems()", start);
-    assert.ok(start >= 0 && end > start, file + " actuals renderer is missing");
-    const renderer = js.slice(start, end);
-    assert.match(renderer, /const hasActuals = Number\(actuals\.count\) > 0/);
-    assert.match(renderer, /hasActuals \? money\(actuals\.actualExpenseTotal\) : "Non renseigné"/);
-    assert.match(renderer, /Écart non calculable : aucun achat n’est enregistré/);
-    assert.ok(renderer.indexOf("if (hasActuals)") < renderer.indexOf("const variance ="),
-      file + " must calculate a variance only when actual purchases exist");
+    assert.doesNotMatch(js, /\/actuals|actuals\.expenses|renderActuals|refreshActuals|bep:state-rendered|bep:offline-synced/);
+    assert.match(js, /expenses: \[\], monthKey: current\?\.monthKey/);
+    assert.match(js, /api\("\/api\/budgets\/months\/" \+ encodeURIComponent\(monthKey\)\)/);
+  }
+  for (const file of ["index.html", "dist/index.html"]) {
+    const html = read(file);
+    assert.doesNotMatch(html, /monthly-budget-actuals|monthlyBudgetActual/);
   }
 });
 
