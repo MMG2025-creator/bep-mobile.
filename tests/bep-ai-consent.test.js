@@ -75,3 +75,8 @@ test("published source and dist Coach assets stay identical and both entrypoints
  }
  for(const css of [rootCss,distCss])assert.match(css,/\.external-ai-consent-notice/);
 });
+
+test("consent notice identifies the configured external provider without exposing its key",()=>{
+ assert.match(server,/provider:String\(process\.env\.BEP_AI_PROVIDER\|\|"gemini"\)\.toLowerCase\(\)/);
+ assert.match(server,/requiredConsentVersion:BEP_EXTERNAL_AI_CONSENT_VERSION,provider:/);
+});
