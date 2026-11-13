@@ -1,7 +1,7 @@
 # BEP Gemini Agent — exploitation
 
 ## Démarrage
-L'API crée les tables additives de l'agent après l'initialisation PostgreSQL, même si Gemini reste désactivé. Le worker et tout appel Gemini ne démarrent que si les trois conditions d'activation sont satisfaites. En l'absence de configuration, le serveur BEP et le Coach local continuent normalement.
+L'agent est désactivé par défaut. Tant que les trois conditions d'activation ne sont pas réunies, le démarrage ne crée aucune table, n'écrit rien en base et n'effectue aucun appel Gemini. Lorsque l'agent est explicitement activé, il crée uniquement ses tables additives avant de démarrer le worker. Le serveur BEP et le Coach local restent indépendants de Gemini.
 
 ## Cadence
 Au démarrage, deux tâches sont mises en file : revue documentaire et revue qualité synthétique. Un cycle de programmation relance ces tâches toutes les six heures. Un worker traite une tâche à la fois et interroge la file persistante toutes les 15 secondes par défaut.
@@ -12,7 +12,7 @@ Un service Render Free peut être suspendu. Dans ce cas, la file PostgreSQL cons
 La limite est de 8 appels Gemini par jour par défaut (maximum configurable : 50). Si la limite est atteinte, les tâches restent en attente ou échouent sans fallback vers un fournisseur payant.
 
 ## Contrôles
-Tables : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates`, `bep_agent_daily_usage`, `bep_agent_metrics`.
+Tables additives : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates`, `bep_agent_daily_usage`, `bep_agent_metrics`, `bep_agent_approved_knowledge`, `bep_agent_coach_metrics`.
 
 Ne jamais activer l'agent en production avant d'avoir vérifié la clé Gemini dédiée, la configuration de facturation gratuite et le plan Render. Les propositions documentaires doivent être examinées avant toute publication.
 
@@ -25,4 +25,4 @@ Configurer `BEP_AGENT_ADMIN_USER_IDS` avec les identifiants BEP des administrate
 - `GET /api/admin/bep-agent/candidates?status=pending` : propositions en attente.
 - `POST /api/admin/bep-agent/candidates/:id/review` avec `{"decision":"approve"}` ou `{"decision":"reject"}`.
 
-Une approbation publie une surcouche dans `bep_agent_approved_knowledge`, lue par le moteur RAG. Les données seed d'origine ne sont pas écrasées. Une révocation ultérieure peut être réalisée en rejetant les propositions suivantes ; toute décision d'approbation reste humaine.
+Une approbation publie une surcouche dans `bep_agent_approved_knowledge`, lue par le moteur RAG. Les données seed d'origine ne sont pas écrasées. Une décision d'approbation reste humaine.
