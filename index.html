@@ -84,20 +84,20 @@
 <div class="budget-module-nav" role="tablist" aria-label="Modules du budget">
 <button type="button" class="budget-module-tab active" role="tab" aria-selected="true" aria-controls="budgetModuleIncome" data-budget-module="income">Mes revenus</button>
 <button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleCharges" data-budget-module="charges">Mes charges</button>
-<button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleMonthly" data-budget-module="monthly">Mes budgets mensuels</button>
+<button type="button" class="budget-module-tab" role="tab" aria-selected="false" aria-controls="budgetModuleMonthly" data-budget-module="monthly">Mes budgets par mois</button>
 </div>
 
 <div id="budgetModuleMonthly" class="budget-module" role="tabpanel" hidden>
 <article class="card monthly-history-card" id="monthlyHistoryCard">
-  <div class="card-head"><div><p class="eyebrow">HISTORIQUE BUDGÉTAIRE</p><h2>Mes budgets mensuels</h2><p class="hint">Chaque mois conserve sa propre photographie. Une modification ne réécrit pas les mois précédents.</p></div><span class="tag">Historique</span></div>
+  <div class="card-head"><div><p class="eyebrow">SUIVI DE TON BUDGET</p><h2>Mes budgets par mois</h2><p class="hint">Retrouve tes budgets mois après mois, consulte les périodes précédentes et actualise ton budget lorsque ta situation évolue. Les mois déjà enregistrés restent inchangés.</p></div></div>
   <p id="monthlyBudgetStatus" class="monthly-budget-status" role="status" aria-live="polite">Connecte-toi pour consulter ton historique mensuel.</p>
-  <div id="monthlyBudgetNoMonth" hidden><p class="hint">Aucun mois n’est encore enregistré dans le nouvel historique. Le premier mois peut reprendre une seule fois les revenus, charges et objectifs actuellement enregistrés.</p></div>
+  <div id="monthlyBudgetNoMonth" hidden><div class="monthly-budget-empty-state"><h3>Aucun budget enregistré pour le moment</h3><p>Ton premier budget sera créé à partir de tes revenus, charges et objectifs actuels.</p></div></div>
   <form id="monthlyBudgetCreateForm" class="monthly-budget-create" hidden>
-    <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required></div>
-    <button class="secondary full" type="submit">Créer le mois</button>
+    <div class="field"><label for="monthlyBudgetNewMonth">Mois à créer</label><input id="monthlyBudgetNewMonth" type="month" required></div>
+    <button class="secondary full" type="submit">Créer mon premier budget</button>
   </form>
   <div id="monthlyBudgetWorkspace" hidden>
-    <div class="field"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="field"><label for="monthlyBudgetMonth">Retrouver un budget</label><select id="monthlyBudgetMonth"></select></div>
     <div class="monthly-budget-metrics">
       <div><span>Revenus prévus</span><strong id="monthlyBudgetIncomeTotal">0,00 €</strong></div>
       <div><span>Charges prévues</span><strong id="monthlyBudgetChargesTotal">0,00 €</strong></div>
