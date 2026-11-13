@@ -128,7 +128,7 @@
   }catch(error){
    if(window.BEPOffline&&window.BEPOffline.hasKnownUser()&&window.BEPApp){window.BEPApp.enableOfflineMode();notifyOfflineFallback();return}
    authGate.hidden=false;showAuthMessage(error.message||"Connexion au serveur impossible.");
-  }
+  }finally{const startupLoader=document.getElementById("bepStartupLoader");if(startupLoader)startupLoader.hidden=true}
  }
  function notifyOfflineFallback(){showAuthMessage("Mode hors ligne : tes données locales restent accessibles. Les changements seront synchronisés après reconnexion et vérification du compte.")}
  window.addEventListener("load",restoreSession,{once:true});
