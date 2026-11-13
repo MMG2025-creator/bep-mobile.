@@ -7,6 +7,7 @@ on:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"
       - "tests/bep-agent.test.js"
+      - "tests/bep-agent-db.test.js"
       - "docs/BEP_GEMINI_AGENT_*.md"
       - ".github/workflows/bep-gemini-agent.yml"
       - "server.js"
@@ -23,6 +24,21 @@ on:
 jobs:
   validate-agent:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/bep_agent_test
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bep_agent_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bep_agent_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,4 +55,4 @@ jobs:
       - name: Install dependencies for PostgreSQL integration tests
         run: npm install --no-fund
       - name: Agent safety tests
-        run: node --test tests/bep-agent.test.js tests/bep-financial-intelligence.test.js tests/offline-first.test.js tests/offline-sync-api.test.js
+        run: node --test tests/bep-agent.test.js tests/bep-agent-db.test.js tests/bep-financial-intelligence.test.js tests/offline-first.test.js tests/offline-sync-api.test.js
