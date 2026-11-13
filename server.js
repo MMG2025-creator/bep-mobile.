@@ -4,7 +4,7 @@ const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {startBepAgent}=require("./lib/bep-agent");
-const {sourceDigest}=require("./lib/bep-agent/worker");
+const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null,agentTelemetryReady=false;
@@ -234,11 +234,11 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
    const source=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[candidate.source_slug]);
    if(!source.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_NOT_FOUND"})}
    const original=source.rows[0];
-   const currentSourceDigest=sourceDigest(original);
+   const currentSourceDigest=sourceFingerprint(original);
    if(original.source_name!==candidate.source_name||original.source_url!==candidate.source_url||original.evidence_level!==candidate.evidence_level){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_PROVENANCE_CHANGED"})}
    if(Number(original.version)!==Number(candidate.source_version)||currentSourceDigest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_CHANGED"})}
    const deactivate=candidate.proposal_type==="deactivate";
-   await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,$10) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,!deactivate,String(req.session.user.id)]);
+   await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10,1,$11,$12) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,Number(original.version),candidate.source_digest,!deactivate,String(req.session.user.id)]);
   }
   await client.query("UPDATE bep_knowledge_candidates SET review_status=$2,reviewed_at=NOW() WHERE id=$1",[id,decision==="approve"?"accepted":"rejected"]);
   await client.query("COMMIT");res.json({ok:true,id,decision});
