@@ -151,3 +151,9 @@
 .auth-gate form{min-width:0!important}
 .auth-gate input{max-width:100%!important;min-width:0!important}
 @media(max-width:480px){.auth-gate{padding-left:10px!important;padding-right:10px!important}.auth-gate>.auth-card{width:100%!important;padding-left:17px!important;padding-right:17px!important;padding-bottom:20px!important}.auth-gate .auth-brand-banner{width:calc(100% + 34px)!important;margin-left:-17px!important;margin-right:-17px!important;min-height:70px!important;max-height:88px!important}.auth-gate .auth-card h1{font-size:clamp(22px,6vw,26px)!important}.auth-gate .auth-card label{line-height:1.4!important}}
+
+
+/* Mobile login: an empty status paragraph must not reserve a large blank block. */
+.auth-card #authMessage:empty{display:none!important;min-height:0!important;height:0!important;margin:0!important;padding:0!important;border:0!important}
+.auth-card>small{display:block!important;margin:12px 0 0!important;line-height:1.4!important}
+@media(max-width:480px){.auth-gate>.auth-card,.auth-gate .auth-card{padding-bottom:14px!important}}
