@@ -64,7 +64,7 @@ test("foreground revalidation invalidates a session revoked by another interface
 test("logout UI locks a second active interface without deleting its pending offline queue",()=>{
  const js=read("app.js"),offline=read("offline-storage.js"),server=read("server.js");
  assert.match(offline,/new BroadcastChannel\("bep-auth-session-v1"\)/);
- assert.match(offline,/window\.addEventListener\("visibilitychange"/);
+ assert.match(offline,/document\.addEventListener\("visibilitychange"/);
  assert.match(js,/window\.addEventListener\("bep:session-invalidated"/);
  assert.match(js,/La session a été fermée depuis une autre interface/);
  assert.match(js,/broadcastSessionEnd\("logout"\)/);
