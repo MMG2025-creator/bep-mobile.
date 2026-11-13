@@ -166,7 +166,7 @@ $("overdraftForm").onsubmit=e=>{
  if(save()){$("overdraftStatus").textContent="Découvert autorisé enregistré. Il permet de poursuivre les opérations sans modifier ton bilan mensuel.";window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
 };
 $("profileForm").onsubmit=async e=>{e.preventDefault();const button=$("saveProfileBtn"),status=$("profileStatus");button.disabled=true;status.textContent="Enregistrement…";try{const r=await fetch(API+"/api/profile",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({firstName:$("profileFirstName").value,lastName:$("profileLastName").value,phone:$("profilePhone").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Enregistrement impossible.");coachFirstName=$("profileFirstName").value.trim();status.textContent="Profil enregistré.";renderAI();notify("Profil mis à jour");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"profile"}}))}catch(e){status.textContent=e.message}finally{button.disabled=false}};
-$("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");if(!window.confirm("Supprimer définitivement ton compte BEP et toutes les données associées ? Cette action est irréversible."))return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
+$("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");if(!window.confirm("Supprimer définitivement ton compte BEP et toutes les données associées ? Cette action est irréversible."))return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.BEPOffline?.forgetKnownUser();window.bepOfflineMode=false;window.bepSignedIn=false;window.bepOfflineMode=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
 let pdfPreviewRows=[];
 const pdfCategories=["Logement","Factures","Alimentation","Transport","Crédits","Famille","Loisirs","Autres dépenses"];
 function pdfCleanText(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim()}
@@ -248,7 +248,7 @@ $("skipImageCandidate").addEventListener("click",()=>{imageCandidateIndex++;imag
 $("bankImages").addEventListener("change",()=>{const files=[...($("bankImages").files||[])];$("imageSelectionInfo").textContent=files.length+" / 10 photo(s) sélectionnée(s)";if(files.length>10){$("bankImages").value="";$("imageSelectionInfo").textContent="Maximum 10 photos. Sélectionne un nouveau lot.";imageStatus("Tu peux importer 10 photos maximum par analyse.",true)}else if(files.some(f=>!/^image\/(jpeg|png|webp)$/.test(f.type))){$("bankImages").value="";imageStatus("Format non pris en charge. Utilise JPG, PNG ou WebP.",true)}});
 $("analyzeImages").addEventListener("click",async()=>{const files=[...($("bankImages").files||[])];if(!files.length)return imageStatus("Sélectionne au moins une photo.",true);if(files.length>10)return imageStatus("10 photos maximum par analyse.",true);if(files.some(f=>f.size>12*1024*1024))return imageStatus("Chaque photo doit peser moins de 12 Mo.",true);try{await loadTesseract()}catch(error){return imageStatus(error.message||"Le moteur OCR n'est pas disponible.",true)}$("analyzeImages").disabled=true;$("imageReview").classList.add("hidden");imageStatus("Lecture locale des photos… Aucune image n'est envoyée au serveur BEP.");const candidates=[];try{for(let i=0;i<files.length;i++){imageStatus("Analyse de la photo "+(i+1)+" sur "+files.length+"…");const ocrImage=await prepareBankImageForOcr(files[i]);const result=await window.Tesseract.recognize(ocrImage,"fra+eng",{logger:m=>{if(m.status==="recognizing text")imageStatus("Photo "+(i+1)+" / "+files.length+" — reconnaissance "+Math.round((m.progress||0)*100)+" %")}});const extracted=imageCandidatesFromOcrData(result.data,files[i].name);for(const c of extracted)candidates.push(c);if(!extracted.length){for(const line of String(result.data?.text||"").split(/\r?\n/)){const c=imageCandidateFromLine(line,files[i].name,false);if(c)candidates.push(c)}}}const seen=new Set();imageCandidates=candidates.filter(c=>{const k=pdfCleanText(c.description)+"|"+c.amount.toFixed(2);if(seen.has(k))return false;seen.add(k);return true});if(!imageCandidates.length)throw Error("Aucune information financière suffisamment lisible n'a été détectée. Essaie avec des captures plus nettes où les libellés et montants sont visibles.");imageCandidateIndex=0;$("bankImages").value="";$("imageSelectionInfo").textContent="Photos analysées. Les fichiers originaux ne sont plus sélectionnés.";imageStatus(imageCandidates.length+" information(s) détectée(s). Vérifie-les une par une.");imageRenderCandidate()}catch(e){$("bankImages").value="";imageStatus(e.message||"L'analyse des photos a échoué.",true)}finally{$("analyzeImages").disabled=false}});
 
-$("logoutBtn").onclick=async()=>{const button=$("logoutBtn");button.disabled=true;button.textContent="Déconnexion…";try{const r=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});if(!r.ok)throw Error("La déconnexion n’a pas pu être confirmée.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginPassword").value="";$("loginEmail").value="";authMessage.textContent="Tu es déconnecté.";button.textContent="Me déconnecter du compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la déconnexion.");button.textContent="Me déconnecter du compte";button.disabled=false;}};
+$("logoutBtn").onclick=async()=>{const button=$("logoutBtn");button.disabled=true;button.textContent="Déconnexion…";try{const r=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});if(!r.ok)throw Error("La déconnexion n’a pas pu être confirmée.");window.BEPOffline?.forgetKnownUser();window.bepOfflineMode=false;window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginPassword").value="";$("loginEmail").value="";authMessage.textContent="Tu es déconnecté.";button.textContent="Me déconnecter du compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la déconnexion.");button.textContent="Me déconnecter du compte";button.disabled=false;}};
 let editingIncomeId=null;
 $("incomeForm").onsubmit=e=>{e.preventDefault();const amount=Number($("incomeAmount").value),label=$("incomeLabel").value.trim(),type=$("incomeType").value;if(!label||!Number.isFinite(amount)||amount<=0)return notify("Renseigne un libellé et un montant valide.");const item={id:editingIncomeId||crypto.randomUUID(),label,type,amount,source:"manual"};if(editingIncomeId){state.incomes=state.incomes.map(x=>x.id===editingIncomeId?item:x);editingIncomeId=null;$("incomeForm").querySelector("button").textContent="+ Ajouter ce revenu";notify("Revenu modifié")}else{state.incomes.push(item);notify("Revenu ajouté")}syncIncomeTotal();$("incomeLabel").value="";$("incomeAmount").value="";$("incomeType").value="Salaire";if(save()!==false)window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"income"}}))};
 function editIncome(id){const item=state.incomes.find(x=>x.id===id);if(!item)return;editingIncomeId=id;$("incomeLabel").value=item.label||"";$("incomeType").value=item.type||"Autre revenu";$("incomeAmount").value=item.amount;$("incomeForm").querySelector("button").textContent="Enregistrer les modifications";if(window.BEP_OPEN_ENTRY_DIALOG)window.BEP_OPEN_ENTRY_DIALOG("income");else $("incomeEditorDetails").open=true;}
@@ -750,50 +750,82 @@ function showVerification(email,message){pendingVerificationEmail=String(email||
 function authMode(mode){const reg=mode==="register";loginForm.hidden=reg;registerForm.hidden=!reg;verifyEmailForm.hidden=true;$("showLogin").classList.toggle("active",!reg);$("showRegister").classList.toggle("active",reg);authMessage.textContent=""}
 $("showLogin").onclick=()=>authMode("login");$("showRegister").onclick=()=>authMode("register");
 $("googleLogin").onclick=()=>{window.location.href=API+"/api/auth/google"};
-async function finishAuth(isNew){try{if(!isNew){const r=await fetch(API+"/api/data",{credentials:"include"});if(!r.ok)throw Error("Impossible de charger tes données.");const d=await r.json();state={...defaults,...(d.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}await window.BEPOffline.setBaseline(d.payload||{})}renderCoachProfile();await persistMigratedIncomeState()}else{const r=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});if(!r.ok)throw Error("Le compte est créé, mais la sauvegarde initiale a échoué.")}localStorage.removeItem(PENDING_EMAIL_KEY);pendingVerificationEmail="";window.bepSignedIn=true;if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}window.BEPOffline.setBaseline(state)}window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;aiConnection={configured:false,provider:"",model:""};await loadAiConnection();tab("home");render()}catch(e){authMessage.textContent=e.message}}
+async function finishAuth(isNew){try{if(!isNew){const r=await fetch(API+"/api/data",{credentials:"include"});if(!r.ok)throw Error("Impossible de charger tes données.");const d=await r.json();state={...defaults,...(d.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}await window.BEPOffline.setBaseline(d.payload||{})}renderCoachProfile();await persistMigratedIncomeState()}else{const r=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});if(!r.ok)throw Error("Le compte est créé, mais la sauvegarde initiale a échoué.")}localStorage.removeItem(PENDING_EMAIL_KEY);pendingVerificationEmail="";window.bepOfflineMode=false;window.bepSignedIn=true;if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}window.BEPOffline.setBaseline(state)}window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;aiConnection={configured:false,provider:"",model:""};await loadAiConnection();tab("home");render()}catch(e){authMessage.textContent=e.message}}
 $("resendVerification").onclick=async()=>{if(!pendingVerificationEmail)return authMessage.textContent="Adresse e-mail manquante. Recommence l'inscription.";authMessage.textContent="Envoi du code…";try{const r=await fetch(API+"/api/auth/resend-verification",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:pendingVerificationEmail})});const d=await r.json();if(!r.ok)throw Error(d.message||"Envoi impossible.");authMessage.textContent="Un nouveau code a été envoyé à "+pendingVerificationEmail+"."}catch(e){authMessage.textContent=e.message}};verifyEmailForm.onsubmit=async e=>{e.preventDefault();if(!pendingVerificationEmail)return authMessage.textContent="Adresse e-mail manquante. Recommence l'inscription.";authMessage.textContent="Vérification…";try{const r=await fetch(API+"/api/auth/verify-email",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:pendingVerificationEmail,code:$("verifyEmailCode").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Vérification impossible.");await finishAuth(true)}catch(e){authMessage.textContent=e.message}};loginForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Connexion…";try{const r=await fetch(API+"/api/auth/login",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value,password:$("loginPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Connexion impossible.");await finishAuth(false)}catch(x){authMessage.textContent=x.message}};
 registerForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Création du compte et envoi du code…";try{const email=$("registerEmail").value.trim().toLowerCase(),r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(x){authMessage.textContent=x.message}};
 const oauthResult=new URLSearchParams(window.location.search).get("login");const oauthMessages={success:"Connexion Google réussie.",error:"Google n’a pas finalisé la connexion. Vérifie le compte Google choisi puis réessaie.",google_config_error:"La configuration Google de BEP est invalide : le Client Secret OAuth doit être renouvelé dans Google Cloud puis mis à jour sur le serveur.",link_required:"Un compte BEP existe déjà avec cette adresse. Connecte-toi par e-mail puis associe Google dans les paramètres.",link_email_mismatch:"Choisis dans Google la même adresse e-mail que celle de ton compte BEP.",google_already_linked:"Ce compte Google est déjà associé à un autre compte BEP.",google_email_changed:"L’adresse e-mail Google ne correspond plus au compte associé.",link_session_required:"La session BEP a expiré. Reconnecte-toi puis réessaie.",link_account_missing:"Le compte BEP à associer est introuvable.",link_session_error:"Google est associé, mais la session n’a pas pu être actualisée. Reconnecte-toi.",google_linked:"Compte Google associé avec succès."};if(oauthResult&&oauthMessages[oauthResult]){authMessage.textContent=oauthMessages[oauthResult];history.replaceState({},document.title,window.location.pathname+window.location.hash)}(async()=>{
- if(new URLSearchParams(window.location.search).has("reset")){gate.hidden=false;const loader=document.getElementById("bepStartupLoader");if(loader)loader.hidden=true;return}
+ if(new URLSearchParams(window.location.search).has("reset")){gate.hidden=false;const resetLoader=document.getElementById("bepStartupLoader");if(resetLoader)resetLoader.hidden=true;return}
  if(pendingVerificationEmail)showVerification(pendingVerificationEmail,"Inscription en attente pour "+pendingVerificationEmail+". Saisis le code reçu ou demande-en un nouveau.");
  const loader=document.getElementById("bepStartupLoader");
  const knownLocalUser=!!(window.BEPOffline&&window.BEPOffline.hasKnownUser());
- if(knownLocalUser){
-  window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));if(loader)loader.hidden=true;
-  const localSnapshot=localStorage.getItem(DB);
-  (async()=>{
-   try{
-    const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});
-    if(!authResponse.ok)throw Error("Session indisponible");
-    const auth=await authResponse.json();
-    if(!auth.user){gate.hidden=false;window.bepOfflineMode=false;state={...defaults};render();return}
-    const identity=String(auth.user.id||auth.user.email||"authenticated");
-    const previousIdentity=localStorage.getItem("bep-last-authenticated-user");
-    if(previousIdentity&&previousIdentity!==identity){localStorage.removeItem(DB);window.bepOfflineMode=false;state={...defaults};render();gate.hidden=false;authMessage.textContent="Ce navigateur est associé à un autre compte. Connecte-toi pour charger tes données.";return}
-    window.BEPOffline.markKnownUser(identity);window.bepSignedIn=true;window.bepOfflineMode=false;
-    try{const profileResponse=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(profileResponse.ok){const profileData=await profileResponse.json();coachFirstName=String(profileData.user?.firstName||"").trim()}}catch{}
-    const pending=await window.BEPOffline.readPending();
-    if(pending){await window.BEPOffline.flush();return}
-    const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
-    if(!dataResponse.ok)throw Error("Données du compte momentanément indisponibles");
-    const remote=await dataResponse.json();
-    if(localStorage.getItem(DB)===localSnapshot){state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];await window.BEPOffline.setBaseline(remote.payload||{});await persistMigratedIncomeState();render();dispatchLegacyBudgetChanged()}
-    window.dispatchEvent(new Event("bep:auth-ready"));
-   }catch(error){
-    window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));
-    notify("BEP reste disponible avec tes données locales. La synchronisation reprendra dès que le serveur répondra.");
+ const localSnapshotRaw=localStorage.getItem(DB);
+ let localSnapshot=null;
+ try{const parsed=JSON.parse(localSnapshotRaw||"null");if(parsed&&typeof parsed==="object"&&!Array.isArray(parsed))localSnapshot=parsed}catch{}
+ const offlineEligible=window.BEPOffline?.resolveStartupMode({knownUser:knownLocalUser,hasSnapshot:!!localSnapshot,authState:"unavailable"})==="offline";
+ const showLogin=message=>{
+  window.bepSignedIn=false;window.bepOfflineMode=false;window.dispatchEvent(new Event("bep:auth-ready"));
+  gate.hidden=false;if(message)authMessage.textContent=message;
+  if(loader)loader.hidden=true;
+ };
+ const showOfflineSnapshot=()=>{
+  if(!offlineEligible||!localSnapshot)return false;
+  state={...defaults,...localSnapshot};
+  window.bepSignedIn=false;window.bepOfflineMode=true;
+  gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));
+  notify("Connexion au serveur indisponible. Tes dernières données enregistrées sur cet appareil sont accessibles en lecture hors ligne.");
+  if(loader)loader.hidden=true;
+  return true;
+ };
+ try{
+  const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});
+  if(authResponse.status===401||authResponse.status===403){showLogin("Ta session n’est plus valide. Reconnecte-toi pour accéder à tes données.");return}
+  if(!authResponse.ok)throw Error("Service d’authentification indisponible ("+authResponse.status+").");
+  const auth=await authResponse.json();
+  if(!auth.user){showLogin("");return}
+  const identity=String(auth.user.id||auth.user.email||"authenticated");
+  const previousIdentity=localStorage.getItem("bep-last-authenticated-user");
+  if(previousIdentity&&previousIdentity!==identity){
+   localStorage.removeItem(DB);window.bepSignedIn=false;window.bepOfflineMode=false;state={...defaults};render();
+   showLogin("Ce navigateur est associé à un autre compte. Connecte-toi pour charger les données de ce compte.");
+   return;
+  }
+  if(window.BEPOffline)window.BEPOffline.markKnownUser(identity);
+  window.bepSignedIn=true;window.bepOfflineMode=false;
+  const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
+  if(dataResponse.status===401||dataResponse.status===403){showLogin("L’accès aux données a été refusé. Reconnecte-toi pour ouvrir ton espace.");return}
+  if(!dataResponse.ok)throw Error("Données du compte momentanément indisponibles ("+dataResponse.status+").");
+  let remote=await dataResponse.json();
+  const pending=window.BEPOffline?await window.BEPOffline.readPending():null;
+  if(pending){
+   const synced=await window.BEPOffline.flush();
+   if(!synced){
+    const pendingSnapshot=localSnapshot||pending.payload;
+    if(pendingSnapshot&&typeof pendingSnapshot==="object"){
+     state={...defaults,...pendingSnapshot};window.bepSignedIn=false;window.bepOfflineMode=true;
+     gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));
+     notify("Synchronisation suspendue : les données locales sont préservées et aucune donnée distante n’a été écrasée.");
+     if(loader)loader.hidden=true;return;
+    }
+   }else{
+    const refreshed=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
+    if(refreshed.status===401||refreshed.status===403){showLogin("La session a expiré pendant la synchronisation. Reconnecte-toi.");return}
+    if(!refreshed.ok)throw Error("Impossible de confirmer les données après synchronisation.");
+    remote=await refreshed.json();
    }
-  })();
- }else{
-  try{
-   const response=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});
-   const auth=await response.json();
-   if(auth.user){window.bepSignedIn=true;const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});if(!dataResponse.ok)throw Error("Impossible de charger tes données.");const remote=await dataResponse.json();state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){window.BEPOffline.markKnownUser(auth.user.id||auth.user.email);await window.BEPOffline.setBaseline(remote.payload||{})}await persistMigratedIncomeState();window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;tab(getSavedTab());try{const p=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(p.ok){const profile=await p.json();coachFirstName=String(profile.user?.firstName||"").trim()}}catch{}}
-   else gate.hidden=false;
-  }catch(error){gate.hidden=false;authMessage.textContent="Connexion au serveur impossible. Connecte-toi une première fois avec Internet pour activer le mode hors ligne."}
-  render();if(loader)loader.hidden=true;
+  }
+  if(localStorage.getItem(DB)===localSnapshotRaw){
+   state={...defaults,...(remote.payload||{})};
+   if(!Array.isArray(state.coachProfile))state.coachProfile=[];
+   if(window.BEPOffline)await window.BEPOffline.setBaseline(remote.payload||{});
+   await persistMigratedIncomeState();render();dispatchLegacyBudgetChanged();
+  }
+  window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;tab(getSavedTab());
+  try{const profileResponse=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(profileResponse.ok){const profile=await profileResponse.json();coachFirstName=String(profile.user?.firstName||"").trim()}}catch{}
+  if(loader)loader.hidden=true;
+ }catch(error){
+  if(showOfflineSnapshot())return;
+  showLogin("Connexion au serveur impossible. Aucune session hors ligne enregistrée n’est disponible sur cet appareil. Connecte-toi avec Internet pour continuer.");
  }
 })();
-
 setupInlineVoice();setupPlaceSuggestions();setupPurchaseNatureSuggestions();if($("purchaseNotes"))$("purchaseNotes").addEventListener("input",()=>{const n=$("purchaseNotes").value.toLowerCase();if(/chauss|basket|sneaker|vêtement|textile|tenue/.test(n))$("purchaseCategory").value="Mode";else if(/ballon|raquette|fitness|équipement sportif/.test(n))$("purchaseCategory").value="Loisirs"});render();// Service worker disabled: always load the current published app and assets.
 })();
