@@ -112,3 +112,25 @@ Les tests dynamiques de connexion, import photo, OCR, PDF et parcours complet re
 - Contrôle syntaxique et statique : réalisé.
 - Tests fonctionnels navigateur/staging : en attente.
 - Production : inchangée.
+
+
+## Phase 2 — chargement différé du module Budgets mensuels
+
+Date : 2026-11-13
+
+### Changement réalisé
+- Le fichier `monthly-budget-ui.js` n'est plus demandé pendant le chargement initial.
+- Il est chargé lors de la première ouverture de l'onglet « Mes budgets mensuels ».
+- Le module expose un point d'initialisation explicite pour démarrer le chargement des données si l'utilisateur est déjà connecté au moment de son chargement.
+- Les écouteurs `bep:auth-ready`, `bep:state-rendered`, `bep:offline-synced` et la logique métier/API du module restent en place.
+- La promesse de chargement est mutualisée ; en cas d'échec réseau, elle est réinitialisée pour permettre une nouvelle tentative.
+- Le changement est répliqué dans les deux index (racine et `dist/`) et l'URL du module est versionnée.
+ 
+### Analyse des autres modules
+- `spend-experience.js` n'est pas différé : il installe les dialogues partagés utilisés aussi par les parcours Revenus, Charges, Épargne et Profil, et définit notamment `BEP_OPEN_ENTRY_DIALOG` et `BEP_CONFIRM_ACTION`. Le charger uniquement à l'ouverture de Dépenses casserait des parcours hors Dépenses.
+- `spend-clean-ui.js` n'est pas encore différé : il transforme le panneau Dépenses et dépend du DOM construit par `spend-experience.js`. Il faut ajouter un signal d'activation explicite et vérifier le cas où Dépenses est l'onglet restauré au démarrage avant de le déplacer.
+- Le Coach et les calculs principaux d'Épargne sont intégrés à `app.js`, qui contient aussi l'authentification, le rendu et les formulaires de base. Les extraire en bloc serait risqué sans refactorisation des dépendances et tests de non-régression. Aucune extraction hasardeuse n'a été faite.
+
+### Vérifications statiques prévues / limites
+- Vérifier la syntaxe des fichiers modifiés, la présence du déclencheur dans les deux index et l'absence du chargement direct du module dans les deux index.
+- Les tests navigateur, authentification, changement d'onglet, création/modification/clôture de mois et mode hors ligne restent nécessaires dans le staging actif. Le staging est suspendu : aucun test dynamique n'est prétendu.
