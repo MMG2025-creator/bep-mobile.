@@ -20,7 +20,7 @@
   $("showRegister")?.classList.toggle("active",mode==="register");
   if(clearMessage&&message)message.textContent="";
  }
- function showVerification(email,text){
+ function window.BEPAuthPage.showVerification(email,text){
   pendingEmail=String(email||"").trim().toLowerCase();
   if(pendingEmail)localStorage.setItem(pendingKey,pendingEmail);
   setMode("verify");
@@ -60,6 +60,12 @@
   }
  });
  window.BEPAuthPage={setMode,showVerification,getPendingEmail:()=>pendingEmail,clearPendingEmail};
+})();
+
+(()=> {
+ "use strict";
+ const $=id=>document.getElementById(id);
+ const pendingEmail=window.BEPAuthPage.getPendingEmail();
 /* Keep the main BEP application isolated from the standalone authentication module. */
 (()=> {
  "use strict";
@@ -106,9 +112,9 @@
   e.preventDefault();showAuthMessage("Connexion…");
   try{const r=await fetch(API+"/api/auth/login",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value,password:$("loginPassword").value})}),d=await r.json();if(!r.ok)throw Error(d.message||"Connexion impossible.");await finishAppAuthentication(false)}catch(error){showAuthMessage(error.message)}
  });
- register?.addEventListener("submit",async e=>{
+ registerForm?.addEventListener("submit",async e=>{
   e.preventDefault();const email=$("registerEmail").value.trim().toLowerCase();showAuthMessage("Création du compte et envoi du code…");
-  try{const r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(error){showAuthMessage(error.message)}
+  try{const r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}window.BEPAuthPage.showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(error){showAuthMessage(error.message)}
  });
  async function restoreSession(){
   if(window.BEP_DEMO_LOCAL){
