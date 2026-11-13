@@ -69,3 +69,16 @@
  .settings-danger-block>.hint{min-height:0}
 }
 @media(max-width:360px){.settings-button-grid{grid-template-columns:1fr}.settings-action-button{min-height:68px}}
+
+/* Settings panel toggle — isolated, accessible motion */
+.topbar .settings-icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:44px;padding:0 12px}
+.topbar .settings-icon-btn .settings-person-icon{width:21px;height:21px;flex:0 0 21px}
+.topbar .settings-icon-btn .settings-toggle-chevron{display:none;width:21px;height:21px;flex:0 0 21px;transform:rotate(180deg);transition:transform .22s ease}
+.topbar .settings-icon-btn[aria-expanded="true"]{background:#eaf3ed!important;border-color:#cfe1d6!important;color:#176b50!important}
+.topbar .settings-icon-btn[aria-expanded="true"] .settings-person-icon,
+.topbar .settings-icon-btn[aria-expanded="true"] .settings-button-label{display:none}
+.topbar .settings-icon-btn[aria-expanded="true"] .settings-toggle-chevron{display:block;transform:rotate(0)}
+.settings-panel{background:#edf5f0;border:1px solid #dcebe1;border-radius:20px;padding:14px;transform-origin:top center}
+.settings-panel.active{animation:bep-settings-open .24s cubic-bezier(.2,.75,.25,1) both}
+@keyframes bep-settings-open{from{opacity:0;transform:translateY(-8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.settings-panel.active{animation:none}.topbar .settings-icon-btn .settings-toggle-chevron{transition:none}}
