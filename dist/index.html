@@ -526,7 +526,7 @@
       <path d="m17 35 5-7m-9 1 4-2m121 12 6-6m-3 13 6-2" stroke="#e8b94d" stroke-width="3.5" stroke-linecap="round"/>
       <circle cx="132" cy="24" r="5" fill="#f6d96d"/><path d="M20 112h8m-4-4v8" stroke="#5bbd83" stroke-width="3" stroke-linecap="round"/>
     </svg><div><h2 id="bepAdviceTitle">Conseil BEP</h2><span id="bepAdviceContext">Accueil</span></div></div>
-      <div class="bep-advice-controls"><button type="button" id="bepAdviceMinimize" aria-label="Réduire le conseil">−</button><button type="button" id="bepAdviceClose" aria-label="Fermer le conseil">×</button></div>
+      <div class="bep-advice-controls"><button type="button" id="bepAdviceClose" aria-label="Fermer le conseil">×</button></div>
     </header>
     <div class="bep-advice-content">
       <span class="ai-label" id="bepAdviceBadge">Coach local</span>
@@ -551,7 +551,7 @@
  function close(){dialog.close();robot.setAttribute("aria-expanded","false")}
  robot.addEventListener("click",()=>dialog.open?close():open());
  document.getElementById("bepAdviceClose").addEventListener("click",close);
- document.getElementById("bepAdviceMinimize").addEventListener("click",close);
+ 
  dialog.addEventListener("click",e=>{if(e.target===dialog)close()});
  window.BEP_OPEN_ADVICE=open;
  
