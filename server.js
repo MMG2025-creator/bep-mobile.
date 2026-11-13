@@ -66,6 +66,21 @@ await pool.query("CREATE INDEX IF NOT EXISTS bep_financial_knowledge_active_cate
 for(const item of financialKnowledgeSeed){await pool.query("INSERT INTO bep_financial_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,TRUE) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_financial_knowledge.version+1,active=TRUE,updated_at=NOW() WHERE bep_financial_knowledge.content IS DISTINCT FROM EXCLUDED.content OR bep_financial_knowledge.title IS DISTINCT FROM EXCLUDED.title OR bep_financial_knowledge.source_url IS DISTINCT FROM EXCLUDED.source_url",[item.slug,item.category,item.title,item.content,JSON.stringify(item.keywords),item.source_name,item.source_url,item.evidence_level])}
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
+function requireBepAgentAdmin(req,res,next){
+ const allowed=String(process.env.BEP_AGENT_ADMIN_USER_IDS||"").split(",").map(x=>x.trim()).filter(Boolean);
+ if(!req.session?.user?.id||!allowed.includes(String(req.session.user.id)))return res.status(403).json({error:"AGENT_ADMIN_REQUIRED"});
+ next();
+}
+function coachTelemetry(req,res,next){
+ const started=Date.now();let recorded=false;const send=res.json.bind(res);
+ res.json=function(body){
+  if(!recorded){recorded=true;const mode=["structured","structured-fallback","bep"].includes(body?.mode)?body.mode:"unknown",status=Number(res.statusCode)||200,tokens=Number(body?.usage?.totalTokenCount??body?.usage?.total_tokens)||0;
+   res.once("finish",()=>{if(pool)pool.query("INSERT INTO bep_agent_coach_metrics(day_key,mode,status_code,calls,total_latency_ms,total_tokens) VALUES(CURRENT_DATE,$1,$2,1,$3,$4) ON CONFLICT(day_key,mode,status_code) DO UPDATE SET calls=bep_agent_coach_metrics.calls+1,total_latency_ms=bep_agent_coach_metrics.total_latency_ms+EXCLUDED.total_latency_ms,total_tokens=bep_agent_coach_metrics.total_tokens+EXCLUDED.total_tokens",[mode,status,Date.now()-started,tokens]).catch(()=>{})});
+  }
+  return send(body);
+ };
+ next();
+}
 async function keepSingleSession(userId,sessionId){await pool.query("DELETE FROM user_sessions WHERE sess->'user'->>'id'=$1 AND sid<>$2",[String(userId),String(sessionId)])}
 app.get("/api/health",async(req,res)=>{let databaseReady=false;try{if(pool){await pool.query("SELECT 1");databaseReady=dbReady}}catch(e){dbInitError=e.message}res.status(200).json({ok:true,authConfigured:configured(),databaseConfigured:!!pool,databaseReady, ...(dbInitError?{databaseError:"DATABASE_NOT_READY"}:{})})});
 app.get("/api/auth/status",async(req,res)=>{res.setHeader("Cache-Control","no-store");if(!req.session?.user)return res.json({configured:true,googleConfigured:configured(),user:null});try{const r=await pool.query("SELECT id,email,display_name,email_verified,password_hash,google_sub FROM bep_users WHERE id=$1",[req.session.user.id]);if(!r.rowCount)return res.status(404).json({configured:true,googleConfigured:configured(),user:null});const u=r.rows[0];return res.json({configured:true,googleConfigured:configured(),user:{id:u.id,email:u.email,name:u.display_name||"",emailVerified:u.email_verified!==false,passwordEnabled:!!u.password_hash,googleLinked:!!u.google_sub}})}catch(e){console.error("Auth status read failed",e.message);return res.status(500).json({error:"AUTH_STATUS_UNAVAILABLE"})}});
@@ -160,6 +175,7 @@ app.post("/api/ai/advice",auth,async(req,res)=>{try{
  if(!allowed.includes(zone))return res.status(400).json({message:"Zone de conseil invalide."});
  res.setHeader("Cache-Control","no-store");res.json({answer:structuredAdvice(zone,req.body?.financialContext||{}),provider:"bep-structured",model:"bep-financial-rules",mode:"structured",usage:null,quota:null});
  }catch(e){res.status(400).json({message:e.message||"Conseil BEP indisponible."})}});
+app.use("/api/ai/chat",coachTelemetry);
 app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  const q=String(req.body?.question||"").trim();if(!q||q.length>4000)return res.status(400).json({message:"Question invalide."});
  const p=req.body?.financialContext||{},structured=routeStructuredQuestion(q,p);
@@ -178,6 +194,44 @@ app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  }catch(e){if(quota)await releaseBepAiQuota(req.session.user.id,quota.month).catch(()=>{});res.status(400).json({message:e.message||"IA indisponible."})}});
 app.get("/api/coach/knowledge",auth,async(req,res)=>{try{const r=await pool.query("SELECT id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider,review_status,created_at FROM bep_user_coach_knowledge WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows.map(x=>({id:x.id,kind:x.kind,category:x.category,title:x.title,detail:x.detail,priority:x.priority,confidence:x.confidence,evidence:x.evidence,action:x.action,valid_until:x.valid_until,provider:x.source_provider,status:x.review_status,created_at:x.created_at}))})}catch(e){console.error("Coach knowledge read failed",e.message);res.status(500).json({message:"Base de connaissances indisponible."})}});
 app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.items,provider=String(req.body?.source_provider||"other");if(!Array.isArray(items)||items.length<1||items.length>100||!["chatgpt","gemini","claude","mistral","other"].includes(provider))return res.status(400).json({message:"Import BEP invalide."});const client=await pool.connect();let inserted=0;try{await client.query("BEGIN");for(const x of items){const kind=x?.kind==="recommendation"?"recommendation":x?.kind==="knowledge"?"knowledge":null,category=String(x?.category||"other"),title=String(x?.title||"").trim().slice(0,120),detail=String(x?.detail||"").trim().slice(0,1500),priority=["low","medium","high"].includes(x?.priority)?x.priority:"medium",confidence=["low","medium","high"].includes(x?.confidence)?x.confidence:"low",externalId=String(x?.id||"").trim().slice(0,80);const allowed=kind==="recommendation"?["budget","spending","savings","debt","behavior","other"]:["budget","spending","savings","behavior","general"];const dateCandidate=kind==="recommendation"?String(x.valid_until||""):"";const dateValid=!dateCandidate||(/^\d{4}-\d{2}-\d{2}$/.test(dateCandidate)&&!Number.isNaN(Date.parse(dateCandidate+"T00:00:00Z"))&&new Date(dateCandidate+"T00:00:00Z").toISOString().slice(0,10)===dateCandidate);if(!kind||!allowed.includes(category)||!title||!detail||!externalId||!dateValid)continue;const evidence=Array.isArray(x.evidence)?x.evidence.slice(0,8).map(v=>String(v).slice(0,300)):[],action=kind==="recommendation"?String(x.action||"").slice(0,500):"",validUntil=kind==="recommendation"&&/^\d{4}-\d{2}-\d{2}$/.test(x.valid_until||"")?x.valid_until:null;const r=await client.query("INSERT INTO bep_user_coach_knowledge(user_id,external_id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12) ON CONFLICT(user_id,external_id,kind) DO NOTHING RETURNING id",[req.session.user.id,externalId,kind,category,title,detail,priority,confidence,JSON.stringify(evidence),action,validUntil,provider]);if(r.rowCount)inserted++}await client.query("COMMIT");res.status(201).json({ok:true,inserted,received:items.length})}catch(e){await client.query("ROLLBACK");console.error("Coach knowledge import failed",e.message);res.status(500).json({message:"Import non enregistré. Aucune donnée financière n'a été modifiée."})}finally{client.release()}});
+app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
+ const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
+ try{const r=await pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status=$1 ORDER BY created_at DESC LIMIT 100",[status]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows})}
+ catch(e){res.status(503).json({error:"AGENT_CANDIDATES_UNAVAILABLE"})}
+});
+app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
+ try{
+  const [runs,metrics,coach]=await Promise.all([
+   pool.query("SELECT id,job_type,status,model,input_digest,output_digest,output_summary,usage,error_code,started_at,finished_at FROM bep_agent_runs ORDER BY finished_at DESC LIMIT 30"),
+   pool.query("SELECT day_key,jobs_completed,jobs_failed,candidates_created,quality_findings FROM bep_agent_metrics ORDER BY day_key DESC LIMIT 30"),
+   pool.query("SELECT day_key,mode,status_code,calls,total_latency_ms,total_tokens FROM bep_agent_coach_metrics WHERE day_key>=CURRENT_DATE-INTERVAL '30 days' ORDER BY day_key DESC,mode LIMIT 120")
+  ]);
+  res.setHeader("Cache-Control","no-store");res.json({runs:runs.rows,agentMetrics:metrics.rows,coachMetrics:coach.rows});
+ }catch(e){res.status(503).json({error:"AGENT_OVERVIEW_UNAVAILABLE"})}
+});
+app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,async(req,res)=>{
+ const id=Number(req.params.id),decision=String(req.body?.decision||"");
+ if(!Number.isSafeInteger(id)||id<1||!["approve","reject"].includes(decision))return res.status(400).json({error:"INVALID_REVIEW"});
+ const client=await pool.connect();
+ try{
+  await client.query("BEGIN");
+  const found=await client.query("SELECT * FROM bep_knowledge_candidates WHERE id=$1 FOR UPDATE",[id]);
+  if(!found.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"CANDIDATE_NOT_FOUND"})}
+  const candidate=found.rows[0];
+  if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
+  if(decision==="approve"){
+   const source=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[candidate.source_slug]);
+   if(!source.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_NOT_FOUND"})}
+   const original=source.rows[0];
+   if(original.source_name!==candidate.source_name||original.source_url!==candidate.source_url||original.evidence_level!==candidate.evidence_level){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_PROVENANCE_CHANGED"})}
+   const deactivate=candidate.proposal_type==="deactivate";
+   await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,$10) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,!deactivate,String(req.session.user.id)]);
+  }
+  await client.query("UPDATE bep_knowledge_candidates SET review_status=$2,reviewed_at=NOW() WHERE id=$1",[id,decision==="approve"?"accepted":"rejected"]);
+  await client.query("COMMIT");res.json({ok:true,id,decision});
+ }catch(e){await client.query("ROLLBACK").catch(()=>{});console.error("BEP agent candidate review failed",String(e?.message||e).slice(0,160));res.status(500).json({error:"CANDIDATE_REVIEW_FAILED"})}
+ finally{client.release()}
+});
 app.use("/api/budgets",createMonthlyBudgetRouter({pool,auth}));
 app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT payload,updated_at FROM bep_user_data WHERE user_id=$1",[req.session.user.id]);res.json(r.rows[0]||{payload:{income:0,budgets:[],expenses:[],goals:[]}})});
 app.put("/api/data",auth,async(req,res)=>{
