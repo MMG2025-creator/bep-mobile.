@@ -196,7 +196,18 @@
       <button class="primary full" type="submit">Ajouter les revenus sélectionnés</button>
     </form>
   </details>
-</section><section class="income-manual-entry" aria-label="Ajouter une source de revenu"><span class="tag">Ajouter un revenu</span><h3>Ajouter un autre revenu</h3><p class="hint">Saisis le montant net mensuel de cette source.</p><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter un revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></section></div><details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
+</section><section class="income-manual-entry" aria-label="Ajouter une source de revenu"><span class="tag">Ajouter un revenu</span><h3>Ajouter un autre revenu</h3><p class="hint">Saisis le montant net mensuel de cette source.</p><details id="incomeEditorDetails" class="budget-editor"><summary>+ Ajouter un revenu</summary><form id="incomeForm" class="income-form"><div class="field"><label for="incomeLabel">Libellé</label><input id="incomeLabel" type="text" maxlength="100" required placeholder="Ex. Salaire, ARE, pension, loyers"></div><div class="field"><label for="incomeType">Type de revenu</label><select id="incomeType"><option>Salaire</option><option>Allocation chômage (ARE)</option><option>Pension / retraite</option><option>Pension alimentaire</option><option>Revenus locatifs</option><option>Activité indépendante</option><option>Prestations / allocations</option><option>Prime récurrente</option><option>Commissions</option><option>Revenu de placements</option><option>Revenu complémentaire</option><option>Autre revenu</option></select></div><div class="field"><label for="incomeAmount">Montant net mensuel (€)</label><input id="incomeAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary full" type="submit">+ Ajouter ce revenu</button></form></details></section></div><section class="card overdraft-permission-card" aria-labelledby="overdraftTitle">
+<h3 id="overdraftTitle">Découvert autorisé</h3>
+<p class="hint">Indique le plafond accordé par ta banque. BEP pourra alors autoriser la poursuite de l'épargne et des dépenses dans cette limite, sans ajouter le découvert à tes revenus ni modifier ton bilan mensuel.</p>
+<form id="overdraftForm">
+<div class="two">
+<div class="field"><label for="overdraftLimit">Plafond du découvert autorisé (€)</label><input id="overdraftLimit" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Ex. 500"></div>
+<div class="field"><label for="overdraftValidUntil">Valable jusqu'au (facultatif)</label><input id="overdraftValidUntil" type="date"></div>
+</div>
+<button class="secondary full" type="submit">Enregistrer le découvert autorisé</button><p class="hint" id="overdraftStatus" role="status"></p>
+</form>
+</section>
+<details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
 <article class="card charges-card">
@@ -381,32 +392,7 @@
 </section>
 <section id="settings" class="panel">
 <article class="card"><h2>Mon profil</h2><p class="hint" id="profileEmail"></p><form id="profileForm"><div class="profile-name-row"><div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div><div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div></div><div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div><button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p></form></article>
-<article class="card treasury-card" aria-labelledby="treasuryTitle">
-<h2 id="treasuryTitle">Ma situation bancaire</h2>
-<p class="hint">Renseigne les conditions de ton découvert et les rentrées d'argent attendues. Ces informations servent à suivre ta trésorerie, sans être ajoutées à tes revenus encaissés ni à ton disponible budgétaire.</p>
-<form id="treasuryForm">
-<div class="two">
-<div class="field"><label for="overdraftLimit">Découvert autorisé (€)</label><input id="overdraftLimit" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Ex. 1 000"></div>
-<div class="field"><label for="overdraftUsed">Découvert actuellement utilisé (€)</label><input id="overdraftUsed" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Ex. 350"></div>
-</div>
-<div class="field"><label for="overdraftValidUntil">Autorisation valable jusqu'au (facultatif)</label><input id="overdraftValidUntil" type="date"></div>
-<div class="field"><label for="overdraftAlertPercent">Alerte à partir de (%)</label><input id="overdraftAlertPercent" type="number" min="1" max="100" step="1" value="80"></div>
-<button class="primary full" type="submit">Enregistrer ma situation bancaire</button><p class="hint" id="treasuryStatus" role="status"></p>
-</form>
-<div id="treasurySummary" class="notice treasury-summary" aria-live="polite">Renseigne ton découvert autorisé pour suivre ta marge de trésorerie.</div>
-<div class="divider"></div>
-<h3>Revenus attendus et décalages</h3>
-<p class="hint">Ajoute une prime, un remboursement ou un revenu attendu. Une entrée reste prévisionnelle jusqu'à ce que tu la marques comme reçue.</p>
-<form id="expectedCreditForm">
-<div class="field"><label for="expectedCreditLabel">Libellé</label><input id="expectedCreditLabel" maxlength="100" placeholder="Ex. Prime annuelle" required></div>
-<div class="two">
-<div class="field"><label for="expectedCreditAmount">Montant attendu (€)</label><input id="expectedCreditAmount" type="number" min="0.01" max="10000000" step="0.01" inputmode="decimal" required></div>
-<div class="field"><label for="expectedCreditDate">Date prévue</label><input id="expectedCreditDate" type="date" required></div>
-</div>
-<button class="secondary full" type="submit">Ajouter un revenu attendu</button><p class="hint" id="expectedCreditStatus" role="status"></p>
-</form>
-<div id="treasuryForecast" class="rows" aria-live="polite"></div>
-</article>
+
 <article class="card"><h2>Mes données et ma confidentialité</h2><div class="privacy-note">Les informations financières sont conservées dans le stockage privé de ce navigateur sur ce téléphone. Effacer les données du navigateur ou désinstaller le navigateur peut les supprimer.</div><div class="field"><label>Mot de passe de sauvegarde</label><input id="vaultPhraseInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" minlength="10" placeholder="10 caractères minimum" aria-label="Mot de passe de sauvegarde"></div><button class="primary full" id="exportBtn">Exporter une sauvegarde chiffrée</button><div class="field"><label>Restaurer une sauvegarde BEP (.bep)</label><input id="importFile" type="file" accept=".bep,application/json"></div><button class="secondary full" id="importBtn">Restaurer sur cet appareil</button><div class="divider"></div><button class="danger full" id="deleteBtn">Effacer toutes mes données BEP</button><p class="hint">L'export est chiffré avec AES-GCM et une dérivation de clé PBKDF2. Conserve ton mot de passe séparément : sans lui, la sauvegarde ne pourra pas être restaurée.</p><div class="divider"></div><h3>Compte et session</h3><p class="hint">Ferme ta session BEP sur cet appareil. Tes données enregistrées sur ton compte ne sont pas supprimées.</p><h3>Méthodes de connexion</h3><p class="hint">Associe Google à ton compte BEP. Pour un compte e-mail, confirme d’abord ton mot de passe. Google doit confirmer la même adresse e-mail que ton compte BEP.</p><div class="field"><label for="accountProofInput">Mot de passe BEP actuel (comptes e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div><button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p><div class="divider"></div><button type="button" class="secondary full logout-btn-settings" id="logoutBtn">Me déconnecter du compte</button><div class="divider"></div><h3>Suppression du compte</h3><p class="hint">Supprime définitivement ton compte BEP, ton profil, tes données financières, tes achats, tes objectifs et les sessions associées. Cette action est irréversible.</p><button type="button" class="danger full" id="deleteAccountBtn">Supprimer mon compte et toutes mes données</button></article>
 <article class="card"><h2>Mesure du coach BEP</h2><div class="ai-usage-grid"><div><strong id="aiRequestCount">0</strong><span>Conseils générés</span></div><div><strong id="aiTokenCount">0</strong><span>Tokens estimés</span></div><div><strong id="aiLatency">0 ms</strong><span>Temps moyen</span></div><div><strong id="aiCost">—</strong><span>Coût IA externe</span></div></div><p class="hint">Les conseils financiers structurés sont calculés par BEP sans appel Gemini. Gemini intervient uniquement pour certaines questions ouvertes, dans les limites gratuites configurées et après confirmation que le projet Google ne peut pas générer de facturation. Si un quota est atteint, le Coach BEP structuré reste disponible.</p></article>
 <article class="card"><h2>À propos de BEP</h2><p class="muted">Version BEP avec compte personnel et synchronisation sécurisée. Aucune connexion bancaire.</p><p class="hint">Build • Earn • Preserve</p></article>
@@ -494,7 +480,7 @@
 <script src="./financial-engine.js?v=1"></script>
 <script src="./offline-storage.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=97&bep=treasury-overdraft-20261113"></script>
+<script src="./app.js?v=98&bep=overdraft-permission-20261113"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
 <script src="./pwa.js?v=11"></script>
