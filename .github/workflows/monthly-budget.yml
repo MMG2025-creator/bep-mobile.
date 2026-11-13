@@ -25,6 +25,8 @@ on:
       - "database/migrations/**"
       - "tests/monthly-budget*.test.js"
       - "tests/active-session-concurrency.test.js"
+      - "tests/auth-session-flow.integration.test.js"
+      - "tests/disable-pg-ssl.cjs"
       - "package.json"
       - "docs/**"
       - ".github/workflows/monthly-budget.yml"
