@@ -151,7 +151,7 @@
       const rows = items.map((x, index) => ({ ...x, index })).filter(x => x.itemType === type &&
         (!query || (x.label + " " + (x.category || "")).toLocaleLowerCase("fr-FR").includes(query)));
       const total = rows.reduce((n, x) => n + Number(x.plannedAmount || 0), 0);
-      return '<details class="monthly-budget-group" ' + (query || type === "charge" ? "open" : "") + '><summary><span>' + labels[type] +
+      return '<details class="monthly-budget-group"><summary><span>' + labels[type] +
         ' <small>' + rows.length + ' ligne(s)</small></span><b>' + money(total) + '</b></summary><div class="monthly-budget-group-rows">' +
         (rows.length ? rows.map(x => '<div class="monthly-budget-row" data-month-row="' + x.index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
           (x.category ? escapeHtml(x.category) : labels[type]) + '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
@@ -209,7 +209,6 @@
       escapeHtml(x.category || "Sans catégorie") + ' · ' + new Date(x.at).toLocaleDateString("fr-FR") +
       '</small></span><b>' + money(x.amount) + '</b></div>').join("") : '<p class="empty">' +
       (query ? "Aucune dépense correspondant à la recherche." : "Aucune dépense réelle enregistrée pour ce mois.") + '</p>';
-    if (query) $("monthlyBudgetActuals").open = true;
     $("monthlyBudgetSave").hidden = current.status === "closed";
     $("monthlyBudgetClose").hidden = current.status === "closed";
     $("monthlyBudgetReopen").hidden = current.status !== "closed";
