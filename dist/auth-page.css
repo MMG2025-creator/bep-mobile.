@@ -162,3 +162,31 @@
 /* The authenticated app is a separate module and stays absent until access is granted. */
 /* Defense in depth: authenticated application root is never rendered before access. */
 #bepAppRoot[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+
+/* Login brand banner — uniform background, balanced spacing, original BEP logo unchanged. */
+.auth-gate .auth-brand-banner{
+  height:104px!important;
+  min-height:104px!important;
+  max-height:104px!important;
+  aspect-ratio:auto!important;
+  background:#103b32!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:22px 22px 0 0!important;
+  overflow:hidden!important;
+}
+.auth-gate .auth-brand-banner svg{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+@media(max-width:480px){
+  .auth-gate .auth-brand-banner{
+    height:88px!important;
+    min-height:88px!important;
+    max-height:88px!important;
+    border-radius:21px 21px 0 0!important;
+  }
+}
