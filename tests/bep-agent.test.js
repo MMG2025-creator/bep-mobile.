@@ -54,6 +54,7 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/BEP_AGENT_ADMIN_USER_IDS/);
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
+ assert.match(server,/\/api\/admin\/bep-agent\/run/);
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
  assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
