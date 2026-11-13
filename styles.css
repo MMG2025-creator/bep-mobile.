@@ -1434,3 +1434,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .budget-checkup-row>span{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere;font-size:11px}
   .budget-checkup-row>input[type=number]{grid-column:3;grid-row:1;width:100%;min-width:0;box-sizing:border-box;padding:7px 5px;font-size:10px}
 }
+
+/* Clear empty state for the monthly budget archive. */
+.monthly-budget-empty-state{margin:12px 0 16px;padding:16px;border-radius:14px;background:var(--mint);color:var(--forest)}
+.monthly-budget-empty-state h3{margin:0 0 6px;font:750 16px Manrope,sans-serif;color:var(--forest)}
+.monthly-budget-empty-state p{margin:0;color:var(--forest);font-size:14px;line-height:1.5}
