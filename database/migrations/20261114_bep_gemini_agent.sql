@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS bep_agent_runs (
 CREATE TABLE IF NOT EXISTS bep_knowledge_candidates (
  id BIGSERIAL PRIMARY KEY,
  source_slug TEXT NOT NULL,
+ source_version INTEGER NOT NULL,
+ source_digest TEXT NOT NULL,
  proposal_type TEXT NOT NULL CHECK(proposal_type IN ('clarify','update','deactivate')),
  title TEXT NOT NULL,
  content TEXT NOT NULL,
