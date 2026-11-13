@@ -6,7 +6,7 @@ Agent interne asynchrone, distinct du Coach BEP. Il ne répond jamais aux utilis
 ## Fonctions V1
 - Audit périodique de la bibliothèque documentaire publique déjà présente dans `bep_financial_knowledge`.
 - Création de propositions de correction dans `bep_knowledge_candidates`, toujours en attente de validation humaine.
-- Revue périodique d'un corpus synthétique de scénarios de qualité du Coach.
+- Revue périodique d'un corpus synthétique de scénarios de qualité du Coach et de métriques opérationnelles agrégées (mode, statut HTTP, latence, tokens).
 - Conservation de métriques agrégées et de condensats SHA-256 ; aucune question, réponse ou donnée financière personnelle n'est collectée.
 
 ## Isolation
