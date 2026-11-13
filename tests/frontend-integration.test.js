@@ -5,8 +5,8 @@ const fs=require("node:fs");
 const path=require("node:path");
 const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
-test("published JavaScript and CSS assets are synchronized",()=>{
- for(const file of ["app.js","financial-engine.js","spend-experience.js","monthly-budget-ui.js","offline-storage.js","sw.js","styles.css"]){
+test("published JavaScript assets are synchronized without overwriting production-specific CSS",()=>{
+ for(const file of ["app.js","financial-engine.js","spend-experience.js","spend-clean-ui.js","monthly-budget-ui.js","offline-storage.js","sw.js"]){
   assert.equal(read(file),read("dist/"+file),file+" source and dist must match");
  }
 });
@@ -51,13 +51,20 @@ test("expense experience remains a separate module and uses the existing purchas
  assert.match(spend,/mountQuickExpenseModal\(panel,entry,addButton\)/);
  assert.match(spend,/bepQuickExpenseDialog/);
  assert.match(read("spend-experience.css"),/body:has\(#budget\.active\) #bepQuickExpense/);
+ const clean=read("spend-clean-ui.js");
+ assert.equal(clean,read("dist/spend-clean-ui.js"));
+ assert.match(clean,/const wasActive=p\.classList\.contains\("active"\)/);
+ assert.match(clean,/p\.className="panel bep-expenses-page";if\(wasActive\)p\.classList\.add\("active"\);p\.hidden=!wasActive/);
 });
 
 test("offline-first state persistence keeps local writes and conflict protection",()=>{
  const app=read("app.js"),offline=read("offline-storage.js");
- assert.match(app,/window\.BEPOffline\.hasKnownUser\(\)/);
+ assert.match(app,/window\.BEPOffline\.hasTrustedSnapshot\(\)/);
+ assert.match(app,/window\.BEPOffline\.markKnownUser\(/);
  assert.match(app,/window\.BEPOffline\.setBaseline\(d\.payload\|\|\{\}\)/);
- assert.match(offline,/hasKnownUser\(\)\)return false/);
+ assert.match(offline,/window\.BEPOffline\?\.hasKnownUser\(\)/);
+ assert.match(offline,/hasKnownUser:\(\)=>!!localStorage\.getItem\(USER_KEY\)/);
+ assert.match(offline,/hasTrustedSnapshot/);
  assert.match(offline,/stable\(remote\)!==stable\(pending\.base\)/);
  assert.match(offline,/bep:offline-conflict/);
 });

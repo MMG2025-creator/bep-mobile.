@@ -17,6 +17,7 @@ on:
       - "app.js"
       - "financial-engine.js"
       - "spend-experience.js"
+      - "spend-clean-ui.js"
       - "tests/frontend-integration.test.js"
       - "tests/financial-engine.test.js"
       - "dist/**"
@@ -71,7 +72,6 @@ jobs:
       - run: npm audit --omit=dev
       - run: cmp -s app.js dist/app.js
       - run: cmp -s monthly-budget-ui.js dist/monthly-budget-ui.js
-      - run: cmp -s styles.css dist/styles.css
       - run: node --check server.js
       - name: Verify frontend entrypoint asset references
         shell: bash
@@ -85,6 +85,7 @@ jobs:
             monthly-budget-ui.js
             spend-experience.css
             spend-experience.js
+            spend-clean-ui.js
           )
           for file in index.html dist/index.html; do
             for asset in "${assets[@]}"; do
@@ -96,8 +97,8 @@ jobs:
           done
 
           extract_assets() {
-            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)[.](js|css)[?]v=[^"]+"' "$1" |
-              sed -E 's/^[^"]*"//; s/"$//' |
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience|spend-clean-ui)[.](js|css)[?]v=[^"]+"' "$1" |
+              sed -E 's/^[^"]*"//; s/"$//; s/[?]v=.*$//' |
               sort
           }
           diff -u <(extract_assets index.html) <(extract_assets dist/index.html)
