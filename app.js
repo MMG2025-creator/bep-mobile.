@@ -153,16 +153,18 @@ document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$
 
 const profileDialog=$("profileSettingsDialog"),loginMethodsDialog=$("loginMethodsDialog");
 function openSettingsDialog(dialog){if(!dialog)return;if(!dialog.open)dialog.showModal()}
+function setProfileEditMode(editing){$("profileReadView").hidden=editing;$("profileForm").hidden=!editing;$("profileStatus").textContent=""}
 document.querySelectorAll("[data-close-settings-dialog]").forEach(button=>button.addEventListener("click",()=>button.closest("dialog")?.close()));
 [profileDialog,loginMethodsDialog].forEach(dialog=>{if(!dialog)return;dialog.addEventListener("click",event=>{if(event.target===dialog)dialog.close()})});
 $("openProfileDialog")?.addEventListener("click",async()=>{
- openSettingsDialog(profileDialog);
+ setProfileEditMode(false);openSettingsDialog(profileDialog);
  if(!window.bepSignedIn)return;
- try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||"";$("passwordResetEmail").value=u.email||""}catch(e){notify(e.message)}
+ try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||"";$("passwordResetEmail").value=u.email||"";$("profileFirstNameView").textContent=u.firstName||"Non renseigné";$("profileLastNameView").textContent=u.lastName||"Non renseigné";$("profilePhoneView").textContent=u.phone||"Non renseigné"}catch(e){notify(e.message)}
 });
+$("editProfileBtn")?.addEventListener("click",()=>setProfileEditMode(true));
+$("cancelProfileEditBtn")?.addEventListener("click",()=>setProfileEditMode(false));
 $("openLoginMethodsDialog")?.addEventListener("click",async()=>{
- openSettingsDialog(loginMethodsDialog);
- $("passwordResetStatus").textContent="";
+ $("passwordResetStatus").textContent="";openSettingsDialog(loginMethodsDialog);
  if(!window.bepSignedIn)return;
  try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Compte indisponible.");const d=await r.json();$("passwordResetEmail").value=d.user?.email||$("profileEmail").textContent||""}catch(e){$("passwordResetStatus").textContent=e.message}
 });
