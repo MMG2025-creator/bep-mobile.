@@ -1,0 +1,32 @@
+name: Coach external AI consent checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "server.js"
+      - "app.js"
+      - "dist/app.js"
+      - "index.html"
+      - "dist/index.html"
+      - "settings.css"
+      - "dist/settings.css"
+      - "tests/bep-ai-consent.test.js"
+      - ".github/workflows/coach-ai-consent.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check server syntax
+        run: node --check server.js
+      - name: Check frontend syntax
+        run: |
+          node --check app.js
+          node --check dist/app.js
+      - name: Test account consent and frontend controls
+        run: node --test tests/bep-ai-consent.test.js
