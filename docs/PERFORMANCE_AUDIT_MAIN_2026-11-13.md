@@ -160,3 +160,13 @@ Date : 2026-11-13
 - Le chargement de l'onglet est temporairement suspendu pendant la récupération des ressources afin d'éviter l'affichage d'une page non stylée ; l'action est rejouée après chargement.
 - Le cas d'un onglet Dépenses restauré depuis la session précédente est anticipé par lecture de la préférence locale et par surveillance de l'onglet actif.
 - La feuille `spend-experience.css` reste initiale : elle contient des styles partagés avec les dialogues et les formulaires des rubriques Budget, Revenus, Charges, Épargne et Profil. La différer globalement risquerait de dégrader ces parcours.
+
+
+### Contrôles statiques complémentaires — phase 4
+- Les scripts inline des deux index passent la compilation syntaxique V8.
+- La référence directe à `spend-clean-ui.css` a disparu des deux index ; son URL versionnée est présente dans le chargeur différé.
+- Le chargeur attend la feuille de style avant d'insérer le script de présentation Dépenses.
+- Le clic sur Dépenses est rejoué après chargement pour éviter d'afficher l'onglet avant que ses ressources soient prêtes.
+- Le chargement est également anticipé si la préférence locale indique que Dépenses était l'onglet utilisé précédemment.
+- `spend-clean-ui.js`, `monthly-budget-ui.js` et leurs scripts inline restent syntaxiquement valides.
+- Deux nouveaux commits sur `main` depuis le dernier contrôle retirent une mention de sécurité de l'écran de connexion (racine et `dist/`). Ils n'ont pas été écrasés ; la branche doit intégrer ces deux commits en plus des six précédents avant toute fusion.
