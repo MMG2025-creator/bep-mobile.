@@ -402,30 +402,43 @@
 <script src="./auth-recovery.js?v=2&bep=auth-page-controller-20261113"></script>
 <script src="./pwa.js?v=11"></script>
 <script src="./spend-experience.js?v=20&bep=expense-modal-merchant-field-20261112"></script>
-<script src="./spend-clean-ui.js?v=5&bep=receipt-proof-import-20261112"></script>
-
 <script>
 (function(){
-  let monthlyPromise=null;
-  function loadMonthlyBudget(){
-    if(monthlyPromise)return monthlyPromise;
-    monthlyPromise=new Promise((resolve,reject)=>{
+  let monthlyPromise=null,spendCleanPromise=null;
+  function loadScript(src,onload){
+    return new Promise((resolve,reject)=>{
       const script=document.createElement("script");
-      script.src="./monthly-budget-ui.js?v=9&bep=lazy-monthly-budget-20261113";
-      script.async=true;
-      script.onload=()=>{try{window.BEP_MONTHLY_UI_READY?.();resolve(true)}catch(error){monthlyPromise=null;reject(error)}};
-      script.onerror=()=>{monthlyPromise=null;reject(new Error("Le module Budgets mensuels n’a pas pu être chargé."))};
+      script.src=src;script.async=true;
+      script.onload=()=>{try{onload?.();resolve(true)}catch(error){reject(error)}};
+      script.onerror=()=>reject(new Error("Chargement impossible : "+src));
       document.body.appendChild(script);
     });
+  }
+  function loadMonthlyBudget(){
+    if(monthlyPromise)return monthlyPromise;
+    monthlyPromise=loadScript("./monthly-budget-ui.js?v=9&bep=lazy-monthly-budget-20261113",()=>window.BEP_MONTHLY_UI_READY?.())
+      .catch(error=>{monthlyPromise=null;const status=document.getElementById("monthlyBudgetStatus");if(status)status.textContent=error.message;throw error});
     return monthlyPromise;
   }
+  function loadSpendClean(){
+    if(spendCleanPromise)return spendCleanPromise;
+    spendCleanPromise=loadScript("./spend-clean-ui.js?v=6&bep=lazy-spend-ui-20261113")
+      .catch(error=>{spendCleanPromise=null;console.warn("[BEP] Interface Dépenses différée :",error);throw error});
+    return spendCleanPromise;
+  }
   document.addEventListener("click",event=>{
-    if(!event.target.closest('[data-budget-module="monthly"]'))return;
-    loadMonthlyBudget().catch(error=>{
-      const status=document.getElementById("monthlyBudgetStatus");
-      if(status)status.textContent=error.message;
-    });
+    if(event.target.closest('[data-budget-module="monthly"]'))loadMonthlyBudget().catch(()=>{});
+    if(event.target.closest('[data-tab="purchases"]'))loadSpendClean().catch(()=>{});
   },true);
+  const tabs=document.querySelectorAll(".tab[data-tab]");
+  if("MutationObserver"in window){
+    const observer=new MutationObserver(()=>{
+      const active=document.querySelector('.tab[data-tab="purchases"].active');
+      if(active)loadSpendClean().catch(()=>{});
+    });
+    tabs.forEach(tab=>observer.observe(tab,{attributes:true,attributeFilter:["class"]}));
+  }
+  if(document.querySelector('.tab[data-tab="purchases"].active'))loadSpendClean().catch(()=>{});
 })();
 </script>
 </body></html>
