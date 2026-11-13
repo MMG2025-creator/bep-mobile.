@@ -32,6 +32,7 @@ test("knowledge proposals must preserve the source provenance supplied by BEP",(
  assert.ok(validateKnowledgeProposal(valid,source));
  assert.equal(validateKnowledgeProposal({...valid,source_url:"https://example.com"},source),null);
  assert.equal(validateKnowledgeProposal({...valid,proposal_type:"invent"},source),null);
+ assert.equal(validateKnowledgeProposal(valid,undefined),null);
 });
 test("quality review corpus is synthetic and contains no user or account identifiers",()=>{
  assert.ok(cases.length>=5);
