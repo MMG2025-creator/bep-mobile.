@@ -1439,3 +1439,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .monthly-budget-empty-state{margin:12px 0 16px;padding:16px;border-radius:14px;background:var(--mint);color:var(--forest)}
 .monthly-budget-empty-state h3{margin:0 0 6px;font:750 16px Manrope,sans-serif;color:var(--forest)}
 .monthly-budget-empty-state p{margin:0;color:var(--forest);font-size:14px;line-height:1.5}
+
+/* Respecte l'attribut hidden même si le composant utilise display:grid. */
+.monthly-budget-actuals[hidden]{display:none!important}
