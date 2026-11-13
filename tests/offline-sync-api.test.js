@@ -3,6 +3,8 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
+const crypto=require("node:crypto");
+const {Pool}=require("pg");
 const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
 test("data writes compare the submitted baseline while holding the user row lock",()=>{
@@ -54,4 +56,40 @@ test("client submits the baseline and preserves pending changes on a conflict",(
 
 test("published offline sync runtime is identical to the tested source",()=>{
  assert.equal(read("offline-storage.js"),read("dist/offline-storage.js"));
+});
+
+test("PostgreSQL row locking makes simultaneous stale writers detect the first commit",{
+ skip:!process.env.TEST_DATABASE_URL
+},async()=>{
+ const pool=new Pool({connectionString:process.env.TEST_DATABASE_URL});
+ const id=crypto.randomUUID();
+ const first=await pool.connect(),second=await pool.connect();
+ const base={income:0,incomes:[],budgets:[],expenses:[],goals:[]};
+ const newer={income:38686,incomes:[{id:"income-1",amount:38686}],budgets:[],expenses:[],goals:[]};
+ try{
+  await pool.query("CREATE TABLE IF NOT EXISTS bep_offline_sync_test_snapshots(id TEXT PRIMARY KEY,payload JSONB NOT NULL)");
+  await pool.query("INSERT INTO bep_offline_sync_test_snapshots(id,payload) VALUES($1,$2::jsonb)",[id,JSON.stringify(base)]);
+  await first.query("BEGIN");
+  const firstRead=await first.query("SELECT payload FROM bep_offline_sync_test_snapshots WHERE id=$1 FOR UPDATE",[id]);
+  assert.deepEqual(firstRead.rows[0].payload,base);
+  await second.query("BEGIN");
+  let secondResolved=false;
+  const secondReadPromise=second.query("SELECT payload FROM bep_offline_sync_test_snapshots WHERE id=$1 FOR UPDATE",[id]).then(result=>{
+   secondResolved=true;
+   return result.rows[0].payload;
+  });
+  await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(secondResolved,false,"the second writer must wait for the first row lock");
+  await first.query("UPDATE bep_offline_sync_test_snapshots SET payload=$2::jsonb WHERE id=$1",[id,JSON.stringify(newer)]);
+  await first.query("COMMIT");
+  const secondSnapshot=await secondReadPromise;
+  assert.deepEqual(secondSnapshot,newer);
+  assert.notDeepEqual(secondSnapshot,base,"the stale baseline must now be rejected with a conflict");
+  await second.query("ROLLBACK");
+ }finally{
+  await first.query("ROLLBACK").catch(()=>{});
+  await second.query("ROLLBACK").catch(()=>{});
+  await pool.query("DELETE FROM bep_offline_sync_test_snapshots WHERE id=$1",[id]).catch(()=>{});
+  first.release();second.release();await pool.end();
+ }
 });
