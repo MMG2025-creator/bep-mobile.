@@ -629,9 +629,10 @@ async function loadExternalAiConsent(){
   const response=await fetch(API+"/api/ai/consent",{credentials:"include",cache:"no-store"});
   const data=await response.json();if(!response.ok)throw Error(data.message||"Statut indisponible.");
   const enabled=data.enabled===true&&data.consentVersion===BEP_EXTERNAL_AI_CONSENT_VERSION;
+  const provider=String(data.provider||"gemini").toLowerCase(),providerLabel=({gemini:"Google Gemini",openai:"OpenAI",anthropic:"Anthropic",mistral:"Mistral AI",openrouter:"OpenRouter"})[provider]||"le fournisseur externe configuré";
   checkbox.checked=enabled;checkbox.disabled=false;saveButton.disabled=false;
   if(revokeButton)revokeButton.hidden=!enabled;
-  statusLabel.textContent=enabled?"Autorisation active pour ce compte. Tu peux la retirer à tout moment.":"Aucune autorisation active. Les appels externes du Coach restent bloqués ; le Coach BEP structuré continue de fonctionner.";
+  statusLabel.textContent=enabled?"Autorisation active pour "+providerLabel+". Tu peux la retirer à tout moment.":"Aucune autorisation active pour "+providerLabel+". Les appels externes du Coach restent bloqués ; le Coach BEP structuré continue de fonctionner.";
   return enabled;
  }catch(error){checkbox.checked=false;checkbox.disabled=true;saveButton.disabled=true;if(revokeButton)revokeButton.hidden=true;statusLabel.textContent="Impossible de vérifier l’autorisation. Aucun partage externe ne doit être activé. "+error.message;return false}
 }
