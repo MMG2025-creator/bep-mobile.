@@ -71,7 +71,15 @@ jobs:
       - run: npm audit --omit=dev
       - run: cmp -s app.js dist/app.js
       - run: cmp -s monthly-budget-ui.js dist/monthly-budget-ui.js
-      - run: cmp -s styles.css dist/styles.css
+      - name: Verify panel isolation in both stylesheets
+        shell: bash
+        run: |
+          for file in styles.css dist/styles.css; do
+            grep -Fq '#budget.panel.active ~ #purchases.panel{display:none!important}' "$file" || {
+              echo "Missing Budget / Purchases isolation guard in $file"
+              exit 1
+            }
+          done
       - run: node --check server.js
       - name: Verify frontend entrypoint asset references
         shell: bash
