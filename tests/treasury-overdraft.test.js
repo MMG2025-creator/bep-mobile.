@@ -21,6 +21,9 @@ test("overdraft permission UI is part of income and mirrored in production asset
  const dialogs=read("spend-experience.js");
  assert.match(dialogs,/\["overdraft","Découvert autorisé","Gérer mon découvert autorisé","\.overdraft-permission-card"\]/);
  assert.equal(dialogs,read("dist/spend-experience.js"));
+ assert.match(app,/BEP_OPEN_ENTRY_DIALOG\("overdraft"\)/);
+ assert.match(app,/detail:\{id:"overdraft"\}/);
+ assert.equal(app,read("dist/app.js"));
 });
 
 test("overdraft only authorizes a negative projected balance and never changes financial calculations",()=>{
