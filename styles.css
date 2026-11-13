@@ -1417,5 +1417,5 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .savings-operation-row .savings-delete-button{box-sizing:border-box!important;width:76px!important;min-width:76px!important;max-width:76px!important;height:32px!important;min-height:32px!important;padding:4px 5px!important;margin:0!important;font-size:11px!important;line-height:1!important;font-weight:600!important;white-space:nowrap!important;text-align:center!important;border-radius:8px!important}
 @media(max-width:520px){.savings-operation-row{grid-template-columns:minmax(0,1fr) minmax(70px,max-content) 68px;gap:5px}.savings-operation-row .savings-delete-button{width:68px!important;min-width:68px!important;max-width:68px!important;font-size:10px!important}}
 
-/* The Coach BEP remains available in navigation; remove only the global floating shortcut. */
-.bep-advice-dock { display: none !important; }
+/* Restore the persistent floating BEP advice robot. */
+.bep-advice-dock{display:block!important;visibility:visible!important;opacity:1!important}
