@@ -3,6 +3,7 @@ const express=require("express"),session=require("express-session"),PgSession=re
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
+const {startBepAgent}=require("./lib/bep-agent");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null;
@@ -263,4 +264,4 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{await startBepAgent({pool})}catch(agentError){console.error("BEP Gemini agent startup failed",String(agentError?.message||agentError).slice(0,180))}return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});
