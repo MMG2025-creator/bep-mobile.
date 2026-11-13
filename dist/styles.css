@@ -1480,3 +1480,9 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .monthly-budget-actuals>summary{padding:12px 48px 12px 12px!important;}
 .monthly-budget-actuals>summary>b{flex:0 0 auto;margin-right:2px;white-space:nowrap;}
 .monthly-budget-actuals>summary>span{min-width:0;}
+
+/* Match the actual-expenses amount to the other accordion totals */
+.monthly-budget-actuals>summary{padding:12px 42px 12px 12px!important;}
+.monthly-budget-actuals>summary>b{font-size:13px!important;font-weight:700;color:var(--forest);white-space:nowrap;flex:0 0 auto;margin:0;}
+.monthly-budget-actuals>summary>span{display:flex;align-items:center;gap:5px;min-width:0;}
+.monthly-budget-actuals>summary>span::before{content:"";display:inline-block;width:20px;height:20px;flex:0 0 20px;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='7' y='11' width='26' height='22' rx='8' fill='%23eaf5ef' stroke='%23176b50' stroke-width='2'/%3E%3Cpath d='M20 6v5M17 6h6' stroke='%23b9872c' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='15' cy='21' r='2.5' fill='%23176b50'/%3E%3Ccircle cx='25' cy='21' r='2.5' fill='%23176b50'/%3E%3Cpath d='M15 27q5 4 10 0' fill='none' stroke='%23176b50' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");}
