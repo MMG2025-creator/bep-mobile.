@@ -467,7 +467,6 @@
 <script src="./auth-page.js?v=1&bep=isolated-auth-controller-20261113"></script>
 <script src="./app.js?v=97&bep=lazy-receipt-ocr-20261113"></script>
 <script src="./auth-recovery.js?v=2&bep=auth-page-controller-20261113"></script>
-<script src="./monthly-budget-ui.js?v=8&bep=multi-select-20261112"></script>
 <script src="./pwa.js?v=11"></script>
 <script src="./spend-experience.js?v=20&bep=expense-modal-merchant-field-20261112"></script>
 <script src="./spend-clean-ui.js?v=5&bep=receipt-proof-import-20261112"></script>
@@ -490,6 +489,31 @@
   });
   document.addEventListener('visibilitychange',sync);
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',sync);
+})();
+</script>
+
+<script>
+(function(){
+  let monthlyPromise=null;
+  function loadMonthlyBudget(){
+    if(monthlyPromise)return monthlyPromise;
+    monthlyPromise=new Promise((resolve,reject)=>{
+      const script=document.createElement("script");
+      script.src="./monthly-budget-ui.js?v=9&bep=lazy-monthly-budget-20261113";
+      script.async=true;
+      script.onload=()=>{try{window.BEP_MONTHLY_UI_READY?.();resolve(true)}catch(error){monthlyPromise=null;reject(error)}};
+      script.onerror=()=>{monthlyPromise=null;reject(new Error("Le module Budgets mensuels n’a pas pu être chargé."))};
+      document.body.appendChild(script);
+    });
+    return monthlyPromise;
+  }
+  document.addEventListener("click",event=>{
+    if(!event.target.closest('[data-budget-module="monthly"]'))return;
+    loadMonthlyBudget().catch(error=>{
+      const status=document.getElementById("monthlyBudgetStatus");
+      if(status)status.textContent=error.message;
+    });
+  },true);
 })();
 </script>
 </body></html>
