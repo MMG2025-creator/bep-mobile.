@@ -9,7 +9,7 @@
   let months = [];
   let current = null;
   let items = [];
-  let editingItemIndex = null;
+  let editingItemId = null;
   let monthSelectionMode = false;
   const monthSelection = new Set();
   function attachMonthLongPress() {
@@ -57,7 +57,7 @@
       if (!monthSelection.size || current?.status !== "open") return;
       const accepted = window.BEP_CONFIRM_ACTION ? await window.BEP_CONFIRM_ACTION("Retirer les " + monthSelection.size + " lignes sélectionnées de ce mois ?", "Suppression multiple") : window.confirm("Retirer les lignes sélectionnées de ce mois ?");
       if (!accepted) return;
-      items = items.filter((_, index) => !monthSelection.has(index)); monthSelection.clear(); monthSelectionMode = false; editingItemIndex = null;
+      items = items.filter((_, index) => !monthSelection.has(index)); monthSelection.clear(); monthSelectionMode = false; editingItemId = null;
       $("monthlyBudgetItemForm").reset(); $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne"; $("monthlyBudgetItemCancel").hidden = true; renderItems();
       status("Lignes retirées. Enregistre ce mois pour confirmer les modifications.");
     });
@@ -154,8 +154,9 @@
     ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
     $("monthlyBudgetItems").querySelectorAll("[data-edit-month-item]").forEach(button => {
       button.onclick = () => {
-        editingItemIndex = Number(button.dataset.editMonthItem);
-        const item = items[editingItemIndex];
+        const item = items[Number(button.dataset.editMonthItem)];
+        if (!item) return;
+        editingItemId = item.clientId;
         $("monthlyBudgetItemType").value = item.itemType;
         $("monthlyBudgetItemLabel").value = item.label;
         $("monthlyBudgetItemCategory").value = item.category || "";
@@ -175,7 +176,7 @@
           : window.confirm("Retirer cette ligne du budget mensuel ?");
         if (!accepted) return;
         items.splice(index, 1);
-        editingItemIndex = null;
+        editingItemId = null;
         $("monthlyBudgetItemForm").reset();
         $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
         $("monthlyBudgetItemCancel").hidden = true;
@@ -202,12 +203,12 @@
       const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
-      editingItemIndex = null; monthSelection.clear(); monthSelectionMode = false;
+      editingItemId = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
       $("monthlyBudgetItemCancel").hidden = true;
       items = current.items.map(x => ({
-        itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
+        clientId: crypto.randomUUID(), itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
       }));
       renderMonths();
@@ -289,12 +290,22 @@
       itemType: $("monthlyBudgetItemType").value, label,
       category: $("monthlyBudgetItemCategory").value.trim() || null,
       plannedAmount: amount,
-      sourceItemId: editingItemIndex === null ? crypto.randomUUID() : (items[editingItemIndex]?.sourceItemId || crypto.randomUUID()),
-      metadata: editingItemIndex === null ? { source: "monthly-history" } : (items[editingItemIndex]?.metadata || { source: "monthly-history" })
+      clientId: editingItemId,
+      sourceItemId: editingItemId === null ? crypto.randomUUID() : (items.find(x => x.clientId === editingItemId)?.sourceItemId || crypto.randomUUID()),
+      metadata: editingItemId === null ? { source: "monthly-history" } : (items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" })
     };
-    if (editingItemIndex === null) items.push(item);
-    else items[editingItemIndex] = item;
-    editingItemIndex = null;
+    if (editingItemId === null) {
+      item.clientId = crypto.randomUUID();
+      items.push(item);
+    } else {
+      const targetIndex = items.findIndex(x => x.clientId === editingItemId);
+      if (targetIndex < 0) {
+        editingItemId = null;
+        return status("La ligne à modifier n’existe plus. Recharge le mois avant de réessayer.", true);
+      }
+      items[targetIndex] = item;
+    }
+    editingItemId = null;
     $("monthlyBudgetItemForm").reset();
     $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
     $("monthlyBudgetItemCancel").hidden = true;
@@ -302,7 +313,7 @@
     window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"monthly-item"}}));
   };
   $("monthlyBudgetItemCancel").onclick = () => {
-    editingItemIndex = null;
+    editingItemId = null;
     $("monthlyBudgetItemForm").reset();
     $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
     $("monthlyBudgetItemCancel").hidden = true;
@@ -318,7 +329,7 @@
       });
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
-      items = current.items.map(x => ({ ...x, plannedAmount: Number(x.plannedAmount) }));
+      items = current.items.map(x => ({ ...x, clientId: crypto.randomUUID(), plannedAmount: Number(x.plannedAmount) }));
       renderItems();
       let syncWarning = null;
       if (current.monthKey === monthNow() && current.status === "open" && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
