@@ -6,7 +6,7 @@ const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/
 const {startBepAgent}=require("./lib/bep-agent");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
-let dbReady=false,dbInitError=null;
+let dbReady=false,dbInitError=null,agentTelemetryReady=false;
 const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.GOOGLE_REDIRECT_URI&&process.env.SESSION_SECRET);
 app.set("trust proxy",1);
 app.use((req,res,next)=>{
@@ -72,6 +72,7 @@ function requireBepAgentAdmin(req,res,next){
  next();
 }
 function coachTelemetry(req,res,next){
+ if(!agentTelemetryReady)return next();
  const started=Date.now();let recorded=false;const send=res.json.bind(res);
  res.json=function(body){
   if(!recorded){recorded=true;const mode=["structured","structured-fallback","bep"].includes(body?.mode)?body.mode:"unknown",status=Number(res.statusCode)||200,tokens=Number(body?.usage?.totalTokenCount??body?.usage?.total_tokens)||0;
@@ -229,10 +230,12 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   const candidate=found.rows[0];
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
-   const source=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[candidate.source_slug]);
+   const source=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[candidate.source_slug]);
    if(!source.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_NOT_FOUND"})}
    const original=source.rows[0];
+   const currentSourceDigest=crypto.createHash("sha256").update(JSON.stringify({slug:original.slug,category:original.category,title:original.title,content:String(original.content||""),source_name:original.source_name,source_url:original.source_url,evidence_level:original.evidence_level,version:Number(original.version)})).digest("hex");
    if(original.source_name!==candidate.source_name||original.source_url!==candidate.source_url||original.evidence_level!==candidate.evidence_level){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_PROVENANCE_CHANGED"})}
+   if(Number(original.version)!==Number(candidate.source_version)||currentSourceDigest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_CHANGED"})}
    const deactivate=candidate.proposal_type==="deactivate";
    await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,$10) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,!deactivate,String(req.session.user.id)]);
   }
@@ -327,4 +330,4 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{await startBepAgent({pool})}catch(agentError){console.error("BEP Gemini agent startup failed",String(agentError?.message||agentError).slice(0,180))}return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{const agentState=await startBepAgent({pool});agentTelemetryReady=agentState.enabled===true}catch(agentError){agentTelemetryReady=false;console.error("BEP Gemini agent startup failed",String(agentError?.message||agentError).slice(0,180))}return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});
