@@ -137,6 +137,7 @@ function overdraftCapacityAllows(projectedAvailable){
  const valid=!validUntil||validUntil>=new Date().toISOString().slice(0,10);
  return valid&&Number(projectedAvailable)>=-limit;
 }
+$("overdraftLimit").value=String(state.treasury.overdraftLimit||"");$("overdraftValidUntil").value=state.treasury.validUntil||"";
 $("overdraftForm").onsubmit=e=>{
  e.preventDefault();
  const limit=Math.max(0,Number($("overdraftLimit").value)||0),validUntil=$("overdraftValidUntil").value;
