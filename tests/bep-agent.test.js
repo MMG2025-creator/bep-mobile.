@@ -3,6 +3,7 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {readConfig}=require("../lib/bep-agent/config");
 const {GeminiClient}=require("../lib/bep-agent/gemini-client");
+const {startBepAgent}=require("../lib/bep-agent");
 const {validateKnowledgeProposal}=require("../lib/bep-agent/worker");
 const cases=require("../lib/bep-agent/quality-cases");
 const fs=require("node:fs");
@@ -13,6 +14,13 @@ test("agent remains disabled by default and fails closed without separate billin
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}).enabled,false);
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true"}).enabled,false);
 });
+test("disabled agent performs no schema or database writes",async()=>{
+ let queries=0;
+ const pool={query:async()=>{queries++;throw new Error("database should not be touched")}};
+ const result=await startBepAgent({pool,env:{},logger:{info(){}}});
+ assert.equal(result.enabled,false);
+ assert.equal(queries,0);
+});
 test("agent enables only with its dedicated key and explicit zero-billing confirmation",()=>{
  const c=readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"});
  assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
@@ -22,9 +30,9 @@ test("daily Gemini call quota is bounded",()=>{
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"0"}).maxCallsPerDay,8);
 });
 test("Gemini client requires a key and does not accept a custom endpoint",()=>{
- assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-2.5-flash"}),/API key/);
- const client=new GeminiClient({apiKey:"x",model:"gemini-2.5-flash"});
- assert.equal(client.model,"gemini-2.5-flash");assert.equal(Object.hasOwn(client,"endpoint"),false);
+ assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-3.8-flash"}),/API key/);
+ const client=new GeminiClient({apiKey:"x",model:"gemini-3.8-flash"});
+ assert.equal(client.model,"gemini-3.8-flash");assert.equal(Object.hasOwn(client,"endpoint"),false);
 });
 test("knowledge proposals must preserve the source provenance supplied by BEP",()=>{
  const source={slug:"budget-baseline",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/",evidence_level:"institutional_guidance"};
