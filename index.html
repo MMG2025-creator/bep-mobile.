@@ -107,14 +107,13 @@
     </div>
     <label class="monthly-budget-search-label" for="monthlyBudgetSearch">Rechercher dans ce mois</label>
     <input id="monthlyBudgetSearch" class="monthly-budget-search" type="search" placeholder="Libellé ou catégorie…">
-    <details id="monthlyBudgetActuals" class="monthly-budget-actuals">
-      <summary><span>Dépenses réellement effectuées</span><b id="monthlyBudgetActualTotal">0,00 €</b></summary>
-      <small id="monthlyBudgetActualCount">0 dépense(s) réelle(s)</small>
+    <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
+    <details id="monthlyBudgetActuals" class="monthly-budget-group monthly-budget-actuals">
+      <summary><span>Dépenses réellement effectuées <small id="monthlyBudgetActualCount">0 dépense(s)</small></span><b id="monthlyBudgetActualTotal">0,00 €</b></summary>
       <small id="monthlyBudgetActualImpact">Impact sur le disponible : 0,00 €</small>
       <p id="monthlyBudgetActualError" class="monthly-budget-actual-error" hidden></p>
       <div id="monthlyBudgetActualRows"></div>
     </details>
-    <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
     <form id="monthlyBudgetItemForm" class="monthly-budget-item-form">
       <h3>Ajouter une ligne</h3>
       <div class="field"><label for="monthlyBudgetItemType">Type</label><select id="monthlyBudgetItemType"><option value="income">Revenu</option><option value="charge">Charge</option><option value="savings">Épargne</option></select></div>
@@ -404,7 +403,7 @@
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
 <script src="./app.js?v=96&bep=actual-expenses-home-20261113"></script>
 <script src="./auth-recovery.js?v=1"></script>
-<script src="./monthly-budget-ui.js?v=10&bep=actual-expenses-collapsible-20261113"></script>
+<script src="./monthly-budget-ui.js?v=11&bep=uniform-four-accordions-20261113"></script>
 <script src="./pwa.js?v=11"></script>
 <script src="./spend-experience.js?v=20&bep=expense-modal-merchant-field-20261112"></script>
 <script src="./spend-clean-ui.js?v=5&bep=receipt-proof-import-20261112"></script>
