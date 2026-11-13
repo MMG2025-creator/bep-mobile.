@@ -1,7 +1,7 @@
 # BEP Gemini Agent — exploitation
 
 ## Démarrage
-L'agent démarre après l'initialisation réussie de PostgreSQL et uniquement si les trois conditions d'activation sont satisfaites. En l'absence de configuration, le serveur BEP et le Coach local continuent normalement.
+L'API crée les tables additives de l'agent après l'initialisation PostgreSQL, même si Gemini reste désactivé. Le worker et tout appel Gemini ne démarrent que si les trois conditions d'activation sont satisfaites. En l'absence de configuration, le serveur BEP et le Coach local continuent normalement.
 
 ## Cadence
 Au démarrage, deux tâches sont mises en file : revue documentaire et revue qualité synthétique. Un cycle de programmation relance ces tâches toutes les six heures. Un worker traite une tâche à la fois et interroge la file persistante toutes les 15 secondes par défaut.
