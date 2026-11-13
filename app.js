@@ -160,10 +160,20 @@ $("openProfileDialog")?.addEventListener("click",async()=>{
  if(!window.bepSignedIn)return;
  try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("passwordResetEmail").value=u.email||""}catch(e){notify(e.message)}
 });
+async function refreshLoginMethodsStatus(){
+ const emailStatus=$("emailLinkStatus"),googleStatus=$("googleAccountStatus"),linkButton=$("linkGoogleBtn"),proofField=$("googleLinkProofField");
+ emailStatus.textContent="Vérification…";googleStatus.textContent="Vérification…";
+ try{const r=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Impossible de vérifier les méthodes de connexion.");const d=await r.json(),u=d.user;if(!u)throw Error("Session BEP non disponible.");
+ $("passwordResetEmail").value=u.email||"";
+ emailStatus.textContent=u.emailVerified?"✓ Adresse e-mail confirmée : "+u.email:"⚠ Adresse e-mail à confirmer : "+u.email;
+ googleStatus.textContent=u.googleLinked?"✓ Compte Google associé à cette adresse.":"Non associé. Tu peux lier ton compte Google ci-dessous.";
+ linkButton.hidden=!!u.googleLinked;if(proofField)proofField.hidden=!!u.googleLinked;
+ }catch(e){emailStatus.textContent="Statut de l’adresse e-mail indisponible.";googleStatus.textContent=e.message;linkButton.hidden=false;if(proofField)proofField.hidden=false}
+}
 $("openLoginMethodsDialog")?.addEventListener("click",async()=>{
- $("passwordResetStatus").textContent="";openSettingsDialog(loginMethodsDialog);
+ $("passwordResetStatus").textContent="";$("googleLinkStatus").textContent="";$("accountProofInput").value="";openSettingsDialog(loginMethodsDialog);
  if(!window.bepSignedIn)return;
- try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Compte indisponible.");const d=await r.json();$("passwordResetEmail").value=d.user?.email||$("profileEmail").textContent||""}catch(e){$("passwordResetStatus").textContent=e.message}
+ await refreshLoginMethodsStatus();
 });
 $("requestPasswordResetBtn").onclick=async()=>{const email=$("passwordResetEmail").value.trim().toLowerCase(),button=$("requestPasswordResetBtn"),status=$("passwordResetStatus");if(!email){status.textContent="Saisis l’adresse e-mail associée à ton compte.";return}button.disabled=true;status.textContent="Envoi en cours…";try{const r=await fetch(API+"/api/auth/forgot-password",{method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({email})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de traiter la demande.");status.textContent=d.message||"Si un compte correspond à cette adresse, un lien sécurisé sera envoyé."}catch(e){status.textContent=e.message||"Le service est temporairement indisponible."}finally{button.disabled=false}};
 
