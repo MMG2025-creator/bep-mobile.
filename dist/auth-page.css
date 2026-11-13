@@ -160,4 +160,5 @@
 
 
 /* The authenticated app is a separate module and stays absent until access is granted. */
-#bepAppRoot[hidden]{display:none!important}
+/* Defense in depth: authenticated application root is never rendered before access. */
+#bepAppRoot[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
