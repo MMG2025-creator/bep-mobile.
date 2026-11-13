@@ -113,10 +113,17 @@
  async function restoreSession(){
   if(window.BEP_DEMO_LOCAL){
    window.bepSignedIn=false;
-   window.BEPApp.enableDemoMode();
-   const note=document.querySelector(".privacy-note");
-   if(note)note.textContent="Mode démo : tes données sont enregistrées uniquement sur cet appareil. Aucune connexion ni synchronisation avec un compte.";
-   const startupLoader=document.getElementById("bepStartupLoader");if(startupLoader)startupLoader.hidden=true;
+   try {
+    if(window.BEPApp?.enableDemoMode) window.BEPApp.enableDemoMode();
+    else console.error("[BEP demo] Le moteur BEP n'est pas disponible au démarrage.");
+    const note=document.querySelector(".privacy-note");
+    if(note)note.textContent="Mode démo : tes données sont enregistrées uniquement sur cet appareil. Aucune connexion ni synchronisation avec un compte.";
+   } catch(error) {
+    console.error("[BEP demo] Erreur pendant l'initialisation locale :",error);
+   } finally {
+    const startupLoader=document.getElementById("bepStartupLoader");
+    if(startupLoader)startupLoader.hidden=true;
+   }
    return;
   }
   const params=new URLSearchParams(window.location.search),oauthResult=params.get("login");
