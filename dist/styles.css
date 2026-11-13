@@ -1419,3 +1419,18 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 /* Restore the persistent floating BEP advice robot. */
 .bep-advice-dock{display:block!important;visibility:visible!important;opacity:1!important}
+
+/* Keep charge/income checklist rows on one line on narrow mobile viewports. */
+@media(max-width:380px){
+  .budget-checkup-row{
+    display:grid;
+    grid-template-columns:16px minmax(0,1fr) 76px;
+    align-items:center;
+    gap:5px;
+    width:100%;
+    min-width:0;
+  }
+  .budget-checkup-row>input[type=checkbox]{grid-column:1;grid-row:1;width:16px;height:16px;margin:0}
+  .budget-checkup-row>span{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere;font-size:11px}
+  .budget-checkup-row>input[type=number]{grid-column:3;grid-row:1;width:100%;min-width:0;box-sizing:border-box;padding:7px 5px;font-size:10px}
+}
