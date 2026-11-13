@@ -1,0 +1,17 @@
+# BEP Gemini Agent — exploitation
+
+## Démarrage
+L'agent démarre après l'initialisation réussie de PostgreSQL et uniquement si les trois conditions d'activation sont satisfaites. En l'absence de configuration, le serveur BEP et le Coach local continuent normalement.
+
+## Cadence
+Au démarrage, deux tâches sont mises en file : revue documentaire et revue qualité synthétique. Un cycle de programmation relance ces tâches toutes les six heures. Un worker traite une tâche à la fois et interroge la file persistante toutes les 15 secondes par défaut.
+
+Un service Render Free peut être suspendu. Dans ce cas, la file PostgreSQL conserve les tâches ; le traitement reprend au redémarrage. Ce mode n'est pas une garantie d'exécution 24/7.
+
+## Quotas
+La limite est de 8 appels Gemini par jour par défaut (maximum configurable : 50). Si la limite est atteinte, les tâches restent en attente ou échouent sans fallback vers un fournisseur payant.
+
+## Contrôles
+Tables : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates`, `bep_agent_daily_usage`, `bep_agent_metrics`.
+
+Ne jamais activer l'agent en production avant d'avoir vérifié la clé Gemini dédiée, la configuration de facturation gratuite et le plan Render. Les propositions documentaires doivent être examinées avant toute publication.
