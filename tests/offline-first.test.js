@@ -25,12 +25,12 @@ test("offline startup preserves local data for a previously authenticated user",
  assert.match(js,/window\.BEPOffline\.hasKnownUser\(\)/);
  assert.match(js,/window\.bepOfflineMode=true/);
  assert.match(js,/gate\.hidden=true/);
- assert.match(js,/window\.BEPOffline\.setBaseline\(payload\.payload\|\|\{\}\)/);
+ assert.match(js,/window\.BEPOffline\.setBaseline\(d\.payload\|\|\{\}\)/);
 });
 test("service worker caches app shell and approved local OCR dependencies",()=>{
  for(const file of ["sw.js","dist/sw.js"]){
   const js=read(file);
-  assert.match(js,/bep-shell-v2/);
+  assert.match(js,/bep-shell-v8/);
   assert.match(js,/offline-storage\.js/);
   assert.match(js,/cdn\.jsdelivr\.net/);
   assert.match(js,/tessdata\.projectnaptha\.com/);
@@ -39,7 +39,7 @@ test("service worker caches app shell and approved local OCR dependencies",()=>{
 });
 test("offline capture never sends receipt images and remains local OCR",()=>{
  const js=read("app.js");
- assert.match(js,/window\.Tesseract\.recognize\(file,"fra\+eng"/);
+ assert.match(js,/window\.Tesseract\.recognize\(ocrImage,"fra\+eng"/);
  assert.match(js,/Vérifie et corrige les champs avant d’enregistrer/);
  assert.doesNotMatch(js,/fetch\([^)]*receiptFile/);
 });
@@ -48,7 +48,7 @@ test("monthly budget history is cached per authenticated user for offline read-o
  const js=read("monthly-budget-ui.js");
  assert.equal(js,read("dist/monthly-budget-ui.js"));
  assert.match(js,/bep-monthly-history-cache-v1/);
- assert.match(js,/monthly-history:" \\+ user/);
+ assert.match(js,/const key = "monthly-history:" \\+ user/);
  assert.match(js,/cached\\?\\.budgets\\?\\.\\[monthKey\\]/);
  assert.match(js,/navigator\\.onLine/);
  assert.match(js,/lecture seule/);
