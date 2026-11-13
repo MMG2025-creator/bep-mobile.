@@ -383,7 +383,7 @@
 </div>
 <div id="chartZoom" class="chart-zoom" hidden role="dialog" aria-modal="true" aria-labelledby="chartZoomTitle"><div class="chart-zoom-panel"><div class="chart-zoom-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartZoomTitle">Graphique</h2><span id="chartZoomPeriod" class="chart-period"></span></div><button type="button" id="chartZoomClose" class="chart-zoom-close" aria-label="Fermer le graphique agrandi">×</button></div><div id="chartZoomBody" class="chart-zoom-body"></div><p id="chartZoomDetail" class="chart-zoom-detail" aria-live="polite">Sélectionne une part ou une barre pour voir le détail.</p></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<div id="bepAdviceDock" class="bep-advice-dock">
+<div id="bepAdviceDock" class="bep-advice-dock" hidden style="display:none!important" inert aria-hidden="true">
   <button type="button" id="bepAdviceRobot" class="bep-advice-robot" aria-label="Ouvrir le conseil BEP" aria-expanded="false">
     <svg class="bep-robot-icon" viewBox="0 0 160 170" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="80" cy="158" rx="48" ry="7" fill="#b9d9c8" opacity=".45"/>
@@ -441,8 +441,8 @@
 (function(){
  const dialog=document.getElementById("bepAdviceDialog"),robot=document.getElementById("bepAdviceRobot"),dock=document.getElementById("bepAdviceDock");
  if(!dialog||!robot||!dock)return;
- function syncAuthVisibility(){const authenticated=window.bepSignedIn===true;dock.hidden=!authenticated;if(!authenticated&&dialog.open)dialog.close();robot.setAttribute("aria-expanded",authenticated&&dialog.open?"true":"false")}
- dock.hidden=true;
+ function syncAuthVisibility(){const authorized=window.bepSignedIn===true||window.bepOfflineMode===true;dock.hidden=!authorized;dock.inert=!authorized;dock.setAttribute("aria-hidden",String(!authorized));dock.style.setProperty("display",authorized?"block":"none","important");if(!authorized&&dialog.open)dialog.close();robot.setAttribute("aria-expanded",authorized&&dialog.open?"true":"false")}
+ dock.hidden=true;dock.style.setProperty("display","none","important");dock.inert=true;dock.setAttribute("aria-hidden","true");
  window.addEventListener("bep:auth-ready",syncAuthVisibility);
  syncAuthVisibility();
  const ids={home:"aiHome",budget:{income:"aiIncome",charges:"aiCharges",monthly:"aiMonthly"},savings:"aiSavings",purchases:"aiPurchases"};
