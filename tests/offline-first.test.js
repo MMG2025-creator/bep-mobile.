@@ -34,6 +34,47 @@ test("explicit logout and account deletion clear the remembered offline identity
  assert.ok(logout>=0&&forget>logout&&localDataClear>forget);
 });
 
+
+test("session logout propagates across tabs through BroadcastChannel and shared storage",()=>{
+ const store=new Map([["bep-last-authenticated-user","user-1"]]),listeners={},events=[],channels=[];
+ class FakeBroadcastChannel{constructor(name){this.name=name;this.onmessage=null;channels.push(this)}postMessage(data){this.sent=data}}
+ class FakeCustomEvent{constructor(type,init={}){this.type=type;this.detail=init.detail}}
+ const window={BroadcastChannel:FakeBroadcastChannel,addEventListener:(name,fn)=>{listeners[name]=fn},dispatchEvent:event=>events.push(event)};
+ const context={window,localStorage:{getItem:key=>store.has(key)?store.get(key):null,setItem:(key,value)=>store.set(key,String(value)),removeItem:key=>store.delete(key)},BroadcastChannel:FakeBroadcastChannel,CustomEvent:FakeCustomEvent,navigator:{onLine:true},document:{visibilityState:"visible"},fetch:async()=>({ok:true,status:200,json:async()=>({user:{id:"user-1"}})})};
+ vm.runInNewContext(read("offline-storage.js"),context);
+ const api=window.BEPOffline;api.broadcastSessionEnd("logout");
+ assert.equal(channels[0].name,"bep-auth-session-v1");assert.equal(channels[0].sent.type,"logout");
+ channels[0].onmessage({data:{type:"logout"}});
+ assert.ok(events.some(event=>event.type==="bep:session-invalidated"&&event.detail.reason==="logout"));
+ listeners.storage({key:"bep-last-authenticated-user",oldValue:"user-1",newValue:null});
+ assert.ok(events.some(event=>event.type==="bep:session-invalidated"&&event.detail.reason==="storage-identity-changed"));
+});
+
+test("foreground revalidation invalidates a session revoked by another interface",async()=>{
+ const store=new Map([["bep-last-authenticated-user","user-1"]]),events=[];
+ class FakeCustomEvent{constructor(type,init={}){this.type=type;this.detail=init.detail}}
+ const window={bepSignedIn:true,addEventListener:()=>{},dispatchEvent:event=>events.push(event)};
+ const context={window,localStorage:{getItem:key=>store.has(key)?store.get(key):null,setItem:(key,value)=>store.set(key,String(value)),removeItem:key=>store.delete(key)},CustomEvent:FakeCustomEvent,navigator:{onLine:true},document:{visibilityState:"visible"},fetch:async()=>({ok:false,status:401,json:async()=>({})})};
+ vm.runInNewContext(read("offline-storage.js"),context);
+ const valid=await window.BEPOffline.validateActiveSession();
+ assert.equal(valid,false);assert.equal(store.has("bep-last-authenticated-user"),false);
+ assert.ok(events.some(event=>event.type==="bep:session-invalidated"&&event.detail.reason==="server-session-ended"));
+});
+
+test("logout UI locks a second active interface without deleting its pending offline queue",()=>{
+ const js=read("app.js"),offline=read("offline-storage.js"),server=read("server.js");
+ assert.match(offline,/new BroadcastChannel\("bep-auth-session-v1"\)/);
+ assert.match(offline,/window\.addEventListener\("visibilitychange"/);
+ assert.match(js,/window\.addEventListener\("bep:session-invalidated"/);
+ assert.match(js,/La session a été fermée depuis une autre interface/);
+ assert.match(js,/broadcastSessionEnd\("logout"\)/);
+ assert.match(js,/broadcastSessionEnd\("account-deleted"\)/);
+ const logout=server.indexOf('app.post("/api/auth/logout"');
+ const revoke=server.indexOf("DELETE FROM user_sessions WHERE sess->'user'->>'id'=$1",logout);
+ const destroy=server.indexOf("req.session.destroy",logout);
+ assert.ok(logout>=0&&revoke>logout&&destroy>revoke);
+});
+
 test("offline restoration requires a known identity and a valid local snapshot",()=>{
  const js=read("app.js");
  assert.ok(js.includes('const localSnapshotRaw=localStorage.getItem(DB)'));
