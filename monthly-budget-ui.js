@@ -64,6 +64,86 @@
   }
   let loading = false;
   let authEpoch = 0;
+  const CACHE_DB = "bep-monthly-history-cache-v1";
+  const CACHE_STORE = "snapshots";
+  const CACHE_USER_KEY = "bep-last-authenticated-user";
+  let cacheDbPromise = null;
+  function cacheIdentity() {
+    try { return String(localStorage.getItem(CACHE_USER_KEY) || ""); } catch { return ""; }
+  }
+  function openCacheDb() {
+    if (cacheDbPromise) return cacheDbPromise;
+    cacheDbPromise = new Promise((resolve, reject) => {
+      if (!("indexedDB" in window)) return reject(new Error("IndexedDB indisponible"));
+      const request = indexedDB.open(CACHE_DB, 1);
+      request.onupgradeneeded = () => {
+        if (!request.result.objectStoreNames.contains(CACHE_STORE)) request.result.createObjectStore(CACHE_STORE);
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Ouverture du cache impossible"));
+    });
+    return cacheDbPromise;
+  }
+  async function readHistoryCache() {
+    const user = cacheIdentity();
+    if (!user) return null;
+    const key = "monthly-history:" + user;
+    try {
+      const db = await openCacheDb();
+      return await new Promise((resolve, reject) => {
+        const request = db.transaction(CACHE_STORE).objectStore(CACHE_STORE).get(key);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+    } catch {
+      try { return JSON.parse(localStorage.getItem("bep-monthly-history-cache:" + user) || "null"); } catch { return null; }
+    }
+  }
+  async function writeHistoryCache(snapshot) {
+    const user = cacheIdentity();
+    if (!user || !snapshot || !Array.isArray(snapshot.months)) return false;
+    const key = "monthly-history:" + user;
+    const value = { ...snapshot, user, savedAt: new Date().toISOString() };
+    try {
+      const db = await openCacheDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(CACHE_STORE, "readwrite");
+        tx.objectStore(CACHE_STORE).put(value, key);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error || new Error("Écriture du cache interrompue"));
+      });
+      return true;
+    } catch {
+      try { localStorage.setItem("bep-monthly-history-cache:" + user, JSON.stringify(value)); return true; } catch { return false; }
+    }
+  }
+  async function cacheMonthList(nextMonths) {
+    const previous = await readHistoryCache();
+    return writeHistoryCache({ months: nextMonths, budgets: previous?.budgets || {} });
+  }
+  async function cacheMonthBudget(budget) {
+    if (!budget?.monthKey || !Array.isArray(budget.items)) return;
+    const previous = await readHistoryCache();
+    const budgets = { ...(previous?.budgets || {}), [budget.monthKey]: budget };
+    await writeHistoryCache({ months: months.length ? months : (previous?.months || []), budgets });
+  }
+  function applyOfflineReadOnly() {
+    const offline = !navigator.onLine;
+    const create = $("monthlyBudgetCreateForm");
+    const itemForm = $("monthlyBudgetItemForm");
+    const save = $("monthlyBudgetSave");
+    const close = $("monthlyBudgetClose");
+    const reopen = $("monthlyBudgetReopen");
+    if (create) create.hidden = offline || !window.bepSignedIn;
+    if (itemForm) itemForm.hidden = offline || !current || current.status === "closed";
+    if (save) save.hidden = offline || !current || current.status === "closed";
+    if (close) close.hidden = offline || !current || current.status === "closed";
+    if (reopen) reopen.hidden = offline || !current || current.status !== "closed";
+    const trigger = document.querySelector('[data-entry-dialog="monthly-item"]');
+    if (trigger) trigger.hidden = offline || !current || current.status === "closed";
+    card.querySelectorAll("[data-edit-month-item],[data-remove-month-item],[data-month-delete]").forEach(el => { el.disabled = offline || loading || current?.status === "closed"; });
+  }
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   function financialPosition() {
@@ -140,7 +220,8 @@
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
-    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
+    if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !navigator.onLine;
+    applyOfflineReadOnly();
   }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
@@ -148,9 +229,9 @@
       '<div class="monthly-budget-row" data-month-row="' + index + '"><span><b>' + escapeHtml(x.label) + '</b><small>' +
       labels[x.itemType] + (x.category ? " · " + escapeHtml(x.category) : "") +
       '</small></span><b>' + money(x.plannedAmount) + '</b><span class="monthly-budget-row-actions">' +
-      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" ? "disabled" : "") + '>Modifier</button>' +
+      '<button type="button" data-edit-month-item="' + index + '" ' + (current.status === "closed" || !navigator.onLine ? "disabled" : "") + '>Modifier</button>' +
       '<button type="button" data-remove-month-item="' + index + '" aria-label="Retirer cette ligne" ' +
-      (current.status === "closed" ? "disabled" : "") + '>×</button></span></div>'
+      (current.status === "closed" || !navigator.onLine ? "disabled" : "") + '>×</button></span></div>'
     ).join("") : '<p class="empty">Aucune ligne dans ce mois.</p>';
     $("monthlyBudgetItems").querySelectorAll("[data-edit-month-item]").forEach(button => {
       button.onclick = () => {
@@ -168,6 +249,7 @@
       };
     });
     attachMonthLongPress();
+    applyOfflineReadOnly();
     $("monthlyBudgetItems").querySelectorAll("[data-remove-month-item]").forEach(button => {
       button.onclick = async () => {
         const index = Number(button.dataset.removeMonthItem);
@@ -200,9 +282,27 @@
     const epoch = authEpoch;
     setBusy(true);
     try {
-      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
-      if (epoch !== authEpoch || !window.bepSignedIn) return;
-      current = data.budget;
+      let budget = null;
+      let fromCache = false;
+      if (navigator.onLine && window.bepSignedIn) {
+        try {
+          const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
+          budget = data.budget;
+          await cacheMonthBudget(budget);
+        } catch (networkError) {
+          const cached = await readHistoryCache();
+          budget = cached?.budgets?.[monthKey] || null;
+          fromCache = Boolean(budget);
+          if (!budget) throw networkError;
+        }
+      } else {
+        const cached = await readHistoryCache();
+        budget = cached?.budgets?.[monthKey] || null;
+        fromCache = Boolean(budget);
+        if (!budget) throw new Error("Ce mois n’est pas encore enregistré sur cet appareil. Reconnecte-toi pour le télécharger.");
+      }
+      if (epoch !== authEpoch) return;
+      current = budget;
       editingItemId = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -218,40 +318,76 @@
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
         catch (syncError) { syncWarning = syncError.message; }
       }
-      status(syncWarning
-        ? "Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncWarning
-        : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version),
+      status(fromCache
+        ? "Copie locale consultée hors ligne · " + new Date((await readHistoryCache())?.savedAt || Date.now()).toLocaleString("fr-FR") + " · lecture seule."
+        : (syncWarning
+          ? "Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncWarning
+          : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version)),
         Boolean(syncWarning));
     } catch (error) {
       status("Impossible de charger ce mois : " + error.message, true);
     } finally { setBusy(false); }
   }
   async function refresh() {
-    if (!window.bepSignedIn || loading) return;
+    if (loading) return;
     const epoch = authEpoch;
     setBusy(true);
     try {
-      const data = await api("/api/budgets/months");
-      if (epoch !== authEpoch || !window.bepSignedIn) return;
-      months = data.months || [];
-      renderMonths();
-      if (months.length) await loadMonth(months[0].monthKey);
-      else {
-        current = null; items = []; renderMonths();
-        status("Aucun historique mensuel. Crée le premier mois à partir de ton budget actuel.");
+      if (navigator.onLine && window.bepSignedIn) {
+        const data = await api("/api/budgets/months");
+        if (epoch !== authEpoch) return;
+        months = data.months || [];
+        await cacheMonthList(months);
+        renderMonths();
+        if (months.length) {
+          await loadMonth(months[0].monthKey);
+          // Hydrate every month snapshot in the background so previously saved months
+          // remain fully readable offline, not only the last selected month.
+          const missing = months.filter(month => month.monthKey !== months[0].monthKey);
+          for (let offset = 0; offset < missing.length; offset += 3) {
+            const batch = missing.slice(offset, offset + 3);
+            await Promise.all(batch.map(async month => {
+              try {
+                const detail = await api("/api/budgets/months/" + encodeURIComponent(month.monthKey));
+                await cacheMonthBudget(detail.budget);
+              } catch { /* keep the last known snapshot; never replace it with an empty result */ }
+            }));
+          }
+        } else {
+          current = null; items = []; renderMonths();
+          status("Aucun historique mensuel. Crée le premier mois à partir de ton budget actuel.");
+        }
+      } else {
+        const cached = await readHistoryCache();
+        if (!cached || !Array.isArray(cached.months)) throw new Error("Aucun historique mensuel n’a encore été téléchargé sur cet appareil. Connecte-toi une fois pour le rendre disponible hors ligne.");
+        months = cached.months;
+        renderMonths();
+        if (months.length) await loadMonth(months[0].monthKey);
+        else {
+          current = null; items = []; renderMonths();
+          status("Aucun mois enregistré dans la copie locale.");
+        }
       }
     } catch (error) {
-      status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
-        ? "Historique indisponible : migration non appliquée ou base temporairement inaccessible."
-        : "Historique temporairement indisponible : " + error.message, true);
-    } finally { setBusy(false); }
+      const cached = await readHistoryCache();
+      if (cached?.months?.length) {
+        months = cached.months;
+        renderMonths();
+        await loadMonth(months[0].monthKey);
+        status("Serveur indisponible : dernière photographie locale affichée en lecture seule.", true);
+      } else {
+        status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
+          ? "Historique indisponible : migration non appliquée ou base temporairement inaccessible."
+          : error.message || "Historique temporairement indisponible.", true);
+      }
+    } finally { setBusy(false); applyOfflineReadOnly(); }
   }
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
   window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
-    if (loading) return;
+    if (loading || !navigator.onLine) return status("La création d’un budget mensuel nécessite une connexion.", true);
     const monthKey = $("monthlyBudgetNewMonth").value;
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey)) return status("Choisis un mois valide.", true);
     const epoch = authEpoch;
@@ -282,6 +418,7 @@
   };
   $("monthlyBudgetItemForm").onsubmit = event => {
     event.preventDefault();
+    if (!navigator.onLine) return status("La modification d’un budget mensuel nécessite une connexion.", true);
     if (!current || current.status !== "open") return;
     const label = $("monthlyBudgetItemLabel").value.trim();
     const amount = Number($("monthlyBudgetItemAmount").value);
@@ -319,6 +456,7 @@
     $("monthlyBudgetItemCancel").hidden = true;
   };
   $("monthlyBudgetSave").onclick = async () => {
+    if (!navigator.onLine) return status("L’enregistrement d’un budget mensuel nécessite une connexion.", true);
     if (!current || loading) return;
     const epoch = authEpoch;
     setBusy(true);
@@ -329,6 +467,7 @@
       });
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
+      await cacheMonthBudget(current);
       items = current.items.map(x => ({ ...x, clientId: crypto.randomUUID(), plannedAmount: Number(x.plannedAmount) }));
       renderItems();
       let syncWarning = null;
@@ -422,8 +561,10 @@
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
-    if (window.bepSignedIn) refresh();
+    if (window.bepSignedIn || !navigator.onLine) refresh();
     else { months = []; current = null; items = []; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
-  if (window.bepSignedIn) refresh();
+  window.addEventListener("offline", () => { authEpoch++; refresh(); });
+  window.addEventListener("online", () => { authEpoch++; if (window.bepSignedIn) refresh(); else applyOfflineReadOnly(); });
+  if (window.bepSignedIn || !navigator.onLine) refresh();
 })();
