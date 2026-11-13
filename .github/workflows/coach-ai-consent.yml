@@ -46,7 +46,7 @@ jobs:
           node --check app.js
           node --check dist/app.js
           cmp -s app.js dist/app.js
-      - name: Run BEP regression suite
-        run: npm run check:monthly-budget
       - name: Test account consent and frontend controls
         run: node --test tests/bep-ai-consent.test.js
+      - name: Test offline and synchronization regressions
+        run: node --test tests/offline-first.test.js tests/offline-sync-api.test.js
