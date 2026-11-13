@@ -13,10 +13,11 @@ test("authenticated API requests create a bounded lease and release it only afte
  assert.match(guard,/res\.once\("finish",releaseLease\)/);
  assert.match(guard,/res\.once\("close",\(\)=>\{if\(res\.writableFinished\)releaseLease\(\)\}\)/);
  assert.match(guard,/DELETE FROM bep_active_session_requests WHERE request_id=\$1/);
+ assert.match(server,/SELECT user_id FROM bep_active_sessions WHERE user_id=\$1 FOR UPDATE/);
  assert.match(server,/AND NOT EXISTS\(SELECT 1 FROM bep_active_session_requests r WHERE r\.user_id=bep_active_sessions\.user_id AND r\.expires_at>NOW\(\)\)/);
 });
 
-test("PostgreSQL serializes an in-flight request against a concurrent session takeover",{skip:!process.env.TEST_DATABASE_URL},async t=>{
+test("PostgreSQL serializes an in-flight request against a concurrent session takeover",{skip:!process.env.TEST_DATABASE_URL},async()=>{
  const pool=new Pool({connectionString:process.env.TEST_DATABASE_URL,max:4});
  const suffix=crypto.randomUUID().replace(/-/g,"");
  const sessions="bep_test_sessions_"+suffix;
@@ -30,15 +31,20 @@ test("PostgreSQL serializes an in-flight request against a concurrent session ta
   const lease=await c1.query("WITH active AS (SELECT user_id FROM "+sessions+" WHERE user_id=$1 AND session_id=$2 AND updated_at>NOW()-INTERVAL '15 minutes' FOR UPDATE) INSERT INTO "+requests+"(request_id,user_id,session_id,expires_at) SELECT $3,user_id,$2,NOW()+INTERVAL '15 minutes' FROM active RETURNING request_id",["user-1","device-A","request-1"]);
   assert.equal(lease.rowCount,1);
   await c1.query("UPDATE "+sessions+" SET updated_at=NOW()-INTERVAL '16 minutes' WHERE user_id='user-1'");
-  const takeoverPromise=c2.query("INSERT INTO "+sessions+"(user_id,session_id,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(user_id) DO UPDATE SET session_id=EXCLUDED.session_id,updated_at=NOW() WHERE "+sessions+".updated_at<=NOW()-INTERVAL '15 minutes' AND NOT EXISTS(SELECT 1 FROM "+requests+" r WHERE r.user_id="+sessions+".user_id AND r.expires_at>NOW()) RETURNING session_id",["user-1","device-B"]);
+  await c2.query("BEGIN");
+  const loginLock=c2.query("SELECT user_id FROM "+sessions+" WHERE user_id=$1 FOR UPDATE",["user-1"]);
   await c1.query("COMMIT");
-  const blocked=await takeoverPromise;
-  assert.equal(blocked.rowCount,0,"takeover must wait for the request lease and then be refused");
+  assert.equal((await loginLock).rowCount,1);
+  const takeoverSql="INSERT INTO "+sessions+"(user_id,session_id,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(user_id) DO UPDATE SET session_id=EXCLUDED.session_id,updated_at=NOW() WHERE "+sessions+".updated_at<=NOW()-INTERVAL '15 minutes' AND NOT EXISTS(SELECT 1 FROM "+requests+" r WHERE r.user_id="+sessions+".user_id AND r.expires_at>NOW()) RETURNING session_id";
+  const blocked=await c2.query(takeoverSql,["user-1","device-B"]);
+  assert.equal(blocked.rowCount,0,"takeover must be refused while the request lease exists");
   await c2.query("DELETE FROM "+requests+" WHERE request_id='request-1'");
-  const allowed=await c2.query("INSERT INTO "+sessions+"(user_id,session_id,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(user_id) DO UPDATE SET session_id=EXCLUDED.session_id,updated_at=NOW() WHERE "+sessions+".updated_at<=NOW()-INTERVAL '15 minutes' AND NOT EXISTS(SELECT 1 FROM "+requests+" r WHERE r.user_id="+sessions+".user_id AND r.expires_at>NOW()) RETURNING session_id",["user-1","device-B"]);
+  const allowed=await c2.query(takeoverSql,["user-1","device-B"]);
   assert.equal(allowed.rowCount,1,"takeover is allowed once the in-flight request lease is released");
+  await c2.query("COMMIT");
  }finally{
   await c1.query("ROLLBACK").catch(()=>{});
+  await c2.query("ROLLBACK").catch(()=>{});
   c1.release();c2.release();
   await pool.query("DROP TABLE IF EXISTS "+requests).catch(()=>{});
   await pool.query("DROP TABLE IF EXISTS "+sessions).catch(()=>{});
