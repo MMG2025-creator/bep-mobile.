@@ -47,7 +47,7 @@ self.addEventListener("fetch",event=>{
     return;
   }
   if(url.pathname.startsWith("/api/"))return;
-  if(/\\.(?:js|css)$/.test(url.pathname)){
+  if(/\.(?:js|css)$/.test(url.pathname)){
     event.respondWith((async()=>{
       try{
         const response=await fetch(request,{cache:"no-store"});
