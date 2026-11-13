@@ -1466,3 +1466,12 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .monthly-budget-group[open]>summary::after,.monthly-budget-actuals[open]>summary::after{transform:translateY(-25%) rotate(225deg)}
 .monthly-budget-group>summary:focus-visible,.monthly-budget-actuals>summary:focus-visible{outline:3px solid rgba(26,112,86,.28);outline-offset:2px;border-radius:8px}
 .monthly-budget-group>summary:hover,.monthly-budget-actuals>summary:hover{background:rgba(26,112,86,.035)}
+
+/* Match the actual-expenses accordion to the three planned budget cards */
+.monthly-budget-actuals{margin:8px 0;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;display:block;overflow:hidden}
+.monthly-budget-actuals>summary{padding:12px}
+.monthly-budget-actuals>summary span{font-size:12px;font-weight:700;color:var(--forest)}
+.monthly-budget-actuals>summary small{margin-left:5px;font-size:11px;font-weight:400;color:var(--muted)}
+.monthly-budget-actuals>summary>b{font-size:13px;color:var(--forest);white-space:nowrap}
+.monthly-budget-actuals>#monthlyBudgetActualImpact,.monthly-budget-actuals>#monthlyBudgetActualError,.monthly-budget-actuals>#monthlyBudgetActualRows{margin-left:12px;margin-right:12px}
+.monthly-budget-actuals>#monthlyBudgetActualRows{padding-bottom:10px}
