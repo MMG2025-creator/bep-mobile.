@@ -10,9 +10,12 @@ test("agent schema is additive, idempotent and supports persistent queue operati
  try{
   await repo.ensureSchema(pool);
   await repo.ensureSchema(pool);
-  const tables=await pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name LIKE 'bep_agent_%' OR table_schema='public' AND table_name='bep_knowledge_candidates'");
+  const tables=await pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND (table_name LIKE 'bep_agent_%' OR table_name='bep_knowledge_candidates')");
   const names=new Set(tables.rows.map(x=>x.table_name));
   for(const name of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics","bep_agent_approved_knowledge","bep_agent_coach_metrics"])assert.ok(names.has(name),name+" missing");
+  const candidate=await pool.query("INSERT INTO bep_knowledge_candidates(source_slug,source_version,source_digest,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,input_digest) VALUES('test-source',7,'digest-7','clarify','Test','Test content','Test source','https://example.org','test','high','test rationale','test-input') RETURNING source_version,source_digest");
+  assert.equal(Number(candidate.rows[0].source_version),7);
+  assert.equal(candidate.rows[0].source_digest,"digest-7");
   const jobId=await repo.enqueue(pool,"coach_quality_review",{test:true});
   assert.ok(jobId);
   const claimed=await repo.claim(pool,"test-worker");
@@ -33,7 +36,6 @@ test("agent schema is additive, idempotent and supports persistent queue operati
   assert.equal(run.rowCount,1);
   assert.deepEqual(run.rows[0].output_summary,{findings:[]});
   const usage=await pool.query("SELECT calls,tokens FROM bep_agent_daily_usage WHERE day_key=CURRENT_DATE");
-  assert.equal(Number(usage.rows[0].calls),1);
-  assert.equal(Number(usage.rows[0].tokens),12);
+  assert.equal(Number(usage.rows[0].calls),1);assert.equal(Number(usage.rows[0].tokens),12);
  }finally{await pool.end()}
 });
