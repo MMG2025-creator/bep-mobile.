@@ -159,7 +159,6 @@ $("openProfileDialog")?.addEventListener("click",async()=>{
  if(!window.bepSignedIn)return;
  try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("passwordResetEmail").value=u.email||""}catch(e){notify(e.message)}
 });
-$("cancelProfileEditBtn")?.addEventListener("click",()=>profileDialog?.close());
 $("openLoginMethodsDialog")?.addEventListener("click",async()=>{
  $("passwordResetStatus").textContent="";openSettingsDialog(loginMethodsDialog);
  if(!window.bepSignedIn)return;
