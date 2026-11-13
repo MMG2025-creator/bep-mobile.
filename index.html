@@ -8,6 +8,7 @@
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=5">
+<link rel="stylesheet" href="./connection-status.css?v=1">
 <style id="bep-basic-loader-style">
 #bepStartupLoader{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#f7f8f5}
 #bepStartupLoader[hidden]{display:none}
@@ -421,7 +422,7 @@
     <div class="settings-section-heading"><span class="settings-section-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span><div><h2>Confidentialité et sécurité</h2><p class="hint">Garde le contrôle de tes données et de ton compte.</p></div></div>
     <details class="settings-disclosure settings-sync-disclosure">
       <summary class="settings-action-button"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg></span><span class="settings-action-copy"><strong>Stockage et synchronisation</strong><small>Comprendre où sont conservées tes informations</small></span><span class="settings-action-chevron">›</span></summary>
-      <div class="settings-disclosure-content"><p class="hint">Certaines informations sont conservées sur cet appareil. Les données associées à ton compte peuvent également être synchronisées avec BEP. Effacer les données locales ne supprime pas ton compte ni les données déjà synchronisées.</p></div>
+      <div class="settings-disclosure-content"><p class="hint">Certaines informations sont conservées sur cet appareil. Les données associées à ton compte peuvent également être synchronisées avec BEP. Effacer les données locales ne supprime pas ton compte ni les données déjà synchronisées.</p><div class="connection-diagnostics" id="connectionDiagnostics"><p><strong>Connexion réseau :</strong> <span id="settingsNetworkState">Vérification…</span></p><p><strong>Session BEP :</strong> <span id="settingsSessionState">Vérification…</span></p><p><strong>Synchronisation :</strong> <span id="settingsSyncState">Vérification…</span></p><p><strong>Modifications en attente :</strong> <span id="settingsPendingCount">Vérification…</span></p><p><strong>Dernière synchronisation :</strong> <span id="settingsLastSync">Aucune synchronisation confirmée sur cet appareil</span></p></div></div>
     </details>
     <div class="settings-danger-actions">
       <div class="settings-danger-block">
@@ -441,7 +442,7 @@
   </div>
 </section>
 </main>
-<footer> B E P <span>•</span> Bâtir · Épargner · Préserver </footer>
+<footer class="bep-footer"> <span class="bep-footer-brand">B E P <span>•</span> Bâtir · Épargner · Préserver</span><div id="bepConnectionStatus" class="bep-connection-status" role="status" aria-live="polite"><span class="connection-status-dot"></span><span id="bepConnectionLabel">Vérification de la connexion…</span></div></footer>
 </div>
 <div id="chartZoom" class="chart-zoom" hidden role="dialog" aria-modal="true" aria-labelledby="chartZoomTitle"><div class="chart-zoom-panel"><div class="chart-zoom-head"><div><p class="eyebrow chart-kicker">ANALYSE FINANCIÈRE</p><h2 id="chartZoomTitle">Graphique</h2><span id="chartZoomPeriod" class="chart-period"></span></div><button type="button" id="chartZoomClose" class="chart-zoom-close" aria-label="Fermer le graphique agrandi">×</button></div><div id="chartZoomBody" class="chart-zoom-body"></div><p id="chartZoomDetail" class="chart-zoom-detail" aria-live="polite">Sélectionne une part ou une barre pour voir le détail.</p></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -497,6 +498,7 @@
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
 <script src="./pwa.js?v=11"></script>
+<script src="./connection-status.js?v=1"></script>
 <script src="./spend-experience.js?v=20&bep=expense-modal-merchant-field-20261112"></script>
 <script src="./spend-clean-ui.js?v=5&bep=receipt-proof-import-20261112"></script>
 </body></html>

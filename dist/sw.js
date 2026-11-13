@@ -12,6 +12,8 @@ const APP_SHELL=[
   "./spend-experience.css",
   "./runtime-config.js",
   "./offline-storage.js",
+  "./connection-status.js",
+  "./connection-status.css",
   "./financial-engine.js",
   "./receipt-ocr.js",
   "./app.js",

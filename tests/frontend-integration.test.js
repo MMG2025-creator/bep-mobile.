@@ -6,7 +6,7 @@ const path=require("node:path");
 const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
 test("published JavaScript assets are synchronized without overwriting production-specific CSS",()=>{
- for(const file of ["app.js","financial-engine.js","spend-experience.js","spend-clean-ui.js","monthly-budget-ui.js","offline-storage.js","sw.js"]){
+ for(const file of ["app.js","financial-engine.js","spend-experience.js","spend-clean-ui.js","monthly-budget-ui.js","offline-storage.js","sw.js","connection-status.js"]){
   assert.equal(read(file),read("dist/"+file),file+" source and dist must match");
  }
 });
@@ -76,4 +76,21 @@ test("savings tabs and monthly history bridge remain wired",()=>{
  assert.match(app,/BEP_APPLY_MONTHLY_ITEMS/);
  assert.match(html,/data-savings-module="goals"/);
  assert.match(html,/data-savings-module="movements"/);
+});
+
+test("single-session policy invalidates previous sessions and connection status stays isolated",()=>{
+ const server=read("server.js"),status=read("connection-status.js"),html=read("index.html"),sw=read("sw.js");
+ assert.match(server,/async function keepSingleSession\(userId,sessionId\)/);
+ assert.match(server,/DELETE FROM user_sessions WHERE sess->'user'->>'id'=\$1 AND sid<>\$2/);
+ assert.match(server,/keepSingleSession\(u\.id,req\.sessionID\)/);
+ assert.match(server,/app\.post\("\/api\/auth\/login"[\s\S]*?keepSingleSession\(u\.id,req\.sessionID\)/);
+ assert.match(server,/keepSingleSession\(user\.id,req\.sessionID\)/);
+ assert.match(status,/setInterval\(checkSession,15000\)/);
+ assert.match(status,/Cette session a été fermée car ton compte a été connecté sur un autre appareil/);
+ assert.match(status,/bepConnectionStatus/);
+ assert.match(html,/connection-status\.js\?v=/);
+ assert.match(html,/connection-status\.css\?v=/);
+ assert.match(html,/settingsNetworkState/);
+ assert.match(sw,/\.\/connection-status\.js/);
+ assert.match(sw,/\.\/connection-status\.css/);
 });

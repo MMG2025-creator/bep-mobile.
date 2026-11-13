@@ -10,6 +10,8 @@ on:
     branches: [main]
     paths:
       - "server.js"
+      - "connection-status.js"
+      - "connection-status.css"
       - "lib/bep-financial-*.js"
       - "tests/bep-financial-intelligence.test.js"
       - "monthly-budget-routes.js"
@@ -22,6 +24,7 @@ on:
       - "tests/financial-engine.test.js"
       - "dist/**"
       - "index.html"
+      - "dist/index.html"
       - "styles.css"
       - "database/migrations/**"
       - "tests/monthly-budget*.test.js"
@@ -80,6 +83,8 @@ jobs:
             runtime-config.js
             financial-engine.js
             offline-storage.js
+            connection-status.js
+            connection-status.css
             app.js
             styles.css
             monthly-budget-ui.js
@@ -97,7 +102,7 @@ jobs:
           done
 
           extract_assets() {
-            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience|spend-clean-ui)[.](js|css)[?]v=[^"]+"' "$1" |
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|connection-status|app|styles|monthly-budget-ui|spend-experience|spend-clean-ui)[.](js|css)[?]v=[^"]+"' "$1" |
               sed -E 's/^[^"]*"//; s/"$//; s/[?]v=.*$//' |
               sort
           }
