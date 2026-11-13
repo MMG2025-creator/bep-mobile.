@@ -131,6 +131,14 @@ Date : 2026-11-13
 - `spend-clean-ui.js` n'est pas encore différé : il transforme le panneau Dépenses et dépend du DOM construit par `spend-experience.js`. Il faut ajouter un signal d'activation explicite et vérifier le cas où Dépenses est l'onglet restauré au démarrage avant de le déplacer.
 - Le Coach et les calculs principaux d'Épargne sont intégrés à `app.js`, qui contient aussi l'authentification, le rendu et les formulaires de base. Les extraire en bloc serait risqué sans refactorisation des dépendances et tests de non-régression. Aucune extraction hasardeuse n'a été faite.
 
-### Vérifications statiques prévues / limites
-- Vérifier la syntaxe des fichiers modifiés, la présence du déclencheur dans les deux index et l'absence du chargement direct du module dans les deux index.
+### Vérifications statiques effectuées / limites
+- Compilation syntaxique V8 de `monthly-budget-ui.js` et `dist/monthly-budget-ui.js` : OK.
+- Les deux fichiers du module sont identiques et exposent `BEP_MONTHLY_UI_READY`.
+- Les deux index contiennent le déclencheur de chargement différé et ne contiennent plus de balise script qui charge directement `monthly-budget-ui.js`.
+- Les scripts de base (`runtime-config.js`, `financial-engine.js`, `offline-storage.js`, `auth-page.js`, `app.js`, `pwa.js`, `spend-experience.js`) restent chargés dans leur ordre actuel.
 - Les tests navigateur, authentification, changement d'onglet, création/modification/clôture de mois et mode hors ligne restent nécessaires dans le staging actif. Le staging est suspendu : aucun test dynamique n'est prétendu.
+
+### État de la branche par rapport à `main`
+- La branche a divergé depuis le début des travaux : elle contient 10 commits propres et se trouve 6 commits derrière `main`.
+- Les 6 commits apparus sur `main` concernent des ajustements récents de l'interface d'authentification (`index.html`, `dist/index.html`, `auth-page.css` et `dist/auth-page.css`).
+- Les changements de performance restent isolés. Ne pas fusionner cette branche avant d'avoir réintégré ces 6 commits récents et contrôlé les deux index pour éviter d'écraser les ajustements d'authentification.
