@@ -149,7 +149,7 @@ document.addEventListener("click",event=>{
   window.setTimeout(()=>{if(window.BEP_OPEN_ENTRY_DIALOG)window.BEP_OPEN_ENTRY_DIALOG("overdraft");else $("overdraftForm")?.scrollIntoView({behavior:"smooth",block:"center"})},100);
  }else tab(action);
 });
-document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>{if(x.classList.contains("home-overdraft-link")){setBudgetModule("income");tab("budget");window.setTimeout(()=>window.BEP_OPEN_ENTRY_DIALOG?.("overdraft"),100)}else tab(x.dataset.goto)});$("settingsBtn").onclick=async()=>{const button=$("settingsBtn"),settingsOpen=document.getElementById("settings")?.classList.contains("active");if(settingsOpen){tab(settingsReturnTab);button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Ouvrir les paramètres");button.title="Paramètres";return}const current=document.querySelector(".panel.active")?.id;settingsReturnTab=current&&current!=="settings"?current:"home";button.setAttribute("aria-expanded","true");button.setAttribute("aria-label","Fermer les paramètres");button.title="Fermer les paramètres";tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
+document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>{if(x.classList.contains("home-overdraft-link")){setBudgetModule("income");tab("budget");window.setTimeout(()=>window.BEP_OPEN_ENTRY_DIALOG?.("overdraft"),100)}else tab(x.dataset.goto)});$("settingsBtn").onclick=async()=>{const button=$("settingsBtn"),settingsOpen=document.getElementById("settings")?.classList.contains("active");if(settingsOpen){tab(settingsReturnTab);button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Ouvrir les paramètres");button.title="Paramètres";return}const current=document.querySelector(".panel.active")?.id;settingsReturnTab=current&&current!=="settings"?current:"home";button.setAttribute("aria-expanded","true");button.setAttribute("aria-label","Fermer les paramètres");button.title="Fermer les paramètres";tab("settings");if(!window.bepSignedIn)return;loadAiConnection();loadExternalAiConsent();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
 
 const profileDialog=$("profileSettingsDialog"),loginMethodsDialog=$("loginMethodsDialog");
 function openSettingsDialog(dialog){if(!dialog)return;if(!dialog.open)dialog.showModal()}
@@ -619,14 +619,49 @@ function addCoachMessage(role,message){
 }
 let aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};
 const AI_ENABLED_KEY="bep-external-ai-enabled-v1";let aiCoachEnabled=false;try{localStorage.removeItem(AI_ENABLED_KEY)}catch{}
+const BEP_EXTERNAL_AI_CONSENT_VERSION="bep-external-ai-financial-context-v1";
+async function loadExternalAiConsent(){
+ const checkbox=$("externalAiConsentCheckbox"),saveButton=$("saveExternalAiConsentBtn"),revokeButton=$("revokeExternalAiConsentBtn"),statusLabel=$("externalAiConsentStatus");
+ if(!checkbox||!saveButton||!statusLabel)return false;
+ if(!window.bepSignedIn){checkbox.checked=false;checkbox.disabled=true;saveButton.disabled=true;if(revokeButton)revokeButton.hidden=true;statusLabel.textContent="Connecte-toi pour consulter ou modifier ton autorisation.";return false}
+ checkbox.disabled=true;saveButton.disabled=true;statusLabel.textContent="Vérification de ton autorisation…";
+ try{
+  const response=await fetch(API+"/api/ai/consent",{credentials:"include",cache:"no-store"});
+  const data=await response.json();if(!response.ok)throw Error(data.message||"Statut indisponible.");
+  const enabled=data.enabled===true&&data.consentVersion===BEP_EXTERNAL_AI_CONSENT_VERSION;
+  const provider=String(data.provider||"gemini").toLowerCase(),providerLabel=({gemini:"Google Gemini",openai:"OpenAI",anthropic:"Anthropic",mistral:"Mistral AI",openrouter:"OpenRouter"})[provider]||"le fournisseur externe configuré";
+  checkbox.checked=enabled;checkbox.disabled=false;saveButton.disabled=false;
+  if(revokeButton)revokeButton.hidden=!enabled;
+  statusLabel.textContent=enabled?"Autorisation active pour "+providerLabel+". Tu peux la retirer à tout moment.":"Aucune autorisation active pour "+providerLabel+". Les appels externes du Coach restent bloqués ; le Coach BEP structuré continue de fonctionner.";
+  return enabled;
+ }catch(error){checkbox.checked=false;checkbox.disabled=true;saveButton.disabled=true;if(revokeButton)revokeButton.hidden=true;statusLabel.textContent="Impossible de vérifier l’autorisation. Aucun partage externe ne doit être activé. "+error.message;return false}
+}
+async function updateExternalAiConsent(enabled){
+ const checkbox=$("externalAiConsentCheckbox"),saveButton=$("saveExternalAiConsentBtn"),revokeButton=$("revokeExternalAiConsentBtn"),statusLabel=$("externalAiConsentStatus");
+ if(!window.bepSignedIn)return;
+ if(enabled&&(!checkbox?.checked||checkbox.disabled)){if(statusLabel)statusLabel.textContent="Coche la case après avoir lu les informations avant de donner ton autorisation.";return}
+ if(saveButton)saveButton.disabled=true;if(revokeButton)revokeButton.disabled=true;
+ if(statusLabel)statusLabel.textContent=enabled?"Enregistrement de ton autorisation…":"Retrait de ton autorisation…";
+ try{
+  const response=await fetch(API+"/api/ai/consent",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled,consentVersion:enabled?BEP_EXTERNAL_AI_CONSENT_VERSION:undefined})});
+  const data=await response.json();if(!response.ok)throw Error(data.message||"Modification impossible.");
+  await loadExternalAiConsent();await loadAiConnection();
+  if(statusLabel)statusLabel.textContent=enabled?"Ton autorisation est enregistrée. Les appels externes restent soumis à la disponibilité du service et aux quotas.":"Ton autorisation a été retirée. Les prochains appels externes sont bloqués.";
+ }catch(error){if(statusLabel)statusLabel.textContent="La modification n’a pas été confirmée. "+error.message;await loadExternalAiConsent()}
+ finally{if(saveButton)saveButton.disabled=!!checkbox?.disabled;if(revokeButton)revokeButton.disabled=false}
+}
+const externalAiConsentForm=$("externalAiConsentForm");
+if(externalAiConsentForm)externalAiConsentForm.addEventListener("submit",event=>{event.preventDefault();updateExternalAiConsent(true)});
+const revokeExternalAiConsentBtn=$("revokeExternalAiConsentBtn");
+if(revokeExternalAiConsentBtn)revokeExternalAiConsentBtn.addEventListener("click",()=>updateExternalAiConsent(false));
 async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const sr=await fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"});
  if(!sr.ok)throw Error("HTTP "+sr.status);
  const status=await sr.json(),active=!!status.available;
  aiConnection={configured:active,mode:active?"bep":"structured",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
  const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach BEP structuré';
- const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · Gemini sous verrou gratuit";
- const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Gemini est verrouillé tant que le fonctionnement sans facturation du projet Google n'est pas confirmé.";
+ const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · partage externe désactivé sans autorisation";
+ const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Aucun partage avec un fournisseur externe sans ton autorisation explicite.";
  const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Base BEP : conseils structurés sans appel Gemini.";quotaLabel.classList.remove("hidden")}
  const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Gemini gratuit":"BEP structuré";
  const disconnect=$("disconnectAiBtn");if(disconnect)disconnect.classList.add("hidden");

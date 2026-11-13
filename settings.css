@@ -124,3 +124,19 @@
 .settings-account-status strong{display:block;color:#173c32;font:800 13px Manrope,sans-serif}
 .settings-account-status .hint{margin:4px 0 0;overflow-wrap:anywhere}
 @media(max-width:480px){.settings-modal-header-green{margin:-18px -18px 16px;padding:18px}}
+
+/* Consentement explicite, révocable et indépendant du fonctionnement local du Coach */
+.external-ai-consent-notice{padding:13px 15px;border:1px solid #dce8e1;border-radius:13px;background:#f7faf8;color:#29483d;font-size:13px;line-height:1.55}
+.external-ai-consent-notice p{margin:0 0 9px}
+.external-ai-consent-notice p:last-child{margin-bottom:0}
+.external-ai-consent-notice ul{margin:6px 0 11px;padding-left:20px}
+.external-ai-consent-notice li{margin:4px 0}
+.external-ai-consent-form{margin-top:14px}
+.external-ai-consent-choice{display:flex;align-items:flex-start;gap:10px;color:#173c32;font-size:13px;line-height:1.5}
+.external-ai-consent-choice input{flex:0 0 auto;width:19px;height:19px;margin:1px 0 0;accent-color:#176b50}
+.external-ai-consent-choice input:disabled{opacity:.55}
+.external-ai-consent-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+.external-ai-consent-actions button{min-height:42px}
+.external-ai-consent-status{margin:11px 0 0}
+@media(max-width:480px){.external-ai-consent-actions{display:grid}.external-ai-consent-actions button{width:100%}}
+
