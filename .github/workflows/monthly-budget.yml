@@ -1,10 +1,12 @@
 name: Monthly budget history checks
+# Includes isolated PostgreSQL and HTTP authentication journey regressions.
 
 concurrency:
   group: monthly-budget-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches: [main]
@@ -24,6 +26,9 @@ on:
       - "styles.css"
       - "database/migrations/**"
       - "tests/monthly-budget*.test.js"
+      - "tests/active-session-concurrency.test.js"
+      - "tests/auth-session-flow.integration.test.js"
+      - "tests/disable-pg-ssl.cjs"
       - "package.json"
       - "docs/**"
       - ".github/workflows/monthly-budget.yml"

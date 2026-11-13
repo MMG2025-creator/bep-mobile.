@@ -1518,7 +1518,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 
 /* Homepage financial snapshot: direct management shortcuts */
-.home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
 .home-snapshot-card{min-height:94px;justify-content:space-between;gap:6px;padding:12px 12px;text-align:left}
 .home-snapshot-action{width:100%;font:inherit;color:inherit;cursor:pointer;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
 .home-snapshot-action:hover{border-color:#9ccbb4;box-shadow:0 4px 13px rgba(16,46,41,.08);transform:translateY(-1px)}
