@@ -53,4 +53,4 @@ jobs:
       - run: node --check offline-storage.js
       - run: node --check monthly-budget-ui.js
       - run: node --test tests/offline-first.test.js
-      - run: npm run check:monthly-budget
+      - run: node --test tests/monthly-budget.test.js tests/monthly-budget.integration.test.js tests/offline-first.test.js
