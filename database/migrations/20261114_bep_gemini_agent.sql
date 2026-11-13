@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS bep_agent_approved_knowledge (
  source_name TEXT NOT NULL,
  source_url TEXT NOT NULL DEFAULT '',
  evidence_level TEXT NOT NULL,
+ source_version INTEGER NOT NULL,
+ source_digest TEXT NOT NULL,
  version INTEGER NOT NULL DEFAULT 1,
  active BOOLEAN NOT NULL DEFAULT TRUE,
  approved_by TEXT NOT NULL,
