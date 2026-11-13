@@ -98,7 +98,7 @@ jobs:
 
           extract_assets() {
             grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience|spend-clean-ui)[.](js|css)[?]v=[^"]+"' "$1" |
-              sed -E 's/^[^"]*"//; s/"$//' |
+              sed -E 's/^[^"]*"//; s/"$//; s/[?]v=.*$//' |
               sort
           }
           diff -u <(extract_assets index.html) <(extract_assets dist/index.html)
