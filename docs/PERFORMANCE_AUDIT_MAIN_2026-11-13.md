@@ -132,7 +132,8 @@ Date : 2026-11-13
 - Le Coach et les calculs principaux d'Épargne sont intégrés à `app.js`, qui contient aussi l'authentification, le rendu et les formulaires de base. Les extraire en bloc serait risqué sans refactorisation des dépendances et tests de non-régression. Aucune extraction hasardeuse n'a été faite.
 
 ### Vérifications statiques effectuées / limites
-- Compilation syntaxique V8 de `monthly-budget-ui.js` et `dist/monthly-budget-ui.js` : OK.
+- Compilation syntaxique V8 des fichiers `monthly-budget-ui.js`, `dist/monthly-budget-ui.js`, `spend-clean-ui.js`, `dist/spend-clean-ui.js`, `app.js`, `dist/app.js` et `receipt-ocr.js` : OK.
+- Compilation syntaxique V8 des scripts inline des deux index : OK.
 - Les deux fichiers du module sont identiques et exposent `BEP_MONTHLY_UI_READY`.
 - Les deux index contiennent le déclencheur de chargement différé et ne contiennent plus de balise script qui charge directement `monthly-budget-ui.js`.
 - Les scripts de base (`runtime-config.js`, `financial-engine.js`, `offline-storage.js`, `auth-page.js`, `app.js`, `pwa.js`, `spend-experience.js`) restent chargés dans leur ordre actuel.
@@ -150,3 +151,5 @@ Date : 2026-11-13
 - Le module `spend-experience.js` reste chargé initialement car il gère les dialogues partagés pour les autres rubriques.
 - Version d'URL du module différé : `v=6`.
 - Cette optimisation ne déplace ni le formulaire d'achat, ni les événements métier, ni le code OCR ; elle retarde uniquement la construction de la couche de présentation Dépenses.
+
+- Contrôle statique Phase 3 : les deux index ne chargent plus directement `spend-clean-ui.js`, conservent les scripts de base dans leur ordre actuel et contiennent le déclencheur sur l'onglet Dépenses.
