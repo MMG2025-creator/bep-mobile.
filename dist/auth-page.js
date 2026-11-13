@@ -29,7 +29,36 @@
  function clearPendingEmail(){pendingEmail="";localStorage.removeItem(pendingKey);}
  $("showLogin")?.addEventListener("click",()=>setMode("login",true));
  $("showRegister")?.addEventListener("click",()=>setMode("register",true));
- google?.addEventListener("click",()=>{window.location.href="https://bep-v2-api.onrender.com/api/auth/google"});
+ google?.addEventListener("click",async()=>{
+  if(google.disabled)return;
+  const originalText=google.textContent;
+  google.disabled=true;
+  google.setAttribute("aria-busy","true");
+  const attempts=20;
+  try{
+   let ready=false;
+   for(let attempt=1;attempt<=attempts;attempt++){
+    google.textContent="Réveil du serveur… ("+attempt+"/"+attempts+")";
+    try{
+     const controller=new AbortController();
+     const timeout=setTimeout(()=>controller.abort(),5000);
+     let response;
+     try{response=await fetch("https://bep-v2-api.onrender.com/api/health",{method:"GET",credentials:"include",cache:"no-store",signal:controller.signal})}
+     finally{clearTimeout(timeout)}
+     if(response.ok){const health=await response.json();if(health.ok&&health.databaseReady){ready=true;break}}
+    }catch{}
+    if(attempt<attempts)await new Promise(resolve=>setTimeout(resolve,2500));
+   }
+   if(!ready)throw new Error("Le serveur BEP met trop de temps à répondre. Réessaie dans quelques instants.");
+   google.textContent="Ouverture de Google…";
+   window.location.assign("https://bep-v2-api.onrender.com/api/auth/google");
+  }catch(error){
+   if(message)message.textContent=error.message||"Impossible de joindre le serveur BEP. Réessaie.";
+   google.disabled=false;
+   google.removeAttribute("aria-busy");
+   google.textContent=originalText;
+  }
+ });
  window.BEPAuthPage={setMode,showVerification,getPendingEmail:()=>pendingEmail,clearPendingEmail};
 /* Keep the main BEP application isolated from the standalone authentication module. */
 (()=> {
