@@ -2,7 +2,7 @@ name: Coach external AI consent checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/coach-external-ai-consent-gate-20261113]
     paths:
       - "server.js"
       - "app.js"
@@ -50,3 +50,5 @@ jobs:
         run: node --test tests/bep-ai-consent.test.js
       - name: Test offline and synchronization regressions
         run: node --test tests/offline-first.test.js tests/offline-sync-api.test.js
+      - name: Run full BEP regression suite
+        run: npm run check:monthly-budget
