@@ -12,7 +12,7 @@ test("offline persistence runtime is synchronized and included in the app shell"
 
 test("offline sync is account-scoped and refuses to overwrite a changed remote snapshot",()=>{
  const js=read("offline-storage.js");
- assert.match(js,/hasKnownUser\(\)\)return false/);
+ assert.match(js,/hasTrustedSnapshot\(\)\)return false/);
  assert.match(js,/hasTrustedSnapshot\(\)/);
  assert.match(js,/SNAPSHOT_KEY/);
  assert.match(js,/if\(!base\|\|typeof base!=="object"/);
@@ -31,7 +31,7 @@ test("offline startup restores the local session and sets the remote baseline",(
  assert.match(js,/window\.BEPOffline\.hasKnownUser\(\)/);
  assert.match(js,/window\.bepOfflineMode=true/);
  assert.match(js,/gate\.hidden=true/);
- assert.match(js,/window\.BEPOffline\.setBaseline\(d\.payload\|\|\{\}\)/);
+ assert.match(js,/window\.BEPOffline\.setBaseline\(remote\.payload\|\|\{\}\)/);
 });
 
 test("source and published service workers use the same cache and include offline dependencies",()=>{
