@@ -35,5 +35,7 @@ jobs:
           node --check lib/bep-agent/repository.js
           node --check lib/bep-agent/worker.js
           node --check lib/bep-agent/index.js
+      - name: Install dependencies for PostgreSQL integration tests
+        run: npm install --no-fund
       - name: Agent safety tests
         run: node --test tests/bep-agent.test.js tests/bep-financial-intelligence.test.js tests/offline-first.test.js tests/offline-sync-api.test.js
