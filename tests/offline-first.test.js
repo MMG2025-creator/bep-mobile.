@@ -21,16 +21,16 @@ test("offline sync is account-scoped and refuses to overwrite a changed remote s
 
 test("offline startup restores the local session and sets the remote baseline",()=>{
  const js=read("app.js");
- assert.match(js,/window\.BEPOffline\.hasKnownUser\(\)/);
+ assert.match(js,/window\.BEPOffline\.hasTrustedSnapshot\(\)/);
  assert.match(js,/window\.bepOfflineMode=true/);
  assert.match(js,/gate\.hidden=true/);
- assert.match(js,/window\.BEPOffline\.setBaseline\(d\.payload\|\|\{\}\)/);
+ assert.match(js,/window\.BEPOffline\.setBaseline\(remote\.payload\|\|\{\}\)/);
 });
 
 test("source and published service workers use the same cache and include offline dependencies",()=>{
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
- assert.match(source,/bep-shell-v8/);
+ assert.match(source,/bep-shell-v\d+/);
  assert.match(source,/offline-storage\.js/);
  assert.match(source,/cdn\.jsdelivr\.net/);
  assert.match(source,/tessdata\.projectnaptha\.com/);
@@ -51,4 +51,20 @@ test("monthly budget history cache is isolated by authenticated user",()=>{
  assert.match(js,/cached\?\.budgets\?\.\[monthKey\]/);
  assert.match(js,/cacheOnlyMode/);
  assert.match(js,/lecture seule/);
+});
+
+test("monthly budget loading ignores stale responses from an earlier month selection",()=>{
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.match(js,/let monthLoadSequence = 0/);
+ assert.match(js,/const requestId = \+\+monthLoadSequence/);
+ assert.match(js,/requestId !== monthLoadSequence/);
+ assert.match(js,/if \(requestId === monthLoadSequence && epoch === authEpoch\)/);
+});
+test("monthly budget creation is idempotent and updates require the current version",()=>{
+ const js=read("monthly-budget-routes.js");
+ assert.match(js,/ON CONFLICT\(user_id,month_key\) DO NOTHING/);
+ assert.match(js,/if \(!inserted\.rowCount\)/);
+ assert.match(js,/expectedVersion/);
+ assert.match(js,/VERSION_CONFLICT/);
 });

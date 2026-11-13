@@ -150,6 +150,7 @@ document.addEventListener("click",event=>{
  }else tab(action);
 });
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>{if(x.classList.contains("home-overdraft-link")){setBudgetModule("income");tab("budget");window.setTimeout(()=>window.BEP_OPEN_ENTRY_DIALOG?.("overdraft"),100)}else tab(x.dataset.goto)});$("settingsBtn").onclick=async()=>{const button=$("settingsBtn"),settingsOpen=document.getElementById("settings")?.classList.contains("active");if(settingsOpen){tab(settingsReturnTab);button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Ouvrir les paramètres");button.title="Paramètres";return}const current=document.querySelector(".panel.active")?.id;settingsReturnTab=current&&current!=="settings"?current:"home";button.setAttribute("aria-expanded","true");button.setAttribute("aria-label","Fermer les paramètres");button.title="Fermer les paramètres";tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
+
 const profileDialog=$("profileSettingsDialog"),loginMethodsDialog=$("loginMethodsDialog");
 function openSettingsDialog(dialog){if(!dialog)return;if(!dialog.open)dialog.showModal()}
 document.querySelectorAll("[data-close-settings-dialog]").forEach(button=>button.addEventListener("click",()=>button.closest("dialog")?.close()));
@@ -801,7 +802,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
  if(new URLSearchParams(window.location.search).has("reset")){gate.hidden=false;const loader=document.getElementById("bepStartupLoader");if(loader)loader.hidden=true;return}
  if(pendingVerificationEmail)showVerification(pendingVerificationEmail,"Inscription en attente pour "+pendingVerificationEmail+". Saisis le code reçu ou demande-en un nouveau.");
  const loader=document.getElementById("bepStartupLoader");
- const knownLocalUser=!!(window.BEPOffline&&window.BEPOffline.hasKnownUser());
+ const knownLocalUser=!!(window.BEPOffline&&window.BEPOffline.hasTrustedSnapshot());
  if(knownLocalUser){
   window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));if(loader)loader.hidden=true;
   const localSnapshot=localStorage.getItem(DB);
@@ -816,12 +817,22 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
     if(previousIdentity&&previousIdentity!==identity){localStorage.removeItem(DB);window.bepOfflineMode=false;state={...defaults};render();gate.hidden=false;authMessage.textContent="Ce navigateur est associé à un autre compte. Connecte-toi pour charger tes données.";return}
     window.BEPOffline.markKnownUser(identity);window.bepSignedIn=true;window.bepOfflineMode=false;
     try{const profileResponse=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(profileResponse.ok){const profileData=await profileResponse.json();coachFirstName=String(profileData.user?.firstName||"").trim()}}catch{}
-    const pending=await window.BEPOffline.readPending();
-    if(pending){await window.BEPOffline.flush();return}
     const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
     if(!dataResponse.ok)throw Error("Données du compte momentanément indisponibles");
     const remote=await dataResponse.json();
-    if(localStorage.getItem(DB)===localSnapshot){state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];await window.BEPOffline.setBaseline(remote.payload||{});await persistMigratedIncomeState();render();dispatchLegacyBudgetChanged()}
+    const pending=await window.BEPOffline.readPending();
+    if(pending){
+     const synced=await window.BEPOffline.flush();
+     if(!synced){window.bepSignedIn=false;window.bepOfflineMode=true;window.dispatchEvent(new Event("bep:auth-ready"));notify("Synchronisation suspendue : tes modifications locales sont conservées et aucune donnée distante n’a été remplacée.");return}
+     state={...defaults,...(pending.payload||{})};
+     if(!Array.isArray(state.coachProfile))state.coachProfile=[];
+     localStorage.setItem(DB,JSON.stringify(state));render();dispatchLegacyBudgetChanged();
+    }else if(localStorage.getItem(DB)===localSnapshot){
+     state={...defaults,...(remote.payload||{})};
+     if(!Array.isArray(state.coachProfile))state.coachProfile=[];
+     await window.BEPOffline.setBaseline(remote.payload||{});
+     await persistMigratedIncomeState();render();dispatchLegacyBudgetChanged();
+    }
     window.dispatchEvent(new Event("bep:auth-ready"));
    }catch(error){
     window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));

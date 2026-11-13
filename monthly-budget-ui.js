@@ -13,6 +13,7 @@
   let actualsError = "";
   let editingItemId = null;
   let monthSelectionMode = false;
+  let monthLoadSequence = 0;
   const monthSelection = new Set();
   function attachMonthLongPress() {
     const container = $("monthlyBudgetItems"); if (!container) return;
@@ -304,6 +305,7 @@
   }
   async function loadMonth(monthKey, options = {}) {
     const epoch = authEpoch;
+    const requestId = ++monthLoadSequence;
     setBusy(true);
     try {
       const timeZone = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Paris");
@@ -331,7 +333,7 @@
         if (!budget) throw new Error("Ce mois n’est pas encore enregistré sur cet appareil. Reconnecte-toi pour le télécharger.");
       }
       const actualData = await actualRequest;
-      if (epoch !== authEpoch || (!window.bepSignedIn && navigator.onLine)) return;
+      if (epoch !== authEpoch || requestId !== monthLoadSequence || (!window.bepSignedIn && navigator.onLine)) return;
       actuals = actualData;
       actualsError = actualData.__error ? "Dépenses réelles indisponibles : " + actualData.__error : "";
       current = budget;
@@ -349,8 +351,9 @@
         ? "Copie locale consultée hors ligne · " + new Date((await readHistoryCache())?.savedAt || Date.now()).toLocaleString("fr-FR") + " · lecture seule."
         : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version));
     } catch (error) {
-      status("Impossible de charger ce mois : " + error.message, true);
-    } finally { setBusy(false); }
+      if (requestId === monthLoadSequence && epoch === authEpoch)
+        status("Impossible de charger ce mois : " + error.message, true);
+    } finally { if (requestId === monthLoadSequence) setBusy(false); }
   }
   async function refresh() {
     if (loading) return;
