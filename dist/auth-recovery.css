@@ -68,3 +68,16 @@
 @media (max-width: 480px) {
   .auth-gate .auth-card { padding-bottom: 9px !important; }
 }
+
+
+/* Authentication screen: compact layout, single-color BEP banner, no advice robot while signed out. */
+.auth-gate .auth-card{padding-top:18px!important;padding-bottom:12px!important}
+.auth-gate .auth-brand-banner{background:#145b46!important;border:0!important;box-shadow:none!important;margin:0 auto 12px!important;border-radius:12px!important}
+.auth-gate .auth-brand-banner svg{background:#145b46!important}
+.auth-gate .auth-switch{margin:10px 0!important}
+.auth-gate .auth-divider{margin:10px 0!important}
+.auth-gate .auth-card label{margin:10px 0!important}
+.auth-gate .auth-card .auth-forgot-link{min-height:22px!important;margin:0!important}
+.auth-gate .auth-card #authMessage:empty{display:none!important}
+#authGate:not([hidden]) ~ #bepAdviceDock{display:none!important;visibility:hidden!important;pointer-events:none!important}
+@media(max-width:480px){.auth-gate .auth-card{padding:16px 16px 10px!important}.auth-gate .auth-brand-banner{margin-bottom:10px!important}}
