@@ -1,0 +1,39 @@
+name: BEP Gemini Agent isolated checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "lib/bep-agent/**"
+      - "database/migrations/20261114_bep_gemini_agent.sql"
+      - "tests/bep-agent.test.js"
+      - "docs/BEP_GEMINI_AGENT_*.md"
+      - ".github/workflows/bep-gemini-agent.yml"
+      - "server.js"
+  push:
+    branches: [feat/bep-gemini-agent-v1-20261114]
+    paths:
+      - "lib/bep-agent/**"
+      - "database/migrations/20261114_bep_gemini_agent.sql"
+      - "tests/bep-agent.test.js"
+      - "docs/BEP_GEMINI_AGENT_*.md"
+      - ".github/workflows/bep-gemini-agent.yml"
+      - "server.js"
+
+jobs:
+  validate-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax checks
+        run: |
+          node --check lib/bep-agent/config.js
+          node --check lib/bep-agent/gemini-client.js
+          node --check lib/bep-agent/repository.js
+          node --check lib/bep-agent/worker.js
+          node --check lib/bep-agent/index.js
+      - name: Agent safety tests
+        run: node --test tests/bep-agent.test.js
