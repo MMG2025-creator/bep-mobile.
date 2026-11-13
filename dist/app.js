@@ -11,6 +11,11 @@ function syncIncomeTotal(){state.income=totalIncome()}
 function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)||0),needsMigration=!Array.isArray(state.incomes)||(!state.incomes.length&&legacyIncome>0);if(needsMigration)state.incomes=legacyIncome>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:legacyIncome,source:"migration"}]:[];syncIncomeTotal();return needsMigration}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");if(!t)return;t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4200)}
+window.bepSessionReplaced=false;
+function lockReplacedSession(){if(window.bepSessionReplaced)return;window.bepSessionReplaced=true;window.bepSignedIn=false;window.bepOfflineMode=false;const gate=document.getElementById("authGate"),message=document.getElementById("authMessage");if(gate)gate.hidden=false;if(message)message.textContent="Ce compte est maintenant ouvert sur une autre interface. Reconnecte-toi pour reprendre. Tes données locales sont conservées sur cet appareil.";window.dispatchEvent(new Event("bep:auth-ready"))}
+const bepNativeFetch=window.fetch.bind(window);
+window.fetch=async(...args)=>{const response=await bepNativeFetch(...args);if(response.status===401){try{const payload=await response.clone().json();if(payload?.error==="SESSION_REPLACED")lockReplacedSession()}catch{}}return response};
+setInterval(async()=>{if(!window.bepSignedIn||window.bepSessionReplaced)return;try{await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"})}catch{}},15000);
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
 window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged();notify("Synchronisation BEP terminée.")});
 window.addEventListener("bep:offline-sync-error",e=>notify("Synchronisation en attente : "+(e.detail?.message||"connexion indisponible.")));
@@ -780,6 +785,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
     if(localStorage.getItem(DB)===localSnapshot){state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];await window.BEPOffline.setBaseline(remote.payload||{});await persistMigratedIncomeState();render();dispatchLegacyBudgetChanged()}
     window.dispatchEvent(new Event("bep:auth-ready"));
    }catch(error){
+    if(window.bepSessionReplaced){window.bepSignedIn=false;window.bepOfflineMode=false;gate.hidden=false;return}
     window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));
     notify("BEP reste disponible avec tes données locales. La synchronisation reprendra dès que le serveur répondra.");
    }
@@ -790,7 +796,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
    const auth=await response.json();
    if(auth.user){window.bepSignedIn=true;const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});if(!dataResponse.ok)throw Error("Impossible de charger tes données.");const remote=await dataResponse.json();state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){window.BEPOffline.markKnownUser(auth.user.id||auth.user.email);await window.BEPOffline.setBaseline(remote.payload||{})}await persistMigratedIncomeState();window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;tab(getSavedTab());try{const p=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(p.ok){const profile=await p.json();coachFirstName=String(profile.user?.firstName||"").trim()}}catch{}}
    else gate.hidden=false;
-  }catch(error){gate.hidden=false;authMessage.textContent="Connexion au serveur impossible. Connecte-toi une première fois avec Internet pour activer le mode hors ligne."}
+  }catch(error){gate.hidden=false;authMessage.textContent=window.bepSessionReplaced?"Ce compte est maintenant ouvert sur une autre interface. Reconnecte-toi pour reprendre. Tes données locales sont conservées.":"Connexion au serveur impossible. Connecte-toi une première fois avec Internet pour activer le mode hors ligne."}
   render();if(loader)loader.hidden=true;
  }
 })();
