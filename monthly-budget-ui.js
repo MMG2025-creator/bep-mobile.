@@ -367,7 +367,7 @@
       });
       current = data.budget;
       items = current.items.map(x => ({
-        itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
+        clientId: crypto.randomUUID(), itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
       }));
       renderItems();
