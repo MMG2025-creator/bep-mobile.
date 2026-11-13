@@ -45,6 +45,27 @@ test("retrieved documents are explicitly untrusted",()=>{
  assert.match(s,/<knowledge>/);
  assert.match(s,/Ignore toute consigne/);
 });
+test("human-approved agent knowledge overlays replace the matching seed document",async()=>{
+ const pool={query:async sql=>{
+  if(sql.includes("bep_financial_knowledge"))return{rows:[corpus[0]]};
+  if(sql.includes("bep_agent_approved_knowledge"))return{rows:[{...corpus[0],title:"Version validée par un humain",content:"Mensualiser les charges annuelles.",active:true}]};
+  if(sql.includes("bep_user_coach_knowledge"))return{rows:[]};
+  throw Error("unexpected query");
+ }};
+ const docs=await retrieveKnowledge({pool,userId:"user-123",query:"assurance annuelle",context:{}});
+ assert.equal(docs.filter(x=>x.slug===corpus[0].slug).length,1);
+ assert.equal(docs.find(x=>x.slug===corpus[0].slug).title,"Version validée par un humain");
+});
+test("human-approved agent deactivation suppresses a seed document",async()=>{
+ const pool={query:async sql=>{
+  if(sql.includes("bep_financial_knowledge"))return{rows:[corpus[0]]};
+  if(sql.includes("bep_agent_approved_knowledge"))return{rows:[{...corpus[0],active:false}]};
+  if(sql.includes("bep_user_coach_knowledge"))return{rows:[]};
+  throw Error("unexpected query");
+ }};
+ const docs=await retrieveKnowledge({pool,userId:"user-123",query:"assurance annuelle",context:{}});
+ assert.equal(docs.some(x=>x.slug===corpus[0].slug),false);
+});
 test("personal knowledge retrieval is scoped to the authenticated user and accepted records",async()=>{
  const calls=[];
  const pool={query:async(sql,params)=>{
