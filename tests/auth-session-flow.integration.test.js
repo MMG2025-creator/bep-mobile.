@@ -134,9 +134,28 @@ test("real HTTP authentication journeys enforce one active session and preserve 
     await t.test("simulates Google OAuth login and rejects a second active Google session", async () => {
       const start = await call("/api/auth/google");
       assert.equal(start.status, 302);
-      const authorizationUrl = new URL(start.setCookie ? start.location || start.headers?.location : start.location || start.headers?.location || "https://accounts.google.com/");
-      // The helper exposes the response location separately below through a raw request.
+      const authorizationUrl = new URL(start.location);
       assert.equal(authorizationUrl.hostname, "accounts.google.com");
+      const state = authorizationUrl.searchParams.get("state");
+      assert.match(state, /^[a-f0-9]{64}$/);
+
+      const callback = await call("/api/auth/google/callback?code=isolated-google-code&state=" + encodeURIComponent(state));
+      assert.equal(callback.status, 302);
+      assert.match(callback.location, /login=success$/);
+      const googleCookie = callback.setCookie.split(";")[0];
+      assert.ok(googleCookie.startsWith("connect.sid="));
+      const profile = await call("/api/me", "GET", undefined, googleCookie);
+      assert.equal(profile.status, 200);
+      assert.equal(profile.data.user.email, "google-flow@example.test");
+
+      const secondStart = await call("/api/auth/google");
+      assert.equal(secondStart.status, 302);
+      const secondState = new URL(secondStart.location).searchParams.get("state");
+      const secondCallback = await call("/api/auth/google/callback?code=isolated-google-code&state=" + encodeURIComponent(secondState));
+      assert.equal(secondCallback.status, 302);
+      assert.match(secondCallback.location, /login=already_connected$/);
+      const originalStillActive = await call("/api/me", "GET", undefined, googleCookie);
+      assert.equal(originalStillActive.status, 200);
     });
 
     await t.test("registers a new account and verifies its email through a local mail stub", async () => {
