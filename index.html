@@ -182,6 +182,7 @@
 </svg><span>On fait le point ensemble ?</span></div><div class="charges-actions-grid">
 <section class="budget-checkup charges-checkup card" aria-label="Assistant charges">
   <div class="budget-checkup-head"><div><span class="tag">Assistant charges</span><p class="budget-action-description">Identifie tes dépenses parmi les propositions.</p></div></div>
+    <details id="budgetCheckupDetails">
     <form id="budgetCheckupForm">
       <p class="budget-checkup-note">Coche les charges qui te concernent et indique leur montant. Les dépenses annuelles seront réparties sur 12 mois.</p>
       <div class="budget-checkup-group"><h4>Logement</h4>
@@ -229,6 +230,7 @@
       <p id="budgetCheckupStatus" class="budget-checkup-status" role="status" aria-live="polite"></p>
       <button class="primary full" type="submit">Ajouter les dépenses sélectionnées</button>
     </form>
+  </details>
 </section>
 <section class="charges-manual-entry" aria-label="Ajouter une charge manuellement">
 <span class="tag">Ajouter une charge</span><p class="budget-action-description">Une charge particulière à ajouter ?</p>
