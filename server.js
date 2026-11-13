@@ -245,7 +245,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const rawCoachProfile=Object.prototype.hasOwnProperty.call(p,"coachProfile")?p.coachProfile:previous.coachProfile;const coachProfile=Array.isArray(rawCoachProfile)?[...new Set(rawCoachProfile.filter(x=>["budget","spending","savings","goals","income","debt","planning","learning"].includes(x)))].slice(0,8):[];
   // Preserve the bank-authorized overdraft independently from monthly financial calculations.
   const rawTreasury=Object.prototype.hasOwnProperty.call(p,"treasury")?p.treasury:previous.treasury;
-  const treasurySource=rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
+  const treasurySource=rawTreasury===undefined?{overdraftLimit:0,validUntil:""}:rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
   const overdraftLimit=Number(treasurySource.overdraftLimit);
   const validUntil=String(treasurySource.validUntil||"");
   const validDate=!validUntil||(/^\d{4}-\d{2}-\d{2}$/.test(validUntil)&&!Number.isNaN(Date.parse(validUntil+"T00:00:00Z"))&&new Date(validUntil+"T00:00:00Z").toISOString().slice(0,10)===validUntil);
