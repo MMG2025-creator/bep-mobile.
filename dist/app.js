@@ -764,7 +764,8 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
  const hasUsableSnapshot=!!window.BEPOffline?.hasUsableSnapshot(localSnapshot);
  const offlineEligible=window.BEPOffline?.resolveStartupMode({knownUser:knownLocalUser,hasSnapshot:hasUsableSnapshot,authState:"unavailable"})==="offline";
  const showLogin=message=>{
-  window.bepSignedIn=false;window.bepOfflineMode=false;window.dispatchEvent(new Event("bep:auth-ready"));
+  window.bepSignedIn=false;window.bepOfflineMode=false;state={...defaults};syncIncomeTotal();render();
+  window.dispatchEvent(new Event("bep:auth-ready"));
   gate.hidden=false;if(message)authMessage.textContent=message;
   if(loader)loader.hidden=true;
  };
