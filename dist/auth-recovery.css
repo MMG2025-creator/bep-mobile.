@@ -53,3 +53,18 @@
 /* Auth visual cleanup — 2026-11-13 */
 .auth-card { padding-bottom: 18px; }
 @media (max-width: 480px) { .auth-card { padding-bottom: 14px; } }
+
+/* Auth refinement — transparent logo artwork, single banner tone, tighter card footer */
+.auth-gate .auth-card .auth-brand-banner {
+  background: #145b46 !important;
+  box-shadow: 0 5px 16px rgba(16, 46, 41, .10);
+}
+.auth-gate .auth-card { padding-bottom: 10px !important; }
+.auth-gate .auth-card .auth-forgot-link {
+  min-height: 24px;
+  margin: 0 0 2px;
+}
+.auth-gate .auth-card #authMessage:empty { display: none !important; }
+@media (max-width: 480px) {
+  .auth-gate .auth-card { padding-bottom: 9px !important; }
+}
