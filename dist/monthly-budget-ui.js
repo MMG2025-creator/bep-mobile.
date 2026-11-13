@@ -213,15 +213,7 @@
       }));
       renderMonths();
       renderItems();
-      let syncWarning = null;
-      if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
-        try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
-        catch (syncError) { syncWarning = syncError.message; }
-      }
-      status(syncWarning
-        ? "Budget mensuel chargé, mais synchronisation des autres modules impossible : " + syncWarning
-        : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version),
-        Boolean(syncWarning));
+      status(current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version);
     } catch (error) {
       status("Impossible de charger ce mois : " + error.message, true);
     } finally { setBusy(false); }
@@ -248,7 +240,6 @@
   }
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
-  window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
     if (loading) return;
@@ -331,14 +322,7 @@
       current = data.budget;
       items = current.items.map(x => ({ ...x, clientId: crypto.randomUUID(), plannedAmount: Number(x.plannedAmount) }));
       renderItems();
-      let syncWarning = null;
-      if (current.monthKey === monthNow() && current.status === "open" && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
-        try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
-        catch (syncError) { syncWarning = syncError.message; }
-      }
-      status(syncWarning
-        ? "Budget mensuel enregistré · version " + current.version + ". Synchronisation des autres modules à reprendre : " + syncWarning
-        : "Budget enregistré · version " + current.version, Boolean(syncWarning));
+      status("Budget enregistré · version " + current.version);
       try { await refreshMonthListOnly(); }
       catch (refreshError) {
         status("Budget mensuel enregistré · version " + current.version + ". Actualisation de la liste des mois impossible : " + refreshError.message, true);
@@ -346,40 +330,6 @@
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
-  async function syncLegacyBudget(event) {
-    if (!window.bepSignedIn || !current || current.status !== "open" ||
-        current.monthKey !== monthNow() || loading) return;
-    const incoming = legacyItems(event.detail || {});
-    const managed = new Set(["legacy-income", "legacy-budget", "legacy-savings-goal"]);
-    const custom = items.filter(x => !managed.has(x.metadata?.source));
-    const merged = [...incoming, ...custom];
-    const signature = rows => JSON.stringify(rows.map(x => ({
-      itemType: x.itemType, sourceItemId: x.sourceItemId || null, label: x.label,
-      category: x.category || null, nature: x.nature || null,
-      plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
-    })));
-    if (signature(merged) === signature(items)) return;
-    setBusy(true);
-    try {
-      const data = await api("/api/budgets/months/" + current.monthKey, {
-        method: "PUT",
-        body: JSON.stringify({ expectedVersion: current.version, items: merged })
-      });
-      current = data.budget;
-      items = current.items.map(x => ({
-        clientId: crypto.randomUUID(), itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
-        category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
-      }));
-      renderItems();
-      await refreshMonthListOnly();
-      status("Budget mensuel synchronisé avec les modules Revenus, Charges et Épargne.");
-    } catch (error) {
-      status(error.message === "VERSION_CONFLICT"
-        ? "Le budget mensuel a changé en parallèle. Recharge le mois avant de modifier les deux vues."
-        : "Synchronisation du budget mensuel impossible : " + error.message, true);
-    } finally { setBusy(false); }
-  }
-
   async function refreshMonthListOnly() {
     const data = await api("/api/budgets/months");
     months = data.months || [];
