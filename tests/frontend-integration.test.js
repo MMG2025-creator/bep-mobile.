@@ -503,3 +503,13 @@ test("spending hero stats refresh from the authoritative app state and label the
     assert.match(html, /app\.js\?v=86&bep=spend-stats-refresh-20261112/);
   }
 });
+
+
+test("monthly budget creation reuses the complete server response instead of fetching the same month twice", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.match(js, /async function loadMonth\(monthKey, options = \{\}\)/);
+    assert.match(js, /const budget = options\.budget[\s\S]*await api\("\/api\/budgets\/months\/" \+ encodeURIComponent\(monthKey\)\)/);
+    assert.match(js, /await loadMonth\(monthKey, \{ budget: data\.budget \}\)/);
+  }
+});
