@@ -479,17 +479,41 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 
 
 /* Budget > Mes revenus: improve explanatory copy readability on mobile. */
-#budgetModuleIncome .income-card > .card-head .hint{margin:6px 0 0;font-size:15px;line-height:1.55;color:#52665d}
-#budgetModuleIncome .income-checkup-head h3,#budgetModuleIncome .income-manual-entry h3{font-size:17px;line-height:1.45}
-#budgetModuleIncome .budget-checkup-note,#budgetModuleIncome .income-manual-entry > .hint{font-size:14.5px;line-height:1.6}
-#budgetModuleIncome .budget-checkup-group h4{font-size:15px;line-height:1.4}
-#budgetModuleIncome .budget-checkup-row{font-size:14.5px;line-height:1.5}
-#budgetModuleIncome .budget-checkup-row small{font-size:13px;line-height:1.45}
+#budgetModuleIncome .income-card > .card-head .hint{
+  margin:6px 0 0;
+  font-size:15px;
+  line-height:1.55;
+  color:#52665d;
+}
+#budgetModuleIncome .income-checkup-head h3,
+#budgetModuleIncome .income-manual-entry h3{
+  font-size:17px;
+  line-height:1.45;
+}
+#budgetModuleIncome .budget-checkup-note,
+#budgetModuleIncome .income-manual-entry > .hint{
+  font-size:14.5px;
+  line-height:1.6;
+}
+#budgetModuleIncome .budget-checkup-group h4{
+  font-size:15px;
+  line-height:1.4;
+}
+#budgetModuleIncome .budget-checkup-row{
+  font-size:14.5px;
+  line-height:1.5;
+}
+#budgetModuleIncome .budget-checkup-row small{
+  font-size:13px;
+  line-height:1.45;
+}
 @media(max-width:640px){
-#budgetModuleIncome .income-card > .card-head .hint{font-size:15.5px;line-height:1.6}
-#budgetModuleIncome .income-checkup-head h3,#budgetModuleIncome .income-manual-entry h3{font-size:17px}
-#budgetModuleIncome .budget-checkup-note,#budgetModuleIncome .income-manual-entry > .hint{font-size:15px;line-height:1.6}
-#budgetModuleIncome .budget-checkup-row{font-size:15px}
+  #budgetModuleIncome .income-card > .card-head .hint{font-size:15.5px;line-height:1.6}
+  #budgetModuleIncome .income-checkup-head h3,
+  #budgetModuleIncome .income-manual-entry h3{font-size:17px}
+  #budgetModuleIncome .budget-checkup-note,
+  #budgetModuleIncome .income-manual-entry > .hint{font-size:15px;line-height:1.6}
+  #budgetModuleIncome .budget-checkup-row{font-size:15px}
 }
 
 
