@@ -20,7 +20,7 @@ async function validateActiveSession(){
  if(validatingSession||!navigator.onLine||!window.bepSignedIn)return false;
  validatingSession=true;
  try{
-  const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+  const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
   const response=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});
   if(response.status===401||response.status===403){forgetKnownUser();dispatchSessionInvalidated("server-session-ended");return false}
   if(!response.ok)return false;
