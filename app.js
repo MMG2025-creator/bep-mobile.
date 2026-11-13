@@ -735,7 +735,7 @@ window.BEPApp={
  finishAuth,
  initializeAuthenticatedSession,
  enableOfflineMode(){window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));render()},
- enableDemoMode(){window.bepSignedIn=false;window.bepOfflineMode=true;window.bepDemoMode=true;document.documentElement.classList.add("bep-demo-local");gate.hidden=true;const profileForm=document.getElementById("profileForm");if(profileForm?.closest(".card"))profileForm.closest(".card").hidden=true;const accountSettings=document.getElementById("accountSettings");if(accountSettings)accountSettings.hidden=true;aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};window.dispatchEvent(new Event("bep:auth-ready"));tab(getSavedTab());render()},
+ enableDemoMode(){window.bepSignedIn=false;window.bepOfflineMode=true;window.bepDemoMode=true;document.documentElement.classList.add("bep-demo-local");gate.hidden=true;const profileForm=document.getElementById("profileForm");if(profileForm?.closest(".card"))profileForm.closest(".card").hidden=true;const accountSettings=document.getElementById("accountSettings");if(accountSettings)accountSettings.hidden=true;const aiSettings=document.getElementById("aiAdvancedSettings");if(aiSettings)aiSettings.hidden=true;aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};window.dispatchEvent(new Event("bep:auth-ready"));tab(getSavedTab());render()},
  showLogin(){gate.hidden=false;window.BEPAuthPage.setMode("login",true)}
 };
 
