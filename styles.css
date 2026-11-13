@@ -1471,5 +1471,3 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .monthly-budget-group[open]>summary::after,.monthly-budget-actuals[open]>summary::after{transform:translateY(-25%) rotate(225deg)}
 .monthly-budget-group>summary:focus-visible,.monthly-budget-actuals>summary:focus-visible{outline:3px solid rgba(26,112,86,.28);outline-offset:2px;border-radius:8px}
 .monthly-budget-group>summary:hover,.monthly-budget-actuals>summary:hover{background:rgba(26,112,86,.035)}
-.monthly-budget-group>summary span::before{content:"+";display:inline-grid;place-items:center;width:19px;height:19px;margin-right:8px;border:1px solid #cbd9d2;border-radius:50%;font-size:14px;line-height:1;color:#28745c;vertical-align:middle}
-.monthly-budget-group[open]>summary span::before{content:"−";background:#e9f3ee;border-color:#b9d6c8}
