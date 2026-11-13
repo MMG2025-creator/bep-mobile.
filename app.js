@@ -647,7 +647,7 @@ async function updateExternalAiConsent(enabled){
   await loadExternalAiConsent();await loadAiConnection();
   if(statusLabel)statusLabel.textContent=enabled?"Ton autorisation est enregistrée. Les appels externes restent soumis à la disponibilité du service et aux quotas.":"Ton autorisation a été retirée. Les prochains appels externes sont bloqués.";
  }catch(error){if(statusLabel)statusLabel.textContent="La modification n’a pas été confirmée. "+error.message;await loadExternalAiConsent()}
- finally{if(saveButton)saveButton.disabled=false;if(revokeButton)revokeButton.disabled=false}
+ finally{if(saveButton)saveButton.disabled=!!checkbox?.disabled;if(revokeButton)revokeButton.disabled=false}
 }
 const externalAiConsentForm=$("externalAiConsentForm");
 if(externalAiConsentForm)externalAiConsentForm.addEventListener("submit",event=>{event.preventDefault();updateExternalAiConsent(true)});
@@ -659,7 +659,7 @@ async function loadAiConnection(){if(!window.bepSignedIn)return;try{
  const status=await sr.json(),active=!!status.available;
  aiConnection={configured:active,mode:active?"bep":"structured",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
  const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach BEP structuré';
- const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · Gemini sous verrou gratuit";
+ const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · partage externe désactivé sans autorisation";
  const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Aucun partage avec un fournisseur externe sans ton autorisation explicite.";
  const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Base BEP : conseils structurés sans appel Gemini.";quotaLabel.classList.remove("hidden")}
  const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Gemini gratuit":"BEP structuré";
