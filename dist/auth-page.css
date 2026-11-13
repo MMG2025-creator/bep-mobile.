@@ -157,3 +157,10 @@
 .auth-card #authMessage:empty{display:none!important;min-height:0!important;height:0!important;margin:0!important;padding:0!important;border:0!important}
 .auth-card>small{display:block!important;margin:12px 0 0!important;line-height:1.4!important}
 @media(max-width:480px){.auth-gate>.auth-card,.auth-gate .auth-card{padding-bottom:14px!important}}
+
+
+/* Authentication brand banner: full viewport width, independent from the login card. */
+.auth-gate>.auth-brand-banner{display:block!important;flex:0 0 auto!important;position:relative!important;width:100vw!important;max-width:none!important;height:clamp(104px,15vw,176px)!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;margin-top:calc(-1 * max(14px,env(safe-area-inset-top)))!important;margin-right:calc(50% - 50vw)!important;margin-bottom:22px!important;margin-left:calc(50% - 50vw)!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important;background:linear-gradient(120deg,#102e29 0%,#145842 58%,#176b50 100%)!important}
+.auth-gate>.auth-brand-banner svg{display:block!important;width:100%!important;height:100%!important;min-width:0!important;object-fit:contain!important}
+.auth-gate>.auth-card{flex:0 0 auto!important;margin:0 auto!important}
+@media(max-width:480px){.auth-gate>.auth-brand-banner{height:104px!important;margin-bottom:18px!important}}
