@@ -12,30 +12,10 @@
   if (!login || !forgot || !reset || !forgotLink || !authMessage) return;
 
   const setMode = (mode) => {
-    const showLogin = mode === "login";
-    const showRegister = mode === "register";
-    login.hidden = !showLogin;
-    register.hidden = !showRegister;
-    if (verify) verify.hidden = true;
-    forgot.hidden = mode !== "forgot";
-    reset.hidden = mode !== "reset";
-    forgotLink.hidden = !showLogin;
-    const switcher = document.querySelector(".auth-switch");
-    const google = $("googleLogin");
-    const divider = document.querySelector(".auth-divider");
-    if (switcher) switcher.hidden = mode === "forgot" || mode === "reset";
-    if (google) google.hidden = mode === "forgot" || mode === "reset";
-    if (divider) divider.hidden = mode === "forgot" || mode === "reset";
+    if (window.BEPAuthPage) window.BEPAuthPage.setMode(mode);
+    else { login.hidden = mode !== "login"; register.hidden = mode !== "register"; if (verify) verify.hidden = mode !== "verify"; forgot.hidden = mode !== "forgot"; reset.hidden = mode !== "reset"; }
   };
 
-  $("showLogin")?.addEventListener("click", () => {
-    setMode("login");
-    authMessage.textContent = "";
-  });
-  $("showRegister")?.addEventListener("click", () => {
-    setMode("register");
-    authMessage.textContent = "";
-  });
   forgotLink.addEventListener("click", (event) => {
     event.preventDefault();
     $("forgotPasswordEmail").value = $("loginEmail")?.value.trim() || "";
