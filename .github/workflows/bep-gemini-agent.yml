@@ -17,6 +17,7 @@ on:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"
       - "tests/bep-agent.test.js"
+      - "tests/bep-agent-db.test.js"
       - "docs/BEP_GEMINI_AGENT_*.md"
       - ".github/workflows/bep-gemini-agent.yml"
       - "server.js"
