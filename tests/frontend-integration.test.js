@@ -26,15 +26,18 @@ test("published frontend assets are synchronized with source", () => {
     "source and dist HTML must load the same asset versions");
 });
 
-test("monthly budget has no dependency on real expenses or global app refresh events", () => {
+test("monthly budget reads actual expenses without syncing or mutating legacy modules", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
-    assert.doesNotMatch(js, /\/actuals|actualsRequestId|actualsRefreshPending|renderActuals|refreshActuals|bep:state-rendered|bep:offline-synced/);
+    assert.match(js, /\/actuals\?timeZone=/);
+    assert.match(js, /Promise\.all\(/);
+    assert.match(js, /monthlyBudgetActualRows/);
+    assert.doesNotMatch(js, /BEP_APPLY_MONTHLY_ITEMS|bep:legacy-budget-changed|bep:state-rendered|bep:offline-synced/);
   }
   assert.equal(read("monthly-budget-ui.js"), read("dist/monthly-budget-ui.js"));
   for (const file of ["index.html", "dist/index.html"]) {
     const html = read(file);
-    assert.doesNotMatch(html, /monthly-budget-actuals|monthlyBudgetActual/);
+    for (const id of ["monthlyBudgetSearch","monthlyBudgetActuals","monthlyBudgetActualTotal","monthlyBudgetActualRows"]) assert.match(html, new RegExp("id=\"" + id + "\""));
   }
 });
 
