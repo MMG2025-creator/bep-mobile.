@@ -159,3 +159,6 @@
 .auth-card>small{display:block!important;margin:12px 0 0!important;line-height:1.4!important}
 @media(max-width:480px){.auth-gate>.auth-card,.auth-gate .auth-card{padding-bottom:14px!important}}
 
+
+/* The authenticated app is a separate module and stays absent until access is granted. */
+#bepAppRoot[hidden]{display:none!important}

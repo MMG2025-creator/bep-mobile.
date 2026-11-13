@@ -31,4 +31,20 @@
  $("showRegister")?.addEventListener("click",()=>setMode("register",true));
  google?.addEventListener("click",()=>{window.location.href="https://bep-v2-api.onrender.com/api/auth/google"});
  window.BEPAuthPage={setMode,showVerification,getPendingEmail:()=>pendingEmail,clearPendingEmail};
+/* Keep the main BEP application isolated from the standalone authentication module. */
+(()=> {
+ "use strict";
+ const appRoot=document.getElementById("bepAppRoot");
+ const authGate=document.getElementById("authGate");
+ if(!appRoot)return;
+ function syncApplicationAccess(){
+  const allowed=window.bepSignedIn===true||window.bepOfflineMode===true;
+  appRoot.hidden=!allowed;
+  if(authGate)authGate.hidden=allowed;
+  document.documentElement.classList.toggle("bep-authenticated-view",allowed);
+ }
+ window.addEventListener("bep:auth-ready",syncApplicationAccess);
+ syncApplicationAccess();
+})();
+
 })();
