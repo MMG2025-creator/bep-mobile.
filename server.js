@@ -199,6 +199,15 @@ app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,re
  try{const r=await pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status=$1 ORDER BY created_at DESC LIMIT 100",[status]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows})}
  catch(e){res.status(503).json({error:"AGENT_CANDIDATES_UNAVAILABLE"})}
 });
+app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
+ try{
+  const [knowledge,quality]=await Promise.all([
+   pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('knowledge_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id"),
+   pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('coach_quality_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id")
+  ]);
+  res.status(202).json({queued:true,knowledgeJobId:knowledge.rows[0]?.id||null,qualityJobId:quality.rows[0]?.id||null});
+ }catch(e){res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
+});
 app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
  try{
   const [runs,metrics,coach]=await Promise.all([
