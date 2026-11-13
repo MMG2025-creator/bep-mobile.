@@ -69,9 +69,9 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
  assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
  assert.match(server,/SOURCE_DOCUMENT_CHANGED/);
- assert.match(server,/candidate\\.source_version/);
- assert.match(server,/candidate\\.source_digest/);
- assert.match(server,/if\\(!agentTelemetryReady\\)return next\\(\\)/);
+ assert.ok(server.includes("candidate.source_version"));
+ assert.ok(server.includes("candidate.source_digest"));
+ assert.ok(server.includes("if(!agentTelemetryReady)return next();"));
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
 });
