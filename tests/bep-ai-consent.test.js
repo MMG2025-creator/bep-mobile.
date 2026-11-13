@@ -60,3 +60,18 @@ test("frontend sends the current consent version only after explicit user action
  assert.match(app,/externalAiConsentForm\.addEventListener\("submit"/);
  assert.match(app,/revokeExternalAiConsentBtn\.addEventListener\("click"/);
 });
+
+test("published source and dist Coach assets stay identical and both entrypoints expose the consent UI",()=>{
+ const rootApp=fs.readFileSync(path.join(__dirname,"..","app.js"),"utf8");
+ const distApp=fs.readFileSync(path.join(__dirname,"..","dist","app.js"),"utf8");
+ const rootHtml=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
+ const distHtml=fs.readFileSync(path.join(__dirname,"..","dist","index.html"),"utf8");
+ const rootCss=fs.readFileSync(path.join(__dirname,"..","settings.css"),"utf8");
+ const distCss=fs.readFileSync(path.join(__dirname,"..","dist","settings.css"),"utf8");
+ assert.equal(rootApp,distApp);
+ for(const html of [rootHtml,distHtml]){
+  assert.match(html,/id="settingsExternalAiConsentCard"/);
+  assert.match(html,/app\.js\?v=110&bep=external-ai-consent-20261113/);
+ }
+ for(const css of [rootCss,distCss])assert.match(css,/\.external-ai-consent-notice/);
+});
