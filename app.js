@@ -770,7 +770,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
  };
  const showOfflineSnapshot=()=>{
   if(!offlineEligible||!localSnapshot)return false;
-  state={...defaults,...localSnapshot};
+  // The startup state was already parsed and normalized before authentication checks.
   window.bepSignedIn=false;window.bepOfflineMode=true;
   gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));
   notify("Connexion au serveur indisponible. Tes dernières données enregistrées sur cet appareil sont accessibles en lecture hors ligne.");
