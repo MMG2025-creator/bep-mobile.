@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v9";
+const CACHE_NAME="bep-shell-v10";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
@@ -47,6 +47,16 @@ self.addEventListener("fetch",event=>{
     return;
   }
   if(url.pathname.startsWith("/api/"))return;
+  if(/\\.(?:js|css)$/.test(url.pathname)){
+    event.respondWith((async()=>{
+      try{
+        const response=await fetch(request,{cache:"no-store"});
+        if(response&&response.ok){const cache=await caches.open(CACHE_NAME);await cache.put(request,response.clone());}
+        return response;
+      }catch(_error){return (await caches.match(request))||Response.error();}
+    })());
+    return;
+  }
   if(request.mode==="navigate"){
     event.respondWith((async()=>{
       try{
