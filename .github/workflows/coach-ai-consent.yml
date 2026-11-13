@@ -14,6 +14,7 @@ on:
       - "styles.css"
       - "dist/styles.css"
       - "tests/frontend-integration.test.js"
+      - "tests/treasury-overdraft.test.js"
       - "tests/bep-ai-consent.test.js"
       - ".github/workflows/coach-ai-consent.yml"
 
