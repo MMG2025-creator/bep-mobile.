@@ -50,6 +50,34 @@ CREATE TABLE IF NOT EXISTS bep_knowledge_candidates (
 );
 CREATE INDEX IF NOT EXISTS bep_knowledge_candidates_review_idx ON bep_knowledge_candidates(review_status,created_at DESC);
 
+-- Approved knowledge overlays seed documents without overwriting the seed source.
+CREATE TABLE IF NOT EXISTS bep_agent_approved_knowledge (
+ slug TEXT PRIMARY KEY,
+ category TEXT NOT NULL,
+ title TEXT NOT NULL,
+ content TEXT NOT NULL,
+ keywords JSONB NOT NULL DEFAULT '[]'::jsonb,
+ source_name TEXT NOT NULL,
+ source_url TEXT NOT NULL DEFAULT '',
+ evidence_level TEXT NOT NULL,
+ version INTEGER NOT NULL DEFAULT 1,
+ active BOOLEAN NOT NULL DEFAULT TRUE,
+ approved_by TEXT NOT NULL,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Aggregate-only Coach telemetry: no account IDs, questions, answers or financial values.
+CREATE TABLE IF NOT EXISTS bep_agent_coach_metrics (
+ day_key DATE NOT NULL,
+ mode TEXT NOT NULL,
+ status_code INTEGER NOT NULL,
+ calls INTEGER NOT NULL DEFAULT 0,
+ total_latency_ms BIGINT NOT NULL DEFAULT 0,
+ total_tokens BIGINT NOT NULL DEFAULT 0,
+ PRIMARY KEY(day_key,mode,status_code)
+);
+
 CREATE TABLE IF NOT EXISTS bep_agent_daily_usage (
  day_key DATE PRIMARY KEY,
  calls INTEGER NOT NULL DEFAULT 0,
