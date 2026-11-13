@@ -183,7 +183,25 @@ $("overdraftForm").onsubmit=e=>{
  state.treasury={overdraftLimit:limit,validUntil};
  if(save()){$("overdraftStatus").textContent="Découvert autorisé enregistré. Il permet de poursuivre les opérations sans modifier ton bilan mensuel.";window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
 };
-$("profileForm").onsubmit=async e=>{e.preventDefault();const button=$("saveProfileBtn"),status=$("profileStatus");button.disabled=true;status.textContent="Enregistrement…";try{const r=await fetch(API+"/api/profile",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({firstName:$("profileFirstName").value,lastName:$("profileLastName").value,phone:$("profilePhone").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Enregistrement impossible.");coachFirstName=$("profileFirstName").value.trim();$("profileFirstNameView").textContent=$("profileFirstName").value.trim()||"Non renseigné";$("profileLastNameView").textContent=$("profileLastName").value.trim()||"Non renseigné";$("profilePhoneView").textContent=$("profilePhone").value.trim()||"Non renseigné";profileDialog?.close();status.textContent="Profil enregistré.";renderAI();notify("Profil mis à jour");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"profile"}}))}catch(e){status.textContent=e.message}finally{button.disabled=false}};
+$("profileForm").onsubmit=async e=>{
+ e.preventDefault();
+ const form=$("profileForm"),button=$("saveProfileBtn"),status=$("profileStatus");
+ if(!form.reportValidity())return;
+ button.disabled=true;status.textContent="Enregistrement…";
+ try{
+  const payload={firstName:$("profileFirstName").value.trim(),lastName:$("profileLastName").value.trim(),phone:$("profilePhone").value.trim()};
+  const r=await fetch(API+"/api/profile",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),cache:"no-store"});
+  let d={};try{d=await r.json()}catch(_error){}
+  if(!r.ok)throw Error(d.message||({400:"Les informations du profil sont invalides.",401:"Ta session a expiré. Reconnecte-toi puis réessaie.",403:"Tu n’es pas autorisé à modifier ce profil.",500:"Le serveur n’a pas pu enregistrer le profil."}[r.status]||("Échec de l’enregistrement (HTTP "+r.status+").")));
+  coachFirstName=payload.firstName;
+  profileDialog?.close();
+  notify("Profil mis à jour");
+  renderAI();
+  window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"profile"}}));
+ }catch(error){
+  status.textContent=error.message||"Impossible d’enregistrer le profil. Vérifie ta connexion et réessaie.";
+ }finally{button.disabled=false}
+};
 $("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");if(!window.confirm("Supprimer définitivement ton compte BEP et toutes les données associées ? Cette action est irréversible."))return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
 let pdfPreviewRows=[];
 const pdfCategories=["Logement","Factures","Alimentation","Transport","Crédits","Famille","Loisirs","Autres dépenses"];
