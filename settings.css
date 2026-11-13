@@ -100,3 +100,16 @@
 .settings-modal-trigger{width:100%;text-align:left;cursor:pointer;font:inherit}
 @keyframes bep-settings-dialog-in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.settings-modal[open]{animation:none}}
+
+
+/* Unified profile and login modal visual system */
+.settings-profile-value{min-height:44px;display:flex;align-items:center;padding:11px 13px;border:1px solid #dce8e1;border-radius:12px;background:#fff;color:#173c32;font:500 14px Manrope,sans-serif}
+.settings-profile-read .field{margin:12px 0}
+.settings-modal-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:16px}
+.settings-login-section{padding:2px 0}
+.settings-login-heading strong{display:block;color:#173c32;font:800 15px Manrope,sans-serif}
+.settings-login-heading .hint{margin:5px 0 10px}
+.settings-modal .primary,.settings-modal .secondary{min-height:46px;border-radius:12px;font:700 14px Manrope,sans-serif}
+.settings-modal .secondary{border:1px solid #cbded2;background:#fff;color:#174c3c}
+.settings-modal form[hidden],.settings-profile-read[hidden]{display:none!important}
+@media(max-width:480px){.settings-modal-actions{grid-template-columns:1fr}.settings-modal-window{padding:18px}}
