@@ -1533,3 +1533,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .home-overdraft-mini #homeOverdraftStatus.overdraft-expired{color:#9a432c}
 @media(max-width:560px){.home-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-budget-available,.home-overdraft-mini{grid-row:auto;grid-column:auto}}
 @media(max-width:380px){.home-snapshot-card{min-height:88px;padding:10px 9px}.home-snapshot-card span{font-size:10px}.home-snapshot-card small{font-size:9px}}
+
+/* Apply shortcut affordance to every metric button, including the savings and overdraft tiles. */
+.home-snapshot-grid>button{font:inherit;text-align:left;color:inherit;cursor:pointer}
+.home-snapshot-grid>button:focus-visible{outline:3px solid #80b99a;outline-offset:2px}

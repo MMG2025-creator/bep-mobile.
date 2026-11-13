@@ -130,25 +130,24 @@ document.addEventListener("click",event=>{
 },true);
 setBudgetModule((()=>{try{const saved=localStorage.getItem(ACTIVE_BUDGET_MODULE_KEY);return ["income","charges","monthly"].includes(saved)?saved:"income"}catch{return "income"}})());
 
-// Homepage financial tiles: route each amount to its management area.
+
+// Route financial snapshot buttons by their stable value IDs.
 document.addEventListener("click",event=>{
- const target=event.target instanceof Element?event.target.closest("[data-home-action]"):null;
- if(!target)return;
+ const target=event.target instanceof Element?event.target:null;
+ const card=target?.closest(".home-snapshot-card");
+ if(!card||card.tagName!=="BUTTON")return;
+ const valueId=card.querySelector("strong")?.id;
+ const action={homeTotalIncome:"income",homeTotalCharges:"charges",homeTotalActualExpenses:"purchases",homeSavingsPlanned:"savings",homeOverdraftAmount:"overdraft"}[valueId];
+ if(!action)return;
  event.preventDefault();
- const action=target.dataset.homeAction;
  if(action==="income"||action==="charges"){
   setBudgetModule(action);
   tab("budget");
-  return;
- }
- if(action==="overdraft"){
+ }else if(action==="overdraft"){
   setBudgetModule("income");
   tab("budget");
   window.setTimeout(()=>$("overdraftForm")?.scrollIntoView({behavior:"smooth",block:"center"}),80);
-  return;
- }
- if(action==="purchases")tab("purchases");
- if(action==="savings")tab("savings");
+ }else tab(action);
 });
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>tab(x.dataset.goto));$("settingsBtn").onclick=async()=>{tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
 $("linkGoogleBtn").onclick=async()=>{const button=$("linkGoogleBtn"),status=$("googleLinkStatus");button.disabled=true;status.textContent="Vérification du compte BEP…";try{const r=await fetch(API+"/api/auth/google/link/start",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("accountProofInput").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de démarrer l'association.");if(!d.url)throw Error("Adresse de connexion Google manquante.");window.location.href=d.url}catch(e){status.textContent=e.message;button.disabled=false}};
