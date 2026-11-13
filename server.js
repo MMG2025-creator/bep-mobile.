@@ -155,7 +155,7 @@ app.post("/api/ai/test",auth,async(req,res)=>{let quota=null;try{const {cfg,key}
 app.get("/api/ai/consent",auth,async(req,res)=>{try{
  const r=await pool.query("SELECT enabled,consent_version,consented_at,revoked_at FROM bep_user_external_ai_consent WHERE user_id=$1",[req.session.user.id]);
  const row=r.rows[0]||null;res.setHeader("Cache-Control","no-store");
- res.json({enabled:!!row&&row.enabled===true&&row.consent_version===BEP_EXTERNAL_AI_CONSENT_VERSION,consentVersion:row?.consent_version||null,consentedAt:row?.consented_at||null,revokedAt:row?.revoked_at||null,requiredConsentVersion:BEP_EXTERNAL_AI_CONSENT_VERSION});
+ res.json({enabled:!!row&&row.enabled===true&&row.consent_version===BEP_EXTERNAL_AI_CONSENT_VERSION,consentVersion:row?.consent_version||null,consentedAt:row?.consented_at||null,revokedAt:row?.revoked_at||null,requiredConsentVersion:BEP_EXTERNAL_AI_CONSENT_VERSION,provider:String(process.env.BEP_AI_PROVIDER||"gemini").toLowerCase()});
  }catch(e){res.status(500).json({message:"Statut du consentement indisponible."})}});
 app.put("/api/ai/consent",auth,async(req,res)=>{try{
  const enabled=req.body?.enabled;
