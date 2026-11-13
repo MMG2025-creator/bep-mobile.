@@ -46,7 +46,7 @@ window.addEventListener("bep:offline-pending",()=>{state.sync="pending";refreshP
 window.addEventListener("bep:offline-conflict",()=>{state.sync="conflict";render()});
 window.addEventListener("bep:offline-sync-error",()=>{state.sync="pending";render()});
 window.addEventListener("bep:offline-synced",()=>{state.sync="idle";state.lastSync=new Date().toISOString();try{localStorage.setItem("bep-last-sync-at",state.lastSync)}catch{}refreshPending()});
-window.addEventListener("bep:auth-ready",()=>{if(window.bepSignedIn){state.session="active";state.sync="idle";checkSession()}else if(!navigator.onLine){state.session="offline"}render();refreshPending()});
+window.addEventListener("bep:auth-ready",()=>{if(window.bepSignedIn){state.session="active";state.sync="idle";document.querySelector(".app")?.removeAttribute("aria-hidden");checkSession()}else if(!navigator.onLine){state.session="offline"}render();refreshPending()});
 try{state.lastSync=localStorage.getItem("bep-last-sync-at")}catch{}
 render();refreshPending();checkSession();window.setInterval(checkSession,15000);window.setInterval(refreshPending,10000);
 })();
