@@ -199,7 +199,7 @@
     const position = financialPosition();
     $("monthlyBudgetRemaining").textContent = money(position.available);
     $("monthlyBudgetActualTotal").textContent = money(position.actualExpenseTotal);
-    $("monthlyBudgetActualCount").textContent = position.expenseCount + " dépense(s) réelle(s)";
+    $("monthlyBudgetActualCount").textContent = position.expenseCount + " ligne(s)";
     $("monthlyBudgetActualImpact").textContent = "Impact sur le disponible : " + money(position.actualImpact);
     $("monthlyBudgetActualError").hidden = !actualsError;
     $("monthlyBudgetActualError").textContent = actualsError;
