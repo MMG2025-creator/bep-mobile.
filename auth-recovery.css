@@ -83,3 +83,18 @@
 .auth-gate .auth-card .auth-forgot-link{display:flex;justify-content:center;align-items:center;width:100%;min-height:30px;margin:5px auto 0!important;text-align:center;}
 .auth-gate .auth-card #authMessage:empty{display:none!important;}
 @media(max-width:480px){.auth-gate{padding:14px 10px}.auth-gate .auth-card{padding:18px 16px 16px!important}.auth-gate .auth-brand-banner{margin-bottom:14px!important}.auth-gate .auth-card label{margin:11px 0!important}}
+
+/* Final authentication layout — match approved BEP login mockup */
+.auth-gate .auth-card{width:min(100%,520px)!important;padding:24px 28px 22px!important;overflow:hidden}
+.auth-gate .auth-brand-banner{display:block!important;width:100%!important;height:auto!important;aspect-ratio:700/160!important;margin:0 auto 20px!important;padding:0!important;border:0!important;border-radius:12px!important;background:#145b46!important;box-shadow:none!important;overflow:hidden!important}
+.auth-gate .auth-brand-banner svg{display:block!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important}
+.auth-gate .auth-switch{display:flex!important;gap:10px!important;margin:0 0 18px!important}
+.auth-gate .auth-switch button{min-height:48px}
+.auth-gate .google-login{min-height:56px!important;margin:0 0 18px!important}
+.auth-gate .auth-divider{margin:18px 0!important}
+.auth-gate .auth-card label{margin:14px 0!important}
+.auth-gate .auth-card input{min-height:52px!important}
+.auth-gate .auth-card form .primary{min-height:54px!important;margin-top:4px!important}
+.auth-gate .auth-card .auth-forgot-link{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-height:34px!important;margin:8px auto 0!important;text-align:center!important}
+.auth-gate .auth-card #authMessage:empty{display:none!important}
+@media(max-width:480px){.auth-gate .auth-card{padding:18px 16px 18px!important}.auth-gate .auth-brand-banner{margin-bottom:16px!important}.auth-gate .auth-switch{margin-bottom:15px!important}.auth-gate .google-login{margin-bottom:15px!important}.auth-gate .auth-card label{margin:12px 0!important}}
