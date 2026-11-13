@@ -190,3 +190,6 @@
     border-radius:21px 21px 0 0!important;
   }
 }
+
+/* The isolated auth overlay must obey its hidden state even against its own layout rules. */
+.auth-gate[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
