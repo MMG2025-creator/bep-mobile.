@@ -1523,3 +1523,35 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .home-budget-available,.home-overdraft-mini{grid-column:auto;grid-row:auto}
  .home-snapshot-grid>.home-snapshot-card{min-height:100px}
 }
+
+
+/* Savings progress motion and clearer close controls. */
+.savings-progress-track span{
+  transform-origin:left center;
+  animation:savingsProgressReveal .95s cubic-bezier(.22,1,.36,1) both;
+  transition:width .95s cubic-bezier(.22,1,.36,1);
+  will-change:width,transform;
+}
+@keyframes savingsProgressReveal{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+#chartZoomClose{
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+  font-size:32px;
+}
+#bepAdviceClose{
+  width:44px;
+  height:44px;
+  font-size:28px;
+}
+@media(prefers-reduced-motion:reduce){
+  .savings-progress-track span{
+    animation:none;
+    transition:none;
+    transform:none;
+    will-change:auto;
+  }
+}
