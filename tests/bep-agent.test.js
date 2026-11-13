@@ -44,7 +44,11 @@ test("knowledge proposals must preserve the source provenance supplied by BEP",(
  assert.equal(validateKnowledgeProposal({...valid,proposal_type:"invent"},source),null);
  assert.equal(validateKnowledgeProposal(valid,undefined),null);
 });
-test("quality review reports clearly that it has not executed real Coach responses",async()=>{\n const result=await runQualityReview({pool:{query:async()=>({rows:[]})},client:{generateJson:async()=>({value:{findings:[]},usage:null})}});\n assert.equal(result.summary.coachResponsesExecuted,false);\n});\ntest("quality review corpus is synthetic and contains no user or account identifiers",()=>{
+test("quality review reports clearly that it has not executed real Coach responses",async()=>{
+ const result=await runQualityReview({pool:{query:async()=>({rows:[]})},client:{generateJson:async()=>({value:{findings:[]},usage:null})}});
+ assert.equal(result.summary.coachResponsesExecuted,false);
+});
+test("quality review corpus is synthetic and contains no user or account identifiers",()=>{
  assert.ok(cases.length>=5);
  for(const item of cases){assert.ok(item.id&&item.question&&Array.isArray(item.must)&&Array.isArray(item.mustNot));assert.doesNotMatch(JSON.stringify(item),/email|user_id|account_id|iban/i)}
 });
@@ -68,9 +72,11 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
  assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
- assert.match(server,/SOURCE_DOCUMENT_CHANGED/);\n assert.match(server,/sourceDigest\\(original\\)/);
+ assert.match(server,/SOURCE_DOCUMENT_CHANGED/);
+ assert.match(server,/sourceDigest\\(original\\)/);
  assert.ok(server.includes("candidate.source_version"));
- assert.ok(server.includes("candidate.source_digest"));\n assert.match(server,/sourceDigest\\(original\\)/);
+ assert.ok(server.includes("candidate.source_digest"));
+ assert.match(server,/sourceDigest\\(original\\)/);
  assert.ok(server.includes("if(!agentTelemetryReady)return next();"));
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
