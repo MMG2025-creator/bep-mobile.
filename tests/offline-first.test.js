@@ -49,7 +49,7 @@ test("monthly budget history is cached per authenticated user for offline read-o
  assert.equal(js,read("dist/monthly-budget-ui.js"));
  assert.match(js,/bep-monthly-history-cache-v1/);
  assert.match(js,/monthly-history:" \+ user/);
- assert.match(js,/cached\?\.budgets\?\[monthKey\]/);
+ assert.match(js,/cached\?\.budgets\?\.\[monthKey\]/);
  assert.match(js,/navigator\.onLine/);
  assert.match(js,/Lecture seule/);
  assert.match(js,/Hydrate every month snapshot/);
