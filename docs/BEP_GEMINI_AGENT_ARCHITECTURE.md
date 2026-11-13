@@ -21,7 +21,7 @@ L'agent est inactif par défaut. Il exige simultanément :
 - `BEP_AGENT_ENABLED=true`
 - `BEP_AGENT_ZERO_BILLING_CONFIRMED=true`
 - `BEP_AGENT_GEMINI_API_KEY` (clé dédiée, distincte de celle du Coach)
-- `BEP_AGENT_GEMINI_MODEL` facultatif, défaut `gemini-2.5-flash`
+- `BEP_AGENT_GEMINI_MODEL` facultatif, défaut `gemini-3.8-flash`
 
 Quota par défaut : 8 appels/jour, plafonné à 50. Les appels sont limités à un modèle Gemini configuré, timeout 30 secondes, redirections refusées.
 
