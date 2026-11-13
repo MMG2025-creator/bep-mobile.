@@ -579,3 +579,41 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 @keyframes budget-robot-blink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.08)}}
 @keyframes budget-robot-smile{0%,100%{stroke-width:1.8}50%{stroke-width:2.5}}
 @media(prefers-reduced-motion:reduce){.budget-robot-eyes,.budget-robot-smile{animation:none}}
+
+/* Mobile checklist layout: preserve the label and place its amount directly below it. */
+@media(max-width:560px){
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{
+    grid-template-columns:20px minmax(0,1fr);
+    grid-template-rows:auto auto;
+    align-items:center;
+    column-gap:10px;
+    row-gap:6px;
+    padding:12px 8px;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>input[type=checkbox]{
+    grid-column:1;
+    grid-row:1 / span 2;
+    align-self:center;
+    margin:0;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>span{
+    grid-column:2;
+    grid-row:1;
+    display:block;
+    min-width:0;
+    color:#263b32;
+    font-size:14px;
+    line-height:1.35;
+    visibility:visible;
+    opacity:1;
+  }
+  .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row>input[data-checkup-amount]{
+    grid-column:2;
+    grid-row:2;
+    width:100%;
+    min-width:0;
+    min-height:44px;
+    box-sizing:border-box;
+    font-size:15px;
+  }
+}
