@@ -11,3 +11,7 @@
 - Pas de changement automatique de code, de configuration, de règle métier ou de déploiement.
 - Quota quotidien indépendant, timeout, redirections interdites et absence de fournisseur de remplacement.
 - Migration additive uniquement ; aucune suppression ou modification des tables métier.
+
+- L'accès aux routes de revue est limité aux identifiants configurés dans `BEP_AGENT_ADMIN_USER_IDS`.
+- Une approbation crée une surcouche documentaire additive ; le seed financier d'origine n'est pas écrasé.
+- Les métriques de supervision sont agrégées par jour, mode et statut HTTP, sans compte utilisateur.
