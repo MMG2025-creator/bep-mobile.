@@ -17,7 +17,7 @@ function lockExpiredSession(){if(window.bepSessionExpired)return;window.bepSessi
 function scheduleBepIdleTimeout(){if(bepIdleTimer)clearTimeout(bepIdleTimer);if(window.bepSignedIn&&!window.bepSessionExpired)bepIdleTimer=setTimeout(lockExpiredSession,15*60*1000)}
 const bepNativeFetch=window.fetch.bind(window);
 window.fetch=async(...args)=>{const response=await bepNativeFetch(...args);if(response.status===401){try{const payload=await response.clone().json();if(payload?.error==="SESSION_EXPIRED")lockExpiredSession()}catch{}}return response};
-function noteBepUserActivity(){if(!window.bepSignedIn||window.bepSessionExpired)return;scheduleBepIdleTimeout();const now=Date.now();if(now-bepLastActivitySent<60000)return;bepLastActivitySent=now;fetch(API+"/api/auth/activity",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:"{}"}).catch(()=>{})}
+function noteBepUserActivity(){if(!window.bepSignedIn||window.bepSessionExpired)return;scheduleBepIdleTimeout();const now=Date.now();if(now-bepLastActivitySent<10000)return;bepLastActivitySent=now;fetch(API+"/api/session/activity",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:"{}"}).catch(()=>{})}
 ["pointerdown","keydown","touchstart","click"].forEach(eventName=>window.addEventListener(eventName,noteBepUserActivity,{passive:true}));
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
 window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged();notify("Synchronisation BEP terminée.")});
