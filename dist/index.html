@@ -438,6 +438,34 @@
     </div>
   </dialog>
 
+
+  <article class="card settings-card external-ai-consent-card" id="settingsExternalAiConsentCard">
+    <div class="settings-section-heading"><span class="settings-section-icon" aria-hidden="true">✦</span><div><h2>Partage externe du Coach IA</h2><p class="hint">Tu gardes le contrôle de l’utilisation de tes données financières par un fournisseur d’IA externe.</p></div></div>
+    <div class="external-ai-consent-notice">
+      <p><strong>Ce qui peut être transmis</strong></p>
+      <p>Lorsque tu poses une question ouverte au Coach et que le service externe est disponible, BEP peut transmettre au fournisseur configuré :</p>
+      <ul>
+        <li>ta question et les éléments que tu écris dans la conversation ;</li>
+        <li>tes revenus et leurs sources, tes charges, budgets et dépenses ;</li>
+        <li>tes objectifs d’épargne et des indicateurs de ta situation financière ;</li>
+        <li>les thèmes de personnalisation que tu as sélectionnés.</li>
+      </ul>
+      <p><strong>Finalité :</strong> produire une réponse personnalisée aux questions ouvertes. Le fournisseur traite les informations selon ses propres conditions et règles de confidentialité. N’inclus pas de mot de passe, de numéro de compte ou d’information que tu ne souhaites pas partager.</p>
+      <p>Le Coach BEP structuré reste disponible sans ce partage. Autoriser ce traitement ne déclenche pas d’appel à lui seul : le service externe doit aussi être configuré et ses quotas et verrous de facturation doivent l’autoriser.</p>
+    </div>
+    <form id="externalAiConsentForm" class="external-ai-consent-form">
+      <label class="external-ai-consent-choice" for="externalAiConsentCheckbox">
+        <input id="externalAiConsentCheckbox" type="checkbox" disabled required>
+        <span>J’autorise BEP à transmettre les catégories de données décrites ci-dessus au fournisseur d’IA externe configuré, pour traiter mes questions ouvertes au Coach.</span>
+      </label>
+      <div class="external-ai-consent-actions">
+        <button type="submit" class="primary" id="saveExternalAiConsentBtn" disabled>Enregistrer mon autorisation</button>
+        <button type="button" class="secondary" id="revokeExternalAiConsentBtn" hidden>Retirer mon autorisation</button>
+      </div>
+    </form>
+    <p class="hint external-ai-consent-status" id="externalAiConsentStatus" role="status" aria-live="polite">Connecte-toi pour consulter le statut de ton autorisation.</p>
+  </article>
+
   <article class="card settings-card" id="settingsDataCard">
     <div class="settings-section-heading"><span class="settings-section-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span><div><h2>Mes données</h2><p class="hint">Sauvegarde et restauration de tes informations BEP.</p></div></div>
     <div class="settings-button-grid">
