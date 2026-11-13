@@ -1517,6 +1517,27 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:380px){.home-overdraft-card{padding:15px}.home-overdraft-summary{align-items:flex-start;flex-direction:column;gap:6px}}
 
 
+/* Homepage financial snapshot: direct management shortcuts */
+.home-snapshot-card{min-height:94px;justify-content:space-between;gap:6px;padding:12px 12px;text-align:left}
+.home-snapshot-action{width:100%;font:inherit;color:inherit;cursor:pointer;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+.home-snapshot-action:hover{border-color:#9ccbb4;box-shadow:0 4px 13px rgba(16,46,41,.08);transform:translateY(-1px)}
+.home-snapshot-action:focus-visible{outline:3px solid #80b99a;outline-offset:2px}
+.home-snapshot-action small,.home-snapshot-static small{font-size:10px;line-height:1.3;color:var(--green);font-weight:700}
+.home-snapshot-static{cursor:default}
+.home-budget-available{grid-column:1;grid-row:2}
+.home-overdraft-mini{grid-column:2;grid-row:2;background:#f7faf8;border-color:#dce9e2}
+.home-overdraft-mini strong{font:800 clamp(14px,3.5vw,19px) Manrope,sans-serif;color:var(--forest);overflow-wrap:anywhere}
+.home-overdraft-mini #homeOverdraftStatus{font-size:10px;color:var(--muted);font-weight:700}
+.home-overdraft-mini #homeOverdraftStatus.overdraft-active{color:#176b50}
+.home-overdraft-mini #homeOverdraftStatus.overdraft-expired{color:#9a432c}
+@media(max-width:560px){.home-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-budget-available,.home-overdraft-mini{grid-row:auto;grid-column:auto}}
+@media(max-width:380px){.home-snapshot-card{min-height:88px;padding:10px 9px}.home-snapshot-card span{font-size:10px}.home-snapshot-card small{font-size:9px}}
+
+/* Apply shortcut affordance to every metric button, including the savings and overdraft tiles. */
+.home-snapshot-grid>button{font:inherit;text-align:left;color:inherit;cursor:pointer}
+.home-snapshot-grid>button:focus-visible{outline:3px solid #80b99a;outline-offset:2px}
+
+
 /* Desktop homepage snapshot: balanced 3 columns x 2 rows; mobile remains 2 x 3. */
 @media(min-width:561px){
  .home-snapshot-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
