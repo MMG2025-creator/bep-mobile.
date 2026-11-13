@@ -4,6 +4,7 @@ const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {startBepAgent}=require("./lib/bep-agent");
+const {sourceDigest}=require("./lib/bep-agent/worker");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null,agentTelemetryReady=false;
@@ -233,7 +234,7 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
    const source=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[candidate.source_slug]);
    if(!source.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_NOT_FOUND"})}
    const original=source.rows[0];
-   const currentSourceDigest=crypto.createHash("sha256").update(JSON.stringify({slug:original.slug,category:original.category,title:original.title,content:String(original.content||""),source_name:original.source_name,source_url:original.source_url,evidence_level:original.evidence_level,version:Number(original.version)})).digest("hex");
+   const currentSourceDigest=sourceDigest(original);
    if(original.source_name!==candidate.source_name||original.source_url!==candidate.source_url||original.evidence_level!==candidate.evidence_level){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_PROVENANCE_CHANGED"})}
    if(Number(original.version)!==Number(candidate.source_version)||currentSourceDigest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_CHANGED"})}
    const deactivate=candidate.proposal_type==="deactivate";
