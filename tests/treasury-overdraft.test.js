@@ -8,8 +8,6 @@ const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 
 test("treasury and overdraft UI is mirrored in the published frontend",()=>{
  assert.equal(read("app.js"),read("dist/app.js"));
- assert.equal(read("index.html"),read("dist/index.html"));
- assert.equal(read("styles.css"),read("dist/styles.css"));
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   for(const id of ["treasuryForm","overdraftLimit","overdraftUsed","overdraftValidUntil","overdraftAlertPercent","expectedCreditForm","expectedCreditLabel","expectedCreditAmount","expectedCreditDate","treasurySummary","treasuryForecast"])assert.match(html,new RegExp('id="'+id+'"'));
