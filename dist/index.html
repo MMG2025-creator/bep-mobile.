@@ -207,7 +207,7 @@
 <button class="secondary full" type="submit">Enregistrer le découvert autorisé</button><p class="hint" id="overdraftStatus" role="status"></p>
 </form>
 </section>
-<details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
+<details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un revenu pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
 <article class="card charges-card">
@@ -260,7 +260,7 @@
 <details id="budgetEditorDetails" class="budget-editor"><summary>+ Ajouter une charge</summary><form id="budgetForm"><div class="field"><label for="budgetLabel">Libellé / organisme (facultatif)</label><input id="budgetLabel" type="text" maxlength="100" placeholder="Ex. Crédit auto, Cofidis, assurance habitation"></div><div class="field"><label for="budgetCategory">Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label for="budgetNature">Nature de la charge</label><select id="budgetNature"><option value="unspecified">À préciser</option><option value="fixed">Charge fixe / récurrente</option><option value="variable">Charge variable</option></select></div><div class="field"><label for="budgetAmount">Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter une charge</button></form></details>
 </section>
 </div>
-<details id="chargesSavedDetails" class="income-saved-details"><summary><span>Mes charges enregistrées</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="budgetRows" class="rows saved-selectable-list"></div></details>
+<details id="chargesSavedDetails" class="income-saved-details"><summary><span>Mes charges enregistrées</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur une charge pour activer la sélection multiple.</p><div id="budgetRows" class="rows saved-selectable-list"></div></details>
 </article>
 </div>
 <div id="budgetModulePhotos" class="budget-module" role="tabpanel" hidden>
