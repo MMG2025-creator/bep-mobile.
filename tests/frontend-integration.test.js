@@ -55,7 +55,7 @@ test("expense experience remains a separate module and uses the existing purchas
 
 test("offline-first state persistence keeps local writes and conflict protection",()=>{
  const app=read("app.js"),offline=read("offline-storage.js");
- assert.match(app,/window\.BEPOffline\.hasKnownUser\(\)/);
+ assert.match(app,/window\.BEPOffline\.markKnownUser\(/);
  assert.match(app,/window\.BEPOffline\.setBaseline\(d\.payload\|\|\{\}\)/);
  assert.match(offline,/hasKnownUser\(\)\)return false/);
  assert.match(offline,/stable\(remote\)!==stable\(pending\.base\)/);

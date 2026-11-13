@@ -16,7 +16,7 @@ test("overdraft permission UI is part of income and mirrored in production asset
   assert.match(html,/id="overdraftLimit"/);
   assert.match(html,/id="overdraftValidUntil"/);
   assert.doesNotMatch(html,/id="treasuryForm"|id="expectedCreditForm"|id="overdraftUsed"/);
-  assert.match(html,/overdraft-permission-20261113/);
+  assert.match(html,/spend-experience\.js\?v=21&bep=overdraft-permission-20261113/);
  }
  const dialogs=read("spend-experience.js");
  assert.match(dialogs,/\["overdraft","Découvert autorisé","Gérer mon découvert autorisé","\.overdraft-permission-card"\]/);
