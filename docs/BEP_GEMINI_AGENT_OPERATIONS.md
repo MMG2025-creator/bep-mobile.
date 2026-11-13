@@ -20,6 +20,7 @@ Ne jamais activer l'agent en production avant d'avoir vérifié la clé Gemini d
 
 Configurer `BEP_AGENT_ADMIN_USER_IDS` avec les identifiants BEP des administrateurs autorisés, séparés par des virgules. Sans cette allowlist, les routes d'administration renvoient 403.
 
+- `POST /api/admin/bep-agent/run` : déclenche une revue documentaire et une revue qualité immédiatement.
 - `GET /api/admin/bep-agent/overview` : exécutions et métriques agrégées.
 - `GET /api/admin/bep-agent/candidates?status=pending` : propositions en attente.
 - `POST /api/admin/bep-agent/candidates/:id/review` avec `{"decision":"approve"}` ou `{"decision":"reject"}`.
