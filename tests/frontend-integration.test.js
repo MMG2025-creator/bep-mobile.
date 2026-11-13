@@ -177,6 +177,15 @@ test("monthly budget is isolated from real expenses and global refresh events", 
   }
 });
 
+test("monthly budget loading and saving never writes into expenses or legacy modules", () => {
+  for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
+    const js = read(file);
+    assert.doesNotMatch(js, /BEP_APPLY_MONTHLY_ITEMS/);
+    assert.doesNotMatch(js, /bep:legacy-budget-changed/);
+    assert.doesNotMatch(js, /syncLegacyBudget/);
+  }
+});
+
 test("monthly budget item edits retain stable identity and never fall back to add", () => {
   for (const file of ["monthly-budget-ui.js", "dist/monthly-budget-ui.js"]) {
     const js = read(file);
