@@ -6,6 +6,7 @@ const { spawn } = require("node:child_process");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const net = require("node:net");
+const http = require("node:http");
 const path = require("node:path");
 
 const root = path.join(__dirname, "..");
@@ -45,7 +46,8 @@ test("real HTTP authentication journeys enforce one active session and preserve 
 }, async t => {
   const admin = new Pool({ connectionString: databaseUrl, max: 2 });
   const schema = "bep_auth_flow_" + process.pid + "_" + Date.now();
-  let scoped, child, baseUrl;
+  let scoped, child, baseUrl, emailServer;
+  const emailMessages = [];
   let stdout = "", stderr = "";
   const output = () => stdout + "\n" + stderr;
 
@@ -54,6 +56,24 @@ test("real HTTP authentication journeys enforce one active session and preserve 
     const scopedUrl = new URL(databaseUrl);
     scopedUrl.searchParams.set("options", "-c search_path=" + schema);
     scoped = new Pool({ connectionString: scopedUrl.toString(), max: 5 });
+
+    emailServer = http.createServer((req, res) => {
+      let raw = "";
+      req.on("data", chunk => { raw += chunk.toString(); });
+      req.on("end", () => {
+        try {
+          const message = JSON.parse(raw);
+          emailMessages.push(message);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: message.secret === "isolated-mail-secret" }));
+        } catch {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false }));
+        }
+      });
+    });
+    await new Promise(resolve => emailServer.listen(0, "127.0.0.1", resolve));
+    const emailUrl = "http://127.0.0.1:" + emailServer.address().port;
 
     const port = await freePort();
     baseUrl = "http://127.0.0.1:" + port;
@@ -64,6 +84,8 @@ test("real HTTP authentication journeys enforce one active session and preserve 
         DATABASE_URL: scopedUrl.toString(),
         FRONTEND_ORIGIN: baseUrl,
         SESSION_SECRET: "isolated-auth-flow-test-secret",
+        GMAIL_APPS_SCRIPT_URL: emailUrl,
+        BEP_MAIL_SECRET: "isolated-mail-secret",
         PORT: String(port),
         NODE_ENV: "test",
         NODE_OPTIONS: "--require=" + path.join(__dirname, "disable-pg-ssl.cjs")
@@ -105,6 +127,30 @@ test("real HTTP authentication journeys enforce one active session and preserve 
       const result = await call("/api/auth/login", "POST", { email, password: pass });
       return { ...result, cookie: result.setCookie.split(";")[0] };
     };
+
+    await t.test("registers a new account and verifies its email through a local mail stub", async () => {
+      const email = "signup-flow@example.test";
+      const registered = await call("/api/auth/register", "POST", {
+        email, password: "Signup-Password-2026!", name: "Signup Test"
+      });
+      assert.equal(registered.status, 201, JSON.stringify(registered.data));
+      assert.equal(registered.data.verificationRequired, true);
+      const mail = emailMessages.findLast(message => message.email === email && message.type === "email_verification");
+      assert.ok(mail && /^\\d{6}$/.test(mail.code), "verification code must be sent to the isolated mail stub");
+      const wrongCode = mail.code === "000000" ? "000001" : "000000";
+      const rejected = await call("/api/auth/verify-email", "POST", { email, code: wrongCode });
+      assert.equal(rejected.status, 400);
+      assert.equal(rejected.data.error, "INVALID_CODE");
+      const verified = await call("/api/auth/verify-email", "POST", { email, code: mail.code });
+      assert.equal(verified.status, 200, JSON.stringify(verified.data));
+      const cookie = verified.setCookie.split(";")[0];
+      assert.ok(cookie.startsWith("connect.sid="), "email verification must establish a session");
+      const profile = await call("/api/me", "GET", undefined, cookie);
+      assert.equal(profile.status, 200);
+      assert.equal(profile.data.user.email, email);
+      const logout = await call("/api/auth/logout", "POST", {}, cookie);
+      assert.equal(logout.status, 200);
+    });
 
     await t.test("rejects invalid credentials and unverified email", async () => {
       const invalid = await login("auth-flow@example.test", "wrong-password-123");
@@ -227,6 +273,7 @@ test("real HTTP authentication journeys enforce one active session and preserve 
       await new Promise(resolve => child.once("exit", resolve));
     }
     if (scoped) await scoped.end();
+    if (emailServer) await new Promise(resolve => emailServer.close(resolve));
     await admin.query('DROP SCHEMA IF EXISTS "' + schema + '" CASCADE').catch(() => {});
     await admin.end();
   }
