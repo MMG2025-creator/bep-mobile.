@@ -1442,3 +1442,20 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 /* Respecte l'attribut hidden même si le composant utilise display:grid. */
 .monthly-budget-actuals[hidden]{display:none!important}
+
+/* Actual monthly spending and compact searchable budget sections */
+.home-budget-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:560px){.home-budget-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.monthly-budget-search-label{display:block;margin:12px 0 5px;font-size:11px;color:var(--muted)}
+.monthly-budget-search{width:100%;margin:0 0 10px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+.monthly-budget-group{margin:8px 0;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.monthly-budget-group>summary,.monthly-budget-actuals>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;cursor:pointer;list-style:none}
+.monthly-budget-group>summary::-webkit-details-marker,.monthly-budget-actuals>summary::-webkit-details-marker{display:none}
+.monthly-budget-group>summary span{font-size:12px;font-weight:700;color:var(--forest)}
+.monthly-budget-group>summary small{margin-left:5px;font-weight:400;color:var(--muted)}
+.monthly-budget-group>summary>b{font-size:13px;color:var(--forest);white-space:nowrap}
+.monthly-budget-group-rows{padding:0 10px}
+.monthly-budget-actuals>summary{padding:0 0 7px;font-weight:700;color:var(--forest)}
+.monthly-budget-actuals>summary>b{font-size:17px;white-space:nowrap}
+.monthly-budget-actual-error{color:#9a3c32;font-size:11px}
+.home-budget-metric strong{font-size:clamp(13px,3vw,18px)}
