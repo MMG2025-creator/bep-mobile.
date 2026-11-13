@@ -570,3 +570,12 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
     line-height:1.5;
   }
 }
+
+/* Compact reusable BEP robot prompt for budget modules */
+.budget-robot-prompt{display:flex;align-items:center;gap:9px;margin:0 0 10px 2px;color:#416457;font-size:13px;font-weight:700;line-height:1.35}
+.budget-robot-head{width:42px;height:36px;flex:0 0 42px;overflow:visible;filter:drop-shadow(0 2px 3px #173c2918)}
+.budget-robot-eyes{transform-box:fill-box;transform-origin:center;animation:budget-robot-blink 5.8s infinite}
+.budget-robot-smile{stroke-dasharray:40;stroke-dashoffset:0;animation:budget-robot-smile 4.8s ease-in-out infinite}
+@keyframes budget-robot-blink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.08)}}
+@keyframes budget-robot-smile{0%,100%{stroke-width:1.8}50%{stroke-width:2.5}}
+@media(prefers-reduced-motion:reduce){.budget-robot-eyes,.budget-robot-smile{animation:none}}
