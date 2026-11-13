@@ -28,7 +28,7 @@ test("offline sync is account-scoped and refuses to overwrite a changed remote s
 
 test("offline startup restores the local session and sets the remote baseline",()=>{
  const js=read("app.js");
- assert.match(js,/window\.BEPOffline\.hasKnownUser\(\)/);
+ assert.match(js,/window\.BEPOffline\.hasTrustedSnapshot\(\)/);
  assert.match(js,/window\.bepOfflineMode=true/);
  assert.match(js,/gate\.hidden=true/);
  assert.match(js,/window\.BEPOffline\.setBaseline\(remote\.payload\|\|\{\}\)/);
