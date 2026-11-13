@@ -1444,3 +1444,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* BEP panel isolation: inactive pages must remain hidden even if a component sets display. */
 .panel[hidden],
 .panel:not(.active){display:none!important}
+
+/* Respecte l'attribut hidden même si le composant utilise display:grid. */
+.monthly-budget-actuals[hidden]{display:none!important}
