@@ -38,6 +38,12 @@ test("quality review corpus is synthetic and contains no user or account identif
  assert.ok(cases.length>=5);
  for(const item of cases){assert.ok(item.id&&item.question&&Array.isArray(item.must)&&Array.isArray(item.mustNot));assert.doesNotMatch(JSON.stringify(item),/email|user_id|account_id|iban/i)}
 });
+test("Gemini API key is sent in a header and queue leases are recoverable",()=>{
+ const client=fs.readFileSync(path.join(__dirname,"..","lib/bep-agent/gemini-client.js"),"utf8");
+ const repository=fs.readFileSync(path.join(__dirname,"..","lib/bep-agent/repository.js"),"utf8");
+ assert.match(client,/x-goog-api-key/);assert.doesNotMatch(client,/\\?key=/);
+ assert.match(repository,/worker lease expired/);assert.match(repository,/ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED/);
+});
 test("agent schema is additive and does not alter existing BEP financial tables",()=>{
  const sql=fs.readFileSync(path.join(__dirname,"..","database/migrations/20261114_bep_gemini_agent.sql"),"utf8");
  for(const table of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics"])assert.match(sql,new RegExp("CREATE TABLE IF NOT EXISTS "+table));
