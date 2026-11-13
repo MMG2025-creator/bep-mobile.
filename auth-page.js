@@ -1,6 +1,8 @@
-/* BEP authentication page controller — isolated from the main application controller. */
+/* BEP authentication page controller — isolated from app.js and auth-recovery.js. */
 (()=>{
  "use strict";
+ const gate=document.getElementById("authGate");
+ if(!gate)return;
  const $=id=>document.getElementById(id);
  const login=$("loginForm"),register=$("registerForm"),verify=$("verifyEmailForm"),forgot=$("forgotPasswordForm"),reset=$("resetPasswordForm"),message=$("authMessage");
  const switcher=document.querySelector(".auth-switch"),google=$("googleLogin"),divider=document.querySelector(".auth-divider"),forgotLink=$("forgotPasswordLink");
