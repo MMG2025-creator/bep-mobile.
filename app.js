@@ -356,6 +356,7 @@ async function processReceiptFile(file,input){
  try{
   if(!/^image\/[a-z0-9.+-]+$/i.test(file.type))throw Error("Format non pris en charge. Importe une image lisible par ton navigateur.");
   if(file.size>12*1024*1024)throw Error("Cette photo dépasse la limite actuelle de 12 Mo. Réduis-la ou compresse-la, ou prends une capture d’écran. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».");
+  if(window.BEPLoadModule)await window.BEPLoadModule("receiptOCR");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
   await loadTesseract();
   const ocrImage=await prepareReceiptImageForOcr(file);
