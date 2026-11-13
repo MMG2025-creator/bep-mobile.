@@ -217,20 +217,21 @@
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = current.status === "closed";
   }
-  async function loadMonth(monthKey) {
+  async function loadMonth(monthKey, options = {}) {
     const epoch = authEpoch;
     setBusy(true);
     try {
       const timeZone = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Paris");
-      const [data, actualData] = await Promise.all([
-        api("/api/budgets/months/" + encodeURIComponent(monthKey)),
-        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + timeZone)
-          .catch(error => ({ __error: error.message, expenses: [], actualExpenseTotal: "0.00", count: 0 }))
-      ]);
+      const actualRequest = api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + timeZone)
+        .catch(error => ({ __error: error.message, expenses: [], actualExpenseTotal: "0.00", count: 0 }));
+      const budget = options.budget
+        ? options.budget
+        : (await api("/api/budgets/months/" + encodeURIComponent(monthKey))).budget;
+      const actualData = await actualRequest;
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       actuals = actualData;
       actualsError = actualData.__error ? "Dépenses réelles indisponibles : " + actualData.__error : "";
-      current = data.budget;
+      current = budget;
       editingItemId = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -294,7 +295,7 @@
       const data = await api("/api/budgets/months", { method: "POST", body: JSON.stringify(payload) });
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       months = [data.budget, ...months.filter(x => x.monthKey !== monthKey)].sort((a, b) => b.monthKey.localeCompare(a.monthKey));
-      await loadMonth(monthKey);
+      await loadMonth(monthKey, { budget: data.budget });
       status(data.created ? "Mois créé. Les valeurs copiées sont indépendantes." : "Ce mois existait déjà ; aucune duplication effectuée.");
       window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"monthly-create"}}));
     } catch (error) { status("Création impossible : " + error.message, true); }
