@@ -64,6 +64,7 @@
   }
   let loading = false;
   let authEpoch = 0;
+  let cacheOnlyMode = false;
   const CACHE_DB = "bep-monthly-history-cache-v1";
   const CACHE_STORE = "snapshots";
   const CACHE_USER_KEY = "bep-last-authenticated-user";
@@ -129,7 +130,7 @@
     await writeHistoryCache({ months: months.length ? months : (previous?.months || []), budgets });
   }
   function applyOfflineReadOnly() {
-    const offline = !navigator.onLine;
+    const offline = !navigator.onLine || cacheOnlyMode;
     const create = $("monthlyBudgetCreateForm");
     const itemForm = $("monthlyBudgetItemForm");
     const save = $("monthlyBudgetSave");
@@ -166,6 +167,7 @@
   const setBusy = value => {
     loading = value;
     card.querySelectorAll("button,input,select").forEach(el => { el.disabled = value; });
+    applyOfflineReadOnly();
   };
   async function api(path, options = {}) {
     const response = await fetch(API + path, {
@@ -288,17 +290,20 @@
         try {
           const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
           budget = data.budget;
+          cacheOnlyMode = false;
           await cacheMonthBudget(budget);
         } catch (networkError) {
           const cached = await readHistoryCache();
           budget = cached?.budgets?.[monthKey] || null;
           fromCache = Boolean(budget);
+          cacheOnlyMode = fromCache;
           if (!budget) throw networkError;
         }
       } else {
         const cached = await readHistoryCache();
         budget = cached?.budgets?.[monthKey] || null;
         fromCache = Boolean(budget);
+        cacheOnlyMode = fromCache;
         if (!budget) throw new Error("Ce mois n’est pas encore enregistré sur cet appareil. Reconnecte-toi pour le télécharger.");
       }
       if (epoch !== authEpoch) return;
