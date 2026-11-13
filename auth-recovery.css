@@ -49,3 +49,7 @@
   .auth-card { padding: 20px 17px; border-radius: 21px; }
   .auth-brand-banner { margin-bottom: 15px; border-radius: 12px; }
 }
+
+/* Auth visual cleanup — 2026-11-13 */
+.auth-card { padding-bottom: 18px; }
+@media (max-width: 480px) { .auth-card { padding-bottom: 14px; } }
