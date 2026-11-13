@@ -46,7 +46,7 @@ test("Gemini API key is sent in a header and queue leases are recoverable",()=>{
 });
 test("agent schema is additive and does not alter existing BEP financial tables",()=>{
  const sql=fs.readFileSync(path.join(__dirname,"..","database/migrations/20261114_bep_gemini_agent.sql"),"utf8");
- for(const table of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics"])assert.match(sql,new RegExp("CREATE TABLE IF NOT EXISTS "+table));
+ for(const table of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics","bep_agent_approved_knowledge","bep_agent_coach_metrics"])assert.match(sql,new RegExp("CREATE TABLE IF NOT EXISTS "+table));
  assert.doesNotMatch(sql,/\b(DROP|TRUNCATE|ALTER TABLE bep_(users|user_data|monthly_budgets|monthly_budget_items))\b/i);
 });
 test("server exposes only allowlisted admin review and aggregate telemetry",()=>{
@@ -56,6 +56,7 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
+ assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
 });
