@@ -195,9 +195,9 @@ app.put("/api/data",auth,async(req,res)=>{
    if(canonical(previous)!==canonical(base)){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_CONFLICT"});}
   }else{
    const financialKeys=["incomes","budgets","expenses","goals","transactions","savingsOperations"];
-   const hasFinancialData=Number(previous.income)!==0||financialKeys.some(key=>Array.isArray(previous[key])&&previous[key].length>0);
+   const hasFinancialData=Number(previous.income)!==0||financialKeys.some(key=>Object.prototype.hasOwnProperty.call(previous,key)&&(!Array.isArray(previous[key])||previous[key].length>0));
    const hasOtherData=Object.entries(previous).some(([key,value])=>!["income",...financialKeys,"coachProfile"].includes(key)&&value!=null&&value!==""&&value!==false&&(!Array.isArray(value)||value.length>0)&&(!(value&&typeof value==="object")||Object.keys(value).length>0));
-   const hasProfile=Array.isArray(previous.coachProfile)&&previous.coachProfile.length>0;
+   const hasProfile=Object.prototype.hasOwnProperty.call(previous,"coachProfile")&&(!Array.isArray(previous.coachProfile)||previous.coachProfile.length>0);
    if(hasFinancialData||hasOtherData||hasProfile){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_SYNC_REQUIRED"});}
   }
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
