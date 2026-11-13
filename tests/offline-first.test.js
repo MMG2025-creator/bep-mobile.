@@ -14,6 +14,10 @@ test("offline sync is account-scoped and refuses to overwrite a changed remote s
  const js=read("offline-storage.js");
  assert.match(js,/hasKnownUser\(\)\)return false/);
  assert.match(js,/stable\(remote\)!==stable\(pending\.base\)/);
+ assert.match(js,/__bepOfflineSync:true/);
+ assert.match(js,/base:pending\.base,payload:pending\.payload/);
+ assert.match(js,/savedData\.payload/);
+ assert.match(js,/saved\.status===409/);
  assert.match(js,/bep:offline-conflict/);
  const conflict=js.indexOf('if(stable(remote)!==stable(pending.base))');
  assert.ok(conflict>=0&&js.indexOf('method:"PUT"',conflict)>conflict);
