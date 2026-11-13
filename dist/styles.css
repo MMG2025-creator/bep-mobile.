@@ -1584,3 +1584,5 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .topbar .settings-icon-btn .settings-close-icon{display:none!important;grid-area:1/1;width:22px;height:22px}
 .topbar .settings-icon-btn[aria-expanded="true"] .settings-person-icon{display:none!important}
 .topbar .settings-icon-btn[aria-expanded="true"] .settings-close-icon{display:block!important}
+/* Budget is a standalone workspace: never render the purchases panel beneath it. */
+#budget.panel.active ~ #purchases.panel{display:none!important}

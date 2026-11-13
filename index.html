@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=98&bep=settings-exclusive-view-20261113"><link rel="stylesheet" href="./ui-polish.css?v=2"><link rel="stylesheet" href="./settings.css?v=3&bep=settings-exclusive-view-20261113">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=99&bep=settings-exclusive-view-20261113"><link rel="stylesheet" href="./ui-polish.css?v=2"><link rel="stylesheet" href="./settings.css?v=3&bep=settings-exclusive-view-20261113">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=5">
@@ -174,7 +174,7 @@
 <button class="secondary full" type="submit">Enregistrer le découvert autorisé</button><p class="hint" id="overdraftStatus" role="status"></p>
 </form>
 </section>
-<details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
+<details id="incomeSavedDetails" class="income-saved-details"><summary><span>Mes revenus enregistrés</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un revenu pour activer la sélection multiple.</p><div id="incomeRows" class="rows saved-selectable-list"></div></details></article>
 </div>
 <div id="budgetModuleCharges" class="budget-module" role="tabpanel" hidden>
 <article class="card charges-card">
@@ -227,7 +227,7 @@
 <details id="budgetEditorDetails" class="budget-editor"><summary>+ Ajouter une charge</summary><form id="budgetForm"><div class="field"><label for="budgetLabel">Libellé / organisme (facultatif)</label><input id="budgetLabel" type="text" maxlength="100" placeholder="Ex. Crédit auto, Cofidis, assurance habitation"></div><div class="field"><label for="budgetCategory">Poste budgétaire</label><select id="budgetCategory"><option>Logement</option><option>Factures</option><option>Alimentation</option><option>Transport</option><option>Crédits</option><option>Famille</option><option>Loisirs</option><option>Autres dépenses</option></select></div><div class="field"><label for="budgetNature">Nature de la charge</label><select id="budgetNature"><option value="unspecified">À préciser</option><option value="fixed">Charge fixe / récurrente</option><option value="variable">Charge variable</option></select></div><div class="field"><label for="budgetAmount">Montant mensuel (€)</label><input id="budgetAmount" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="0"></div><button class="primary">Ajouter une charge</button></form></details>
 </section>
 </div>
-<details id="chargesSavedDetails" class="income-saved-details"><summary><span>Mes charges enregistrées</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur un achat pour activer la sélection multiple.</p><div id="budgetRows" class="rows saved-selectable-list"></div></details>
+<details id="chargesSavedDetails" class="income-saved-details"><summary><span>Mes charges enregistrées</span><span class="income-saved-toggle" aria-hidden="true">+</span></summary><p class="hint saved-list-longpress-hint">Appui long sur une charge pour activer la sélection multiple.</p><div id="budgetRows" class="rows saved-selectable-list"></div></details>
 </article>
 </div>
 <div id="budgetModulePhotos" class="budget-module" role="tabpanel" hidden>
