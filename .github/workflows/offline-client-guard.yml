@@ -1,0 +1,38 @@
+name: BEP offline client regression guard
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app.js"
+      - "dist/app.js"
+      - "offline-storage.js"
+      - "dist/offline-storage.js"
+      - "monthly-budget-ui.js"
+      - "dist/monthly-budget-ui.js"
+      - "tests/offline-first.test.js"
+      - ".github/workflows/offline-client-guard.yml"
+  push:
+    branches: [fix/trusted-offline-client-release-20261113]
+    paths:
+      - "app.js"
+      - "dist/app.js"
+      - "offline-storage.js"
+      - "dist/offline-storage.js"
+      - "monthly-budget-ui.js"
+      - "dist/monthly-budget-ui.js"
+      - "tests/offline-first.test.js"
+      - ".github/workflows/offline-client-guard.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node --check app.js
+      - run: node --check offline-storage.js
+      - run: node --check monthly-budget-ui.js
+      - run: node --test tests/offline-first.test.js
