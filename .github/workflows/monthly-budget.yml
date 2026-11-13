@@ -10,6 +10,8 @@ on:
     branches: [main]
     paths:
       - "server.js"
+      - "offline-storage.js"
+      - "tests/offline-first.test.js"
       - "lib/bep-financial-*.js"
       - "tests/bep-financial-intelligence.test.js"
       - "monthly-budget-routes.js"
@@ -73,6 +75,9 @@ jobs:
       - run: cmp -s monthly-budget-ui.js dist/monthly-budget-ui.js
       - run: cmp -s styles.css dist/styles.css
       - run: node --check server.js
+      - run: node --check offline-storage.js
+      - run: node --check app.js
+      - run: node --test tests/offline-first.test.js
       - name: Verify frontend entrypoint asset references
         shell: bash
         run: |
