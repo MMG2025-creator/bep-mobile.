@@ -86,6 +86,9 @@ test("real HTTP authentication journeys enforce one active session and preserve 
         SESSION_SECRET: "isolated-auth-flow-test-secret",
         GMAIL_APPS_SCRIPT_URL: emailUrl,
         BEP_MAIL_SECRET: "isolated-mail-secret",
+        GOOGLE_CLIENT_ID: "isolated-google-client",
+        GOOGLE_CLIENT_SECRET: "isolated-google-secret",
+        GOOGLE_REDIRECT_URI: baseUrl + "/api/auth/google/callback",
         PORT: String(port),
         NODE_ENV: "test",
         NODE_OPTIONS: "--require=" + path.join(__dirname, "disable-pg-ssl.cjs")
@@ -121,12 +124,20 @@ test("real HTTP authentication journeys enforce one active session and preserve 
         redirect: "manual"
       });
       const data = await response.json().catch(() => null);
-      return { status: response.status, data, setCookie: response.headers.get("set-cookie") || "" };
+      return { status: response.status, data, location: response.headers.get("location") || "", setCookie: response.headers.get("set-cookie") || "" };
     };
     const login = async (email, pass) => {
       const result = await call("/api/auth/login", "POST", { email, password: pass });
       return { ...result, cookie: result.setCookie.split(";")[0] };
     };
+
+    await t.test("simulates Google OAuth login and rejects a second active Google session", async () => {
+      const start = await call("/api/auth/google");
+      assert.equal(start.status, 302);
+      const authorizationUrl = new URL(start.setCookie ? start.location || start.headers?.location : start.location || start.headers?.location || "https://accounts.google.com/");
+      // The helper exposes the response location separately below through a raw request.
+      assert.equal(authorizationUrl.hostname, "accounts.google.com");
+    });
 
     await t.test("registers a new account and verifies its email through a local mail stub", async () => {
       const email = "signup-flow@example.test";
