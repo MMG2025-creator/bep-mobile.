@@ -19,7 +19,7 @@
     if (verify) verify.hidden = true;
     forgot.hidden = mode !== "forgot";
     reset.hidden = mode !== "reset";
-    forgotLink.hidden = !showLogin;
+    forgotLink.hidden = !(showLogin || showRegister);
     const switcher = document.querySelector(".auth-switch");
     const google = $("googleLogin");
     const divider = document.querySelector(".auth-divider");
