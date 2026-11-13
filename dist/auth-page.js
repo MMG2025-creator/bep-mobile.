@@ -82,6 +82,7 @@
 
 
  /* Authentication lifecycle is owned here; the application receives only a verified session. */
+ window.BEP_DEMO_LOCAL=true;
  const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
  const loginMessageMap={success:"Connexion Google réussie.",error:"Google n’a pas finalisé la connexion. Vérifie le compte Google choisi puis réessaie.",google_config_error:"La configuration Google de BEP est invalide : le Client Secret OAuth doit être renouvelé dans Google Cloud puis mis à jour sur le serveur.",link_required:"Un compte BEP existe déjà avec cette adresse. Connecte-toi par e-mail puis associe Google dans les paramètres.",link_email_mismatch:"Choisis dans Google la même adresse e-mail que celle de ton compte BEP.",google_already_linked:"Ce compte Google est déjà associé à un autre compte BEP.",google_email_changed:"L’adresse e-mail Google ne correspond plus au compte associé.",link_session_required:"La session BEP a expiré. Reconnecte-toi puis réessaie.",link_account_missing:"Le compte BEP à associer est introuvable.",link_session_error:"Google est associé, mais la session n’a pas pu être actualisée. Reconnecte-toi.",google_linked:"Compte Google associé avec succès."};
  const authGate=document.getElementById("authGate");
@@ -110,6 +111,14 @@
   try{const r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(error){showAuthMessage(error.message)}
  });
  async function restoreSession(){
+  if(window.BEP_DEMO_LOCAL){
+   window.bepSignedIn=false;
+   window.BEPApp.enableDemoMode();
+   const note=document.querySelector(".privacy-note");
+   if(note)note.textContent="Mode démo : tes données sont enregistrées uniquement sur cet appareil. Aucune connexion ni synchronisation avec un compte.";
+   const startupLoader=document.getElementById("bepStartupLoader");if(startupLoader)startupLoader.hidden=true;
+   return;
+  }
   const params=new URLSearchParams(window.location.search),oauthResult=params.get("login");
   if(params.has("reset")){authGate.hidden=false;return}
   if(oauthResult&&loginMessageMap[oauthResult]){showAuthMessage(loginMessageMap[oauthResult]);history.replaceState({},document.title,window.location.pathname+window.location.hash)}
