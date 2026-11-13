@@ -452,6 +452,10 @@
  function context(){const panel=document.querySelector(".panel.active")?.id||"home";return panel==="budget"?(document.querySelector("[data-budget-module].active")?.dataset.budgetModule||"income"):panel}
  function open(){const c=context(),key=typeof c==="string"?c:c;const targetId=typeof ids[key]==="string"?ids[key]:ids.budget[c]||ids.budget.income;dialog.querySelectorAll(".bep-advice-content .ai-advice,.bep-advice-content .savings-advisor-foot").forEach(el=>el.hidden=el.id!==targetId&&!(key==="savings"&&el.id==="savingsAdvisorFoot"));document.getElementById("bepAdviceContext").textContent=labels[key]||"Votre situation";dialog.showModal();robot.setAttribute("aria-expanded","true");if(typeof window.recordAdvice==="function")window.recordAdvice(key)}
  function close(){dialog.close();robot.setAttribute("aria-expanded","false")}
+ function syncDock(){const hidden=context()==="purchases";dock.hidden=hidden;dock.style.display=hidden?"none":"";if(hidden&&dialog.open)close()}
+ syncDock();
+ const navigationObserver=new MutationObserver(syncDock);
+ document.querySelectorAll(".panel").forEach(panel=>navigationObserver.observe(panel,{attributes:true,attributeFilter:["class"]}));
  robot.addEventListener("click",()=>dialog.open?close():open());
  document.getElementById("bepAdviceClose").addEventListener("click",close);
  document.getElementById("bepAdviceMinimize").addEventListener("click",close);
