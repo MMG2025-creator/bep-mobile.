@@ -9,7 +9,32 @@ async function write(key,value){try{const db=await openDb();await new Promise((r
 async function clear(key){try{const db=await openDb();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch{try{localStorage.removeItem(key)}catch{}}}
 function hasUsableSnapshot(snapshot){return !!(snapshot&&typeof snapshot==="object"&&(Number(snapshot.income)>0||["incomes","budgets","goals","expenses","transactions","savingsOperations"].some(key=>Array.isArray(snapshot[key])&&snapshot[key].length>0)))}
 function resolveStartupMode({knownUser=false,hasSnapshot=false,authState="unavailable"}={}){if(authState==="authenticated")return "online";if(authState==="unavailable"&&knownUser&&hasSnapshot)return "offline";return "login"}
+function dispatchSessionInvalidated(reason){window.dispatchEvent(new CustomEvent("bep:session-invalidated",{detail:{reason}}))}
+let authChannel=null;
+try{if("BroadcastChannel"in window){authChannel=new BroadcastChannel("bep-auth-session-v1");authChannel.onmessage=event=>{if(event.data?.type==="logout"||event.data?.type==="account-deleted")dispatchSessionInvalidated(event.data.type)}}}catch{}
+function broadcastSessionEnd(reason="logout"){try{authChannel?.postMessage({type:reason==="account-deleted"?"account-deleted":"logout",at:Date.now()})}catch{}}
 function forgetKnownUser(){try{localStorage.removeItem(USER_KEY)}catch{}}
+window.addEventListener("storage",event=>{if(event.key===USER_KEY&&((event.newValue===null&&event.oldValue)||(event.newValue&&event.oldValue&&event.newValue!==event.oldValue)))dispatchSessionInvalidated("storage-identity-changed")});
+let validatingSession=false;
+async function validateActiveSession(){
+ if(validatingSession||!navigator.onLine||!window.bepSignedIn)return false;
+ validatingSession=true;
+ try{
+  const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+  const response=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});
+  if(response.status===401||response.status===403){forgetKnownUser();dispatchSessionInvalidated("server-session-ended");return false}
+  if(!response.ok)return false;
+  const auth=await response.json();
+  if(!auth.user){forgetKnownUser();dispatchSessionInvalidated("server-session-ended");return false}
+  const identity=String(auth.user.id||auth.user.email||"authenticated");
+  const known=localStorage.getItem(USER_KEY);
+  if(known&&known!==identity){forgetKnownUser();dispatchSessionInvalidated("server-identity-changed");return false}
+  return true;
+ }catch{return false}finally{validatingSession=false}
+}
+window.addEventListener("pageshow",()=>{if(window.bepSignedIn)validateActiveSession()});
+window.addEventListener("focus",()=>{if(window.bepSignedIn)validateActiveSession()});
+window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&window.bepSignedIn)validateActiveSession()});
 function stable(value){if(Array.isArray(value))return "["+value.map(stable).join(",")+"]";if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+stable(value[k])).join(",")+"}";return JSON.stringify(value)}
 let baseline=null,flushing=false,baselineWrite=Promise.resolve();async function loadBaseline(){await baselineWrite;if(baseline===null)baseline=await read(baselineKey())}
 function setBaseline(payload){baseline=payload&&typeof payload==="object"?JSON.parse(JSON.stringify(payload)):null;baselineWrite=write(baselineKey(),baseline);return baselineWrite}
