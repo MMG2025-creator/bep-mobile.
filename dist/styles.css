@@ -1537,3 +1537,11 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* Apply shortcut affordance to every metric button, including the savings and overdraft tiles. */
 .home-snapshot-grid>button{font:inherit;text-align:left;color:inherit;cursor:pointer}
 .home-snapshot-grid>button:focus-visible{outline:3px solid #80b99a;outline-offset:2px}
+
+
+/* Desktop homepage snapshot: balanced 3 columns x 2 rows; mobile remains 2 x 3. */
+@media(min-width:561px){
+ .home-snapshot-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+ .home-budget-available,.home-overdraft-mini{grid-column:auto;grid-row:auto}
+ .home-snapshot-grid>.home-snapshot-card{min-height:100px}
+}

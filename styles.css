@@ -1515,3 +1515,11 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .home-overdraft-card .tag.overdraft-expired{background:#fff0e9;color:#9a432c}
 .home-overdraft-link{margin-top:8px}
 @media(max-width:380px){.home-overdraft-card{padding:15px}.home-overdraft-summary{align-items:flex-start;flex-direction:column;gap:6px}}
+
+
+/* Desktop homepage snapshot: balanced 3 columns x 2 rows; mobile remains 2 x 3. */
+@media(min-width:561px){
+ .home-snapshot-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+ .home-budget-available,.home-overdraft-mini{grid-column:auto;grid-row:auto}
+ .home-snapshot-grid>.home-snapshot-card{min-height:100px}
+}
