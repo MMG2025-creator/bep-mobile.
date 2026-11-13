@@ -70,14 +70,16 @@
 }
 
 
-/* Authentication screen: compact layout, single-color BEP banner, no advice robot while signed out. */
-.auth-gate .auth-card{padding-top:18px!important;padding-bottom:12px!important}
-.auth-gate .auth-brand-banner{background:#145b46!important;border:0!important;box-shadow:none!important;margin:0 auto 12px!important;border-radius:12px!important}
-.auth-gate .auth-brand-banner svg{background:#145b46!important}
-.auth-gate .auth-switch{margin:10px 0!important}
-.auth-gate .auth-divider{margin:10px 0!important}
-.auth-gate .auth-card label{margin:10px 0!important}
-.auth-gate .auth-card .auth-forgot-link{min-height:22px!important;margin:0!important}
-.auth-gate .auth-card #authMessage:empty{display:none!important}
-#authGate:not([hidden]) ~ #bepAdviceDock{display:none!important;visibility:hidden!important;pointer-events:none!important}
-@media(max-width:480px){.auth-gate .auth-card{padding:16px 16px 10px!important}.auth-gate .auth-brand-banner{margin-bottom:10px!important}}
+/* Authentication form spacing and centered recovery action. */
+.auth-gate .auth-card{padding:22px 28px 20px!important;}
+.auth-gate .auth-brand-banner{width:100%;aspect-ratio:700/160;margin:0 auto 16px!important;border-radius:12px!important;overflow:hidden;background:#145b46!important;}
+.auth-gate .auth-brand-banner svg{display:block;width:100%;height:100%;}
+.auth-gate .auth-switch{margin:12px 0!important;gap:10px!important;}
+.auth-gate .google-login{margin-bottom:16px!important;min-height:54px;}
+.auth-gate .auth-divider{margin:16px 0!important;}
+.auth-gate .auth-card label{margin:13px 0!important;}
+.auth-gate .auth-card input{min-height:50px;}
+.auth-gate .auth-card form .primary{min-height:52px;margin-top:2px;}
+.auth-gate .auth-card .auth-forgot-link{display:flex;justify-content:center;align-items:center;width:100%;min-height:30px;margin:5px auto 0!important;text-align:center;}
+.auth-gate .auth-card #authMessage:empty{display:none!important;}
+@media(max-width:480px){.auth-gate{padding:14px 10px}.auth-gate .auth-card{padding:18px 16px 16px!important}.auth-gate .auth-brand-banner{margin-bottom:14px!important}.auth-gate .auth-card label{margin:11px 0!important}}
