@@ -93,8 +93,13 @@
 <div class="home-budget-metric home-snapshot-card"><span>Dépenses réelles</span><strong id="homeTotalActualExpenses">0,00 €</strong></div>
 <div class="home-budget-metric home-budget-savings home-snapshot-card"><span>Épargne prévue / mois</span><strong id="homeSavingsPlanned">0,00 €</strong></div>
 </div>
-<p id="homeFinancialDetail" class="home-financial-detail">Dépenses réelles du mois et dépassements pris en compte dans le disponible.</p>
 <div class="home-budget-action-row"><button type="button" class="secondary home-budget-link home-budget-cta" data-goto="budget">Voir mon budget <span aria-hidden="true">→</span></button></div>
+</article>
+<article class="card home-overdraft-card" aria-labelledby="homeOverdraftTitle">
+<div class="card-head"><div><p class="eyebrow">TRÉSORERIE</p><h2 id="homeOverdraftTitle">Découvert autorisé</h2></div><span class="tag" id="homeOverdraftStatus">À renseigner</span></div>
+<div class="home-overdraft-summary"><span>Plafond accordé par ma banque</span><strong id="homeOverdraftAmount">Non renseigné</strong></div>
+<p id="homeOverdraftValidity" class="hint">Renseigne le plafond accordé par ta banque pour le retrouver ici.</p>
+<button type="button" class="secondary full home-overdraft-link" data-goto="budget">Gérer mon découvert autorisé</button>
 </article>
 <article class="card home-coach-card">
 <div class="ai-card-head"><div><p class="eyebrow">ACCOMPAGNEMENT PERSONNALISÉ</p><h2>Conseil BEP</h2></div><span class="ai-label">Coach local</span></div>
@@ -480,7 +485,7 @@
 <script src="./financial-engine.js?v=1"></script>
 <script src="./offline-storage.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=98&bep=overdraft-permission-20261113"></script>
+<script src="./app.js?v=99&bep=home-overdraft-card-20261113"></script>
 <script src="./auth-recovery.js?v=1"></script>
 <script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
 <script src="./pwa.js?v=11"></script>

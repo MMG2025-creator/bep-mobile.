@@ -1501,3 +1501,17 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .treasury-credit-actions{display:flex;align-items:center;gap:9px;white-space:nowrap}
 .treasury-credit-actions button{border:0;background:#e9f4ef;color:#176b50;border-radius:8px;width:30px;height:30px;font-size:17px;font-weight:700}
 .treasury-credit-actions button[data-credit-delete]{background:#fff1ed;color:#a44936}
+
+
+/* Homepage: dedicated authorized-overdraft summary */
+.home-overdraft-card{margin:0 0 16px;padding:18px;border:1px solid #dce9e2;background:linear-gradient(145deg,#fff 0%,#f5faf7 100%)}
+.home-overdraft-card .card-head{align-items:center}
+.home-overdraft-card h2{margin:0;color:var(--forest)}
+.home-overdraft-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;padding:14px;border:1px solid #e2ece6;border-radius:13px;background:#f7fbf8}
+.home-overdraft-summary span{font-size:13px;color:var(--muted);line-height:1.4}
+.home-overdraft-summary strong{font:800 clamp(17px,4vw,22px) Manrope,sans-serif;color:var(--forest);text-align:right}
+.home-overdraft-card .hint{font-size:13px;line-height:1.5}
+.home-overdraft-card .tag.overdraft-active{background:#e8f4ed;color:#176b50}
+.home-overdraft-card .tag.overdraft-expired{background:#fff0e9;color:#9a432c}
+.home-overdraft-link{margin-top:8px}
+@media(max-width:380px){.home-overdraft-card{padding:15px}.home-overdraft-summary{align-items:flex-start;flex-direction:column;gap:6px}}
