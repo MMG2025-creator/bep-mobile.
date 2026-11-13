@@ -769,7 +769,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
  const loader=document.getElementById("bepStartupLoader");
  const knownLocalUser=!!(window.BEPOffline&&window.BEPOffline.hasKnownUser());
  const sessionRevoked=!!(window.BEPOffline&&window.BEPOffline.isRevoked());
- if(sessionRevoked){window.bepSignedIn=false;window.bepOfflineMode=false;gate.hidden=false;if(loader)loader.hidden=true;return;}
+ if(sessionRevoked){window.bepSignedIn=false;window.bepOfflineMode=false;gate.hidden=false;state={...defaults};render();if(loader)loader.hidden=true;return;}
  if(knownLocalUser){
   window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;tab(getSavedTab());render();window.dispatchEvent(new Event("bep:auth-ready"));if(loader)loader.hidden=true;
   const localSnapshot=localStorage.getItem(DB);
@@ -800,7 +800,7 @@ const oauthResult=new URLSearchParams(window.location.search).get("login");const
   try{
    const response=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});
    const auth=await response.json();
-   if(auth.user){window.bepSignedIn=true;const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});if(!dataResponse.ok)throw Error("Impossible de charger tes données.");const remote=await dataResponse.json();state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){window.BEPOffline.markKnownUser(auth.user.id||auth.user.email);window.BEPOffline.clearRevocationAfterAuthentication(auth.user.id||auth.user.email);await window.BEPOffline.setBaseline(remote.payload||{})}await persistMigratedIncomeState();window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;tab(getSavedTab());try{const p=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(p.ok){const profile=await p.json();coachFirstName=String(profile.user?.firstName||"").trim()}}catch{}}
+   if(auth.user){const identity=String(auth.user.id||auth.user.email||"authenticated");if(window.BEPOffline?.isRevoked()&&!window.BEPOffline.clearRevocationAfterAuthentication(identity)){window.bepSignedIn=false;window.bepOfflineMode=false;gate.hidden=false;state={...defaults};render();if(loader)loader.hidden=true;return;}window.BEPOffline?.markKnownUser(identity);window.bepSignedIn=true;const dataResponse=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});if(!dataResponse.ok)throw Error("Impossible de charger tes données.");const remote=await dataResponse.json();state={...defaults,...(remote.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){window.BEPOffline.markKnownUser(auth.user.id||auth.user.email);window.BEPOffline.clearRevocationAfterAuthentication(auth.user.id||auth.user.email);await window.BEPOffline.setBaseline(remote.payload||{})}await persistMigratedIncomeState();window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;tab(getSavedTab());try{const p=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(p.ok){const profile=await p.json();coachFirstName=String(profile.user?.firstName||"").trim()}}catch{}}
    else gate.hidden=false;
   }catch(error){gate.hidden=false;authMessage.textContent="Connexion au serveur impossible. Connecte-toi une première fois avec Internet pour activer le mode hors ligne."}
   render();if(loader)loader.hidden=true;
