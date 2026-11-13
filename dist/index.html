@@ -404,14 +404,24 @@
   <dialog class="settings-modal" id="profileSettingsDialog" aria-labelledby="profileSettingsDialogTitle">
     <div class="settings-modal-window">
       <header class="settings-modal-header"><div><p class="eyebrow">MON PROFIL</p><h2 id="profileSettingsDialogTitle">Informations personnelles</h2></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
-      <p class="hint" id="profileEmail"></p>
-      <form id="profileForm">
+      <section id="profileReadView" class="settings-profile-read">
+        <p class="hint" id="profileEmail"></p>
+        <div class="field"><label>Prénom</label><div class="settings-profile-value" id="profileFirstNameView">—</div></div>
+        <div class="field"><label>Nom</label><div class="settings-profile-value" id="profileLastNameView">—</div></div>
+        <div class="field"><label>Téléphone</label><div class="settings-profile-value" id="profilePhoneView">Non renseigné</div></div>
+        <button type="button" class="primary full" id="editProfileBtn">Modifier mon profil</button>
+      </section>
+      <form id="profileForm" hidden>
         <div class="profile-name-row">
           <div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div>
           <div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div>
         </div>
         <div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div>
-        <button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p>
+        <div class="settings-modal-actions">
+          <button type="button" class="secondary full" id="cancelProfileEditBtn">Annuler</button>
+          <button type="submit" class="primary full" id="saveProfileBtn">Enregistrer mon profil</button>
+        </div>
+        <p class="hint" id="profileStatus" role="status"></p>
       </form>
     </div>
   </dialog>
@@ -419,12 +429,20 @@
   <dialog class="settings-modal" id="loginMethodsDialog" aria-labelledby="loginMethodsDialogTitle">
     <div class="settings-modal-window">
       <header class="settings-modal-header"><div><p class="eyebrow">SÉCURITÉ DU COMPTE</p><h2 id="loginMethodsDialogTitle">Méthodes de connexion</h2></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
-      <p class="hint">Associe Google à ton compte ou demande un lien sécurisé pour renouveler ton mot de passe.</p>
-      <div class="field"><label for="accountProofInput">Mot de passe actuel (compte e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div>
-      <button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p>
+      <p class="hint">Gère les moyens d'accès à ton compte BEP.</p>
+      <section class="settings-login-section">
+        <div class="settings-login-heading"><strong>Association Google</strong><p class="hint">Associe ton compte Google à ton compte BEP.</p></div>
+        <div class="field"><label for="accountProofInput">Mot de passe actuel (compte e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="password" inputmode="text" autocapitalize="off" autocomplete="current-password" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div>
+        <button type="button" class="primary full" id="linkGoogleBtn">Associer mon compte Google</button>
+        <p class="hint" id="googleLinkStatus" role="status"></p>
+      </section>
       <div class="settings-modal-divider"></div>
-      <div class="field"><label for="passwordResetEmail">Adresse e-mail du compte</label><input id="passwordResetEmail" type="email" autocomplete="email" required></div>
-      <button type="button" class="secondary full" id="requestPasswordResetBtn">Recevoir un lien de modification du mot de passe</button><p class="hint" id="passwordResetStatus" role="status" aria-live="polite"></p>
+      <section class="settings-login-section">
+        <div class="settings-login-heading"><strong>Mot de passe</strong><p class="hint">Reçois un lien sécurisé pour modifier ton mot de passe.</p></div>
+        <div class="field"><label for="passwordResetEmail">Adresse e-mail du compte</label><input id="passwordResetEmail" type="email" autocomplete="email" required></div>
+        <button type="button" class="secondary full" id="requestPasswordResetBtn">Recevoir un lien de modification du mot de passe</button>
+        <p class="hint" id="passwordResetStatus" role="status" aria-live="polite"></p>
+      </section>
     </div>
   </dialog>
 
