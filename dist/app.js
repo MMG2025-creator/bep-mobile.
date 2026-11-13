@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
-const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[]};
+const DB=window.BEP_DEMO_LOCAL?"bep-mobile-demo-v1":"bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[]};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
 if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
 if(!Array.isArray(state.coachProfile))state.coachProfile=[];
@@ -20,7 +20,7 @@ function availableBeforeSavings(){return financialPosition({goals:[]}).available
 function rate(excludeGoalId){const goals=(state.goals||[]).filter(g=>!g.archivedAt&&g.id!==excludeGoalId),free=Math.max(0,financialPosition({goals}).available),r=totalIncome()?free/totalIncome()*100:0;return r<5?0:r<15?5:r<25?10:r<35?15:20}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function dispatchLegacyBudgetChanged(){window.dispatchEvent(new CustomEvent("bep:legacy-budget-changed",{detail:{income:state.income,incomes:state.incomes,budgets:state.budgets,goals:state.goals}}))}
-function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return false}render();if(window.BEPOffline){window.BEPOffline.enqueue(state).then(()=>{if(!window.bepSignedIn)notify("Données enregistrées sur cet appareil. Synchronisation à la reconnexion.");}).catch(()=>notify("Données conservées en mémoire locale, mais la file de synchronisation est indisponible."));}else if(window.bepSignedIn){fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);dispatchLegacyBudgetChanged()}).catch(()=>notify("Données conservées sur cet appareil, synchronisation à vérifier."));}else dispatchLegacyBudgetChanged();return true}
+function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return false}render();if(window.BEP_DEMO_LOCAL){dispatchLegacyBudgetChanged();return true}if(window.BEPOffline){window.BEPOffline.enqueue(state).then(()=>{if(!window.bepSignedIn)notify("Données enregistrées sur cet appareil. Synchronisation à la reconnexion.");}).catch(()=>notify("Données conservées en mémoire locale, mais la file de synchronisation est indisponible."));}else if(window.bepSignedIn){fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);dispatchLegacyBudgetChanged()}).catch(()=>notify("Données conservées sur cet appareil, synchronisation à vérifier."));}else dispatchLegacyBudgetChanged();return true}
 window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const d=new Date(),localMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
   if(monthKey!==localMonth||!Array.isArray(monthlyItems))return false;
@@ -38,9 +38,9 @@ window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   };
   nextState.income=nextIncome;
   try{localStorage.setItem(DB,JSON.stringify(nextState))}
-  catch(e){throw Error("Le serveur a été synchronisé, mais l’enregistrement local a échoué. Recharge les données depuis ton compte.")};
+  catch(e){throw Error("L’enregistrement local a échoué. Vérifie l’espace disponible sur cet appareil.")};
   state=nextState;
-  if(window.BEPOffline)await window.BEPOffline.enqueue(nextState);
+  if(window.BEPOffline&&!window.BEP_DEMO_LOCAL)await window.BEPOffline.enqueue(nextState);
   render();
   return true;
 };
@@ -735,6 +735,7 @@ window.BEPApp={
  finishAuth,
  initializeAuthenticatedSession,
  enableOfflineMode(){window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));render()},
+ enableDemoMode(){window.bepSignedIn=false;window.bepOfflineMode=true;window.bepDemoMode=true;document.documentElement.classList.add("bep-demo-local");gate.hidden=true;const profileForm=document.getElementById("profileForm");if(profileForm?.closest(".card"))profileForm.closest(".card").hidden=true;const accountSettings=document.getElementById("accountSettings");if(accountSettings)accountSettings.hidden=true;const aiSettings=document.getElementById("aiAdvancedSettings");if(aiSettings)aiSettings.hidden=true;aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};window.dispatchEvent(new Event("bep:auth-ready"));tab(getSavedTab());render()},
  showLogin(){gate.hidden=false;window.BEPAuthPage.setMode("login",true)}
 };
 
