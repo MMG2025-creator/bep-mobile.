@@ -113,3 +113,14 @@
 .settings-modal .secondary{border:1px solid #cbded2;background:#fff;color:#174c3c}
 .settings-modal form[hidden],.settings-profile-read[hidden]{display:none!important}
 @media(max-width:480px){.settings-modal-actions{grid-template-columns:1fr}.settings-modal-window{padding:18px}}
+
+/* Green heading and verified connection status for the login methods modal */
+.settings-modal-header-green{margin:-22px -22px 18px;padding:20px 22px;background:#145b46;border-radius:22px 22px 0 0;color:#fff}
+.settings-modal-header-green .eyebrow,.settings-modal-header-green h2,.settings-modal-header-green .hint{color:#fff}
+.settings-modal-header-green .eyebrow{opacity:.82}
+.settings-modal-header-green .hint{margin:7px 0 0;opacity:.88}
+.settings-modal-header-green .settings-modal-close{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff}
+.settings-account-status{display:grid;gap:10px;margin:0 0 18px;padding:14px 16px;border:1px solid #dce8e1;border-radius:14px;background:#fff}
+.settings-account-status strong{display:block;color:#173c32;font:800 13px Manrope,sans-serif}
+.settings-account-status .hint{margin:4px 0 0;overflow-wrap:anywhere}
+@media(max-width:480px){.settings-modal-header-green{margin:-18px -18px 16px;padding:18px}}
