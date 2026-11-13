@@ -81,3 +81,34 @@ La fonction `render()` reconstruit plusieurs listes et panneaux, dont les achats
 
 ## Limites de cet audit
 Il s'agit d'un audit statique du code et des métadonnées GitHub. Les tailles indiquées sont les tailles des fichiers dans Git, pas les tailles compressées réellement transférées. Les mesures de navigateur, les tests de parcours authentifiés et le profilage CPU du navigateur restent à effectuer dans un environnement de développement actif.
+
+
+## Phase 1 — premier chargement différé (branche de développement uniquement)
+
+Date : 2026-11-13
+
+### Changement réalisé
+- Retrait du chargement initial de `receipt-ocr.js` dans `index.html` et `dist/index.html`.
+- Ajout d'un chargeur à la demande dans `app.js` et `dist/app.js` : le fichier est téléchargé uniquement au premier import d'une photo de justificatif.
+- La promesse de chargement est partagée pour éviter plusieurs téléchargements simultanés ; en cas d'échec, elle est réinitialisée pour permettre une nouvelle tentative.
+- Le chargement de Tesseract reste lui aussi déclenché uniquement pendant l'import OCR. Le traitement PDF existant n'a pas été modifié.
+- Incrément de version de l'URL de `app.js` à `v=97` dans les deux index pour éviter de réutiliser l'ancien script en cache.
+- Les modifications sont limitées aux fichiers racine et `dist/` de cette branche.
+
+### Vérifications effectuées
+- Vérification syntaxique JavaScript par compilation V8 de `app.js`, `dist/app.js` et `receipt-ocr.js` : OK.
+- Vérification des deux index : aucune balise script ne charge directement `receipt-ocr.js` au démarrage.
+- Vérification des deux versions de `app.js` : le chargement différé est appelé dans le parcours d'import photo.
+- Comparaison GitHub `main...perf/bep-startup-optimization-2026-11-13` : branche en avance de 5 commits, sans retard ; les seuls fichiers applicatifs modifiés sont les deux index et les deux fichiers `app.js`.
+- Aucun changement sur `main`, aucun merge ou pull request, aucun déploiement Render, aucune action sur la base de données.
+
+### Résultat attendu et limites
+Le fichier local `receipt-ocr.js` (7 041 octets dans Git avant modification) n'est plus demandé lors de l'ouverture initiale. Il sera demandé lors du premier import de photo de justificatif. Le gain réel sur le temps de démarrage doit encore être mesuré dans le navigateur ; il ne faut pas assimiler la taille Git à la taille transférée compressée.
+
+Les tests dynamiques de connexion, import photo, OCR, PDF et parcours complet restent à effectuer. Le staging étant suspendu, aucune validation navigateur ou API n'a été prétendue. Réactivation du staging à demander avant ces tests.
+
+### État
+- Code isolé sur la branche de développement : réalisé.
+- Contrôle syntaxique et statique : réalisé.
+- Tests fonctionnels navigateur/staging : en attente.
+- Production : inchangée.
