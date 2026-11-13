@@ -90,9 +90,10 @@
 <div class="home-budget-metric home-snapshot-card"><span>Revenus mensuels</span><strong id="homeTotalIncome">0,00 €</strong></div>
 <div class="home-budget-metric home-snapshot-card"><span>Charges mensuelles</span><strong id="homeTotalCharges">0,00 €</strong></div>
 <div class="home-budget-metric home-budget-available home-snapshot-card"><span>Reste disponible</span><strong id="homeAvailable">0,00 €</strong></div>
+<div class="home-budget-metric home-snapshot-card"><span>Dépenses réelles</span><strong id="homeTotalActualExpenses">0,00 €</strong></div>
 <div class="home-budget-metric home-budget-savings home-snapshot-card"><span>Épargne prévue / mois</span><strong id="homeSavingsPlanned">0,00 €</strong></div>
 </div>
-<p id="homeFinancialDetail" class="home-financial-detail">Épargne prévue et dépenses hors enveloppe prises en compte.</p>
+<p id="homeFinancialDetail" class="home-financial-detail">Dépenses réelles du mois et dépassements pris en compte dans le disponible.</p>
 <div class="home-budget-action-row"><button type="button" class="secondary home-budget-link home-budget-cta" data-goto="budget">Voir mon budget <span aria-hidden="true">→</span></button></div>
 </article>
 <article class="card home-coach-card">
@@ -141,6 +142,15 @@
       <div><span>Épargne prévue</span><strong id="monthlyBudgetSavingsTotal">0,00 €</strong></div>
       <div><span>Disponible prévisionnel</span><strong id="monthlyBudgetRemaining">0,00 €</strong></div>
     </div>
+    <label class="monthly-budget-search-label" for="monthlyBudgetSearch">Rechercher dans ce mois</label>
+    <input id="monthlyBudgetSearch" class="monthly-budget-search" type="search" placeholder="Libellé ou catégorie…">
+    <details id="monthlyBudgetActuals" class="monthly-budget-actuals">
+      <summary><span>Dépenses réellement effectuées</span><b id="monthlyBudgetActualTotal">0,00 €</b></summary>
+      <small id="monthlyBudgetActualCount">0 dépense(s) réelle(s)</small>
+      <small id="monthlyBudgetActualImpact">Impact sur le disponible : 0,00 €</small>
+      <p id="monthlyBudgetActualError" class="monthly-budget-actual-error" hidden></p>
+      <div id="monthlyBudgetActualRows"></div>
+    </details>
     <div id="monthlyBudgetItems" class="monthly-budget-items"></div>
     <form id="monthlyBudgetItemForm" class="monthly-budget-item-form">
       <h3>Ajouter une ligne</h3>
