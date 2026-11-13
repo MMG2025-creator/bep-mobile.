@@ -136,7 +136,7 @@ test("real HTTP authentication journeys enforce one active session and preserve 
       assert.equal(registered.status, 201, JSON.stringify(registered.data));
       assert.equal(registered.data.verificationRequired, true);
       const mail = emailMessages.findLast(message => message.email === email && message.type === "email_verification");
-      assert.ok(mail && /^\\d{6}$/.test(mail.code), "verification code must be sent to the isolated mail stub");
+      assert.ok(mail && /^\d{6}$/.test(mail.code), "verification code must be sent to the isolated mail stub");
       const wrongCode = mail.code === "000000" ? "000001" : "000000";
       const rejected = await call("/api/auth/verify-email", "POST", { email, code: wrongCode });
       assert.equal(rejected.status, 400);
