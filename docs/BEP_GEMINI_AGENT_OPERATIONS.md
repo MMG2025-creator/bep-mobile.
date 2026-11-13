@@ -15,3 +15,13 @@ La limite est de 8 appels Gemini par jour par défaut (maximum configurable : 50
 Tables : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates`, `bep_agent_daily_usage`, `bep_agent_metrics`.
 
 Ne jamais activer l'agent en production avant d'avoir vérifié la clé Gemini dédiée, la configuration de facturation gratuite et le plan Render. Les propositions documentaires doivent être examinées avant toute publication.
+
+## Validation humaine des propositions
+
+Configurer `BEP_AGENT_ADMIN_USER_IDS` avec les identifiants BEP des administrateurs autorisés, séparés par des virgules. Sans cette allowlist, les routes d'administration renvoient 403.
+
+- `GET /api/admin/bep-agent/overview` : exécutions et métriques agrégées.
+- `GET /api/admin/bep-agent/candidates?status=pending` : propositions en attente.
+- `POST /api/admin/bep-agent/candidates/:id/review` avec `{"decision":"approve"}` ou `{"decision":"reject"}`.
+
+Une approbation publie une surcouche dans `bep_agent_approved_knowledge`, lue par le moteur RAG. Les données seed d'origine ne sont pas écrasées. Une révocation ultérieure peut être réalisée en rejetant les propositions suivantes ; toute décision d'approbation reste humaine.
