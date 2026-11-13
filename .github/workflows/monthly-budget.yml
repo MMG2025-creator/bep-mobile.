@@ -104,7 +104,7 @@ jobs:
           done
 
           extract_assets() {
-            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)[.](js|css)[?]v=[^"]+"' "$1" |
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|app|monthly-budget-ui|spend-experience)[.](js|css)[?]v=[^"]+"' "$1" |
               sed -E 's/^[^"]*"//; s/"$//' |
               sort
           }
