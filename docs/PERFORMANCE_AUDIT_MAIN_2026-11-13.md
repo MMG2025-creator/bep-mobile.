@@ -1,0 +1,83 @@
+# BEP — Audit de performance du code main
+Date : 2026-11-13
+Branche de référence : `main`
+Branche isolée : `perf/bep-startup-optimization-2026-11-13`
+
+## Périmètre et sécurité
+- Audit statique en lecture seule du dépôt GitHub.
+- Aucun fichier applicatif de `main` modifié.
+- Aucune modification, variable d'environnement ou commande de déploiement sur Render.
+- La production Render `bep-mobile` publie le répertoire `dist/`. L'API de production reste `bep-v2-api`.
+- Les services de staging observés sont suspendus. Ne pas les réactiver sans autorisation explicite.
+- Cette branche est créée depuis `main` pour isoler le travail. Elle n'est pas configurée comme branche de déploiement de la production.
+
+## Synthèse
+Les principaux leviers identifiés sont le poids du shell initial, l'exécution JavaScript au démarrage, les appels d'authentification séquentiels et la politique de cache des ressources statiques.
+
+## Constats vérifiés
+
+### 1. Ressources initiales volumineuses
+Tailles GitHub des sources (octets, non compressés) :
+- `index.html` : 69 863
+- `styles.css` : 103 735
+- `app.js` : 142 183
+- `spend-experience.css` : 41 016
+- `spend-experience.js` : 27 850
+- `monthly-budget-ui.js` : 27 656
+- `receipt-ocr.js` : 7 064
+
+Le HTML publié dans `dist/index.html` fait 74 240 octets. Les fichiers publiés ne sont pas strictement identiques aux sources racine : `dist/styles.css` fait 111 346 octets contre 103 735 à la racine ; `dist/ui-polish.css` fait 21 730 octets contre 10 219 à la racine. Les références de version CSS divergent également entre les deux index.
+
+**Conséquence :** toute optimisation doit identifier la source de vérité et synchroniser explicitement la sortie `dist/`. Modifier uniquement un fichier racine pourrait ne rien changer à l'interface publiée.
+
+### 2. CSS bloquant le premier rendu
+L'index publié référence plusieurs feuilles de style dans le `<head>`, dont `styles.css`, `ui-polish.css`, `spend-experience.css`, `spend-clean-ui.css` et `auth-page.css`.
+
+**Piste :** mesurer le CSS critique réellement nécessaire à l'écran initial, puis différer les styles propres aux rubriques qui ne sont pas visibles au démarrage. Ne pas déplacer de CSS avant d'avoir vérifié les dépendances et les flashs de mise en page.
+
+### 3. JavaScript chargé au démarrage
+L'index publié charge immédiatement plusieurs scripts classiques, notamment `app.js`, `receipt-ocr.js`, `monthly-budget-ui.js`, `spend-experience.js` et `spend-clean-ui.js`.
+
+`app.js` contient notamment les fonctions d'import PDF et d'OCR image. Les bibliothèques externes PDF.js et Tesseract sont déjà chargées à la demande par des fonctions dédiées ; il faut préserver ce comportement.
+
+**Piste :** séparer progressivement les fonctions réellement différables en modules chargés à la demande, sans casser l'ordre des dépendances globales, les événements BEP, l'offline-first ou les formulaires.
+
+### 4. Authentification initiale avec appels réseau en chaîne
+Au démarrage, le code de `app.js` effectue successivement :
+1. `GET /api/auth/status`
+2. si connecté, `GET /api/me`
+3. puis `GET /api/data`
+
+La récupération du profil ne semble utilisée ici que pour renseigner le prénom du coach. Cette chaîne augmente le temps d'attente perçu lorsque la session est active.
+
+**Piste :** supprimer les appels redondants ou paralléliser uniquement les lectures indépendantes, après vérification des dépendances de session et du rendu. Ne pas modifier le contrat d'authentification sans tests dédiés.
+
+### 5. Politique de cache statique trop restrictive
+Le fichier `_headers` applique globalement :
+`Cache-Control: no-cache, no-store, must-revalidate`.
+Quelques exceptions existent pour `app.js`, `styles.css`, `pwa.js` et `auth-recovery.js`, mais les autres ressources restent soumises à la règle générale.
+
+**Piste :** avec des URL versionnées par contenu, définir une politique de cache longue pour les assets immuables et conserver une revalidation stricte pour `index.html` et `sw.js`. Vérifier auparavant le mécanisme de versionnement et le service worker ; le code actuel indique que l'enregistrement du service worker est désactivé dans `app.js`.
+
+### 6. Rendu initial potentiellement coûteux
+La fonction `render()` reconstruit plusieurs listes et panneaux, dont les achats (jusqu'à 3 000 éléments), les revenus, les charges, les objectifs et les graphiques. Elle est appelée au démarrage.
+
+**Piste :** mesurer le coût réel sur des jeux de données de taille représentative. Ensuite, éviter de recalculer ou reconstruire les rubriques non visibles et préférer des mises à jour ciblées. Ne pas réduire arbitrairement la limite fonctionnelle des achats.
+
+## Ordre recommandé des travaux
+1. Établir un vrai profil navigateur (mobile + desktop) : LCP, INP, CLS, TBT, poids transféré, nombre de requêtes, temps d'exécution JS et waterfall réseau.
+2. Clarifier la chaîne de publication racine → `dist/` et ajouter un contrôle de cohérence des fichiers publiés.
+3. Optimiser la séquence d'authentification et le rendu initial, avec tests de non-régression.
+4. Différer les modules et CSS de rubriques, un par un.
+5. Corriger la politique de cache après vérification du versionnement des assets.
+6. Rejouer les tests fonctionnels et comparer les mesures avant/après.
+
+## Critères d'acceptation
+- Aucun changement de production ni déploiement depuis cette branche.
+- Pas de régression connexion/inscription, session, mode hors ligne, budget, épargne, dépenses, OCR/PDF ou coach.
+- Les ressources différées se chargent correctement à la première ouverture de leur rubrique.
+- Le temps de démarrage et le LCP s'améliorent sur un profil réseau mobile reproductible.
+- Les données et les contrats API restent inchangés sauf décision séparée documentée.
+
+## Limites de cet audit
+Il s'agit d'un audit statique du code et des métadonnées GitHub. Les tailles indiquées sont les tailles des fichiers dans Git, pas les tailles compressées réellement transférées. Les mesures de navigateur, les tests de parcours authentifiés et le profilage CPU du navigateur restent à effectuer dans un environnement de développement actif.
