@@ -34,7 +34,7 @@ async function validateActiveSession(){
 }
 window.addEventListener("pageshow",()=>{if(window.bepSignedIn)validateActiveSession()});
 window.addEventListener("focus",()=>{if(window.bepSignedIn)validateActiveSession()});
-window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&window.bepSignedIn)validateActiveSession()});
+if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&window.bepSignedIn)validateActiveSession()});
 function stable(value){if(Array.isArray(value))return "["+value.map(stable).join(",")+"]";if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+stable(value[k])).join(",")+"}";return JSON.stringify(value)}
 let baseline=null,flushing=false,baselineWrite=Promise.resolve();async function loadBaseline(){await baselineWrite;if(baseline===null)baseline=await read(baselineKey())}
 function setBaseline(payload){baseline=payload&&typeof payload==="object"?JSON.parse(JSON.stringify(payload)):null;baselineWrite=write(baselineKey(),baseline);return baselineWrite}
@@ -46,6 +46,6 @@ const saved=await fetch((window.BEP_API_BASE||"https://bep-v2-api.onrender.com")
 }catch(error){window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));return false}finally{flushing=false}}
 async function refreshAuthAndSync(){if(!navigator.onLine)return;try{const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");const r=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)return;const auth=await r.json();if(!auth.user)return;window.bepSignedIn=true;const identity=String(auth.user.id||auth.user.email||"authenticated");if(localStorage.getItem(USER_KEY)!==identity){localStorage.setItem(USER_KEY,identity);await loadBaseline()}await flush()}catch{}}
 window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),refreshAuthAndSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),markKnownUser:id=>{try{localStorage.setItem(USER_KEY,String(id||"authenticated"))}catch{}},forgetKnownUser,resolveStartupMode,hasUsableSnapshot};
-window.addEventListener("online",()=>{refreshAuthAndSync()});
+window.addEventListener("online",()=>{validateActiveSession().then(valid=>{if(valid)refreshAuthAndSync()})});
 window.addEventListener("bep:offline-conflict",()=>{window.dispatchEvent(new CustomEvent("bep:toast",{detail:{message:"Synchronisation suspendue : les données du compte ont changé sur un autre appareil. Tes données locales sont préservées."}}))});
 })();
