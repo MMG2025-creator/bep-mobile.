@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
-const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[]};
+const DB=window.BEP_DEMO_LOCAL?"bep-mobile-demo-v1":"bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[]};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
 if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
 if(!Array.isArray(state.coachProfile))state.coachProfile=[];
@@ -735,7 +735,7 @@ window.BEPApp={
  finishAuth,
  initializeAuthenticatedSession,
  enableOfflineMode(){window.bepSignedIn=false;window.bepOfflineMode=true;gate.hidden=true;window.dispatchEvent(new Event("bep:auth-ready"));render()},
- enableDemoMode(){window.bepSignedIn=false;window.bepOfflineMode=true;window.bepDemoMode=true;gate.hidden=true;aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};window.dispatchEvent(new Event("bep:auth-ready"));tab(getSavedTab());render()},
+ enableDemoMode(){window.bepSignedIn=false;window.bepOfflineMode=true;window.bepDemoMode=true;document.documentElement.classList.add("bep-demo-local");gate.hidden=true;const profileForm=document.getElementById("profileForm");if(profileForm?.closest(".card"))profileForm.closest(".card").hidden=true;const accountSettings=document.getElementById("accountSettings");if(accountSettings)accountSettings.hidden=true;aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};window.dispatchEvent(new Event("bep:auth-ready"));tab(getSavedTab());render()},
  showLogin(){gate.hidden=false;window.BEPAuthPage.setMode("login",true)}
 };
 
