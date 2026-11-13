@@ -137,9 +137,9 @@ function normalizeTreasury(){
  state.treasury={
   overdraftLimit:Math.max(0,Number(t.overdraftLimit)||0),
   usedAmount:Math.max(0,Number(t.usedAmount)||0),
-  validUntil:/^\\d{4}-\\d{2}-\\d{2}$/.test(String(t.validUntil||""))?t.validUntil:"",
+  validUntil:/^\d{4}-\d{2}-\d{2}$/.test(String(t.validUntil||""))?t.validUntil:"",
   alertPercent:Math.min(100,Math.max(1,Number(t.alertPercent)||80)),
-  expectedCredits:Array.isArray(t.expectedCredits)?t.expectedCredits.filter(x=>x&&typeof x==="object").map(x=>({id:String(x.id||crypto.randomUUID()),label:String(x.label||"Prime ou revenu attendu").slice(0,100),amount:Math.max(0,Number(x.amount)||0),date:/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.date||""))?x.date:"",status:x.status==="received"?"received":"planned"})):[]
+  expectedCredits:Array.isArray(t.expectedCredits)?t.expectedCredits.filter(x=>x&&typeof x==="object").map(x=>({id:String(x.id||crypto.randomUUID()),label:String(x.label||"Prime ou revenu attendu").slice(0,100),amount:Math.max(0,Number(x.amount)||0),date:/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||""))?x.date:"",status:x.status==="received"?"received":"planned"})):[]
  };
 }
 function renderTreasury(){
@@ -370,15 +370,15 @@ input.addEventListener("focus",show);input.addEventListener("input",show);input.
 function fillPurchase(data){if(data.label&&$("merchant")){$("merchant").value=data.label.slice(0,70);$("merchant").dispatchEvent(new Event("input",{bubbles:true}))}if(data.notes&&$("purchaseNotes"))$("purchaseNotes").value=data.notes.slice(0,180);if(data.notes&&$("purchaseCategory")){const n=data.notes.toLowerCase();if(/chauss|basket|sneaker|vêtement|textile|tenue/.test(n))$("purchaseCategory").value="Mode";else if(/ballon|raquette|fitness|équipement sportif/.test(n))$("purchaseCategory").value="Loisirs"}if(data.city&&$("city"))$("city").value=data.city.slice(0,60);if(data.amount>0&&$("purchaseAmount"))$("purchaseAmount").value=Number(data.amount).toFixed(2);if(data.category&&$("purchaseCategory"))$("purchaseCategory").value=data.category;if(data.need&&$("need"))$("need").value=data.need;if(data.psychology&&$("psychology"))$("psychology").value=data.psychology;if(data.moodAfter&&$("moodAfter"))$("moodAfter").value=data.moodAfter;notify("Champs détectés : vérifie et complète avant l’enregistrement.")}
 function parsePurchaseText(text){
 const raw=String(text||"").replace(/\\s+/g," ").trim();
-const amountMatches=[...raw.matchAll(/(?:total(?:\\s+(?:ttc|à payer))?|net\\s+à\\s+payer|montant\\s+payé|payé|pour|prix)?\\s*[:=]?\\s*(\\d{1,5}(?:[ .]\\d{3})*(?:[,.]\\d{1,2})?)\\s*(?:€|euros?|eur)?/gi)];
-let amount=0;if(amountMatches.length){const m=amountMatches[amountMatches.length-1];amount=Number(m[1].replace(/[ .](?=\\d{3}(?:[,.]|$))/g,"").replace(",", "."))||0}
+const amountMatches=[...raw.matchAll(/(?:total(?:\\s+(?:ttc|à payer))?|net\\s+à\\s+payer|montant\\s+payé|payé|pour|prix)?\\s*[:=]?\\s*(\d{1,5}(?:[ .]\d{3})*(?:[,.]\d{1,2})?)\\s*(?:€|euros?|eur)?/gi)];
+let amount=0;if(amountMatches.length){const m=amountMatches[amountMatches.length-1];amount=Number(m[1].replace(/[ .](?=\d{3}(?:[,.]|$))/g,"").replace(",", "."))||0}
 const brands=[["Carrefour",/\\bcarrefour(?:\\s+(?:market|city|contact|express))?\\b/i],["Auchan",/\\bauchan\\b/i],["E.Leclerc",/\\b(?:e\\.?\\s*leclerc|leclerc)\\b/i],["Lidl",/\\blidl\\b/i],["Aldi",/\\baldi\\b/i],["Monoprix",/\\bmonoprix\\b/i],["Franprix",/\\bfranprix\\b/i],["Intermarché",/\\bintermarch[eé]\\b/i],["Super U",/\\bsuper\\s*u\\b/i],["Casino",/\\bcasino\\b/i],["Picard",/\\bpicard\\b/i],["Fnac",/\\bfnac\\b/i],["Darty",/\\bdarty\\b/i],["IKEA",/\\bikea\\b/i],["Leroy Merlin",/\\bleroy\\s*merlin\\b/i],["Decathlon",/\\bdecathlon\\b/i],["Zara",/\\bzara\\b/i],["Uniqlo",/\\buniqlo\\b/i],["H&M",/\\bh\\s*&\\s*m\\b/i]];
 const found=brands.find(x=>x[1].test(raw));const label=found?found[0]:"";
 let cleaned=raw.replace(/\\bje vais acheter\\b/gi," ").replace(/\\bj[’']ach[eè]te\\b/gi," ").replace(/\\b(?:acheter|ach[eè]ter|chez|au magasin|magasin|pour|au prix de|prix de|co[uû]te|co[uû]t[eé])\\b/gi," ");
 if(found)cleaned=cleaned.replace(found[1]," ");
-cleaned=cleaned.replace(/\\b\\d{1,5}(?:[,.]\\d{1,2})?\\s*(?:€|euros?|eur)?\\b/gi," ").replace(/\\b(?:euros?|eur)\\b/gi," ").replace(/[,.!?;:]+/g," ").replace(/\\s+/g," ").trim();
+cleaned=cleaned.replace(/\\b\d{1,5}(?:[,.]\d{1,2})?\\s*(?:€|euros?|eur)?\\b/gi," ").replace(/\\b(?:euros?|eur)\\b/gi," ").replace(/[,.!?;:]+/g," ").replace(/\\s+/g," ").trim();
 const notes=cleaned.replace(/^(?:des?|les?|de|du|d)\\s+/i,"").replace(/\\s+(?:à|dans|sur)\\s+(?:bois colombes|paris|antony)\\b.*$/i,"").trim().slice(0,180);
-let city="";const cm=raw.match(/\\b(?:à|dans la ville de)\\s+([A-ZÀ-Ÿ][\\wÀ-ÿ'’-]*(?:[- ][A-ZÀ-Ÿ][\\wÀ-ÿ'’-]*){0,3})(?=\\s+(?:pour|total|coût|coûte)|\\s+\\d|$)/i);if(cm&&(!label||cm[1].toLowerCase()!==label.toLowerCase()))city=cm[1].replace(/[,.!?]+$/,"").trim().slice(0,60);
+let city="";const cm=raw.match(/\\b(?:à|dans la ville de)\\s+([A-ZÀ-Ÿ][\\wÀ-ÿ'’-]*(?:[- ][A-ZÀ-Ÿ][\\wÀ-ÿ'’-]*){0,3})(?=\\s+(?:pour|total|coût|coûte)|\\s+\d|$)/i);if(cm&&(!label||cm[1].toLowerCase()!==label.toLowerCase()))city=cm[1].replace(/[,.!?]+$/,"").trim().slice(0,60);
 let category="";if(/chauss|basket|vêtement|mode|textile|baskets?|sneakers?|tenue|sportwear/i.test(raw))category="Mode";else if(/decathlon|sport|ballon|raquette|fitness/i.test(raw))category="Loisirs";else if(/courses?|supermarch[eé]|aliment|primeur|fruits?|légumes?|boulangerie|boucherie|poissonnerie|épicerie|carrefour|auchan|leclerc|lidl|aldi|monoprix|franprix/i.test(raw))category="Alimentation";else if(/informatique|téléphone|ordinateur|électronique|fnac|darty/i.test(raw))category="Technologie";else if(/maison|meuble|ikea|bricolage|leroy merlin/i.test(raw))category="Maison";else if(/transport|essence|carburant|parking|train|métro/i.test(raw))category="Transport";else if(/beauté|coiffure|parfum|cosmétique|esthétique/i.test(raw))category="Beauté";
 return{label,notes,city,amount,category,need:/pas nécessaire|envie|pas un besoin/i.test(raw)?"no":/besoin|nécessaire/i.test(raw)?"yes":"" ,psychology:/impulsif|sur un coup de tête/i.test(raw)?"impulsive":/pression|stress|fomo/i.test(raw)?"pressure":/envie spontanée/i.test(raw)?"spontaneous":""}
 }
