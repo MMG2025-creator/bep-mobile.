@@ -152,16 +152,18 @@ document.addEventListener("click",event=>{
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>{if(x.classList.contains("home-overdraft-link")){setBudgetModule("income");tab("budget");window.setTimeout(()=>window.BEP_OPEN_ENTRY_DIALOG?.("overdraft"),100)}else tab(x.dataset.goto)});$("settingsBtn").onclick=async()=>{const button=$("settingsBtn"),settingsOpen=document.getElementById("settings")?.classList.contains("active");if(settingsOpen){tab(settingsReturnTab);button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Ouvrir les paramètres");button.title="Paramètres";return}const current=document.querySelector(".panel.active")?.id;settingsReturnTab=current&&current!=="settings"?current:"home";button.setAttribute("aria-expanded","true");button.setAttribute("aria-label","Fermer les paramètres");button.title="Fermer les paramètres";tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
 const profileDialog=$("profileSettingsDialog"),loginMethodsDialog=$("loginMethodsDialog");
 function openSettingsDialog(dialog){if(!dialog)return;if(!dialog.open)dialog.showModal()}
+function setProfileEditMode(editing){$("profileReadView").hidden=editing;$("profileForm").hidden=!editing;$("profileStatus").textContent=""}
 document.querySelectorAll("[data-close-settings-dialog]").forEach(button=>button.addEventListener("click",()=>button.closest("dialog")?.close()));
 [profileDialog,loginMethodsDialog].forEach(dialog=>{if(!dialog)return;dialog.addEventListener("click",event=>{if(event.target===dialog)dialog.close()})});
 $("openProfileDialog")?.addEventListener("click",async()=>{
- openSettingsDialog(profileDialog);
+ setProfileEditMode(false);openSettingsDialog(profileDialog);
  if(!window.bepSignedIn)return;
- try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||"";$("passwordResetEmail").value=u.email||""}catch(e){notify(e.message)}
+ try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||"";$("passwordResetEmail").value=u.email||"";$("profileFirstNameView").textContent=u.firstName||"Non renseigné";$("profileLastNameView").textContent=u.lastName||"Non renseigné";$("profilePhoneView").textContent=u.phone||"Non renseigné"}catch(e){notify(e.message)}
 });
+$("editProfileBtn")?.addEventListener("click",()=>setProfileEditMode(true));
+$("cancelProfileEditBtn")?.addEventListener("click",()=>setProfileEditMode(false));
 $("openLoginMethodsDialog")?.addEventListener("click",async()=>{
- openSettingsDialog(loginMethodsDialog);
- $("passwordResetStatus").textContent="";
+ $("passwordResetStatus").textContent="";openSettingsDialog(loginMethodsDialog);
  if(!window.bepSignedIn)return;
  try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Compte indisponible.");const d=await r.json();$("passwordResetEmail").value=d.user?.email||$("profileEmail").textContent||""}catch(e){$("passwordResetStatus").textContent=e.message}
 });
