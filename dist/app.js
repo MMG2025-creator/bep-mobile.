@@ -1,10 +1,10 @@
 (()=>{"use strict";
 const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
-const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[],treasury:{overdraftLimit:0,usedAmount:0,validUntil:"",alertPercent:80,expectedCredits:[]}};
+const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[],treasury:{overdraftLimit:0,validUntil:""}};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
 if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
 if(!Array.isArray(state.coachProfile))state.coachProfile=[];
-if(!state.treasury||typeof state.treasury!=="object")state.treasury={overdraftLimit:0,usedAmount:0,validUntil:"",alertPercent:80,expectedCredits:[]};
+if(!state.treasury||typeof state.treasury!=="object")state.treasury={overdraftLimit:0,validUntil:""};else state.treasury={overdraftLimit:Math.max(0,Number(state.treasury.overdraftLimit)||0),validUntil:/^\d{4}-\d{2}-\d{2}$/.test(String(state.treasury.validUntil||""))?state.treasury.validUntil:""};
 if(!Array.isArray(state.incomes))state.incomes=Number(state.income)>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:Number(state.income),source:"migration"}]:[];
 function totalIncome(){return (state.incomes||[]).reduce((sum,item)=>sum+Math.max(0,Number(item.amount)||0),0)}
 function syncIncomeTotal(){state.income=totalIncome()}
@@ -129,57 +129,21 @@ document.addEventListener("click",event=>{
  setBudgetModule(button.dataset.budgetModule);
 },true);
 setBudgetModule((()=>{try{const saved=localStorage.getItem(ACTIVE_BUDGET_MODULE_KEY);return ["income","charges","monthly"].includes(saved)?saved:"income"}catch{return "income"}})());
-document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>tab(x.dataset.goto));$("settingsBtn").onclick=async()=>{tab("settings");renderTreasury();if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
+document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>tab(x.dataset.tab));$("homeLink").onclick=e=>{e.preventDefault();tab("home")};document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>tab(x.dataset.goto));$("settingsBtn").onclick=async()=>{tab("settings");if(!window.bepSignedIn)return;loadAiConnection();try{const r=await fetch(API+"/api/me",{credentials:"include",cache:"no-store"});if(!r.ok)throw Error("Profil indisponible.");const d=await r.json(),u=d.user||{};$("profileFirstName").value=u.firstName||"";$("profileLastName").value=u.lastName||"";$("profilePhone").value=u.phone||"";$("profileEmail").textContent=u.email||""}catch(e){notify(e.message)}};
 $("linkGoogleBtn").onclick=async()=>{const button=$("linkGoogleBtn"),status=$("googleLinkStatus");button.disabled=true;status.textContent="Vérification du compte BEP…";try{const r=await fetch(API+"/api/auth/google/link/start",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("accountProofInput").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de démarrer l'association.");if(!d.url)throw Error("Adresse de connexion Google manquante.");window.location.href=d.url}catch(e){status.textContent=e.message;button.disabled=false}};
 
-function normalizeTreasury(){
- const t=state.treasury&&typeof state.treasury==="object"?state.treasury:{};
- state.treasury={
-  overdraftLimit:Math.max(0,Number(t.overdraftLimit)||0),
-  usedAmount:Math.max(0,Number(t.usedAmount)||0),
-  validUntil:/^\d{4}-\d{2}-\d{2}$/.test(String(t.validUntil||""))?t.validUntil:"",
-  alertPercent:Math.min(100,Math.max(1,Number(t.alertPercent)||80)),
-  expectedCredits:Array.isArray(t.expectedCredits)?t.expectedCredits.filter(x=>x&&typeof x==="object").map(x=>({id:String(x.id||crypto.randomUUID()),label:String(x.label||"Prime ou revenu attendu").slice(0,100),amount:Math.max(0,Number(x.amount)||0),date:/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||""))?x.date:"",status:x.status==="received"?"received":"planned"})):[]
- };
+function overdraftCapacityAllows(projectedAvailable){
+ const limit=Math.max(0,Number(state.treasury?.overdraftLimit)||0),validUntil=String(state.treasury?.validUntil||"");
+ const valid=!validUntil||validUntil>=new Date().toISOString().slice(0,10);
+ return valid&&Number(projectedAvailable)>=-limit;
 }
-function renderTreasury(){
- normalizeTreasury();
- const t=state.treasury,limit=$("overdraftLimit"),used=$("overdraftUsed"),valid=$("overdraftValidUntil"),alert=$("overdraftAlertPercent");
- if(limit)limit.value=t.overdraftLimit||"";
- if(used)used.value=t.usedAmount||"";
- if(valid)valid.value=t.validUntil||"";
- if(alert)alert.value=String(t.alertPercent);
- const remaining=t.overdraftLimit-t.usedAmount,pending=t.expectedCredits.filter(x=>x.status==="planned").reduce((n,x)=>n+x.amount,0);
- const summary=$("treasurySummary");
- if(summary){
-  const over=t.usedAmount>t.overdraftLimit;
-  const near=t.overdraftLimit>0&&t.usedAmount>=t.overdraftLimit*t.alertPercent/100;
-  summary.className="notice treasury-summary"+(over?" warning":near?" warning":"");
-  summary.innerHTML="<strong>Utilisation du découvert : "+money(t.usedAmount)+" / "+money(t.overdraftLimit)+"</strong><br>"+(over?"Dépassement de la limite autorisée de "+money(t.usedAmount-t.overdraftLimit)+".":t.overdraftLimit===0?"Aucun découvert autorisé renseigné.": "Marge restante : "+money(Math.max(0,remaining))+".")+(pending?"<br>Entrées d'argent attendues : "+money(pending)+".":"")+(t.validUntil?"<br>Autorisation valable jusqu'au "+new Date(t.validUntil+"T12:00:00").toLocaleDateString("fr-FR")+".":"");
- }
- const forecast=$("treasuryForecast");
- if(forecast){
-  const rows=[...t.expectedCredits].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-  forecast.innerHTML=rows.length?rows.map(x=>'<div class="rowitem treasury-credit-row"><span><b>'+esc(x.label)+'</b><small>'+esc(x.date?new Date(x.date+"T12:00:00").toLocaleDateString("fr-FR"):"Date non précisée")+' · '+(x.status==="received"?"Reçu":"Attendu")+'</small></span><span class="treasury-credit-actions"><b>'+money(x.amount)+'</b>'+(x.status==="planned"?'<button type="button" data-credit-received="'+esc(x.id)+'" aria-label="Marquer comme reçu" title="Marquer comme reçu">✓</button>':'')+'<button type="button" data-credit-delete="'+esc(x.id)+'" aria-label="Supprimer cette entrée" title="Supprimer">×</button></span></div>').join(""):"<p class='empty'>Aucun revenu différé renseigné.</p>";
-  forecast.querySelectorAll("[data-credit-received]").forEach(b=>b.onclick=()=>{const item=t.expectedCredits.find(x=>x.id===b.dataset.creditReceived);if(item){item.status="received";save();renderTreasury()}});
-  forecast.querySelectorAll("[data-credit-delete]").forEach(b=>b.onclick=()=>{t.expectedCredits=t.expectedCredits.filter(x=>x.id!==b.dataset.creditDelete);save();renderTreasury()});
- }
-}
-$("treasuryForm").onsubmit=e=>{
- e.preventDefault();normalizeTreasury();
- const limit=Math.max(0,Number($("overdraftLimit").value)||0),used=Math.max(0,Number($("overdraftUsed").value)||0),validUntil=$("overdraftValidUntil").value,alertPercent=Math.min(100,Math.max(1,Number($("overdraftAlertPercent").value)||80));
- if(validUntil&&validUntil<new Date().toISOString().slice(0,10)){notify("La date de validité doit être aujourd'hui ou ultérieure.");return}
- state.treasury={...state.treasury,overdraftLimit:limit,usedAmount:used,validUntil,alertPercent};
- if(save()){$("treasuryStatus").textContent="Situation bancaire enregistrée.";renderTreasury()}
+$("overdraftForm").onsubmit=e=>{
+ e.preventDefault();
+ const limit=Math.max(0,Number($("overdraftLimit").value)||0),validUntil=$("overdraftValidUntil").value;
+ if(validUntil&&validUntil<new Date().toISOString().slice(0,10)){notify("Date de validité dépassée.");return}
+ state.treasury={overdraftLimit:limit,validUntil};
+ if(save())$("overdraftStatus").textContent="Découvert autorisé enregistré. Il permet de poursuivre les opérations sans modifier ton bilan mensuel.";
 };
-$("expectedCreditForm").onsubmit=e=>{
- e.preventDefault();normalizeTreasury();
- const label=$("expectedCreditLabel").value.trim(),amount=Number($("expectedCreditAmount").value),date=$("expectedCreditDate").value;
- if(!label||!Number.isFinite(amount)||amount<=0||!date){$("expectedCreditStatus").textContent="Renseigne un libellé, un montant positif et une date.";return}
- state.treasury.expectedCredits.push({id:crypto.randomUUID(),label,amount,date,status:"planned"});
- if(save()){$("expectedCreditLabel").value="";$("expectedCreditAmount").value="";$("expectedCreditDate").value="";$("expectedCreditStatus").textContent="Entrée prévisionnelle enregistrée.";renderTreasury()}
-};
-
 $("profileForm").onsubmit=async e=>{e.preventDefault();const button=$("saveProfileBtn"),status=$("profileStatus");button.disabled=true;status.textContent="Enregistrement…";try{const r=await fetch(API+"/api/profile",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({firstName:$("profileFirstName").value,lastName:$("profileLastName").value,phone:$("profilePhone").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Enregistrement impossible.");coachFirstName=$("profileFirstName").value.trim();status.textContent="Profil enregistré.";renderAI();notify("Profil mis à jour");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"profile"}}))}catch(e){status.textContent=e.message}finally{button.disabled=false}};
 $("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");if(!window.confirm("Supprimer définitivement ton compte BEP et toutes les données associées ? Cette action est irréversible."))return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
 let pdfPreviewRows=[];
@@ -282,7 +246,7 @@ const savingsToday=(()=>{const d=new Date();return d.getFullYear()+"-"+String(d.
 $("savingsOperationForm").onsubmit=e=>{e.preventDefault();const type=$("savingsOperationType").value,goalId=$("savingsOperationGoal").value,amount=Math.round(Number($("savingsOperationAmount").value)*100)/100,date=$("savingsOperationDate").value;if(!goalId||!state.goals.some(g=>g.id===goalId&&(type==="withdrawal"||!g.archivedAt)))return notify(type==="withdrawal"?"Choisis un coffre avec un historique.":"Les versements sont réservés aux coffres actifs.");if(!Number.isFinite(amount)||amount<=0||amount>10000000)return notify("Saisis un montant valide (maximum 10 000 000 €).");const parsed=new Date(date+"T00:00:00Z");if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date>savingsToday)return notify("La date doit être valide et ne peut pas être future.");if(type==="withdrawal"&&amount>savingsBalance(goalId)+0.000001)return notify("Le retrait dépasse le solde enregistré de ce coffre.");if(savingsOperations().some(o=>o.goalId===goalId&&o.type===type&&Number(o.amount)===amount&&o.date===date)&&!confirm("Un mouvement identique est déjà enregistré à cette date. Veux-tu vraiment l'ajouter ?"))return;state.savingsOperations.push({id:crypto.randomUUID(),type,goalId,amount,date,createdAt:new Date().toISOString()});$("savingsOperationAmount").value="";if(save()!==false){notify(type==="deposit"?"Versement enregistré.":"Retrait enregistré.");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"savings-movement"}}))}};
 const projectionMonthly=$("savingsProjectionMonthly"),projectionYears=$("savingsProjectionYears");if(projectionMonthly)projectionMonthly.oninput=updateSavingsProjection;if(projectionYears)projectionYears.onchange=updateSavingsProjection;
 let editingGoalId=null;
-$("savingsForm").onsubmit=e=>{e.preventDefault();let r=$("savingsRate").value==="suggested"?rate(editingGoalId):+$("savingsRate").value,m=totalIncome()*r/100,otherGoals=state.goals.filter(x=>!x.archivedAt&&x.id!==editingGoalId).reduce((n,g)=>n+Number(g.monthly||0),0);if(r<=0||totalIncome()<=0||m<=0||m>availableBeforeSavings()-otherGoals)return notify("Épargne non soutenable avec le budget actuel. Vérifie tes revenus, tes charges et tes engagements.");const item={id:editingGoalId||crypto.randomUUID(),name:$("goalName").value.trim()||"Mon épargne",rate:r,monthly:m,duration:+$("duration").value};if(editingGoalId){state.goals=state.goals.map(x=>x.id===editingGoalId?item:x);editingGoalId=null;notify("Objectif modifié")}else{state.goals.push(item);notify("Objectif enregistré")}save();$("goalName").value="";$("savingsRate").value="suggested";$("customSavingsRate").value="";$("duration").value="3";$("savingsForm").querySelector("button").textContent="Créer mon objectif";preview();window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"savings-goal"}}))};
+$("savingsForm").onsubmit=e=>{e.preventDefault();let r=$("savingsRate").value==="suggested"?rate(editingGoalId):+$("savingsRate").value,m=totalIncome()*r/100,otherGoals=state.goals.filter(x=>!x.archivedAt&&x.id!==editingGoalId).reduce((n,g)=>n+Number(g.monthly||0),0);const projectedAvailable=availableBeforeSavings()-otherGoals-m;if(r<=0||totalIncome()<=0||m<=0||!overdraftCapacityAllows(projectedAvailable))return notify("Cette épargne dépasse ton disponible et la capacité de découvert autorisée.");const item={id:editingGoalId||crypto.randomUUID(),name:$("goalName").value.trim()||"Mon épargne",rate:r,monthly:m,duration:+$("duration").value};if(editingGoalId){state.goals=state.goals.map(x=>x.id===editingGoalId?item:x);editingGoalId=null;notify("Objectif modifié")}else{state.goals.push(item);notify("Objectif enregistré")}save();$("goalName").value="";$("savingsRate").value="suggested";$("customSavingsRate").value="";$("duration").value="3";$("savingsForm").querySelector("button").textContent="Créer mon objectif";preview();window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"savings-goal"}}))};
 let activeSavingsModule="goals";
 function setSavingsModule(name){
  if(name!=="goals"&&name!=="movements")return;
@@ -520,8 +484,10 @@ $("purchaseForm").onsubmit=e=>{
  const previous=editingPurchaseId?state.expenses.find(x=>x.id===editingPurchaseId)||{}:{};
  const purchaseLabel=label||category||"Achat";
  const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:(()=>{const date=$("purchaseDate")?.value||localPurchaseDate();return date?new Date(date+"T12:00:00").toISOString():new Date().toISOString()})()};
- const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice();
- if(wasEditing)state.expenses=state.expenses.map(x=>x.id===editingPurchaseId?p:x);else state.expenses.unshift(p);
+ const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice(),nextExpenses=wasEditing?beforeExpenses.map(x=>x.id===editingPurchaseId?p:x):[p,...beforeExpenses];
+ const projectedAvailable=financialPosition({expenses:nextExpenses}).available;
+ if(!overdraftCapacityAllows(projectedAvailable))return notify("Cette dépense dépasserait le disponible et la capacité de découvert autorisée.");
+ state.expenses=nextExpenses;
  if(save()===false){state.expenses=beforeExpenses;return}
  showPurchaseAdvice(p);cancelPurchaseEdit();$("purchaseSubmit").classList.add("hidden");$("purchaseNew")?.classList.remove("hidden");notify(wasEditing?"Achat modifié":"Achat enregistré");window.dispatchEvent(new CustomEvent("bep:expense-saved"));
 };
