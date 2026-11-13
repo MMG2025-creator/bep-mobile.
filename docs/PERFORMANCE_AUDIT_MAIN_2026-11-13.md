@@ -153,3 +153,10 @@ Date : 2026-11-13
 - Cette optimisation ne déplace ni le formulaire d'achat, ni les événements métier, ni le code OCR ; elle retarde uniquement la construction de la couche de présentation Dépenses.
 
 - Contrôle statique Phase 3 : les deux index ne chargent plus directement `spend-clean-ui.js`, conservent les scripts de base dans leur ordre actuel et contiennent le déclencheur sur l'onglet Dépenses.
+
+
+### Phase 4 — CSS Dépenses différée
+- La feuille `spend-clean-ui.css` (environ 6 Ko source) est retirée du chargement initial et ajoutée avant le JavaScript de présentation, uniquement lors de la première ouverture de Dépenses.
+- Le chargement de l'onglet est temporairement suspendu pendant la récupération des ressources afin d'éviter l'affichage d'une page non stylée ; l'action est rejouée après chargement.
+- Le cas d'un onglet Dépenses restauré depuis la session précédente est anticipé par lecture de la préférence locale et par surveillance de l'onglet actif.
+- La feuille `spend-experience.css` reste initiale : elle contient des styles partagés avec les dialogues et les formulaires des rubriques Budget, Revenus, Charges, Épargne et Profil. La différer globalement risquerait de dégrader ces parcours.
