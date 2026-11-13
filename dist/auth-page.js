@@ -68,7 +68,11 @@
  if(!appRoot)return;
  function syncApplicationAccess(){
   const allowed=window.bepSignedIn===true||window.bepOfflineMode===true;
+  /* Enforce visibility with an inline !important rule so global/module CSS cannot reveal private UI. */
   appRoot.hidden=!allowed;
+  appRoot.inert=!allowed;
+  appRoot.setAttribute("aria-hidden",String(!allowed));
+  appRoot.style.setProperty("display",allowed?"block":"none","important");
   if(authGate)authGate.hidden=allowed;
   document.documentElement.classList.toggle("bep-authenticated-view",allowed);
  }
