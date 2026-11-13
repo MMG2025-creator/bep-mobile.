@@ -49,6 +49,16 @@ test("agent schema is additive and does not alter existing BEP financial tables"
  for(const table of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics"])assert.match(sql,new RegExp("CREATE TABLE IF NOT EXISTS "+table));
  assert.doesNotMatch(sql,/\b(DROP|TRUNCATE|ALTER TABLE bep_(users|user_data|monthly_budgets|monthly_budget_items))\b/i);
 });
+test("server exposes only allowlisted admin review and aggregate telemetry",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(server,/BEP_AGENT_ADMIN_USER_IDS/);
+ assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
+ assert.match(server,/\/api\/admin\/bep-agent\/overview/);
+ assert.match(server,/bep_agent_approved_knowledge/);
+ assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
+ const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
+ assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
+});
 test("agent prompts are isolated from personal Coach context and contain explicit untrusted-data policy",()=>{
  const worker=fs.readFileSync(path.join(__dirname,"..","lib/bep-agent/worker.js"),"utf8");
  assert.match(worker,/Tu es un évaluateur interne du système BEP/);
