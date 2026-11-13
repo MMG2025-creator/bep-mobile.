@@ -20,7 +20,7 @@
   $("showRegister")?.classList.toggle("active",mode==="register");
   if(clearMessage&&message)message.textContent="";
  }
- function window.BEPAuthPage.showVerification(email,text){
+ function showVerification(email,text){
   pendingEmail=String(email||"").trim().toLowerCase();
   if(pendingEmail)localStorage.setItem(pendingKey,pendingEmail);
   setMode("verify");
@@ -114,7 +114,7 @@
  });
  registerForm?.addEventListener("submit",async e=>{
   e.preventDefault();const email=$("registerEmail").value.trim().toLowerCase();showAuthMessage("Création du compte et envoi du code…");
-  try{const r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}window.BEPAuthPage.showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(error){showAuthMessage(error.message)}
+  try{const r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(!r.ok){if(r.status===409){window.BEPAuthPage.showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}window.BEPAuthPage.showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(error){showAuthMessage(error.message)}
  });
  async function restoreSession(){
   if(window.BEP_DEMO_LOCAL){
@@ -135,7 +135,7 @@
   const params=new URLSearchParams(window.location.search),oauthResult=params.get("login");
   if(params.has("reset")){authGate.hidden=false;return}
   if(oauthResult&&loginMessageMap[oauthResult]){showAuthMessage(loginMessageMap[oauthResult]);history.replaceState({},document.title,window.location.pathname+window.location.hash)}
-  if(pendingEmail)showVerification(pendingEmail,"Inscription en attente pour "+pendingEmail+". Saisis le code reçu ou demande-en un nouveau.");
+  if(pendingEmail)window.BEPAuthPage.showVerification(pendingEmail,"Inscription en attente pour "+pendingEmail+". Saisis le code reçu ou demande-en un nouveau.");
   try{
    let data=null,lastStatus=0;
    for(let attempt=0;attempt<12;attempt++){
