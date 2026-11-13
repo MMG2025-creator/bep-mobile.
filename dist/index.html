@@ -15,7 +15,7 @@
 @keyframes bep-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#bepStartupLoader .bep-spinner{animation-duration:1.8s}}
 </style>
-<link rel="stylesheet" href="./spend-experience.css?v=29&bep=budget-action-copy-20261113&bep=budget-compact-mobile-spacing-20261113&bep=budget-robot-head-20261113">
+<link rel="stylesheet" href="./spend-experience.css?v=30&bep=budget-action-copy-20261113&bep=budget-compact-mobile-spacing-20261113&bep=budget-robot-head-20261113">
 <link rel="stylesheet" href="./spend-clean-ui.css?v=5&bep=receipt-proof-import-20261112">
 <style id="pwa-install-style">
 .pwa-install-btn[hidden]{display:none!important}
@@ -221,7 +221,7 @@
   <div class="budget-checkup-head"><div><span class="tag">Assistant charges</span><p class="budget-action-description">Identifie tes dépenses parmi les propositions.</p></div></div>
   <details id="budgetCheckupDetails">
     <form id="budgetCheckupForm">
-      <p class="budget-checkup-note">Vérifie les postes proposés et ajuste les montants. Les dépenses annuelles sont ramenées à un montant mensuel (montant annuel ÷ 12).</p>
+      <p class="budget-checkup-note">Coche les charges qui te concernent et indique leur montant. Les dépenses annuelles seront réparties sur 12 mois.</p>
       <div class="budget-checkup-group"><h4>Logement</h4>
         <label class="budget-checkup-row"><input type="checkbox" data-checkup-item="Loyer" data-checkup-category="Logement"><span>Loyer</span><input type="number" min="0" step="0.01" data-checkup-amount placeholder="€/mois" aria-label="Montant mensuel du loyer"></label>
         <label class="budget-checkup-row"><input type="checkbox" data-checkup-item="Crédit immobilier" data-checkup-category="Logement"><span>Crédit immobilier</span><input type="number" min="0" step="0.01" data-checkup-amount placeholder="€/mois" aria-label="Montant mensuel du crédit immobilier"></label>
