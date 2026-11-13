@@ -83,7 +83,7 @@ test("single-session policy invalidates previous sessions and connection status 
  assert.match(server,/async function keepSingleSession\(userId,sessionId\)/);
  assert.match(server,/DELETE FROM user_sessions WHERE sess->'user'->>'id'=\$1 AND sid<>\$2/);
  assert.match(server,/keepSingleSession\(u\.id,req\.sessionID\)/);
- assert.match(server,/keepSingleSession\(userId,req\.sessionID\)/);
+ assert.match(server,/app\.post\("\/api\/auth\/login"[\s\S]*?keepSingleSession\(u\.id,req\.sessionID\)/);
  assert.match(server,/keepSingleSession\(user\.id,req\.sessionID\)/);
  assert.match(status,/setInterval\(checkSession,15000\)/);
  assert.match(status,/Cette session a été fermée car ton compte a été connecté sur un autre appareil/);
