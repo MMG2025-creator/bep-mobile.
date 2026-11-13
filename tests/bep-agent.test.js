@@ -37,7 +37,9 @@ test("Gemini client requires a key and does not accept a custom endpoint",()=>{
 test("knowledge proposals must preserve the source provenance supplied by BEP",()=>{
  const source={slug:"budget-baseline",category:"budget",title:"Budget",content:"Distinguer les charges fixes et variables.",version:3,source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/",evidence_level:"institutional_guidance"};
  const valid={proposal_type:"clarify",title:"Clarifier le budget",content:"Distinguer prévu et réalisé.",source_name:source.source_name,source_url:source.source_url,confidence:"high",rationale:"La formulation doit être précisée."};
- const proposal=validateKnowledgeProposal(valid,source);\n assert.ok(proposal);assert.equal(proposal.source_version,3);assert.equal(proposal.source_digest,sourceDigest(source));\n assert.notEqual(sourceDigest(source),sourceDigest({...source,content:"Contenu modifié."}));
+ const proposal=validateKnowledgeProposal(valid,source);
+ assert.ok(proposal);assert.equal(proposal.source_version,3);assert.equal(proposal.source_digest,sourceDigest(source));
+ assert.notEqual(sourceDigest(source),sourceDigest({...source,content:"Contenu modifié."}));
  assert.equal(validateKnowledgeProposal({...valid,source_url:"https://example.com"},source),null);
  assert.equal(validateKnowledgeProposal({...valid,proposal_type:"invent"},source),null);
  assert.equal(validateKnowledgeProposal(valid,undefined),null);
@@ -65,7 +67,11 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
- assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);\n assert.match(server,/SOURCE_DOCUMENT_CHANGED/);\n assert.match(server,/candidate\\.source_version/);\n assert.match(server,/candidate\\.source_digest/);\n assert.match(server,/if\\(!agentTelemetryReady\\)return next\\(\\)/);
+ assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
+ assert.match(server,/SOURCE_DOCUMENT_CHANGED/);
+ assert.match(server,/candidate\\.source_version/);
+ assert.match(server,/candidate\\.source_digest/);
+ assert.match(server,/if\\(!agentTelemetryReady\\)return next\\(\\)/);
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
 });
