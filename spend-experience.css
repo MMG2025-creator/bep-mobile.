@@ -552,3 +552,21 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
     margin-top:10px;
   }
 }
+
+ 
+/* Budget action cards: clear, readable guidance beneath the retained mini-labels. */
+#budgetModuleIncome .budget-action-description,
+#budgetModuleCharges .budget-action-description{
+  margin:9px 0 0;
+  color:#52665d;
+  font-size:16px;
+  line-height:1.5;
+  font-weight:400;
+}
+@media(max-width:640px){
+  #budgetModuleIncome .budget-action-description,
+  #budgetModuleCharges .budget-action-description{
+    font-size:16px;
+    line-height:1.5;
+  }
+}
