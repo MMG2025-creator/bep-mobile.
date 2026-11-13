@@ -47,7 +47,7 @@
 <header class="topbar"><a class="brand brand-green" id="homeLink" href="#home" aria-label="BEP — Build, Earn & Preserve" title="Retour à l’accueil"><svg class="logo" viewBox="0 0 250 72" role="img" aria-label="BEP — Build, Earn & Preserve" xmlns="http://www.w3.org/2000/svg">
 <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round"><path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/><path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/></g>
 <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
-<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.75 14 4l2.35-.35 1.05 2.1 2.2 1.05-.35 2.35L20.5 12l-1.25 2 .35 2.35-2.1 1.05-1.05 2.2-2.35-.35L12 20.5l-2-1.25-2.35.35-1.05-2.1-2.2-1.05.35-2.35L3.5 12l1.25-2-.35-2.35 2.1-1.05 1.05-2.2 2.35.35L12 2.75Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.65"/></svg></button></div></header>
+<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button type="button" class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Ouvrir les paramètres" title="Paramètres" aria-expanded="false" aria-controls="settings"><svg class="settings-person-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.2 20c.5-3.6 3.1-5.7 6.8-5.7s6.3 2.1 6.8 5.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="settings-button-label">Paramètres</span><svg class="settings-toggle-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></header>
 <main>
 <section class="welcome welcome-playful" aria-labelledby="welcomeTitle">
   <div class="welcome-copy">
@@ -396,30 +396,37 @@
   <article class="card settings-card" id="settingsProfileCard">
     <div class="settings-section-heading"><span class="settings-section-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.5-3.6 3.2-5.7 7-5.7s6.5 2.1 7 5.7"/></svg></span><div><h2>Mon profil</h2><p class="hint">Informations personnelles et moyens de connexion.</p></div></div>
     <div class="settings-button-grid">
-      <details class="settings-disclosure">
-        <summary class="settings-action-button"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.5-3.5 3.1-5.5 7-5.5s6.5 2 7 5.5"/></svg></span><span class="settings-action-copy"><strong>Informations personnelles</strong><small>Nom, prénom, téléphone et e-mail</small></span><span class="settings-action-chevron">›</span></summary>
-        <div class="settings-disclosure-content">
-          <p class="hint" id="profileEmail"></p>
-          <form id="profileForm">
-            <div class="profile-name-row">
-              <div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div>
-              <div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div>
-            </div>
-            <div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div>
-            <button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p>
-          </form>
-        </div>
-      </details>
-      <details class="settings-disclosure">
-        <summary class="settings-action-button"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><span class="settings-action-copy"><strong>Méthodes de connexion</strong><small>Mot de passe et association Google</small></span><span class="settings-action-chevron">›</span></summary>
-        <div class="settings-disclosure-content">
-          <p class="hint">Associe Google à ton compte pour choisir comment te connecter.</p>
-          <div class="field"><label for="accountProofInput">Mot de passe actuel (compte e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div>
-          <button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p>
-        </div>
-      </details>
+      <button type="button" class="settings-action-button settings-modal-trigger" id="openProfileDialog" aria-haspopup="dialog" aria-controls="profileSettingsDialog"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.5-3.5 3.1-5.5 7-5.5s6.5 2 7 5.5"/></svg></span><span class="settings-action-copy"><strong>Informations personnelles</strong><small>Nom, prénom, téléphone et e-mail</small></span><span class="settings-action-chevron">›</span></button>
+      <button type="button" class="settings-action-button settings-modal-trigger" id="openLoginMethodsDialog" aria-haspopup="dialog" aria-controls="loginMethodsDialog"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><span class="settings-action-copy"><strong>Méthodes de connexion</strong><small>Mot de passe et association Google</small></span><span class="settings-action-chevron">›</span></button>
     </div>
   </article>
+
+  <dialog class="settings-modal" id="profileSettingsDialog" aria-labelledby="profileSettingsDialogTitle">
+    <div class="settings-modal-window">
+      <header class="settings-modal-header"><div><p class="eyebrow">MON PROFIL</p><h2 id="profileSettingsDialogTitle">Informations personnelles</h2></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
+      <p class="hint" id="profileEmail"></p>
+      <form id="profileForm">
+        <div class="profile-name-row">
+          <div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div>
+          <div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div>
+        </div>
+        <div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div>
+        <button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog class="settings-modal" id="loginMethodsDialog" aria-labelledby="loginMethodsDialogTitle">
+    <div class="settings-modal-window">
+      <header class="settings-modal-header"><div><p class="eyebrow">SÉCURITÉ DU COMPTE</p><h2 id="loginMethodsDialogTitle">Méthodes de connexion</h2></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
+      <p class="hint">Associe Google à ton compte ou demande un lien sécurisé pour renouveler ton mot de passe.</p>
+      <div class="field"><label for="accountProofInput">Mot de passe actuel (compte e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div>
+      <button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p>
+      <div class="settings-modal-divider"></div>
+      <div class="field"><label for="passwordResetEmail">Adresse e-mail du compte</label><input id="passwordResetEmail" type="email" autocomplete="email" required></div>
+      <button type="button" class="secondary full" id="requestPasswordResetBtn">Recevoir un lien de modification du mot de passe</button><p class="hint" id="passwordResetStatus" role="status" aria-live="polite"></p>
+    </div>
+  </dialog>
 
   <article class="card settings-card" id="settingsDataCard">
     <div class="settings-section-heading"><span class="settings-section-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span><div><h2>Mes données</h2><p class="hint">Sauvegarde et restauration de tes informations BEP.</p></div></div>
