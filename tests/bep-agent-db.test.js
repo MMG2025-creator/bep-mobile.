@@ -1,0 +1,31 @@
+"use strict";
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const {Pool}=require("pg");
+const repo=require("../lib/bep-agent/repository");
+
+test("agent schema is additive, idempotent and supports persistent queue operations",async t=>{
+ if(!process.env.DATABASE_URL){t.skip("DATABASE_URL not configured");return}
+ const pool=new Pool({connectionString:process.env.DATABASE_URL});
+ try{
+  await repo.ensureSchema(pool);
+  await repo.ensureSchema(pool);
+  const tables=await pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name LIKE 'bep_agent_%' OR table_schema='public' AND table_name='bep_knowledge_candidates'");
+  const names=new Set(tables.rows.map(x=>x.table_name));
+  for(const name of ["bep_agent_jobs","bep_agent_runs","bep_knowledge_candidates","bep_agent_daily_usage","bep_agent_metrics","bep_agent_approved_knowledge","bep_agent_coach_metrics"])assert.ok(names.has(name),name+" missing");
+  const jobId=await repo.enqueue(pool,"coach_quality_review",{test:true});
+  assert.ok(jobId);
+  const claimed=await repo.claim(pool,"test-worker");
+  assert.equal(String(claimed.id),String(jobId));
+  await repo.complete(pool,jobId);
+  assert.equal(await repo.reserveCall(pool,1),1);
+  assert.equal(await repo.reserveCall(pool,1),null);
+  await repo.recordRun(pool,{jobId,jobType:"coach_quality_review",status:"completed",model:"test-model",inputDigest:"input",outputDigest:"output",summary:{findings:[]},usage:{totalTokenCount:12},startedAt:new Date(),candidatesCreated:0,qualityFindings:0});
+  const run=await pool.query("SELECT output_summary,usage FROM bep_agent_runs WHERE job_id=$1",[jobId]);
+  assert.equal(run.rowCount,1);
+  assert.deepEqual(run.rows[0].output_summary,{findings:[]});
+  const usage=await pool.query("SELECT calls,tokens FROM bep_agent_daily_usage WHERE day_key=CURRENT_DATE");
+  assert.equal(Number(usage.rows[0].calls),1);
+  assert.equal(Number(usage.rows[0].tokens),12);
+ }finally{await pool.end()}
+});
