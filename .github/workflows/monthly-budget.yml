@@ -1,4 +1,5 @@
 name: Monthly budget history checks
+# Includes isolated PostgreSQL and HTTP authentication journey regressions.
 
 concurrency:
   group: monthly-budget-${{ github.workflow }}-${{ github.ref }}
