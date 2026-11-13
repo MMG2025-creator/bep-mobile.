@@ -9,7 +9,6 @@
   let months = [];
   let current = null;
   let items = [];
-  let actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] };
   let editingItemIndex = null;
   let monthSelectionMode = false;
   const monthSelection = new Set();
@@ -65,8 +64,6 @@
   }
   let loading = false;
   let authEpoch = 0;
-  let actualsRequestId = 0;
-  let actualsRefreshPending = false;
 
   const money = value => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(value) || 0);
   function financialPosition() {
@@ -74,7 +71,7 @@
       incomes: items.filter(x => x.itemType === "income").map(x => ({ amount: x.plannedAmount })),
       budgets: items.filter(x => x.itemType === "charge").map(x => ({ amount: x.plannedAmount, category: x.category, nature: x.nature })),
       goals: items.filter(x => x.itemType === "savings").map(x => ({ monthly: x.plannedAmount })),
-      expenses: actuals.expenses, monthKey: current?.monthKey
+      expenses: [], monthKey: current?.monthKey
     });
   }
   const monthNow = () => {
@@ -89,10 +86,6 @@
   const setBusy = value => {
     loading = value;
     card.querySelectorAll("button,input,select").forEach(el => { el.disabled = value; });
-    if (!value && actualsRefreshPending) {
-      actualsRefreshPending = false;
-      Promise.resolve().then(refreshActuals);
-    }
   };
   async function api(path, options = {}) {
     const response = await fetch(API + path, {
@@ -149,31 +142,6 @@
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed";
   }
-  function renderActuals() {
-    const hasActuals = Number(actuals.count) > 0;
-    const monthLabel = current?.monthKey
-      ? new Date(current.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
-      : "du mois";
-    $("monthlyBudgetActualHeading").textContent = "Mes dépenses de " + monthLabel;
-    $("monthlyBudgetActualTotal").textContent = hasActuals ? money(actuals.actualExpenseTotal) : "Non renseigné";
-    $("monthlyBudgetActualCount").textContent = actuals.count + (actuals.count === 1 ? " achat enregistré" : " achats enregistrés") + " · calculés selon la date réelle de l’achat";
-    if (hasActuals) {
-      const position = financialPosition();
-      const variance = position.actualImpact;
-      const parts = [];
-      if (position.overBudgetSpend > 0) parts.push("dépassement des enveloppes variables : " + money(position.overBudgetSpend));
-      if (position.unbudgetedSpend > 0) parts.push("achats hors enveloppe : " + money(position.unbudgetedSpend));
-      $("monthlyBudgetActualVariance").textContent = variance > 0 ? "Rapprochement des achats : " + parts.join(" · ") + "." : "Achats enregistrés couverts par les enveloppes variables identifiées.";
-    } else {
-      $("monthlyBudgetActualVariance").textContent = "Écart non calculable : aucun achat n’est enregistré pour ce mois.";
-    }
-    const monthExpenses = Array.isArray(actuals.expenses) ? actuals.expenses.slice().sort((a, b) => new Date(b.at) - new Date(a.at)) : [];
-    $("monthlyBudgetActualItems").innerHTML = monthExpenses.length ? monthExpenses.map(x =>
-      '<div class="monthly-budget-actual-row"><span>' + escapeHtml(x.label) + '<small>' +
-      new Date(x.at).toLocaleDateString("fr-FR") + (x.category ? " · " + escapeHtml(x.category) : "") +
-      '</small></span><b>' + money(x.amount) + '</b></div>'
-    ).join("") : '<p class="empty">Aucune dépense enregistrée pour ce mois.</p>';
-  }
   function renderItems() {
     const labels = { income: "Revenu", charge: "Charge", savings: "Épargne" };
     $("monthlyBudgetItems").innerHTML = items.length ? items.map((x, index) =>
@@ -229,16 +197,11 @@
   }
   async function loadMonth(monthKey) {
     const epoch = authEpoch;
-    actualsRequestId++;
     setBusy(true);
     try {
-      const [data, actualData] = await Promise.all([
-        api("/api/budgets/months/" + encodeURIComponent(monthKey)),
-        api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/actuals?timeZone=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"))
-      ]);
+      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey));
       if (epoch !== authEpoch || !window.bepSignedIn) return;
       current = data.budget;
-      actuals = actualData;
       editingItemIndex = null; monthSelection.clear(); monthSelectionMode = false;
       $("monthlyBudgetItemForm").reset();
       $("monthlyBudgetItemSubmit").textContent = "Ajouter la ligne";
@@ -249,7 +212,6 @@
       }));
       renderMonths();
       renderItems();
-      renderActuals();
       let syncWarning = null;
       if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
@@ -263,28 +225,6 @@
       status("Impossible de charger ce mois : " + error.message, true);
     } finally { setBusy(false); }
   }
-  async function refreshActuals() {
-    if (loading) { actualsRefreshPending = true; return; }
-    if (!window.bepSignedIn || !current || !current.monthKey) return;
-    const epoch = authEpoch;
-    const requestId = ++actualsRequestId;
-    const monthKey = current.monthKey;
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    try {
-      const data = await api("/api/budgets/months/" + encodeURIComponent(monthKey) +
-        "/actuals?timeZone=" + encodeURIComponent(timeZone));
-      if (requestId !== actualsRequestId || epoch !== authEpoch || !window.bepSignedIn ||
-          !current || current.monthKey !== monthKey) return;
-      actuals = data;
-      renderActuals();
-      $("monthlyBudgetRemaining").textContent = money(financialPosition().available);
-    } catch (error) {
-      if (requestId === actualsRequestId && epoch === authEpoch && current?.monthKey === monthKey) {
-        status("Actualisation des dépenses réelles impossible : " + error.message, true);
-      }
-    }
-  }
-
   async function refresh() {
     if (!window.bepSignedIn || loading) return;
     const epoch = authEpoch;
@@ -308,8 +248,6 @@
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
   window.addEventListener("bep:legacy-budget-changed", syncLegacyBudget);
-  window.addEventListener("bep:state-rendered", refreshActuals);
-  window.addEventListener("bep:offline-synced", refreshActuals);
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
     if (loading) return;
@@ -473,9 +411,8 @@
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
-    actualsRequestId++;
     if (window.bepSignedIn) refresh();
-    else { months = []; current = null; items = []; actuals = { count: 0, actualExpenseTotal: "0.00", expenses: [] }; renderMonths(); renderActuals(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    else { months = []; current = null; items = []; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   if (window.bepSignedIn) refresh();
 })();
