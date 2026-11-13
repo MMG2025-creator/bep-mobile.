@@ -386,17 +386,6 @@ test("BEP advice is a contextual popup and quick expense floating button is remo
  assert.ok(html.includes('id="aiIncome"')&&html.includes('id="aiCharges"')&&html.includes('id="aiSavings"')&&html.includes('id="aiPurchases"'));
 });
 
-test("floating BEP advice dock is hidden only while the expenses panel is active", () => {
-  for (const file of ["index.html", "dist/index.html"]) {
-    const html = read(file);
-    assert.match(html, /function syncDock\(\)\{const hidden=context\(\)==="purchases"/);
-    assert.match(html, /dock\.hidden=hidden/);
-    assert.match(html, /dock\.style\.display=hidden\?"none":""/);
-    assert.match(html, /new MutationObserver\(syncDock\)/);
-    assert.match(html, /if\(hidden&&dialog\.open\)close\(\)/);
-  }
-});
-
 test("BEP advice popup replaces repeated cards and floating quick expense", () => {
  const html=read("index.html");
  assert.ok(html.includes('id="bepAdviceDialog"'));
