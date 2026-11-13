@@ -403,15 +403,8 @@
 
   <dialog class="settings-modal" id="profileSettingsDialog" aria-labelledby="profileSettingsDialogTitle">
     <div class="settings-modal-window">
-      <header class="settings-modal-header"><div><p class="eyebrow">MON PROFIL</p><h2 id="profileSettingsDialogTitle">Informations personnelles</h2></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
-      <section id="profileReadView" class="settings-profile-read">
-        <p class="hint" id="profileEmail"></p>
-        <div class="field"><label>Prénom</label><div class="settings-profile-value" id="profileFirstNameView">—</div></div>
-        <div class="field"><label>Nom</label><div class="settings-profile-value" id="profileLastNameView">—</div></div>
-        <div class="field"><label>Téléphone</label><div class="settings-profile-value" id="profilePhoneView">Non renseigné</div></div>
-        <button type="button" class="primary full" id="editProfileBtn">Modifier mon profil</button>
-      </section>
-      <form id="profileForm" hidden>
+      <header class="settings-modal-header"><div><p class="eyebrow">SAISIE BEP</p><h2 id="profileSettingsDialogTitle">Modifier mon profil</h2><p class="hint">Renseigne les informations puis confirme.</p></div><button type="button" class="settings-modal-close" data-close-settings-dialog aria-label="Fermer">×</button></header>
+      <form id="profileForm">
         <div class="profile-name-row">
           <div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div>
           <div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div>
