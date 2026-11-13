@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS bep_agent_runs (
  model TEXT NOT NULL,
  input_digest TEXT NOT NULL,
  output_digest TEXT,
+ output_summary JSONB,
  usage JSONB,
  error_code TEXT,
  started_at TIMESTAMPTZ NOT NULL,
