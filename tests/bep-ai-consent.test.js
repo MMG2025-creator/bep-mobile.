@@ -28,7 +28,7 @@ test("revoking external AI consent disables it server-side",()=>{
  const end=server.indexOf('app.get("/api/ai/status"',start);
  assert.ok(start>=0&&end>start);
  const route=server.slice(start,end);
- assert.match(route,/if\(!enabled\)/);
+ assert.match(route,/else\s*\{/);
  assert.match(route,/enabled=FALSE,revoked_at=NOW\(\)/);
 });
 
