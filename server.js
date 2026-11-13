@@ -179,14 +179,27 @@ app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.item
 app.use("/api/budgets",createMonthlyBudgetRouter({pool,auth}));
 app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT payload,updated_at FROM bep_user_data WHERE user_id=$1",[req.session.user.id]);res.json(r.rows[0]||{payload:{income:0,budgets:[],expenses:[],goals:[]}})});
 app.put("/api/data",auth,async(req,res)=>{
- const p=req.body;
- if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000)return res.status(400).json({error:"INVALID_PAYLOAD"});
+ const offlineSync=req.body?.__bepOfflineSync===true;
+ const base=offlineSync?req.body?.base:null;
+ const p=offlineSync?req.body?.payload:req.body;
+ if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000||
+    (offlineSync&&(!base||typeof base!=="object"||Array.isArray(base)||JSON.stringify(base).length>500000)))return res.status(400).json({error:"INVALID_PAYLOAD"});
  const client=await pool.connect();
  try{
   await client.query("BEGIN");
   await client.query("INSERT INTO bep_user_data(user_id) VALUES($1) ON CONFLICT(user_id) DO NOTHING",[req.session.user.id]);
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
+  if(offlineSync){
+   const canonical=value=>Array.isArray(value)?"["+value.map(canonical).join(",")+"]":value&&typeof value==="object"?"{"+Object.keys(value).sort().map(key=>JSON.stringify(key)+":"+canonical(value[key])).join(",")+"}":JSON.stringify(value);
+   if(canonical(previous)!==canonical(base)){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_CONFLICT"});}
+  }else{
+   const financialKeys=["incomes","budgets","expenses","goals","transactions","savingsOperations"];
+   const hasFinancialData=Number(previous.income)!==0||financialKeys.some(key=>Array.isArray(previous[key])&&previous[key].length>0);
+   const hasOtherData=Object.entries(previous).some(([key,value])=>!["income",...financialKeys,"coachProfile"].includes(key)&&value!=null&&value!==""&&value!==false&&(!Array.isArray(value)||value.length>0)&&(!(value&&typeof value==="object")||Object.keys(value).length>0));
+   const hasProfile=Array.isArray(previous.coachProfile)&&previous.coachProfile.length>0;
+   if(hasFinancialData||hasOtherData||hasProfile){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_SYNC_REQUIRED"});}
+  }
   const goals=Array.isArray(p.goals)?p.goals:(Array.isArray(previous.goals)?previous.goals:[]);
   const suppliedOps=Object.prototype.hasOwnProperty.call(p,"savingsOperations")?p.savingsOperations:[];
   if(!Array.isArray(suppliedOps)||suppliedOps.length>5000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_SAVINGS_LEDGER"});}
@@ -233,7 +246,7 @@ app.put("/api/data",auth,async(req,res)=>{
   const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000),coachProfile};
   await client.query("INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb) ON CONFLICT(user_id) DO UPDATE SET payload=EXCLUDED.payload,updated_at=NOW()",[req.session.user.id,JSON.stringify(safe)]);
   await client.query("COMMIT");
-  res.json({ok:true,updatedAt:new Date().toISOString()});
+  res.json({ok:true,updatedAt:new Date().toISOString(),payload:safe});
  }catch(e){
   await client.query("ROLLBACK").catch(()=>{});
   console.error("User data save failed",e.message);
