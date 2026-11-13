@@ -91,6 +91,7 @@ test("real HTTP authentication journeys enforce one active session and preserve 
         method,
         headers: {
           Origin: baseUrl,
+          "X-Forwarded-Proto": "https",
           ...(body === undefined ? {} : { "Content-Type": "application/json" }),
           ...(cookie ? { Cookie: cookie } : {})
         },
