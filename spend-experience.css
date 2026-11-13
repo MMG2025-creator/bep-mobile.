@@ -515,3 +515,40 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   #budgetModuleIncome .income-manual-entry > .hint{font-size:15px;line-height:1.6}
   #budgetModuleIncome .budget-checkup-row{font-size:15px}
 }
+
+
+/* Budget mobile spacing: compact rhythm shared by income and charges. */
+@media(max-width:640px){
+  #budgetModuleIncome .income-card,
+  #budgetModuleCharges .charges-card{
+    padding:15px;
+    gap:10px;
+  }
+  #budgetModuleIncome .income-actions-grid,
+  #budgetModuleCharges .charges-actions-grid{
+    gap:10px;
+  }
+  #budgetModuleIncome .income-actions-grid>.income-checkup,
+  #budgetModuleIncome .income-manual-entry,
+  #budgetModuleCharges .charges-actions-grid>.charges-checkup,
+  #budgetModuleCharges .charges-manual-entry{
+    padding:13px;
+  }
+  #budgetModuleIncome .income-checkup-head,
+  #budgetModuleCharges .charges-checkup .budget-checkup-head{
+    margin-bottom:9px;
+  }
+  #budgetModuleIncome .income-checkup-head h3,
+  #budgetModuleIncome .income-manual-entry h3,
+  #budgetModuleCharges .charges-checkup .budget-checkup-head h3,
+  #budgetModuleCharges .charges-manual-entry h3{
+    margin:6px 0 8px;
+    line-height:1.4;
+  }
+  #budgetModuleIncome .income-manual-entry .bep-entry-trigger,
+  #budgetModuleIncome .income-checkup .bep-entry-trigger,
+  #budgetModuleCharges .charges-manual-entry .bep-entry-trigger,
+  #budgetModuleCharges .charges-checkup .bep-entry-trigger{
+    margin-top:10px;
+  }
+}
