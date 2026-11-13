@@ -6,6 +6,9 @@ window.bepSignedIn = false;
 window.bepOfflineMode = true;
 window.bepDemoMode = true;
 document.documentElement.classList.add("bep-demo-local");
+/* Never leave the full-screen startup overlay blocking the local demo. */
+const startupLoader = document.getElementById("bepStartupLoader");
+if (startupLoader) startupLoader.hidden = true;
 const demoGate = document.getElementById("authGate");
 const demoRoot = document.getElementById("bepAppRoot");
 if (demoGate) demoGate.hidden = true;
