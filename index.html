@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=97&bep=savings-progress-motion-close-20261113"><link rel="stylesheet" href="./ui-polish.css?v=2">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=97&bep=savings-progress-motion-close-20261113"><link rel="stylesheet" href="./ui-polish.css?v=2"><link rel="stylesheet" href="./settings.css?v=1">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=3">
@@ -46,7 +46,7 @@
 <header class="topbar"><a class="brand brand-green" id="homeLink" href="#home" aria-label="BEP — Build, Earn & Preserve" title="Retour à l’accueil"><svg class="logo" viewBox="0 0 250 72" role="img" aria-label="BEP — Build, Earn & Preserve" xmlns="http://www.w3.org/2000/svg">
 <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round"><path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/><path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/></g>
 <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
-<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.75 14 4l2.35-.35 1.05 2.1 2.2 1.05-.35 2.35L20.5 12l-1.25 2 .35 2.35-2.1 1.05-1.05 2.2-2.35-.35L12 20.5l-2-1.25-2.35.35-1.05-2.1-2.2-1.05.35-2.35L3.5 12l1.25-2-.35-2.35 2.1-1.05 1.05-2.2 2.35.35L12 2.75Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.65"/></svg></button></div></header>
+<text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text></svg></a><div class="head-actions"><button type="button" id="installBtn" class="pwa-install-btn" hidden>Installer BEP</button><button class="icon-btn settings-icon-btn" id="settingsBtn" aria-label="Mon profil et paramètres" title="Mon profil et paramètres"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.2 20c.5-3.6 3.1-5.7 6.8-5.7s6.3 2.1 6.8 5.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div></header>
 <main>
 <section class="welcome"><p class="eyebrow">BUILD <i>•</i> EARN <i>•</i> PRESERVE</p><h1>La maîtrise précède<br>la <span>croissance.</span></h1><p class="sub">Chaque décision compte. Ton capital mérite une stratégie.</p><div class="hero-growth" aria-hidden="true"><i></i><i></i><i></i></div><div class="bep-home-mascot" aria-hidden="true"><svg class="bep-home-robot" viewBox="0 0 120 130"><defs><linearGradient id="homeRobotShell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbd8d2"/></linearGradient><linearGradient id="homeRobotGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe8a0"/><stop offset="1" stop-color="#b9872c"/></linearGradient></defs><ellipse cx="60" cy="119" rx="37" ry="7" fill="#dce8e2"/><path d="M60 12V4m-7 0h14" stroke="#c69b43" stroke-width="3" stroke-linecap="round"/><path d="M27 54c0-22 14-35 33-35s33 13 33 35v31c0 13-12 23-33 23S27 98 27 85Z" fill="url(#homeRobotShell)" stroke="#9eb6aa" stroke-width="2"/><rect x="20" y="45" width="80" height="53" rx="23" fill="#123b34" stroke="url(#homeRobotGold)" stroke-width="4"/><rect x="29" y="53" width="62" height="37" rx="16" fill="#061f1c"/><g class="bep-home-robot-eyes"><circle cx="46" cy="71" r="5" fill="#00e0a1"/><circle cx="74" cy="71" r="5" fill="#00e0a1"/></g><path d="M43 81q17 9 34 0" stroke="#4be7b8" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M21 57h-9v22h9m78-22h9v22h-9" fill="none" stroke="url(#homeRobotGold)" stroke-width="5" stroke-linecap="round"/><path d="M43 107v8m34-8v8" stroke="#9eb6aa" stroke-width="5" stroke-linecap="round"/></svg><span class="bep-home-robot-glow"></span></div></section>
 <nav class="tabs" aria-label="Navigation">
@@ -357,12 +357,59 @@
   </details>
 </article>
 </section>
-<section id="settings" class="panel">
-<article class="card"><h2>Mon profil</h2><p class="hint" id="profileEmail"></p><form id="profileForm"><div class="profile-name-row"><div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div><div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div></div><div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div><button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p></form></article>
+<section id="settings" class="panel settings-panel">
+  <div class="settings-page-heading"><span class="settings-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5.2 20c.5-3.6 3.1-5.7 6.8-5.7s6.3 2.1 6.8 5.7"/></svg></span><div><p class="eyebrow">MON ESPACE</p><h1>Paramètres</h1><p class="hint">Gère ton profil et tes données personnelles.</p></div></div>
 
-<article class="card"><h2>Mes données et ma confidentialité</h2><div class="privacy-note">Les informations financières sont conservées dans le stockage privé de ce navigateur sur ce téléphone. Effacer les données du navigateur ou désinstaller le navigateur peut les supprimer.</div><div class="field"><label>Mot de passe de sauvegarde</label><input id="vaultPhraseInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" minlength="10" placeholder="10 caractères minimum" aria-label="Mot de passe de sauvegarde"></div><button class="primary full" id="exportBtn">Exporter une sauvegarde chiffrée</button><div class="field"><label>Restaurer une sauvegarde BEP (.bep)</label><input id="importFile" type="file" accept=".bep,application/json"></div><button class="secondary full" id="importBtn">Restaurer sur cet appareil</button><div class="divider"></div><button class="danger full" id="deleteBtn">Effacer toutes mes données BEP</button><p class="hint">L'export est chiffré avec AES-GCM et une dérivation de clé PBKDF2. Conserve ton mot de passe séparément : sans lui, la sauvegarde ne pourra pas être restaurée.</p><div class="divider"></div><h3>Compte et session</h3><p class="hint">Ferme ta session BEP sur cet appareil. Tes données enregistrées sur ton compte ne sont pas supprimées.</p><h3>Méthodes de connexion</h3><p class="hint">Associe Google à ton compte BEP. Pour un compte e-mail, confirme d’abord ton mot de passe. Google doit confirmer la même adresse e-mail que ton compte BEP.</p><div class="field"><label for="accountProofInput">Mot de passe BEP actuel (comptes e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div><button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p><div class="divider"></div><button type="button" class="secondary full logout-btn-settings" id="logoutBtn">Me déconnecter du compte</button><div class="divider"></div><h3>Suppression du compte</h3><p class="hint">Supprime définitivement ton compte BEP, ton profil, tes données financières, tes achats, tes objectifs et les sessions associées. Cette action est irréversible.</p><button type="button" class="danger full" id="deleteAccountBtn">Supprimer mon compte et toutes mes données</button></article>
-<article class="card"><h2>Mesure du coach BEP</h2><div class="ai-usage-grid"><div><strong id="aiRequestCount">0</strong><span>Conseils générés</span></div><div><strong id="aiTokenCount">0</strong><span>Tokens estimés</span></div><div><strong id="aiLatency">0 ms</strong><span>Temps moyen</span></div><div><strong id="aiCost">—</strong><span>Coût IA externe</span></div></div><p class="hint">Les conseils financiers structurés sont calculés par BEP sans appel Gemini. Gemini intervient uniquement pour certaines questions ouvertes, dans les limites gratuites configurées et après confirmation que le projet Google ne peut pas générer de facturation. Si un quota est atteint, le Coach BEP structuré reste disponible.</p></article>
-<article class="card"><h2>À propos de BEP</h2><p class="muted">Version BEP avec compte personnel et synchronisation sécurisée. Aucune connexion bancaire.</p><p class="hint">Build • Earn • Preserve</p></article>
+  <article class="card settings-card" id="settingsProfileCard">
+    <div class="settings-section-heading"><span class="settings-section-icon">01</span><div><h2>Mon profil</h2><p class="hint">Tes informations personnelles et tes accès.</p></div></div>
+    <p class="hint" id="profileEmail"></p>
+    <form id="profileForm">
+      <div class="profile-name-row">
+        <div class="field"><label for="profileFirstName">Prénom</label><input id="profileFirstName" maxlength="80" autocomplete="given-name" required></div>
+        <div class="field"><label for="profileLastName">Nom</label><input id="profileLastName" maxlength="80" autocomplete="family-name" required></div>
+      </div>
+      <div class="field"><label for="profilePhone">Téléphone</label><input id="profilePhone" type="tel" maxlength="30" autocomplete="tel" placeholder="+33 6 12 34 56 78"></div>
+      <button class="primary full" id="saveProfileBtn">Enregistrer mon profil</button><p class="hint" id="profileStatus" role="status"></p>
+    </form>
+    <div class="settings-subsection">
+      <h3>Méthodes de connexion</h3>
+      <p class="hint">Associe Google à ton compte pour choisir comment te connecter.</p>
+      <div class="field"><label for="accountProofInput">Mot de passe actuel (compte e-mail uniquement)</label><input id="accountProofInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" placeholder="Mot de passe actuel" aria-label="Mot de passe BEP actuel"></div>
+      <button type="button" class="secondary full" id="linkGoogleBtn">Associer mon compte Google</button><p class="hint" id="googleLinkStatus" role="status"></p>
+    </div>
+  </article>
+
+  <article class="card settings-card" id="settingsDataCard">
+    <div class="settings-section-heading"><span class="settings-section-icon">02</span><div><h2>Mes données</h2><p class="hint">Sauvegarde et restauration de tes informations BEP.</p></div></div>
+    <div class="settings-action-block">
+      <div class="field"><label for="vaultPhraseInput">Mot de passe de sauvegarde</label><input id="vaultPhraseInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" minlength="10" placeholder="10 caractères minimum" aria-label="Mot de passe de sauvegarde"></div>
+      <button class="primary full" id="exportBtn">Exporter une sauvegarde chiffrée</button>
+    </div>
+    <div class="settings-action-block">
+      <div class="field"><label for="importFile">Restaurer une sauvegarde BEP (.bep)</label><input id="importFile" type="file" accept=".bep,application/json"></div>
+      <button class="secondary full" id="importBtn">Restaurer sur cet appareil</button>
+    </div>
+  </article>
+
+  <article class="card settings-card" id="settingsPrivacyCard">
+    <div class="settings-section-heading"><span class="settings-section-icon">03</span><div><h2>Ma confidentialité</h2><p class="hint">Comprends où sont conservées tes informations et garde le contrôle.</p></div></div>
+    <div class="settings-privacy-note"><strong>Stockage de tes données</strong><p>Une partie des informations est conservée localement sur cet appareil. Les données associées à ton compte peuvent également être synchronisées avec BEP. Effacer les données du navigateur peut supprimer les éléments conservés uniquement sur cet appareil.</p></div>
+    <div class="settings-danger-block">
+      <h3>Effacer les données de cet appareil</h3><p class="hint">Supprime les données BEP locales de ce navigateur. Cette action ne supprime pas ton compte.</p>
+      <button class="danger full" id="deleteBtn">Effacer mes données locales</button>
+    </div>
+    <div class="settings-danger-block">
+      <h3>Supprimer mon compte</h3><p class="hint">Supprime définitivement ton compte BEP, ton profil et les données associées. Cette action est irréversible.</p>
+      <button type="button" class="danger full" id="deleteAccountBtn">Supprimer mon compte et toutes mes données</button>
+    </div>
+  </article>
+
+  <article class="card settings-card" id="settingsSessionCard">
+    <div class="settings-section-heading"><span class="settings-section-icon">04</span><div><h2>Ma session</h2><p class="hint">Termine ta session sur cet appareil.</p></div></div>
+    <button type="button" class="secondary full logout-btn-settings" id="logoutBtn">Me déconnecter du compte</button>
+  </article>
+
+  <div class="settings-about">BEP · Build, Earn & Preserve</div>
 </section>
 </main>
 <footer> B E P <span>•</span> Bâtir · Épargner · Préserver </footer>
