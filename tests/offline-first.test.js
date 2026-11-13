@@ -13,6 +13,9 @@ test("offline persistence runtime is synchronized and included in the app shell"
 test("offline sync is account-scoped and refuses to overwrite a changed remote snapshot",()=>{
  const js=read("offline-storage.js");
  assert.match(js,/hasKnownUser\(\)\)return false/);
+ assert.match(js,/hasTrustedSnapshot\(\)/);
+ assert.match(js,/SNAPSHOT_KEY/);
+ assert.match(js,/if\(!base\|\|typeof base!=="object"/);
  assert.match(js,/stable\(remote\)!==stable\(pending\.base\)/);
  assert.match(js,/__bepOfflineSync:true/);
  assert.match(js,/base:pending\.base,payload:pending\.payload/);
@@ -55,4 +58,20 @@ test("monthly budget history cache is isolated by authenticated user",()=>{
  assert.match(js,/cached\?\.budgets\?\.\[monthKey\]/);
  assert.match(js,/cacheOnlyMode/);
  assert.match(js,/lecture seule/);
+});
+
+test("monthly budget loading ignores stale responses from an earlier month selection",()=>{
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.match(js,/let monthLoadSequence = 0/);
+ assert.match(js,/const requestId = \+\+monthLoadSequence/);
+ assert.match(js,/requestId !== monthLoadSequence/);
+ assert.match(js,/if \(requestId === monthLoadSequence && epoch === authEpoch\)/);
+});
+test("monthly budget creation is idempotent and updates require the current version",()=>{
+ const js=read("monthly-budget-routes.js");
+ assert.match(js,/ON CONFLICT\(user_id,month_key\) DO NOTHING/);
+ assert.match(js,/if \(!inserted\.rowCount\)/);
+ assert.match(js,/expectedVersion/);
+ assert.match(js,/VERSION_CONFLICT/);
 });
