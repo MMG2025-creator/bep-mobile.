@@ -1,6 +1,12 @@
 name: BEP atomic offline sync guard
 
 on:
+  push:
+    branches: [fix/atomic-multisession-api-20261113]
+    paths:
+      - "server.js"
+      - "tests/offline-sync-api.test.js"
+      - ".github/workflows/offline-sync-guard.yml"
   pull_request:
     branches: [main]
     paths:
