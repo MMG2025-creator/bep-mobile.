@@ -45,3 +45,18 @@ test("both external AI entry points pass the authenticated account ID into the c
  assert.match(server,/app\.post\("\/api\/ai\/test",auth,async\(req,res\)=>\{let quota=null;try\{const \{cfg,key\}=await userAi\(req\.session\.user\.id\)/);
  assert.match(server,/\(\{cfg,key\}=await userAi\(req\.session\.user\.id\)\)/);
 });
+
+test("settings UI explains external data sharing and requires an unchecked explicit opt-in",()=>{
+ const html=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
+ assert.match(html,/id="externalAiConsentCheckbox" type="checkbox" disabled required/);
+ assert.match(html,/tes revenus et leurs sources, tes charges, budgets et dépenses/);
+ assert.match(html,/objectifs d’épargne/);
+ assert.match(html,/id="revokeExternalAiConsentBtn" hidden/);
+});
+test("frontend sends the current consent version only after explicit user action",()=>{
+ const app=fs.readFileSync(path.join(__dirname,"..","app.js"),"utf8");
+ assert.match(app,/BEP_EXTERNAL_AI_CONSENT_VERSION="bep-external-ai-financial-context-v1"/);
+ assert.match(app,/body:JSON\.stringify\(\{enabled,consentVersion:enabled\?BEP_EXTERNAL_AI_CONSENT_VERSION:undefined\}\)/);
+ assert.match(app,/externalAiConsentForm\.addEventListener\("submit"/);
+ assert.match(app,/revokeExternalAiConsentBtn\.addEventListener\("click"/);
+});
