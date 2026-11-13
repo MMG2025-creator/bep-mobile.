@@ -33,7 +33,7 @@
       let timer = null;
       const clear = () => { if (timer) clearTimeout(timer); timer = null; };
       const start = event => {
-        if (event.target.closest("button,input") || current?.status !== "open" || event.button === 2) return;
+        if (event.target.closest("button,input") || current?.status !== "open" || !navigator.onLine || event.button === 2) return;
         clear();
         timer = setTimeout(() => { timer = null; monthSelectionMode = true; monthSelection.add(index); attachMonthLongPress(); }, 600);
       };
@@ -54,7 +54,7 @@
     toolbar.querySelector("[data-month-all]")?.addEventListener("click", () => { if (monthSelection.size === rows.length) monthSelection.clear(); else rows.forEach(row => monthSelection.add(Number(row.dataset.monthRow))); attachMonthLongPress(); });
     toolbar.querySelector("[data-month-cancel]")?.addEventListener("click", () => { monthSelection.clear(); monthSelectionMode = false; attachMonthLongPress(); });
     toolbar.querySelector("[data-month-delete]")?.addEventListener("click", async () => {
-      if (!monthSelection.size || current?.status !== "open") return;
+      if (!monthSelection.size || current?.status !== "open" || !navigator.onLine) return;
       const accepted = window.BEP_CONFIRM_ACTION ? await window.BEP_CONFIRM_ACTION("Retirer les " + monthSelection.size + " lignes sélectionnées de ce mois ?", "Suppression multiple") : window.confirm("Retirer les lignes sélectionnées de ce mois ?");
       if (!accepted) return;
       items = items.filter((_, index) => !monthSelection.has(index)); monthSelection.clear(); monthSelectionMode = false; editingItemId = null;
@@ -314,7 +314,7 @@
       renderMonths();
       renderItems();
       let syncWarning = null;
-      if (current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
+      if (!fromCache && navigator.onLine && current.status === "open" && current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
         catch (syncError) { syncWarning = syncError.message; }
       }
@@ -525,6 +525,7 @@
     renderMonths();
   }
   $("monthlyBudgetClose").onclick = async () => {
+    if (!navigator.onLine) return status("La clôture d’un budget mensuel nécessite une connexion.", true);
     if (!current || loading) return;
     const epoch = authEpoch;
     setBusy(true);
@@ -540,6 +541,7 @@
     finally { setBusy(false); }
   };
   $("monthlyBudgetReopen").onclick = async () => {
+    if (!navigator.onLine) return status("La réouverture d’un budget mensuel nécessite une connexion.", true);
     if (!current || loading) return;
     const epoch = authEpoch;
     const reason = $("monthlyBudgetReasonInput").value.trim();
