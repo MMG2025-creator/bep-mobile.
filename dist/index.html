@@ -87,20 +87,15 @@
 <article class="card home-budget-overview home-financial-snapshot" aria-labelledby="homeBudgetTitle">
 <div class="card-head"><div><p class="eyebrow">VUE D'ENSEMBLE</p><h2 id="homeBudgetTitle">Ma situation mensuelle</h2></div><span class="tag">Actualisée</span></div>
 <div class="home-budget-metrics home-snapshot-grid">
-<div class="home-budget-metric home-snapshot-card"><span>Revenus mensuels</span><strong id="homeTotalIncome">0,00 €</strong></div>
-<div class="home-budget-metric home-snapshot-card"><span>Charges mensuelles</span><strong id="homeTotalCharges">0,00 €</strong></div>
-<div class="home-budget-metric home-budget-available home-snapshot-card"><span>Reste disponible</span><strong id="homeAvailable">0,00 €</strong></div>
-<div class="home-budget-metric home-snapshot-card"><span>Dépenses réelles</span><strong id="homeTotalActualExpenses">0,00 €</strong></div>
-<div class="home-budget-metric home-budget-savings home-snapshot-card"><span>Épargne prévue / mois</span><strong id="homeSavingsPlanned">0,00 €</strong></div>
+<button type="button" class="home-budget-metric home-snapshot-card home-snapshot-action" data-home-action="income" aria-label="Gérer mes revenus mensuels"><span>Revenus mensuels</span><strong id="homeTotalIncome">0,00 €</strong><small>Gérer mes revenus →</small></button>
+<button type="button" class="home-budget-metric home-snapshot-card home-snapshot-action" data-home-action="charges" aria-label="Gérer mes charges mensuelles"><span>Charges mensuelles</span><strong id="homeTotalCharges">0,00 €</strong><small>Gérer mes charges →</small></button>
+<button type="button" class="home-budget-metric home-snapshot-card home-snapshot-action" data-home-action="purchases" aria-label="Consulter mes dépenses réelles"><span>Dépenses réelles</span><strong id="homeTotalActualExpenses">0,00 €</strong><small>Voir mes dépenses →</small></button>
+<button type="button" class="home-budget-metric home-budget-savings home-snapshot-card home-snapshot-action" data-home-action="savings" aria-label="Gérer mon épargne prévue"><span>Épargne prévue / mois</span><strong id="homeSavingsPlanned">0,00 €</strong><small>Gérer mon épargne →</small></button>
+<div class="home-budget-metric home-budget-available home-snapshot-card home-snapshot-static"><span>Reste disponible</span><strong id="homeAvailable">0,00 €</strong><small>Solde prévisionnel</small></div>
+<button type="button" class="home-budget-metric home-overdraft-mini home-snapshot-card home-snapshot-action" data-home-action="overdraft" aria-label="Gérer mon découvert autorisé"><span>Découvert autorisé</span><strong id="homeOverdraftAmount">Non renseigné</strong><small id="homeOverdraftStatus">À renseigner · Gérer →</small></button>
 </div>
-<div class="home-budget-action-row"><button type="button" class="secondary home-budget-link home-budget-cta" data-goto="budget">Voir mon budget <span aria-hidden="true">→</span></button></div>
-</article>
-<article class="card home-overdraft-card" aria-labelledby="homeOverdraftTitle">
-<div class="card-head"><div><p class="eyebrow">TRÉSORERIE</p><h2 id="homeOverdraftTitle">Découvert autorisé</h2></div><span class="tag" id="homeOverdraftStatus">À renseigner</span></div>
-<div class="home-overdraft-summary"><span>Plafond accordé par ma banque</span><strong id="homeOverdraftAmount">Non renseigné</strong></div>
-<p id="homeOverdraftValidity" class="hint">Renseigne le plafond accordé par ta banque pour le retrouver ici.</p>
-<button type="button" class="secondary full home-overdraft-link" data-goto="budget">Gérer mon découvert autorisé</button>
-</article>
+cle>
+
 <article class="card home-coach-card">
 <div class="ai-card-head"><div><p class="eyebrow">ACCOMPAGNEMENT PERSONNALISÉ</p><h2>Conseil BEP</h2></div><span class="ai-label">Coach local</span></div>
 <p class="ai-advice">Fais le point sur tes habitudes, identifie une priorité et avance avec une prochaine action adaptée à ta situation.</p>
