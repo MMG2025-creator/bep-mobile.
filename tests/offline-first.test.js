@@ -9,6 +9,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 test("offline persistence runtime and published app bundles are synchronized",()=>{
  assert.equal(read("app.js"),read("dist/app.js"));
  assert.equal(read("offline-storage.js"),read("dist/offline-storage.js"));
+ assert.equal(read("styles.css"),read("dist/styles.css"));
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/offline-storage\.js\?v=/);
  const assetRefs=html=>[...html.matchAll(/(?:src|href)="\.\/(?:runtime-config|financial-engine|offline-storage|app|styles|monthly-budget-ui|spend-experience)\.(?:js|css)\?v=[^"]+"/g)].map(match=>match[0]).sort();
  assert.deepEqual(assetRefs(read("index.html")),assetRefs(read("dist/index.html")));
