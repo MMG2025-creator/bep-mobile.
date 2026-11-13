@@ -11,6 +11,9 @@ on:
       - "dist/index.html"
       - "settings.css"
       - "dist/settings.css"
+      - "styles.css"
+      - "dist/styles.css"
+      - "tests/frontend-integration.test.js"
       - "tests/bep-ai-consent.test.js"
       - ".github/workflows/coach-ai-consent.yml"
 
