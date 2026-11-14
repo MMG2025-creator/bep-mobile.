@@ -698,3 +698,9 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #purchases .bep-spend-stat-link:hover{border-color:#b8d5c2;box-shadow:0 5px 14px #173c2910}
 #purchases .bep-spend-stat-link:active{transform:translateY(1px)}
 #purchases .bep-spend-stat-link:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
+
+
+/* Distinction visuelle des achats sous impulsion, sans modifier la structure de la liste. */
+#purchaseRows .purchase-row.is-impulsive{background:linear-gradient(90deg,#fff4e8 0%,#fffaf5 100%);border-left:3px solid #ed9a42;padding-left:12px;border-radius:0 12px 12px 0;}
+#purchaseRows .purchase-row.is-impulsive .purchase-row-main>span>b{color:#9a4f12;}
+#purchaseRows .purchase-impulse-flag{display:inline-flex;align-items:center;margin-left:4px;padding:2px 7px;border-radius:999px;background:#ffe2bd;color:#8d470e;font-size:10px;font-style:normal;font-weight:800;white-space:nowrap;}
