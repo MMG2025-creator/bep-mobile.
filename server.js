@@ -12,7 +12,7 @@ const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_C
 app.set("trust proxy",1);
 app.use((req,res,next)=>{
  const origin=req.headers.origin;
- if(origin===FRONTEND_ORIGIN){res.setHeader("Access-Control-Allow-Origin",FRONTEND_ORIGIN);res.setHeader("Access-Control-Allow-Credentials","true");res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,DELETE,OPTIONS");res.setHeader("Access-Control-Allow-Headers","Content-Type");}
+ if(origin===FRONTEND_ORIGIN){res.setHeader("Access-Control-Allow-Origin",FRONTEND_ORIGIN);res.setHeader("Access-Control-Allow-Credentials","true");res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,DELETE,OPTIONS");res.setHeader("Access-Control-Allow-Headers","Content-Type, X-BEP-Device-ID");}
  if(req.method==="OPTIONS")return origin===FRONTEND_ORIGIN?res.sendStatus(204):res.sendStatus(403);
  if(["POST","PUT","PATCH","DELETE"].includes(req.method)&&origin!==FRONTEND_ORIGIN)return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
  next();
@@ -21,26 +21,37 @@ app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
 app.use(express.json({limit:"1mb"}));
-function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
+function rateLimit({windowMs,max,scope,ipMax}){return async(req,res,next)=>{
  if(!pool)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
  const now=Date.now(),windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
+ const rawDevice=String(req.get("X-BEP-Device-ID")||"");
+ const deviceId=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(rawDevice)?rawDevice.toLowerCase():"";
  const ip=String(req.ip||req.socket.remoteAddress||"unknown");
- const key=crypto.createHash("sha256").update(scope+":"+ip).digest("hex");
- try{
+ const identity=deviceId?"device:"+deviceId:"ip-fallback:"+ip;
+ const hash=value=>crypto.createHash("sha256").update(scope+":"+value).digest("hex");
+ const increment=async(bucket,limit)=>{
   const result=await pool.query(
    "INSERT INTO bep_rate_limits(bucket_key,window_start_ms,request_count,expires_at) VALUES($1,$2,1,to_timestamp(($2::bigint+$3::bigint)/1000.0)) ON CONFLICT(bucket_key) DO UPDATE SET request_count=CASE WHEN bep_rate_limits.window_start_ms=EXCLUDED.window_start_ms THEN bep_rate_limits.request_count+1 ELSE 1 END,window_start_ms=EXCLUDED.window_start_ms,expires_at=EXCLUDED.expires_at RETURNING request_count",
-   [scope+":"+key,windowStart,windowMs]
+   [scope+":"+bucket,windowStart,windowMs]
   );
-  const count=Number(result.rows[0].request_count),remaining=Math.max(0,max-count),retryAfter=Math.max(1,Math.ceil((resetAt-now)/1000));
+  return Number(result.rows[0].request_count);
+ };
+ try{
+  const count=await increment(hash(identity),max);
+  const remaining=Math.max(0,max-count),retryAfter=Math.max(1,Math.ceil((resetAt-now)/1000));
   res.setHeader("RateLimit-Limit",String(max));res.setHeader("RateLimit-Remaining",String(remaining));res.setHeader("RateLimit-Reset",String(retryAfter));
-  if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED"})}
+  if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED",scope:"device"})}
+  if(ipMax){
+   const ipCount=await increment("ip-guard:"+hash(ip),ipMax);
+   if(ipCount>ipMax){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED",scope:"network"})}
+  }
   if(Math.random()<0.01)pool.query("DELETE FROM bep_rate_limits WHERE expires_at<NOW()").catch(e=>console.error("Rate limit cleanup failed",e.message));
   next();
  }catch(e){console.error("Shared rate limiter unavailable",e.message);return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"})}
 }}
-app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
-app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
-app.use("/api",rateLimit({windowMs:60*1000,max:120,scope:"api"}));
+app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth",ipMax:10000}));
+app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai",ipMax:10000}));
+app.use("/api",rateLimit({windowMs:60*1000,max:120,scope:"api",ipMax:100000}));
 if(pool&&process.env.SESSION_SECRET)app.use(session({store:new PgSession({pool,tableName:"user_sessions",createTableIfMissing:true}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:true,sameSite:"none",maxAge:604800000}}));
 async function init(){if(!pool)return;await pool.query("CREATE TABLE IF NOT EXISTS bep_users(id TEXT PRIMARY KEY,email TEXT NOT NULL UNIQUE,display_name TEXT,avatar_url TEXT,password_hash TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"); await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS password_hash TEXT");await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT TRUE");await pool.query("CREATE TABLE IF NOT EXISTS bep_email_verifications(email TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,code_hash TEXT NOT NULL,expires_at TIMESTAMPTZ NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_password_reset_tokens(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,expires_at TIMESTAMPTZ NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE INDEX IF NOT EXISTS bep_password_reset_tokens_expiry ON bep_password_reset_tokens(expires_at)");await pool.query("CREATE UNIQUE INDEX IF NOT EXISTS bep_password_reset_tokens_user_unique ON bep_password_reset_tokens(user_id)");await pool.query("CREATE TABLE IF NOT EXISTS bep_user_data(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,payload JSONB NOT NULL DEFAULT '{\"income\":0,\"budgets\":[],\"expenses\":[],\"goals\":[]}'::jsonb,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_states(state TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_state_tokens(token_hash TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");
 await pool.query("CREATE TABLE IF NOT EXISTS bep_user_ai(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,provider TEXT NOT NULL,model TEXT NOT NULL,endpoint TEXT,encrypted_key TEXT NOT NULL,key_iv TEXT NOT NULL,key_tag TEXT NOT NULL,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
