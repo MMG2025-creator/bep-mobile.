@@ -541,23 +541,7 @@
     </div>
   </section>
 </dialog>
-<script>
-(function(){
- const dialog=document.getElementById("bepAdviceDialog"),robot=document.getElementById("bepAdviceRobot"),dock=document.getElementById("bepAdviceDock");
- if(!dialog||!robot||!dock)return;
- const ids={home:"aiHome",budget:{income:"aiIncome",charges:"aiCharges",monthly:"aiMonthly"},savings:"aiSavings",purchases:"aiPurchases"};
- const labels={home:"Accueil",income:"Budget · Mes revenus",charges:"Budget · Mes charges",monthly:"Budget · Budgets mensuels",savings:"Épargne",purchases:"Dépenses"};
- function context(){const panel=document.querySelector(".panel.active")?.id||"home";return panel==="budget"?(document.querySelector("[data-budget-module].active")?.dataset.budgetModule||"income"):panel}
- function open(){const c=context(),key=typeof c==="string"?c:c;const targetId=typeof ids[key]==="string"?ids[key]:ids.budget[c]||ids.budget.income;dialog.querySelectorAll(".bep-advice-content .ai-advice,.bep-advice-content .savings-advisor-foot").forEach(el=>el.hidden=el.id!==targetId&&!(key==="savings"&&el.id==="savingsAdvisorFoot"));document.getElementById("bepAdviceContext").textContent=labels[key]||"Votre situation";dialog.showModal();robot.setAttribute("aria-expanded","true");if(typeof window.recordAdvice==="function")window.recordAdvice(key)}
- function close(){dialog.close();robot.setAttribute("aria-expanded","false")}
- robot.addEventListener("click",()=>dialog.open?close():open());
- document.getElementById("bepAdviceClose").addEventListener("click",close);
- 
- dialog.addEventListener("click",e=>{if(e.target===dialog)close()});
- window.BEP_OPEN_ADVICE=open;
- 
-})();
-</script>
+<script src="./advice-dock.js?v=1&bep=csp-safe-20261115"></script>
 
 <script>
 (function(){window.__bepStartupMetrics={started:performance.now()};const report=()=>{const nav=performance.getEntriesByType("navigation")[0],loader=document.getElementById("bepStartupLoader");if(!loader||loader.hidden){const metrics={domContentLoaded:nav?Math.round(nav.domContentLoadedEventEnd):null,windowLoad:nav?Math.round(nav.loadEventEnd):null,appReady:Math.round(performance.now())};console.info("[BEP performance]",metrics);window.__bepStartupMetrics={...metrics,reported:true};return true}return false};const watch=()=>{const loader=document.getElementById("bepStartupLoader");if(!loader)return;if(!report()){const observer=new MutationObserver(()=>{if(report())observer.disconnect()});observer.observe(loader,{attributes:true,attributeFilter:["hidden"]})}};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();if("PerformanceObserver"in window){try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(e.duration>80)console.info("[BEP long task]",Math.round(e.duration)+" ms")}).observe({type:"longtask",buffered:true})}catch{}}})();
@@ -567,13 +551,13 @@
 <script src="./offline-storage.js?v=6&bep=robust-local-clear-20261114"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=117&bep=receipt-progress-and-budget-motion-20261114"></script>
+<script src="./app.js?v=118&bep=receipt-loading-feedback-20261115"></script>
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
 <script src="./pwa.js?v=11"></script>
 <script src="./connection-status.js?v=1"></script>
 <script src="./spend-experience.js?v=24&bep=short-month-label-20261114"></script>
-<script src="./spend-clean-ui.js?v=8&bep=floating-notes-history-order-20261114"></script>
+<script src="./spend-clean-ui.js?v=9&bep=hide-empty-impulse-count-20261115"></script>
 
 <script>
 (function(){

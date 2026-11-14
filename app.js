@@ -584,7 +584,7 @@ async function prepareReceiptImageForOcr(file){
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
 async function processReceiptFile(file,input){
  if(!file)return;
- const status=$("receiptStatus");status.hidden=false;status.classList.remove("is-success","is-error");status.classList.add("is-processing");status.dataset.stage="prepare";status.style.setProperty("--receipt-progress","6%");status.textContent="Votre visuel est en cours de chargement…";
+ const status=$("receiptStatus");status.hidden=false;status.classList.remove("is-success","is-error");status.classList.add("is-processing");status.dataset.stage="prepare";status.style.setProperty("--receipt-progress","6%");status.textContent="Préparation de la photo…";
  const receiptStage=(stage,message,progress)=>{status.dataset.stage=stage;status.style.setProperty("--receipt-progress",Math.max(4,Math.min(100,progress))+"%");status.textContent=message};
  let worker;
  try{
