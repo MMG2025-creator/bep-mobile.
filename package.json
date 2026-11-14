@@ -7,11 +7,10 @@
     "start": "node server.js",
     "test": "node --test",
     "export:coach-snapshots": "node scripts/export-bep-coach-snapshots.js",
+    "check:coach-exporter-role": "node scripts/check-bep-exporter-db-role.js",
     "check:monthly-budget": "node --check financial-engine.js && node --check dist/financial-engine.js && node --check spend-experience.js && node --check dist/spend-experience.js && node --check lib/bep-financial-intelligence.js && node --check lib/bep-financial-knowledge-seed.js && node --check server.js && node --check monthly-budget-routes.js && node --check monthly-budget-ui.js && node --check offline-storage.js && node --check dist/offline-storage.js && node --check sw.js && node --check dist/sw.js && node --check app.js && node --check dist/app.js && node --check dist/monthly-budget-ui.js && node --test tests/monthly-budget.test.js tests/monthly-budget.integration.test.js tests/frontend-integration.test.js tests/madame-michu-ux.test.js tests/offline-first.test.js tests/bep-financial-intelligence.test.js tests/financial-engine.test.js tests/treasury-overdraft.test.js"
   },
-  "engines": {
-    "node": ">=20"
-  },
+  "engines": { "node": ">=20" },
   "dependencies": {
     "connect-pg-simple": "^10.0.0",
     "express": "^5.1.0",
