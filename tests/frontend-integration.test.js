@@ -6,9 +6,20 @@ const path=require("node:path");
 const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
 test("published JavaScript assets are synchronized without overwriting production-specific CSS",()=>{
- for(const file of ["app.js","financial-engine.js","spend-experience.js","spend-clean-ui.js","monthly-budget-ui.js","offline-storage.js","sw.js","connection-status.js"]){
+ for(const file of ["app.js","financial-engine.js","spend-experience.js","spend-clean-ui.js","monthly-budget-ui.js","offline-storage.js","backup-vault.js","sw.js","connection-status.js"]){
   assert.equal(read(file),read("dist/"+file),file+" source and dist must match");
  }
+});
+
+test("encrypted backup controls are wired in both published HTML builds",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/id="vaultPhraseInput"[^>]*type="password"/);
+  for(const id of ["exportBtn","importFile","importBtn","backupExportStatus","backupImportStatus"])assert.match(html,new RegExp('id="'+id+'"'));
+  assert.match(html,/<script src="\.\/backup-vault\.js\?v=1"><\/script>[\s\S]*?<script src="\.\/app\.js/);
+ }
+ const app=read("app.js");
+ for(const marker of ["BEPBackupVault.encrypt","BEPBackupVault.decrypt","BEPOffline.stage","BEPOffline.discardPending","/api/data"])assert.ok(app.includes(marker),"missing backup flow: "+marker);
 });
 
 test("both HTML builds expose the current budget, savings and overdraft interfaces",()=>{

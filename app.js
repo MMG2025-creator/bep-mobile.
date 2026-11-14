@@ -325,6 +325,86 @@ $("skipImageCandidate").addEventListener("click",()=>{imageCandidateIndex++;imag
 $("bankImages").addEventListener("change",()=>{const files=[...($("bankImages").files||[])];$("imageSelectionInfo").textContent=files.length+" / 10 photo(s) sélectionnée(s)";if(files.length>10){$("bankImages").value="";$("imageSelectionInfo").textContent="Maximum 10 photos. Sélectionne un nouveau lot.";imageStatus("Tu peux importer 10 photos maximum par analyse.",true)}else if(files.some(f=>!/^image\/(jpeg|png|webp)$/.test(f.type))){$("bankImages").value="";imageStatus("Format non pris en charge. Utilise JPG, PNG ou WebP.",true)}});
 $("analyzeImages").addEventListener("click",async()=>{const files=[...($("bankImages").files||[])];if(!files.length)return imageStatus("Sélectionne au moins une photo.",true);if(files.length>10)return imageStatus("10 photos maximum par analyse.",true);if(files.some(f=>f.size>12*1024*1024))return imageStatus("Chaque photo doit peser moins de 12 Mo.",true);try{await loadTesseract()}catch(error){return imageStatus(error.message||"Le moteur OCR n'est pas disponible.",true)}$("analyzeImages").disabled=true;$("imageReview").classList.add("hidden");imageStatus("Lecture locale des photos… Aucune image n'est envoyée au serveur BEP.");const candidates=[];try{for(let i=0;i<files.length;i++){imageStatus("Analyse de la photo "+(i+1)+" sur "+files.length+"…");const ocrImage=await prepareBankImageForOcr(files[i]);const result=await window.Tesseract.recognize(ocrImage,"fra+eng",{logger:m=>{if(m.status==="recognizing text")imageStatus("Photo "+(i+1)+" / "+files.length+" — reconnaissance "+Math.round((m.progress||0)*100)+" %")}});const extracted=imageCandidatesFromOcrData(result.data,files[i].name);for(const c of extracted)candidates.push(c);if(!extracted.length){for(const line of String(result.data?.text||"").split(/\r?\n/)){const c=imageCandidateFromLine(line,files[i].name,false);if(c)candidates.push(c)}}}const seen=new Set();imageCandidates=candidates.filter(c=>{const k=pdfCleanText(c.description)+"|"+c.amount.toFixed(2);if(seen.has(k))return false;seen.add(k);return true});if(!imageCandidates.length)throw Error("Aucune information financière suffisamment lisible n'a été détectée. Essaie avec des captures plus nettes où les libellés et montants sont visibles.");imageCandidateIndex=0;$("bankImages").value="";$("imageSelectionInfo").textContent="Photos analysées. Les fichiers originaux ne sont plus sélectionnés.";imageStatus(imageCandidates.length+" information(s) détectée(s). Vérifie-les une par une.");imageRenderCandidate()}catch(e){$("bankImages").value="";imageStatus(e.message||"L'analyse des photos a échoué.",true)}finally{$("analyzeImages").disabled=false}});
 
+
+const backupExportButton=$("exportBtn"),backupImportButton=$("importBtn"),backupPassword=$("vaultPhraseInput");
+function backupStatus(id,message,isError=false){const el=$(id);if(el){el.textContent=message;el.classList.toggle("error",!!isError)}}
+function backupCount(data,key){return Array.isArray(data?.[key])?data[key].length:0}
+function validateRestoredState(value){
+ if(!value||typeof value!=="object"||Array.isArray(value))throw Error("Les données de cette sauvegarde sont invalides.");
+ for(const key of ["incomes","budgets","expenses","goals","transactions","savingsOperations","coachProfile"])if(value[key]!=null&&!Array.isArray(value[key]))throw Error("La sauvegarde contient une structure invalide (« "+key+" »).");
+ if(value.treasury!=null&&(typeof value.treasury!=="object"||Array.isArray(value.treasury)))throw Error("Les paramètres de découvert de cette sauvegarde sont invalides.");
+ if(JSON.stringify(value).length>10*1024*1024)throw Error("Les données restaurées dépassent la taille autorisée.");
+ return value;
+}
+backupExportButton?.addEventListener("click",async()=>{
+ const password=backupPassword?.value||"";
+ if(password.length<10){backupStatus("backupExportStatus","Choisis un mot de passe d’au moins 10 caractères.",true);backupPassword?.focus();return}
+ backupExportButton.disabled=true;backupStatus("backupExportStatus","Préparation et chiffrement de tes données…");
+ try{
+  let remote=null;
+  if(window.bepSignedIn){
+   const response=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
+   if(!response.ok)throw Error("Impossible de lire les données synchronisées du compte (HTTP "+response.status+").");
+   const result=await response.json();remote=result.payload||{};
+  }
+  const local=JSON.parse(localStorage.getItem(DB)||"{}");
+  if(!local||typeof local!=="object"||Array.isArray(local))throw Error("Les données locales sont illisibles.");
+  const pending=window.BEPOffline?await window.BEPOffline.readPending():null;
+  const payload={format:"BEP-BACKUP-DATA",version:1,createdAt:new Date().toISOString(),appVersion:"2.0.0",data:{local,remote,pending}};
+  const encrypted=await window.BEPBackupVault.encrypt(payload,password);
+  const blob=new Blob([encrypted],{type:"application/vnd.bep.backup+json;charset=utf-8"});
+  const url=URL.createObjectURL(blob),link=document.createElement("a"),stamp=new Date().toISOString().replace(/[:.]/g,"-");
+  link.href=url;link.download="bep-sauvegarde-"+stamp+".bep";document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+  backupPassword.value="";
+  backupStatus("backupExportStatus","Sauvegarde chiffrée téléchargée. Conserve le fichier et le mot de passe séparément.");
+ }catch(error){backupStatus("backupExportStatus",error.message||"L’export de la sauvegarde a échoué.",true)}
+ finally{backupExportButton.disabled=false}
+});
+backupImportButton?.addEventListener("click",async()=>{
+ const file=$("importFile")?.files?.[0],password=backupPassword?.value||"";
+ if(!file){backupStatus("backupImportStatus","Sélectionne un fichier de sauvegarde .bep.",true);return}
+ if(password.length<10){backupStatus("backupImportStatus","Saisis le mot de passe utilisé lors de l’export (10 caractères minimum).",true);backupPassword?.focus();return}
+ if(file.size>20*1024*1024){backupStatus("backupImportStatus","Le fichier dépasse la taille maximale autorisée (20 Mo).",true);return}
+ backupImportButton.disabled=true;backupStatus("backupImportStatus","Vérification du fichier et déchiffrement…");
+ let previousLocal=null,staged=false,previousRemote=null;
+ try{
+  const decrypted=await window.BEPBackupVault.decrypt(await file.text(),password);
+  const imported=validateRestoredState(decrypted.data.local);
+  const pendingNow=window.BEPOffline?await window.BEPOffline.readPending():null;
+  if(pendingNow)throw Error("Des modifications hors ligne sont en attente. Synchronise-les avant toute restauration pour éviter de les écraser.");
+  const counts=["incomes","budgets","expenses","goals","transactions","savingsOperations"].map(key=>backupCount(imported,key));
+  const summary="La sauvegarde contient : "+counts[0]+" revenu(s), "+counts[1]+" charge(s), "+counts[2]+" dépense(s), "+counts[3]+" objectif(s), "+counts[4]+" transaction(s) et "+counts[5]+" mouvement(s) d’épargne.\n\n"+(window.bepSignedIn?"Elle sera restaurée sur ton compte BEP et cet appareil.":"Elle sera restaurée uniquement sur cet appareil invité.");
+  const accepted=window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION(summary,"Confirmer la restauration"):window.confirm(summary+"\n\nContinuer ?");
+  if(!accepted)return;
+  if(!window.bepSignedIn&&window.BEPOffline?.hasKnownUser())throw Error("Reconnecte-toi au compte BEP concerné et réessaie en ligne. La restauration hors connexion d’un compte identifié est bloquée pour protéger ses données.");
+  previousLocal=localStorage.getItem(DB);
+  localStorage.setItem(DB,JSON.stringify(imported));
+  if(window.bepSignedIn){
+   if(!navigator.onLine)throw Error("Une connexion Internet est nécessaire pour restaurer les données du compte.");
+   const response=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
+   if(!response.ok)throw Error("Impossible de vérifier les données actuelles du compte (HTTP "+response.status+").");
+   const current=await response.json();previousRemote=current.payload||{};
+   if(JSON.stringify(imported).length>450000)throw Error("Cette sauvegarde est trop volumineuse pour la synchronisation du compte. Restaure-la sur un appareil invité ou réduis son contenu.");
+   if(!window.BEPOffline?.setBaseline||!window.BEPOffline?.stage||!window.BEPOffline?.flush)throw Error("Le mécanisme sécurisé de synchronisation BEP n’est pas disponible.");
+   await window.BEPOffline.setBaseline(previousRemote);
+   await window.BEPOffline.stage(imported);staged=true;
+   const synced=await window.BEPOffline.flush();
+   if(!synced)throw Error("Le serveur a refusé la restauration ou les données du compte ont changé. Aucune donnée distante n’a été remplacée.");
+   staged=false;
+  }
+  state={...defaults,...imported};
+  for(const key of ["incomes","budgets","expenses","goals","transactions","savingsOperations","coachProfile"])if(!Array.isArray(state[key]))state[key]=[];
+  if(!state.treasury||typeof state.treasury!=="object"||Array.isArray(state.treasury))state.treasury={overdraftLimit:0,validUntil:""};
+  syncIncomeTotal();render();dispatchLegacyBudgetChanged();backupPassword.value="";$("importFile").value="";
+  backupStatus("backupImportStatus",window.bepSignedIn?"Restauration terminée : données enregistrées sur ton compte et cet appareil.":"Restauration locale terminée sur cet appareil.");
+  window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"backup-restore"}}));
+ }catch(error){
+  if(staged&&window.BEPOffline?.discardPending)await window.BEPOffline.discardPending().catch(()=>{});
+  if(previousRemote&&window.BEPOffline?.setBaseline)await window.BEPOffline.setBaseline(previousRemote).catch(()=>{});
+  if(previousLocal===null)localStorage.removeItem(DB);else if(previousLocal!==null)localStorage.setItem(DB,previousLocal);
+  backupStatus("backupImportStatus",error.message||"La restauration a échoué. Les données existantes ont été conservées.",true);
+ }finally{backupImportButton.disabled=false}
+});
 $("logoutBtn").onclick=async()=>{const button=$("logoutBtn");button.disabled=true;button.textContent="Déconnexion…";try{const r=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});if(!r.ok)throw Error("La déconnexion n’a pas pu être confirmée.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginPassword").value="";$("loginEmail").value="";authMessage.textContent="Tu es déconnecté.";button.textContent="Me déconnecter du compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la déconnexion.");button.textContent="Me déconnecter du compte";button.disabled=false;}};
 let editingIncomeId=null;
 $("incomeForm").onsubmit=e=>{e.preventDefault();const amount=Number($("incomeAmount").value),label=$("incomeLabel").value.trim(),type=$("incomeType").value;if(!label||!Number.isFinite(amount)||amount<=0)return notify("Renseigne un libellé et un montant valide.");const item={id:editingIncomeId||crypto.randomUUID(),label,type,amount,source:"manual"};if(editingIncomeId){state.incomes=state.incomes.map(x=>x.id===editingIncomeId?item:x);editingIncomeId=null;$("incomeForm").querySelector("button").textContent="+ Ajouter ce revenu";notify("Revenu modifié")}else{state.incomes.push(item);notify("Revenu ajouté")}syncIncomeTotal();$("incomeLabel").value="";$("incomeAmount").value="";$("incomeType").value="Salaire";if(save()!==false)window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"income"}}))};
