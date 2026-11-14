@@ -44,10 +44,10 @@ function installBepAlert(){
  cancel.addEventListener("click",()=>close("cancel"));
  confirm.addEventListener("click",()=>close("confirm"));
  dialog.addEventListener("click",event=>{if(event.target===dialog)close("cancel")});
- window.BEP_SHOW_ALERT=(text,heading="Information")=>{title.textContent=heading==="Plafond de découvert atteint"?"Achat non autorisé":heading;message.textContent=String(text||"");cancel.hidden=true;confirm.textContent="J’ai compris";confirm.classList.remove("is-danger");if(!dialog.open)dialog.showModal();confirm.focus()};
+ window.BEP_SHOW_ALERT=(text,heading="Information")=>{title.textContent=heading==="Plafond de découvert atteint"?"Achat non autorisé":heading;message.textContent=String(text||"");dialog.returnValue="";cancel.hidden=true;confirm.textContent="J’ai compris";confirm.classList.remove("is-danger");if(!dialog.open)dialog.showModal();confirm.focus()};
  window.BEP_CONFIRM_ACTION=(text,heading="Confirmer cette action",confirmLabel="Confirmer",danger=true)=>new Promise(resolve=>{
   if(dialog.open){resolve(false);return}
-  title.textContent=heading;message.textContent=String(text||"");cancel.hidden=false;confirm.textContent=confirmLabel;confirm.classList.toggle("is-danger",!!danger);
+  title.textContent=heading;message.textContent=String(text||"");dialog.returnValue="";cancel.hidden=false;confirm.textContent=confirmLabel;confirm.classList.toggle("is-danger",!!danger);
   const done=()=>resolve(dialog.returnValue==="confirm");
   dialog.addEventListener("close",done,{once:true});
   dialog.showModal();cancel.focus();
