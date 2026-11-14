@@ -307,3 +307,117 @@ La latence et les codes HTTP restent des métriques opérationnelles, jamais des
 ## 15. Statut
 
 Cette spécification ne modifie aucun code d'exécution, aucune migration, aucune variable d'environnement, aucune base de données ni aucun service Render. Elle constitue le cahier des charges de la V2 et la base d'une revue technique avant toute implémentation.
+
+
+## 16. Addendum de validation technique — exigences à intégrer avant implémentation
+
+La revue technique confirme l'architecture cible, sous réserve des exigences complémentaires suivantes. Elles font partie du périmètre obligatoire de toute implémentation V2.
+
+### 16.1 Isolation réelle des environnements et des privilèges
+
+L'absence de requêtes explicites vers les données personnelles dans le worker V1 est une isolation au niveau du code, pas une séparation de privilèges : le worker est démarré dans le même processus que l'API et reçoit le même objet `pool`. La V2 doit aller plus loin :
+
+- exécuter le collecteur et le superviseur dans un service distinct de l'API utilisateur ;
+- utiliser un rôle PostgreSQL dédié, sans privilège SELECT/INSERT/UPDATE sur les tables utilisateurs, sessions et données financières ;
+- séparer les secrets, connexions et droits réseau par service ;
+- si des résultats d'évaluation doivent être persistés, les écrire dans un schéma ou une base d'évaluation distincte ;
+- interdire l'accès aux environnements de production depuis le banc de tests ; l'utilisation d'une base de test contenant des données synthétiques doit être démontrée ;
+- faire échouer le démarrage si le rôle ou la configuration ne respectent pas ces restrictions.
+
+Une simple promesse dans le prompt ou une absence de requête dans le code n'est pas un contrôle d'accès suffisant.
+
+### 16.2 Contrat d'exécution du Coach
+
+Le « vrai point d'entrée » ne doit pas signifier appeler l'API publique de production ou réutiliser une session utilisateur. Il faut extraire un service métier commun appelé à la fois par la route normale et par l'adaptateur d'évaluation. L'adaptateur reçoit uniquement un scénario synthétique et appelle le même chemin de calcul/routage/récupération, dans l'environnement isolé.
+
+Le contrat de résultat doit être versionné et préciser au minimum :
+- `engine_version`, `prompt_version`, `knowledge_version`, fournisseur et identifiant du modèle ;
+- réponse utilisateur produite ;
+- faits structurés consommés, unités et périodes ;
+- calculs et valeurs intermédiaires utiles à l'audit ;
+- identifiants de documents/snapshots et citations réellement utilisés ;
+- avertissements, abstentions et erreurs ;
+- identifiant/version du scénario et empreinte des entrées synthétiques.
+
+Ne pas journaliser les secrets ni des données personnelles. Les données synthétiques doivent être explicitement marquées comme telles.
+
+### 16.3 Politique d'évaluation et reproductibilité
+
+- Les validateurs déterministes sont les arbitres des calculs et invariants ; Gemini est un évaluateur secondaire, jamais la vérité de référence.
+- Les assertions doivent être exprimées en critères structurés et testables, non en égalité stricte de texte.
+- Versionner les scénarios, fixtures, règles d'évaluation, prompts, modèle et paramètres d'appel.
+- Enregistrer les résultats bruts nécessaires à la reproductibilité, dans les limites de conservation définies.
+- Distinguer les erreurs bloquantes, majeures, mineures et informatives ; définir les seuils de promotion par criticité.
+- Pour les évaluations LLM, mesurer la stabilité sur plusieurs exécutions pour les cas critiques et ne pas faire dépendre un blocage de promotion d'un unique jugement Gemini.
+- Exiger une comparaison avant/après entre la version candidate et la version de référence.
+
+### 16.4 Collecte externe : sécurité et droits
+
+Avant toute requête :
+- résoudre et valider les hôtes contre une allowlist stricte ; refuser IP privées, locales, link-local et destinations non publiques ;
+- imposer HTTPS, interdire les redirections ou revalider intégralement chaque destination si une redirection autorisée est un jour nécessaire ;
+- limiter taille, durée, types MIME, nombre de pages, profondeur de liens et fréquence par domaine ;
+- appliquer des limites réseau sortantes et une extraction dans un processus isolé ;
+- ne jamais accepter une URL ou une instruction de navigation générée par Gemini ;
+- conserver la preuve de la licence, des conditions d'accès et de la base d'autorisation de conservation ;
+- préférer les APIs ouvertes/officielles et ne stocker que le contenu autorisé. Si l'archivage intégral n'est pas permis, conserver les métadonnées et extraits permis avec leur empreinte.
+
+Le contrôle SSRF doit être réalisé côté réseau et côté application ; une vérification de chaîne de caractères du domaine ne suffit pas.
+
+### 16.5 Provenance, hiérarchie des sources et citations Coach
+
+Chaque affirmation sensible ou volatile doit être associée à une preuve traçable : source, snapshot, passage/extrait, date d'accès, date de publication si connue, date d'effet, territoire/juridiction et période de validité. Les citations ne doivent être affichées que si le passage archivé supporte réellement l'affirmation.
+
+Définir une hiérarchie de preuve par domaine (texte officiel, administration compétente, régulateur, statistiques officielles, guide institutionnel, source secondaire). En cas de conflit, le système signale le conflit et applique une règle de priorité documentée ; il ne laisse pas Gemini choisir seul.
+
+Le Coach doit pouvoir indiquer « information non vérifiée ou potentiellement périmée » et s'abstenir. Une URL seule ne constitue pas une preuve du contenu cité.
+
+### 16.6 Workflow de validation et de publication
+
+Clarifier les étapes et les rôles :
+1. Gemini propose ; il ne valide pas.
+2. Un réviseur documentaire contrôle la source, l'extrait et la formulation.
+3. Le moteur de tests exécute les contrôles automatiques.
+4. Un approbateur distinct autorise la publication pour les contenus critiques (légal, fiscal, prestations, crédit).
+5. Le système publie une version immuable et déplace atomiquement le pointeur de version active.
+6. Le journal append-only conserve la décision, l'acteur, les preuves et les empreintes.
+7. Le rollback restaure le pointeur vers une version précédente sans effacer l'historique.
+
+Si une séparation de rôles n'est pas possible au démarrage, imposer une double validation ou une règle documentée de revue renforcée. Une approbation unique ne doit pas masquer les deux étapes distinctes de revue et de publication.
+
+### 16.7 Coûts, quotas et arrêt d'urgence
+
+Distinguer :
+- quota applicatif de requêtes ;
+- plafond de tokens par appel et par période ;
+- budget interne calculé à partir des tarifs fournisseur connus ;
+- limites et alertes du compte fournisseur ;
+- coupe-circuit automatique en cas de dépassement, de tarif inconnu ou de réponse de facturation incohérente.
+
+Ne jamais présenter un quota de requêtes comme un plafond financier garanti. Toute activation nécessite une vérification humaine des tarifs, du mode de facturation et des limites réellement configurées chez le fournisseur. La clé superviseur reste distincte de celle du Coach.
+
+### 16.8 Compatibilité avec la V1 et migration documentaire
+
+Avant de créer les nouvelles tables, établir une cartographie des tables et contrats V1 : `bep_financial_knowledge`, `bep_agent_approved_knowledge`, `bep_knowledge_candidates`, jobs, runs et métriques. Définir une stratégie explicite de reprise, d'import, de dépréciation et de rollback.
+
+Les documents V1 ne doivent pas être perdus ni rendus invisibles au Coach lors d'une migration. La compatibilité doit être maintenue jusqu'à validation de la nouvelle chaîne de connaissance. Les nouvelles migrations restent additives, idempotentes et testées sur une base jetable.
+
+### 16.9 Ordonnancement et observabilité
+
+Définir le composant responsable de chaque cadence, son fuseau horaire, les garanties de livraison, la déduplication, les reprises, les alertes et le propriétaire opérationnel. Une cadence affichée dans une configuration ne vaut pas garantie d'exécution.
+
+Mesurer au minimum le retard maximal de file, l'âge du dernier snapshot réussi par source, le nombre d'échecs consécutifs, les jobs bloqués, les quotas consommés et le temps depuis la dernière évaluation Coach. Définir des seuils d'alerte et une procédure d'escalade.
+
+### 16.10 Critères bloquants supplémentaires
+
+Aucune activation V2 tant que les éléments suivants ne sont pas démontrés :
+- rôle PostgreSQL et service superviseur séparés de l'API et impossibilité technique d'accéder aux tables personnelles ;
+- banc d'essai fonctionnant sur une base isolée et synthétique ;
+- connecteur testé contre SSRF, redirections, DNS/IP privées, fichiers trop volumineux et contenu hostile ;
+- droits d'accès, licence et conservation documentés pour chaque source ;
+- citations vérifiables reliées aux snapshots et passages exacts ;
+- workflow de double validation ou séparation réviseur/approbateur ;
+- budgets et coupe-circuit testés ;
+- migration V1/V2, non-régression et rollback validés ;
+- alertes de fraîcheur et de retard de jobs opérationnelles.
+
