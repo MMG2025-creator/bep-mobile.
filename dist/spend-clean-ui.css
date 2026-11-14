@@ -80,3 +80,10 @@
 #purchases.bep-expenses-page .bep-expenses-history-accordion{scroll-margin-top:18px}
 #purchases.bep-expenses-page #purchaseRows .purchase-row[hidden]{display:none!important}
 @media(max-width:640px){#purchases.bep-expenses-page #bepAddPurchase{min-height:116px!important;padding:12px 32px 12px 10px!important;gap:7px!important}#purchases.bep-expenses-page .bep-expenses-stats>button{min-height:82px;padding:10px 8px;gap:5px}#purchases.bep-expenses-page .bep-expenses-stats>button span{font-size:10px}#purchases.bep-expenses-page .bep-expenses-stats>button small{font-size:9px}}
+
+/* Compact KPI cards and a consistent filter/empty state inside purchase history. */
+#purchases.bep-expenses-page .bep-expenses-stats>button small{display:none!important}
+#purchases.bep-expenses-page .bep-expenses-history-card button{appearance:none;border:1px solid #cfe3d6;border-radius:999px;padding:7px 13px;background:#eef7f1;color:#176b50;font:650 12px/1.2 "DM Sans",sans-serif;cursor:pointer}
+#purchases.bep-expenses-page .bep-expenses-history-card button:hover{background:#e2f1e7;border-color:#9fcbb0}
+#purchases.bep-expenses-page .bep-expenses-history-card p{color:#71847a;font:400 13px/1.5 "DM Sans",sans-serif}
+#purchases.bep-expenses-page .bep-expenses-history-card #purchaseRows:empty::after{content:"Aucun achat correspondant.";display:block;padding:10px 0;color:#71847a;font:400 13px/1.5 "DM Sans",sans-serif}
