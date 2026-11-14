@@ -21,10 +21,13 @@ function installBepAlert(){
  .bep-alert-symbol svg{width:25px;height:25px;display:block}
  .bep-alert-title{margin:0 0 9px;color:#102e29;font:700 21px/1.25 Manrope,'DM Sans',sans-serif;letter-spacing:-.35px}
  .bep-alert-message{margin:0;color:#52635c;font:400 15px/1.6 'DM Sans',sans-serif;white-space:pre-line}
- .bep-alert-actions{display:flex;justify-content:flex-end;margin-top:24px}
- .bep-alert-confirm{min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#176b50;color:#fff;font:700 14px 'DM Sans',sans-serif;cursor:pointer;transition:background .15s,transform .15s}
- .bep-alert-confirm:hover{background:#12583f}.bep-alert-confirm:active{transform:translateY(1px)}
- .bep-alert-confirm:focus-visible{outline:3px solid #b8d9c7;outline-offset:3px}
+ .bep-alert-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+ .bep-alert-confirm,.bep-alert-cancel{min-height:44px;padding:0 20px;border:0;border-radius:12px;font:700 14px 'DM Sans',sans-serif;cursor:pointer;transition:background .15s,transform .15s}
+ .bep-alert-confirm{background:#176b50;color:#fff}.bep-alert-confirm:hover{background:#12583f}
+ .bep-alert-confirm.is-danger{background:#b94736}.bep-alert-confirm.is-danger:hover{background:#963829}
+ .bep-alert-cancel{background:#f0f4f1;color:#344b41}.bep-alert-cancel:hover{background:#e4ece7}
+ .bep-alert-confirm:active,.bep-alert-cancel:active{transform:translateY(1px)}
+ .bep-alert-confirm:focus-visible,.bep-alert-cancel:focus-visible{outline:3px solid #b8d9c7;outline-offset:3px}
  @media(max-width:480px){.bep-alert-dialog{width:calc(100vw - 28px);border-radius:20px}.bep-alert-window{padding:23px 21px 19px}.bep-alert-title{font-size:19px}.bep-alert-message{font-size:14px}}
  @media(prefers-reduced-motion:no-preference){.bep-alert-dialog[open]{animation:bep-alert-in .16s ease-out}@keyframes bep-alert-in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}}
  `;document.head.appendChild(style);
@@ -34,12 +37,21 @@ function installBepAlert(){
  const title=document.createElement("h2");title.className="bep-alert-title";title.id="bepAlertTitle";
  const message=document.createElement("p");message.className="bep-alert-message";message.id="bepAlertMessage";
  const actions=document.createElement("div");actions.className="bep-alert-actions";
+ const cancel=document.createElement("button");cancel.type="button";cancel.className="bep-alert-cancel";cancel.textContent="Annuler";
  const confirm=document.createElement("button");confirm.type="button";confirm.className="bep-alert-confirm";confirm.textContent="J’ai compris";
- actions.appendChild(confirm);windowBox.append(symbol,title,message,actions);dialog.appendChild(windowBox);document.body.appendChild(dialog);
- const close=()=>{if(dialog.open)dialog.close()};
- confirm.addEventListener("click",close);dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
- dialog.addEventListener("close",()=>{if(dialog.returnValue!=="")dialog.returnValue="";});
- window.BEP_SHOW_ALERT=(text,heading="Information")=>{title.textContent=heading==="Plafond de découvert atteint"?"Achat non autorisé":heading;message.textContent=String(text||"");if(!dialog.open)dialog.showModal();confirm.focus()};
+ actions.append(cancel,confirm);windowBox.append(symbol,title,message,actions);dialog.appendChild(windowBox);document.body.appendChild(dialog);
+ const close=value=>{if(dialog.open)dialog.close(value||"")};
+ cancel.addEventListener("click",()=>close("cancel"));
+ confirm.addEventListener("click",()=>close("confirm"));
+ dialog.addEventListener("click",event=>{if(event.target===dialog)close("cancel")});
+ window.BEP_SHOW_ALERT=(text,heading="Information")=>{title.textContent=heading==="Plafond de découvert atteint"?"Achat non autorisé":heading;message.textContent=String(text||"");cancel.hidden=true;confirm.textContent="J’ai compris";confirm.classList.remove("is-danger");if(!dialog.open)dialog.showModal();confirm.focus()};
+ window.BEP_CONFIRM_ACTION=(text,heading="Confirmer cette action",confirmLabel="Confirmer",danger=true)=>new Promise(resolve=>{
+  if(dialog.open){resolve(false);return}
+  title.textContent=heading;message.textContent=String(text||"");cancel.hidden=false;confirm.textContent=confirmLabel;confirm.classList.toggle("is-danger",!!danger);
+  const done=()=>resolve(dialog.returnValue==="confirm");
+  dialog.addEventListener("close",done,{once:true});
+  dialog.showModal();cancel.focus();
+ });
 }
 installBepAlert();
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
@@ -243,7 +255,30 @@ $("profileForm").onsubmit=async e=>{
   status.textContent=error.message||"Impossible d’enregistrer le profil. Vérifie ta connexion et réessaie.";
  }finally{button.disabled=false}
 };
-$("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");if(!window.confirm("Supprimer définitivement ton compte BEP et toutes les données associées ? Cette action est irréversible."))return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
+$("deleteBtn").onclick=async()=>{
+ const button=$("deleteBtn");
+ if(window.BEPOffline){
+  const pending=await window.BEPOffline.readPending().catch(()=>null);
+  if(pending){window.BEP_SHOW_ALERT("Des modifications hors ligne ne sont pas encore synchronisées. Elles doivent être synchronisées avant d’effacer les données de cet appareil.","Synchronisation nécessaire");return}
+ }
+ const accepted=await window.BEP_CONFIRM_ACTION("Cette action effacera les données BEP enregistrées dans ce navigateur et déconnectera cet appareil. Les données déjà synchronisées sur ton compte BEP ne seront pas supprimées.","Effacer les données locales","Effacer cet appareil",true);
+ if(!accepted)return;
+ button.disabled=true;button.textContent="Effacement…";
+ try{
+  if(window.bepSignedIn){
+   const response=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});
+   if(!response.ok)throw Error("La déconnexion n’a pas pu être confirmée. Aucune donnée locale n’a été effacée.");
+  }
+  if(window.BEPOffline?.clearLocalData)await window.BEPOffline.clearLocalData();
+  for(const key of [DB,ACTIVE_TAB_KEY,ACTIVE_BUDGET_MODULE_KEY,PENDING_EMAIL_KEY,AI_USAGE_KEY])localStorage.removeItem(key);
+  window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));
+  state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";
+  authMessage.textContent="Les données locales de cet appareil ont été effacées. Les données de ton compte restent conservées sur BEP.";
+  render();notify("Données locales effacées");
+ }catch(error){window.BEP_SHOW_ALERT(error.message||"Impossible d’effacer les données locales.","Effacement non effectué")}
+ finally{button.disabled=false;button.textContent="Effacer les données de cet appareil"}
+};
+$("deleteAccountBtn").onclick=async()=>{if(!window.bepSignedIn)return notify("Connecte-toi pour supprimer ton compte.");const accepted=await window.BEP_CONFIRM_ACTION("Ton compte BEP et toutes les données qui lui sont associées seront supprimés définitivement. Cette opération est irréversible et ne pourra pas être annulée.","Supprimer définitivement mon compte","Supprimer définitivement",true);if(!accepted)return;const button=$("deleteAccountBtn");button.disabled=true;button.textContent="Suppression…";try{const r=await fetch(API+"/api/account",{method:"DELETE",credentials:"include",cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||"La suppression du compte a échoué.");window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));localStorage.removeItem(DB);localStorage.removeItem(ACTIVE_TAB_KEY);localStorage.removeItem(ACTIVE_BUDGET_MODULE_KEY);localStorage.removeItem(PENDING_EMAIL_KEY);localStorage.removeItem(AI_USAGE_KEY);state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";authMessage.textContent="Ton compte et toutes les données associées ont été supprimés.";button.textContent="Supprimer mon compte";button.disabled=false;render()}catch(e){notify(e.message||"Erreur pendant la suppression.");button.textContent="Supprimer mon compte";button.disabled=false}};
 let pdfPreviewRows=[];
 const pdfCategories=["Logement","Factures","Alimentation","Transport","Crédits","Famille","Loisirs","Autres dépenses"];
 function pdfCleanText(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim()}
