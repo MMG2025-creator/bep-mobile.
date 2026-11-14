@@ -212,3 +212,9 @@ test("RATE_LIMITED opens a visual explanation with a retry countdown",()=>{
 test("custom 404 page explains missing route without implying account or data loss",()=>{
  for(const file of ["404.html","dist/404.html"]){const html=read(file);assert.match(html,/<title>Page introuvable — BEP<\/title>/);assert.match(html,/>404</);assert.match(html,/Cette page n’existe pas ici/);assert.match(html,/Cela ne signifie pas que ton compte a été supprimé/);assert.match(html,/href=\"\/\">Retourner à l’accueil BEP/);}
 });
+
+test("clearing local data resets every collection required by the first render",()=>{
+ const js=read("app.js");
+ assert.match(js,/defaults=\{income:0,incomes:\[\],budgets:\[\],expenses:\[\],goals:\[\],transactions:\[\]/);
+ assert.match(js,/state=\{\.\.\.defaults\};syncIncomeTotal\(\);/);
+});
