@@ -21,6 +21,14 @@ test("both HTML builds expose the current budget, savings and overdraft interfac
  }
 });
 
+test("settings profile row is the direct edit-profile action in both builds",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/<button[^>]*id="openProfileDialog"[^>]*aria-controls="profileSettingsDialog"[\s\S]*?<strong>Modifier mon profil<\/strong>/);
+  assert.doesNotMatch(html,/<strong>Informations personnelles<\/strong>/);
+ }
+});
+
 test("profile settings open directly into one editable form in both published HTML builds",()=>{
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
