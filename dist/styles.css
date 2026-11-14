@@ -1630,3 +1630,18 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 #receiptStatus.is-error::before{content:"!";position:absolute;left:14px;top:13px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#f8e0d8;color:#a0442c;font:800 13px/1 Arial,sans-serif}
 @keyframes bepReceiptSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.income-manual-entry::before,.income-manual-entry .budget-action-icon,.income-manual-entry .budget-action-icon::after,.charges-manual-entry::before,.charges-manual-entry .budget-action-icon,.charges-manual-entry .budget-action-icon::after,#receiptStatus.is-processing::before{animation:none!important}}
+
+/* Enlarge the complete touch target of the persistent Conseil BEP robot. */
+.bep-advice-dock{right:max(12px,env(safe-area-inset-right));bottom:max(16px,calc(env(safe-area-inset-bottom) + 10px));padding:8px;touch-action:manipulation}
+.bep-advice-robot{position:relative;min-width:176px;min-height:68px;gap:12px;padding:12px 20px 12px 13px;border-width:1px;border-radius:999px;box-shadow:0 9px 30px #123b3430;-webkit-tap-highlight-color:transparent}
+.bep-advice-robot::before{content:"";position:absolute;inset:-7px;border-radius:inherit}
+.bep-advice-robot>svg{width:44px;height:44px}
+.bep-advice-robot-label{font-size:14px;line-height:1.2}
+.bep-advice-robot:active{transform:scale(.98)}
+.bep-advice-robot:focus-visible{outline:3px solid #80b99a;outline-offset:4px}
+@media(max-width:560px){
+ .bep-advice-dock{right:max(8px,env(safe-area-inset-right));bottom:max(10px,calc(env(safe-area-inset-bottom) + 8px));padding:7px}
+ .bep-advice-robot{min-width:174px;min-height:72px;padding:13px 19px 13px 14px;gap:12px}
+ .bep-advice-robot>svg{width:46px;height:46px}
+ .bep-advice-robot-label{font-size:14px}
+}
