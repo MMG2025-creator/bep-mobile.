@@ -14,7 +14,7 @@ The trusted exporter runs only in the BEP repository environment. It requires a 
 
 Configure `BEP_KNOWLEDGE_READONLY_DATABASE_URL` only in that trusted exporter environment, never in Gemini. Before any knowledge SELECT, the exporter runs a read-only catalog preflight and fails closed unless the identity has:
 - no superuser, create-role, create-database, replication or bypass-RLS attributes, including inherited role attributes;
-- no database CREATE/TEMP or non-system schema CREATE privilege;
+- no database CREATE or non-system schema CREATE privilege;
 - SELECT and no write/trigger/reference privilege on exactly the two approved tables;
 - no other application relation or sequence access.
 
