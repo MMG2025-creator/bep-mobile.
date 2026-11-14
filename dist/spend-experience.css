@@ -699,6 +699,12 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #purchases .bep-spend-stat-link:active{transform:translateY(1px)}
 #purchases .bep-spend-stat-link:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
 
+
+/* Distinction visuelle des achats sous impulsion, sans modifier la structure de la liste. */
+#purchaseRows .purchase-row.is-impulsive{background:linear-gradient(90deg,#fff4e8 0%,#fffaf5 100%);border-left:3px solid #ed9a42;padding-left:12px;border-radius:0 12px 12px 0;}
+#purchaseRows .purchase-row.is-impulsive .purchase-row-main>span>b{color:#9a4f12;}
+#purchaseRows .purchase-impulse-flag{display:inline-flex;align-items:center;margin-left:4px;padding:2px 7px;border-radius:999px;background:#ffe2bd;color:#8d470e;font-size:10px;font-style:normal;font-weight:800;white-space:nowrap;}
+
 /* Compact action cards for income and charges: manual entry first, guided assistant second. */
 .budget-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .budget-action-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fbfdfb;color:#173a32}
