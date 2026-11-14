@@ -13,7 +13,7 @@ on:
       - ".github/workflows/bep-gemini-agent.yml"
       - "server.js"
   push:
-    branches: [integration/v1.3-baseline-20261114]
+    branches: [integration/v1.3-baseline-20261114, 'feature/**']
     paths:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"
