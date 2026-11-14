@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "Isolated BEP Gemini service using versioned JSON snapshots only",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build:snapshots": "node scripts/build-snapshots.js",
-    "prestart": "npm run build:snapshots",
     "start": "node server.js"
   }
 }
