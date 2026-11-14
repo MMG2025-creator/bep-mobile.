@@ -58,9 +58,23 @@ test("settings show the package version and home shortcut filters impulsive purc
  assert.match(app,/id="clearImpulseFilter"/);
 });
 
-test("mobile connection status has space above the fixed advice dock",()=>{
- for(const file of ["connection-status.css","dist/connection-status.css"])
-  assert.match(read(file),/padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+test("mobile connection status is centered below the BEP footer and stays clear of the advice dock",()=>{
+ for(const file of ["connection-status.css","dist/connection-status.css"]){
+  const css=read(file);
+  assert.match(css,/\.bep-footer\{display:flex;flex-direction:column/);
+  assert.match(css,/\.bep-connection-status\{[^}]*position:static;z-index:auto/);
+  assert.match(css,/padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.bep-advice-robot:active\{transform:scale\(\.94\)/);
+  assert.match(css,/\.bep-advice-robot:focus-visible/);
+ }
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/styles\.css\?v=102&bep=footer-center-advice-feedback-20261115/);
+  assert.match(html,/connection-status\.css\?v=2&bep=footer-centered-20261115/);
+ }
 });
 
 test("overdraft is a permission only and does not alter the financial engine",()=>{
