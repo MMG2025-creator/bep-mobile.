@@ -26,7 +26,7 @@ async function refreshPending(){
 async function checkSession(){
  if(!navigator.onLine||!window.bepSignedIn)return;
  try{
-  const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
+  const api=(window.BEP_API_BASE||"https://bep-coach-functional-test-api-vouu.onrender.com").replace(/\/+$/,"");
   const r=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});
   if(r.status===401||r.ok&&!(await r.clone().json()).user){
    state.session="expired";window.bepSignedIn=false;
