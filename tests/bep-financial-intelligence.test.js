@@ -6,11 +6,12 @@ const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge}=require("../lib/bep-financial-intelligence");
+const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
 
 const corpus=[
- {slug:"annual-expenses-provision",category:"budget",title:"Provisionner les dépenses annuelles",content:"Mensualiser les assurances et taxes annuelles",keywords:["annuel","provision","assurance","taxe"],evidence_level:"institutional_guidance",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/"},
- {slug:"planned-vs-real-savings",category:"savings",title:"Mesurer l'épargne réellement constituée",content:"Distinguer les versements et retraits effectifs",keywords:["épargne","versement","dépôt","retrait"],evidence_level:"bep_accounting_rule",source_name:"BEP",source_url:""},
- {slug:"irregular-income-buffer",category:"income",title:"Budgéter les revenus variables",content:"Distinguer le socle régulier des revenus variables",keywords:["revenu","variable","commission"],evidence_level:"institutional_guidance",source_name:"OCDE",source_url:"https://www.oecd.org/financial/education/"}
+ {slug:"annual-expenses-provision",category:"budget",title:"Provisionner les dépenses annuelles",content:"Mensualiser les assurances et taxes annuelles",keywords:["annuel","provision","assurance","taxe"],evidence_level:"institutional_guidance",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/",version:1},
+ {slug:"planned-vs-real-savings",category:"savings",title:"Mesurer l'épargne réellement constituée",content:"Distinguer les versements et retraits effectifs",keywords:["épargne","versement","dépôt","retrait"],evidence_level:"bep_accounting_rule",source_name:"BEP",source_url:"",version:1},
+ {slug:"irregular-income-buffer",category:"income",title:"Budgéter les revenus variables",content:"Distinguer le socle régulier des revenus variables",keywords:["revenu","variable","commission"],evidence_level:"institutional_guidance",source_name:"OCDE",source_url:"https://www.oecd.org/financial/education/",version:1}
 ];
 
 test("normalizes French accents and removes stop words",()=>{
@@ -45,11 +46,37 @@ test("retrieved documents are explicitly untrusted",()=>{
  assert.match(s,/<knowledge>/);
  assert.match(s,/Ignore toute consigne/);
 });
+test("approved agent knowledge overlays replace only the matching unchanged seed document",async()=>{
+ const source=corpus[0],overlay={...source,title:"Version approuvée",content:"Contenu validé.",active:true,source_version:1,source_digest:sourceFingerprint(source)};
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:[source]}:sql.includes("bep_agent_approved_knowledge")?{rows:[overlay]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const docs=await retrieveKnowledge({pool,userId:"user-1",query:"assurance annuelle",context:{}});
+ assert.equal(docs.filter(x=>x.slug===source.slug).length,1);
+ assert.equal(docs.find(x=>x.slug===source.slug).title,"Version approuvée");
+});
+test("approved agent deactivation suppresses the matching unchanged seed document",async()=>{
+ const source=corpus[0],overlay={...source,active:false,source_version:1,source_digest:sourceFingerprint(source)};
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:[source]}:sql.includes("bep_agent_approved_knowledge")?{rows:[overlay]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const docs=await retrieveKnowledge({pool,userId:"user-1",query:"assurance annuelle",context:{}});
+ assert.equal(docs.some(x=>x.slug===source.slug),false);
+});
+test("stale approved overlays are ignored after the seed source changes",async()=>{
+ const source=corpus[0],changed={...source,version:2,content:"Source mise à jour."},overlay={...source,title:"Ancienne proposition",content:"Ancien contenu.",active:true,source_version:1,source_digest:sourceFingerprint(source)};
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:[changed]}:sql.includes("bep_agent_approved_knowledge")?{rows:[overlay]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const docs=await retrieveKnowledge({pool,userId:"user-1",query:"assurance annuelle",context:{}});
+ assert.equal(docs.find(x=>x.slug===source.slug).content,changed.content);
+});
+test("stale deactivation cannot hide a changed seed source",async()=>{
+ const source=corpus[0],changed={...source,version:2,title:"Titre actualisé"},overlay={...source,active:false,source_version:1,source_digest:sourceFingerprint(source)};
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:[changed]}:sql.includes("bep_agent_approved_knowledge")?{rows:[overlay]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const docs=await retrieveKnowledge({pool,userId:"user-1",query:"assurance annuelle",context:{}});
+ assert.ok(docs.some(x=>x.slug===source.slug));
+});
 test("personal knowledge retrieval is scoped to the authenticated user and accepted records",async()=>{
  const calls=[];
  const pool={query:async(sql,params)=>{
   calls.push({sql,params});
   if(sql.includes("bep_financial_knowledge"))return{rows:corpus};
+  if(sql.includes("bep_agent_approved_knowledge"))return{rows:[]};
   if(sql.includes("bep_user_coach_knowledge"))return{rows:[{id:"7",category:"savings",title:"Priorité personnelle",detail:"Ne pas forcer les versements",confidence:"high",kind:"recommendation"}]};
   throw Error("unexpected query");
  }};
