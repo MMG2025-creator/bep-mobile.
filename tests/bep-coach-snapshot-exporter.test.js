@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const {
-  sourceFingerprint, mergeApprovedKnowledge, validateSnapshots, publishSnapshotsAtomically
+  sourceFingerprint, mergeApprovedKnowledge, publishSnapshotsAtomically
 } = require("../lib/bep-coach-snapshot-exporter");
 
 function source(overrides = {}) {
@@ -41,9 +41,11 @@ test("stale overlays are ignored", () => {
 test("overlays without an active source are ignored", () => {
   assert.deepEqual(mergeApprovedKnowledge([], [overlay()]), []);
 });
-test("fingerprint matches the BEP source fingerprint contract", () => {
+test("fingerprint is identical to the BEP source fingerprint contract", () => {
   assert.equal(sourceFingerprint(source()).length, 64);
-  assert.notEqual(sourceFingerprint(source()), sourceFingerprint(source({ keywords: ["changed"] })));
+  // The established BEP fingerprint intentionally excludes keywords.
+  assert.equal(sourceFingerprint(source()), sourceFingerprint(source({ keywords: ["changed"] })));
+  assert.notEqual(sourceFingerprint(source()), sourceFingerprint(source({ content: "changed" })));
 });
 test("publication validates before replacing snapshots", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bep-export-test-"));
