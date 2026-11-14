@@ -195,3 +195,15 @@ test("API rate limits are isolated by a signed persistent device cookie, not sha
  assert.match(app,/api\/auth\/forgot-password",\{method:"POST",credentials:"include"/);
  assert.match(app,/api\/auth\/resend-verification",\{method:"POST",credentials:"include"/);
 });
+
+
+test("RATE_LIMITED opens a visual explanation with a retry countdown",()=>{
+ const app=read("app.js");
+ assert.match(app,/function showRateLimitPage\(seconds\)/);
+ assert.match(app,/function handleAuthRateLimit\(response,data\)/);
+ assert.match(app,/response\?\.status!==429&&data\?\.error!=="RATE_LIMITED"/);
+ assert.match(app,/Retry-After/);
+ for(const endpoint of ["resend-verification","verify-email","login","register"])assert.ok(app.includes('handleAuthRateLimit(r,d)'),"missing RATE_LIMITED handling for "+endpoint);
+ for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="rateLimitPage"/);assert.match(html,/Une courte pause est nécessaire/);assert.match(html,/auth-recovery\.css\?v=6/)}
+ for(const file of ["auth-recovery.css","dist/auth-recovery.css"]){const css=read(file);assert.match(css,/\.rate-limit-page/);assert.match(css,/\.rate-limit-countdown/)}
+});
