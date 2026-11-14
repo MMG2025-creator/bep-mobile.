@@ -384,11 +384,13 @@ backupImportButton?.addEventListener("click",async()=>{
    const response=await fetch(API+"/api/data",{credentials:"include",cache:"no-store"});
    if(!response.ok)throw Error("Impossible de vérifier les données actuelles du compte (HTTP "+response.status+").");
    const current=await response.json();previousRemote=current.payload||{};
+   if(JSON.stringify(imported).length>450000)throw Error("Cette sauvegarde est trop volumineuse pour la synchronisation du compte. Restaure-la sur un appareil invité ou réduis son contenu.");
    if(!window.BEPOffline?.setBaseline||!window.BEPOffline?.stage||!window.BEPOffline?.flush)throw Error("Le mécanisme sécurisé de synchronisation BEP n’est pas disponible.");
    await window.BEPOffline.setBaseline(previousRemote);
    await window.BEPOffline.stage(imported);staged=true;
    const synced=await window.BEPOffline.flush();
    if(!synced)throw Error("Le serveur a refusé la restauration ou les données du compte ont changé. Aucune donnée distante n’a été remplacée.");
+   staged=false;
   }
   state={...defaults,...imported};
   for(const key of ["incomes","budgets","expenses","goals","transactions","savingsOperations","coachProfile"])if(!Array.isArray(state[key]))state[key]=[];
