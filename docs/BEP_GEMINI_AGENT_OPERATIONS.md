@@ -14,7 +14,7 @@ La limite est de 8 appels Gemini par jour par défaut (maximum configurable : 50
 ## Contrôles
 Tables additives : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates`, `bep_agent_daily_usage`, `bep_agent_metrics`, `bep_agent_approved_knowledge`, `bep_agent_coach_metrics`.
 
-Ne jamais activer l'agent en production avant d'avoir vérifié la clé Gemini dédiée, la configuration de facturation gratuite et le plan Render. Les propositions documentaires doivent être examinées avant toute publication.
+En production, l'agent peut utiliser `BEP_AGENT_GEMINI_API_KEY` (prioritaire) ou, si explicitement autorisé, réutiliser `BEP_AI_API_KEY`. Dans ce second cas, les appels partagent le même projet Google, ses quotas fournisseur et sa facturation. La limite applicative de l'agent reste de 8 appels par jour par défaut. La confirmation de facturation nulle doit être explicite. Les propositions documentaires doivent être examinées avant toute publication.
 
 ## Validation humaine des propositions
 
