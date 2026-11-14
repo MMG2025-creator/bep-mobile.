@@ -48,7 +48,11 @@
       await loadScript("./spend-clean-ui.js?v=6&bep=lazy-20261113");
       await loadScript("./spend-experience.js?v=21&bep=lazy-20261113");
     },
-    monthlyBudget: () => loadScript("./monthly-budget-ui.js?v=9&bep=lazy-20261113"),
+    monthlyBudget: async () => {
+      await loadStyle("./monthly-budget-ui.css?v=1&bep=lazy-20261114");
+      await loadScript("./monthly-budget-ui.js?v=9&bep=lazy-20261113");
+    },
+    savings: () => loadStyle("./savings-ui.css?v=1&bep=lazy-20261114"),
     receiptOCR: () => loadScript("./receipt-ocr.js?v=3&bep=lazy-20261113")
   };
 
@@ -78,5 +82,8 @@
 
     const monthlyTab = event.target.closest('[data-budget-module="monthly"]');
     if (monthlyTab) window.BEPLoadModule("monthlyBudget").catch(() => {});
+
+    const savingsTab = event.target.closest('.tab[data-tab="savings"]');
+    if (savingsTab) window.BEPLoadModule("savings").catch(() => {});
   });
 })();
