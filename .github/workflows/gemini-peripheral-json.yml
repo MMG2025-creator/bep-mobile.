@@ -1,0 +1,49 @@
+name: BEP Gemini peripheral JSON service checks
+
+on:
+  push:
+    branches: [feature/gemini-peripheral-json-service-v1]
+    paths:
+      - "services/gemini-agent/**"
+      - "src/coach/knowledge/**"
+      - "lib/bep-financial-knowledge-seed.js"
+      - ".github/workflows/gemini-peripheral-json.yml"
+  pull_request:
+    paths:
+      - "services/gemini-agent/**"
+      - "src/coach/knowledge/**"
+      - "lib/bep-financial-knowledge-seed.js"
+      - ".github/workflows/gemini-peripheral-json.yml"
+
+jobs:
+  validate-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax checks
+        run: |
+          node --check services/gemini-agent/server.js
+          node --check services/gemini-agent/scripts/build-snapshots.js
+      - name: Generate JSON snapshots
+        run: node services/gemini-agent/scripts/build-snapshots.js
+      - name: Validate snapshot contracts and privacy boundary
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const k = JSON.parse(fs.readFileSync('services/gemini-agent/data/knowledge-bep-coach.json', 'utf8'));
+          const r = JSON.parse(fs.readFileSync('services/gemini-agent/data/reasoning-bep-coach.json', 'utf8'));
+          if (k.schema !== 'bep-coach-knowledge' || k.schema_version !== 1) throw new Error('Invalid knowledge snapshot');
+          if (r.schema !== 'bep-coach-reasoning' || r.schema_version !== 1) throw new Error('Invalid reasoning snapshot');
+          if (!Array.isArray(k.documents) || !k.documents.length) throw new Error('Knowledge documents missing');
+          if (!Array.isArray(k.sources.records) || !k.sources.records.length) throw new Error('Source records missing');
+          if (!Array.isArray(r.scenarios) || !r.scenarios.length) throw new Error('Reasoning scenarios missing');
+          if (!Array.isArray(r.regression_cases.cases) || !r.regression_cases.cases.length) throw new Error('Regression cases missing');
+          for (const snapshot of [k, r]) {
+            if (snapshot.provenance.database_connection_used !== false) throw new Error('Database access must remain disabled');
+            if (snapshot.provenance.personal_data_included !== false) throw new Error('Personal data must remain excluded');
+          }
+          console.log(JSON.stringify({knowledgeDocuments:k.documents.length, sources:k.sources.records.length, scenarios:r.scenarios.length, regressionCases:r.regression_cases.cases.length}));
+          NODE
