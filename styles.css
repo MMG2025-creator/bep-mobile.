@@ -1623,3 +1623,9 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .bep-advice-robot>svg{width:46px;height:46px}
  .bep-advice-robot-label{font-size:14px}
 }
+
+/* Clear tactile confirmation for the floating Conseil BEP action. */
+.bep-advice-robot{transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease;touch-action:manipulation}
+.bep-advice-robot:active{transform:scale(.94);background:#edf7f1;box-shadow:0 3px 12px #123b3438}
+@media(hover:hover){.bep-advice-robot:hover{transform:translateY(-2px);box-shadow:0 12px 34px #123b3438}}
+@media(prefers-reduced-motion:reduce){.bep-advice-robot{transition:none}}
