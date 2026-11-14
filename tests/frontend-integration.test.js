@@ -177,3 +177,21 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
   assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
  }
 });
+
+
+test("API rate limits are isolated by a signed persistent device cookie, not shared IP",()=>{
+ const server=read("server.js");
+ assert.match(server,/function readDeviceCookie\(req\)/);
+ assert.match(server,/createHmac\("sha256",process\.env\.SESSION_SECRET\)/);
+ assert.match(server,/timingSafeEqual/);
+ assert.match(server,/bep_device=/);
+ assert.match(server,/HttpOnly; Secure; SameSite=None/);
+ assert.match(server,/scope\+":device:"\+deviceId/);
+ assert.doesNotMatch(server,/scope\+":"\+ip/);
+ assert.match(server,/req\.bepDeviceId=id/);
+ const app=read("app.js");
+ assert.match(app,/api\/auth\/register",\{method:"POST",credentials:"include"/);
+ assert.match(app,/api\/auth\/login",\{method:"POST",credentials:"include"/);
+ assert.match(app,/api\/auth\/forgot-password",\{method:"POST",credentials:"include"/);
+ assert.match(app,/api\/auth\/resend-verification",\{method:"POST",credentials:"include"/);
+});
