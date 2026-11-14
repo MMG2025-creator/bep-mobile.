@@ -26,11 +26,35 @@ async function stage(payload){
 }
 async function discardPending(){await clear(queueKey());window.dispatchEvent(new CustomEvent("bep:offline-pending-cleared"));}
 async function clearLocalData(){
+ // Vérifier la file avant toute suppression : aucune modification non synchronisée ne doit être perdue.
  const pending=await read(queueKey());
- if(pending)throw Error("Des modifications hors ligne ne sont pas encore synchronisées. Synchronise-les avant d’effacer les données locales.");
- await clear(baselineKey());await clear(queueKey());
- for(const key of [USER_KEY,SNAPSHOT_KEY,DATA_KEY])try{localStorage.removeItem(key)}catch{}
- baseline=null;baselineLoaded=false;
+ if(pending!==null&&pending!==undefined)throw Error("Des modifications hors ligne ne sont pas encore synchronisées. Synchronise-les avant d’effacer les données locales.");
+ const keys=[baselineKey(),queueKey()];
+ if("indexedDB" in window){
+  try{
+   const db=await openDb();
+   await new Promise((resolve,reject)=>{
+    let tx;
+    try{tx=db.transaction(STORE,"readwrite")}catch(error){reject(error);return}
+    const store=tx.objectStore(STORE);
+    for(const key of keys)store.delete(key);
+    tx.oncomplete=resolve;
+    tx.onerror=()=>reject(tx.error||Error("Suppression du stockage local impossible"));
+    tx.onabort=()=>reject(tx.error||Error("Suppression du stockage local interrompue"));
+   });
+  }catch(error){
+   // Repli localStorage uniquement si IndexedDB n'est pas disponible.
+   if(!window.localStorage)throw error;
+   for(const key of keys){try{localStorage.removeItem(key)}catch(removeError){throw removeError}}
+  }
+ }else{
+  for(const key of keys){try{localStorage.removeItem(key)}catch(error){throw error}}
+ }
+ for(const key of [USER_KEY,SNAPSHOT_KEY,DATA_KEY]){
+  try{localStorage.removeItem(key)}catch(error){throw Error("Impossible d’effacer une donnée locale ("+key+").")}
+ }
+ try{dbPromise?.then(db=>db.close()).catch(()=>{})}catch{}
+ dbPromise=null;baseline=null;baselineLoaded=false;baselineWrite=Promise.resolve();
 }
 async function flush(){if(flushing||!navigator.onLine||!window.bepSignedIn)return false;flushing=true;try{await loadBaseline();const pending=await read(queueKey());if(!pending)return true;if(!pending.base||typeof pending.base!=="object"||Array.isArray(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"missing-baseline"}}));return false}
 const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");

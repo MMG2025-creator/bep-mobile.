@@ -267,15 +267,19 @@ $("deleteBtn").onclick=async()=>{
  if(!accepted)return;
  button.disabled=true;button.textContent="Effacement…";
  try{
-  if(window.bepSignedIn){
-   const response=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});
-   if(!response.ok)throw Error("La déconnexion n’a pas pu être confirmée. Aucune donnée locale n’a été effacée.");
-  }
+  // Effacer d'abord les seules données locales BEP. Le logout serveur ne doit jamais bloquer cette opération.
   if(window.BEPOffline?.clearLocalData)await window.BEPOffline.clearLocalData();
   for(const key of [DB,ACTIVE_TAB_KEY,ACTIVE_BUDGET_MODULE_KEY,PENDING_EMAIL_KEY,AI_USAGE_KEY])localStorage.removeItem(key);
+  let logoutWarning="";
+  if(window.bepSignedIn){
+   try{
+    const response=await fetch(API+"/api/auth/logout",{method:"POST",credentials:"include",cache:"no-store"});
+    if(!response.ok)logoutWarning=" Les données locales sont effacées, mais la déconnexion serveur n’a pas été confirmée (HTTP "+response.status+"). Ferme cet onglet et réessaie de te connecter.";
+   }catch{logoutWarning=" Les données locales sont effacées, mais le serveur n’a pas confirmé la déconnexion. Ferme cet onglet et réessaie de te connecter."}
+  }
   window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));
   state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";
-  authMessage.textContent="Les données locales de cet appareil ont été effacées. Les données de ton compte restent conservées sur BEP.";
+  authMessage.textContent="Les données locales de cet appareil ont été effacées. Les données de ton compte restent conservées sur BEP."+logoutWarning;
   notify("Données locales effacées");
  }catch(error){window.BEP_SHOW_ALERT(error.message||"Impossible d’effacer les données locales.","Effacement non effectué")}
  finally{button.disabled=false;button.textContent="Effacer les données de cet appareil"}
