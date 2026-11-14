@@ -1,8 +1,6 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {webcrypto}=require("node:crypto");
-globalThis.crypto=webcrypto;
 const vault=require("../backup-vault.js");
 const sample={format:"BEP-BACKUP-DATA",version:1,createdAt:"2026-11-14T12:00:00.000Z",data:{local:{income:3200,incomes:[{id:"i1",amount:3200}],budgets:[{id:"b1",amount:500}],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[],treasury:{overdraftLimit:200,validUntil:""}},remote:{income:3200},pending:null}};
 test("BEP backup encrypts and decrypts the complete payload",async()=>{
