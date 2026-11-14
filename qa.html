@@ -61,7 +61,9 @@ try{
   {name:"Charges",question:"Quel est le total de mes charges ?",expected:"3200"},
   {name:"Dépenses",question:"Quel est le total de mes dépenses ?",expected:"350"},
   {name:"Objectifs",question:"Quels sont mes objectifs d'épargne ?",expected:"Épargne sécurité"},
-  {name:"Achat hors budget avec séparateur",question:"Puis-je acheter un article à 1 500 € ?",expected:"dépasse"},\n  {name:"Achat hors budget sans séparateur",question:"Puis-je acheter un article à 1500 € ?",expected:"dépasse"},\n  {name:"Achat dans le budget",question:"Puis-je acheter un article à 900 € ?",expected:"inférieur"}
+  {name:"Achat hors budget avec séparateur",question:"Puis-je acheter un article à 1 500 € ?",expected:"dépasse"},
+  {name:"Achat hors budget sans séparateur",question:"Puis-je acheter un article à 1500 € ?",expected:"dépasse"},
+  {name:"Achat dans le budget",question:"Puis-je acheter un article à 900 € ?",expected:"inférieur"}
  ];
  for(const item of structuredCases){
   const result=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:item.question,financialContext:context})});
