@@ -51,7 +51,7 @@ try{
  check(advice.status===200&&advice.data.provider==="bep-structured"&&typeof advice.data.answer==="string"&&advice.data.answer.length>20,"Conseil budget invalide.");
  record("Conseil budget chiffré",true,"HTTP 200 — moteur bep-structured — réponse produite");
  const numeric=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Combien me reste-t-il ?",financialContext:context})});
- check(numeric.status===200&&numeric.data.mode==="structured"&&numeric.data.answer.includes("1"),"Réponse chiffrée structurée invalide.");
+ check(numeric.status===200&&numeric.data.mode==="structured"&&numeric.data.answer.replace(/[^0-9]/g,"").includes("1300"),"Réponse chiffrée structurée invalide : "+String(numeric.data.answer||""));
  record("Question chiffrée Coach",true,"HTTP 200 — mode structured — disponible transmis 1 300 €");
  const open=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Comment réduire mes dépenses ce mois-ci ?",financialContext:context})});
  check(open.status===200&&open.data.mode==="structured-fallback"&&open.data.provider==="bep-structured","Le fallback sans Gemini n'est pas utilisé.");
