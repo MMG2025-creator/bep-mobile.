@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102e29">
+<meta name="robots" content="noindex,follow">
+<title>Page introuvable — BEP</title>
+<style>
+:root{color-scheme:light;--green:#176b50;--deep:#102e29;--gold:#d8b45e;--muted:#617269}
+*{box-sizing:border-box}
+body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,#dcebe1 0,transparent 48%),linear-gradient(145deg,#f4f7f4,#edf3ef);font-family:Inter,"DM Sans",system-ui,-apple-system,sans-serif;color:var(--deep)}
+main{width:min(100%,660px);padding:clamp(26px,6vw,54px);border:1px solid #dce7df;border-radius:28px;background:#fff;box-shadow:0 24px 80px #102e2917;text-align:center}
+.brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;color:var(--deep);font-size:16px;font-weight:850;letter-spacing:1.5px}
+.brand-mark{display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:var(--deep);color:#f2d98e;font-size:17px;font-style:italic}
+.art{width:min(100%,280px);height:170px;margin:0 auto 4px}
+.code{margin:0;color:#b28c3f;font-size:clamp(66px,13vw,104px);font-weight:900;line-height:.95;letter-spacing:-7px}
+h1{margin:16px 0 10px;font-size:clamp(23px,4vw,30px);letter-spacing:-.8px}
+.lead{max-width:490px;margin:0 auto;color:var(--muted);font-size:15px;line-height:1.7}
+.context{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:26px 0 22px;padding:16px;text-align:left;border:1px solid #e5eee8;border-radius:17px;background:#f8fbf8}
+.context-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:#e7f1ea;color:var(--green);font-weight:900}
+.context strong{display:block;margin:1px 0 5px;font-size:13px}
+.context p{margin:0;color:#64736b;font-size:12px;line-height:1.6}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:13px;font-size:13px;font-weight:750;text-decoration:none}
+.primary{background:var(--green);color:white}.secondary{border:1px solid #dce7df;background:white;color:var(--deep)}
+.note{margin:18px 0 0;color:#8a9890;font-size:11px;line-height:1.5}
+@media(max-width:420px){main{padding:25px 18px;border-radius:22px}.actions{display:grid}.actions a{width:100%}.art{height:145px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><span class="brand-mark">B</span> BEP <span style="font-size:9px;letter-spacing:2px;color:#829188">BUILD · EARN · PRESERVE</span></div>
+  <svg class="art" viewBox="0 0 280 170" role="img" aria-label="Illustration d'un chemin qui s'interrompt">
+    <path d="M18 139H262" stroke="#e1ebe4" stroke-width="7" stroke-linecap="round"/>
+    <path d="M45 127c28-2 35-42 64-42 18 0 24 15 40 15" fill="none" stroke="#9dbbab" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 12"/>
+    <path d="M168 100h19" stroke="#d1a74d" stroke-width="7" stroke-linecap="round"/>
+    <path d="M199 100h12" stroke="#d1a74d" stroke-width="7" stroke-linecap="round"/>
+    <path d="M227 100h9" stroke="#d1a74d" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="140" cy="52" r="34" fill="#edf5ef" stroke="#b9d2c3" stroke-width="3"/>
+    <path d="M128 40l24 24m0-24-24 24" stroke="#176b50" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="45" cy="127" r="7" fill="#176b50"/><circle cx="236" cy="100" r="7" fill="#d1a74d"/>
+    <path d="M70 28h22m-11-11v22M211 38h18m-9-9v18" stroke="#d1a74d" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+  <p class="code">404</p>
+  <h1>Cette page n’existe pas ici.</h1>
+  <p class="lead">Le lien utilisé est peut-être incomplet, ancien ou contient une erreur. BEP n’a pas trouvé la page demandée.</p>
+  <section class="context" aria-label="Pourquoi cette page s'affiche">
+    <span class="context-icon">i</span>
+    <div><strong>Que s’est-il passé ?</strong><p>Cette adresse ne correspond à aucune page publiée de BEP. Cela ne signifie pas que ton compte a été supprimé, que tes données ont disparu ou que ton accès est bloqué. Seule l’adresse demandée est introuvable.</p></div>
+  </section>
+  <div class="actions">
+    <a class="primary" href="/">Retourner à l’accueil BEP</a>
+    <a class="secondary" href="javascript:history.back()">Revenir à la page précédente</a>
+  </div>
+  <p class="note">Si tu as suivi un lien reçu par e-mail ou partagé, vérifie qu’il est complet. Si le problème persiste, contacte l’assistance BEP.</p>
+</main>
+</body>
+</html>
