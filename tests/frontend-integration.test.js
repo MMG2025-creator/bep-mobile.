@@ -21,6 +21,19 @@ test("both HTML builds expose the current budget, savings and overdraft interfac
  }
 });
 
+test("settings show the package version and home shortcut filters impulsive purchases",()=>{
+ const html=read("index.html"),dist=read("dist/index.html"),app=read("app.js");
+ for(const source of [html,dist])assert.match(source,/settings-app-version/);
+ for(const source of [html,dist])assert.match(source,/id="homeImpulsivePurchases"/);
+ assert.match(app,/psychology==="impulsive"\|\|p\.psychology==="pressure"/);
+ assert.match(app,/id="clearImpulseFilter"/);
+});
+
+test("mobile connection status has space above the fixed advice dock",()=>{
+ for(const file of ["connection-status.css","dist/connection-status.css"])
+  assert.match(read(file),/padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+});
+
 test("overdraft is a permission only and does not alter the financial engine",()=>{
  const app=read("app.js"),engine=read("financial-engine.js");
  assert.match(app,/treasury:\{overdraftLimit:0,validUntil:""\}/);
