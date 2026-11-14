@@ -30,7 +30,7 @@ test("returns reviewable low-confidence values when amount is not explicitly lab
 });
 
 test("extracts purchase time and classifies a card terminal receipt",()=>{
- const result=extract(["CARTE BANCAIRE","LE 11/11/26 A 13:42:32","PHARMACIE DU CC","MONTANT :","17,99 EUR"].join("\\n"));
+ const result=extract(["CARTE BANCAIRE","LE 11/11/26 A 13:42:32","PHARMACIE DU CC","MONTANT :","17,99 EUR"].join("\n"));
  assert.equal(result.date,"2026-11-11");
  assert.equal(result.time,"13:42:32");
  assert.equal(result.dateTime,"2026-11-11T13:42:32");
