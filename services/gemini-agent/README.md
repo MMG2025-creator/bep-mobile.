@@ -1,6 +1,6 @@
 # BEP Gemini peripheral JSON service
 
-This service is deliberately separate from the BEP application runtime.
+This service is deliberately separate from the BEP application runtime. Its binding data-flow contract is documented in [DATA_FLOW_CONTRACT.md](./DATA_FLOW_CONTRACT.md). The PostgreSQL shared knowledge corpus is the source of truth; the only permitted direction is database → read-only export → JSON snapshots → Gemini. JSON → database is formally prohibited until the project owner explicitly authorizes it in writing.
 
 ## Data boundary
 
@@ -32,4 +32,4 @@ The service must be deployed from a branch containing this directory. Do not con
 
 ## Snapshot provenance and refresh
 
-The startup build reads the checked-in BEP source files and regenerates the JSON snapshots. Updating the source knowledge in Git and deploying this service refreshes the snapshots. A scheduled production-to-service JSON export is a separate future integration; it must use a controlled, read-only export of approved general knowledge only.
+Important: the current Git-source snapshot builder is a development placeholder, not the production synchronization mechanism. The required database-to-JSON read-only exporter has not yet been implemented. Do not deploy this service as a synchronized Gemini knowledge source until that exporter is implemented and verified. Never add a JSON-to-database import path.
