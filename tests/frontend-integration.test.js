@@ -136,3 +136,21 @@ test("single-session policy invalidates previous sessions and connection status 
  assert.match(sw,/\.\/connection-status\.js/);
  assert.match(sw,/\.\/connection-status\.css/);
 });
+
+test("destructive settings actions require an explicit BEP confirmation dialog",()=>{
+ const app=read("app.js");
+ assert.ok(app.includes("window.BEP_CONFIRM_ACTION="),"shared confirmation dialog must be available");
+ assert.ok(app.includes('$("deleteBtn").onclick=async()=>{'));
+ assert.ok(app.includes('$("deleteAccountBtn").onclick=async()=>{'));
+ assert.ok(app.includes("await window.BEP_CONFIRM_ACTION("),"both destructive actions must await confirmation");
+ assert.ok(!app.includes('window.confirm("Supprimer définitivement ton compte BEP'));
+ assert.ok(app.includes("window.BEPOffline.clearLocalData()"),"local clearing must clear offline baseline and identity");
+ const offline=read("offline-storage.js");
+ assert.ok(offline.includes("async function clearLocalData()"));
+ assert.ok(offline.includes("if(pending)throw Error("),"pending offline changes must block local erasure");
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/app\.js\?v=111&bep=destructive-confirmation/);
+  assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
+ }
+});

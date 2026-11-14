@@ -25,6 +25,13 @@ async function stage(payload){
  return true;
 }
 async function discardPending(){await clear(queueKey());window.dispatchEvent(new CustomEvent("bep:offline-pending-cleared"));}
+async function clearLocalData(){
+ const pending=await read(queueKey());
+ if(pending)throw Error("Des modifications hors ligne ne sont pas encore synchronisées. Synchronise-les avant d’effacer les données locales.");
+ await clear(baselineKey());await clear(queueKey());
+ for(const key of [USER_KEY,SNAPSHOT_KEY,DATA_KEY])try{localStorage.removeItem(key)}catch{}
+ baseline=null;baselineLoaded=false;
+}
 async function flush(){if(flushing||!navigator.onLine||!window.bepSignedIn)return false;flushing=true;try{await loadBaseline();const pending=await read(queueKey());if(!pending)return true;if(!pending.base||typeof pending.base!=="object"||Array.isArray(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"missing-baseline"}}));return false}
 const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
 const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});if(!response.ok)throw Error("Lecture du compte impossible ("+response.status+")");const server=await response.json(),remote=server.payload||{};
@@ -32,7 +39,7 @@ if(stable(remote)!==stable(pending.base)){window.dispatchEvent(new CustomEvent("
 const saved=await fetch(api+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({__bepOfflineSync:true,base:pending.base,payload:pending.payload})});const savedData=await saved.json().catch(()=>({}));if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:savedData.error||"remote-changed"}}));return false}if(!saved.ok)throw Error("Synchronisation refusée ("+saved.status+")");await setBaseline(savedData.payload&&typeof savedData.payload==="object"?savedData.payload:pending.payload);await clear(queueKey());window.dispatchEvent(new CustomEvent("bep:offline-synced"));return true
 }catch(error){window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));return false}finally{flushing=false}}
 async function refreshAuthAndSync(){if(!navigator.onLine)return;try{const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");const r=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)return;const auth=await r.json();if(!auth.user)return;const identity=String(auth.user.id||auth.user.email||"authenticated");if(localStorage.getItem(USER_KEY)!==identity){localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}window.bepSignedIn=true;await flush()}catch{}}
-window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),stage,discardPending,refreshAuthAndSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),hasTrustedSnapshot,markKnownUser:id=>{try{const next=String(id||"authenticated");if(localStorage.getItem(USER_KEY)!==next){localStorage.setItem(USER_KEY,next);localStorage.removeItem(SNAPSHOT_KEY);baseline=null;baselineLoaded=false}}catch{}}};
+window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),stage,discardPending,clearLocalData,refreshAuthAndSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),hasTrustedSnapshot,markKnownUser:id=>{try{const next=String(id||"authenticated");if(localStorage.getItem(USER_KEY)!==next){localStorage.setItem(USER_KEY,next);localStorage.removeItem(SNAPSHOT_KEY);baseline=null;baselineLoaded=false}}catch{}}};
 window.addEventListener("online",()=>{refreshAuthAndSync()});
 window.addEventListener("bep:offline-conflict",()=>{window.dispatchEvent(new CustomEvent("bep:toast",{detail:{message:"Synchronisation suspendue : les données du compte ont changé sur un autre appareil. Tes données locales sont préservées."}}))});
 })();
