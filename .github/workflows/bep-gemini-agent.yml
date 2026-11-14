@@ -2,17 +2,18 @@ name: BEP Gemini Agent isolated checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, integration/v1.3-baseline-20261114]
     paths:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"
       - "tests/bep-agent.test.js"
       - "tests/bep-agent-db.test.js"
+      - "tests/bep-agent-shared-learning.test.js"
       - "docs/BEP_GEMINI_AGENT_*.md"
       - ".github/workflows/bep-gemini-agent.yml"
       - "server.js"
   push:
-    branches: [integration/v1.3-baseline-20261114]
+    branches: [integration/v1.3-baseline-20261114, 'feature/**']
     paths:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"
@@ -56,4 +57,4 @@ jobs:
       - name: Install dependencies for PostgreSQL integration tests
         run: npm install --no-fund
       - name: Agent safety tests
-        run: node --test tests/bep-agent.test.js tests/bep-agent-db.test.js tests/bep-financial-intelligence.test.js tests/offline-first.test.js tests/offline-sync-api.test.js
+        run: node --test tests/bep-agent.test.js tests/bep-agent-db.test.js tests/bep-agent-shared-learning.test.js tests/bep-financial-intelligence.test.js tests/offline-first.test.js tests/offline-sync-api.test.js
