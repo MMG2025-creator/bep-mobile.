@@ -445,15 +445,15 @@
       <div class="settings-data-action">
         <div class="settings-action-button settings-action-static"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></span><span class="settings-action-copy"><strong>Exporter une sauvegarde</strong><small>Télécharger une copie chiffrée</small></span></div>
         <div class="settings-data-fields">
-          <div class="field"><label for="vaultPhraseInput">Mot de passe de sauvegarde</label><input id="vaultPhraseInput" class="secure-entry" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" minlength="10" placeholder="10 caractères minimum" aria-label="Mot de passe de sauvegarde"></div>
-          <button class="primary full" id="exportBtn">Exporter ma sauvegarde</button>
+          <div class="field"><label for="vaultPhraseInput">Mot de passe de sauvegarde</label><input id="vaultPhraseInput" class="secure-entry" type="password" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" data-form-type="other" data-lpignore="true" data-1p-ignore="true" minlength="10" placeholder="10 caractères minimum" aria-label="Mot de passe de sauvegarde"></div>
+          <button type="button" class="primary full" id="exportBtn">Exporter ma sauvegarde</button><p class="hint" id="backupExportStatus" role="status" aria-live="polite"></p>
         </div>
       </div>
       <div class="settings-data-action">
         <div class="settings-action-button settings-action-static"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-5 5 5-5 5 5M4 17v4h16v-4"/></svg></span><span class="settings-action-copy"><strong>Restaurer une sauvegarde</strong><small>Importer un fichier BEP (.bep)</small></span></div>
         <div class="settings-data-fields">
           <div class="field"><label for="importFile">Fichier de sauvegarde</label><input id="importFile" type="file" accept=".bep,application/json"></div>
-          <button class="secondary full" id="importBtn">Restaurer sur cet appareil</button>
+          <button type="button" class="secondary full" id="importBtn">Restaurer sur cet appareil</button><p class="hint" id="backupImportStatus" role="status" aria-live="polite"></p>
         </div>
       </div>
     </div>
@@ -563,7 +563,8 @@
 </script>
 <script src="./runtime-config.js?v=1"></script>
 <script src="./financial-engine.js?v=1"></script>
-<script src="./offline-storage.js?v=3"></script>
+<script src="./offline-storage.js?v=4&bep=backup-staging"></script>
+<script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
 <script src="./app.js?v=109&bep=login-methods-status-20261113"></script>
 <script src="./auth-recovery.js?v=2"></script>
