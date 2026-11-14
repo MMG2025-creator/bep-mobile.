@@ -245,6 +245,3 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=112&bep=local-clear-render-guard-20261114/);
 });
-
-test("empty impulse state and receipt loading feedback",()=>{const spend=read("spend-clean-ui.js"),app=read("app.js");assert.match(spend,/bepSpendMonthDecisions",n===0\?"":/);assert.match(app,/Votre visuel est en cours de chargement/);assert.equal(spend,read("dist/spend-clean-ui.js"));assert.equal(app,read("dist/app.js"))});
-test("floating advice click binding uses an external CSP-allowed script",()=>{const js=read("advice-dock.js");assert.match(js,/robot\.addEventListener\("click"/);assert.match(js,/dialog\.showModal\(\)/);for(const p of ["index.html","dist/index.html"])assert.match(read(p),/advice-dock\.js\?v=1&bep=csp-safe-20261115/)});

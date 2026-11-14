@@ -1,0 +1,171 @@
+(()=>{"use strict";
+const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
+const KEY="bep-spend-challenges-v1",SELECT_KEY="bep-spend-selected-challenges-v1";
+const challenges=[
+{id:"pause",icon:"⏳",title:"Le défi des 24 heures",desc:"Attends demain avant de valider un achat non essentiel.",done:"Pause validée : tu as laissé le temps décider avec toi."},
+{id:"subscriptions",icon:"🕵️",title:"Le détective des abonnements",desc:"Retrouve un abonnement oublié ou devenu inutile.",done:"Enquête bouclée : ton compte bancaire respire."},
+{id:"pleasure",icon:"🎈",title:"Le plaisir sans culpabilité",desc:"Choisis un petit plaisir prévu dans ton budget.",done:"Plaisir assumé et budget respecté : combo gagnant."},
+{id:"basket",icon:"🛒",title:"Le panier allégé",desc:"Retire un article dont tu peux vraiment te passer.",done:"Un article en moins, de la marge en plus."},
+{id:"coffee",icon:"☕",title:"Le café fait maison",desc:"Prépare ton café à la maison au lieu de l'acheter une fois.",done:"Barista du jour : économie réalisée."},
+{id:"no-spend",icon:"🧘",title:"La journée sans achat",desc:"Passe une journée sans achat non prévu.",done:"Journée sans achat : tu viens de battre ton panier."},
+{id:"fridge",icon:"🥕",title:"Opération fond du frigo",desc:"Compose un repas avec ce que tu as déjà.",done:"Mission anti-gaspi réussie : le frigo te remercie."},
+{id:"compare",icon:"🔍",title:"Le comparateur malin",desc:"Compare deux offres avant ton prochain achat.",done:"Tu as comparé avant de cliquer : réflexe de pro."},
+{id:"cashback",icon:"🪙",title:"La chasse aux frais cachés",desc:"Vérifie les frais ou options ajoutés à une commande.",done:"Aucun frais surprise ne t'a échappé."},
+{id:"wishlist",icon:"⭐",title:"La liste des envies",desc:"Ajoute une envie à une liste plutôt que de l'acheter tout de suite.",done:"Envie mise en attente : tu gardes le choix."},
+{id:"secondhand",icon:"♻️",title:"La seconde vie",desc:"Cherche une option d'occasion avant un achat non urgent.",done:"Seconde main explorée : malin et plus durable."},
+{id:"unfollow",icon:"📵",title:"Stop au pousse-à-l'achat",desc:"Désactive une notification commerciale ou une newsletter promo.",done:"Une tentation en moins dans ta journée."},
+{id:"mealplan",icon:"🍲",title:"Le menu anti-impro",desc:"Prévois deux repas pour éviter une commande improvisée.",done:"Deux repas anticipés : ton budget te dit merci."},
+{id:"cash",icon:"💶",title:"Le défi des petites pièces",desc:"Mets de côté une petite somme que tu aurais dépensée par réflexe.",done:"Petite somme épargnée, grande satisfaction."},
+{id:"repair",icon:"🧰",title:"Réparer plutôt que remplacer",desc:"Répare, nettoie ou fais durer un objet avant de le remplacer.",done:"Objet sauvé : ton portefeuille aussi."},
+{id:"library",icon:"📚",title:"Emprunter, c'est gagner",desc:"Emprunte ou échange un livre, un jeu ou un outil.",done:"Échange gagnant : usage sans nouvel achat."},
+{id:"walk",icon:"🚶",title:"La balade plutôt que le panier",desc:"Remplace une sortie shopping automatique par une balade.",done:"Tu as choisi l'air frais plutôt que le panier."},
+{id:"price-alert",icon:"🔔",title:"Le radar à bonnes affaires",desc:"Mets une alerte de prix au lieu d'acheter au premier clic.",done:"Tu laisses le prix venir à toi : bien joué."},
+{id:"declutter",icon:"🧺",title:"Le vide-poche rentable",desc:"Repère un objet à vendre ou donner plutôt que d'en acheter un neuf.",done:"Un objet retrouve une utilité, et toi de l'espace."},
+{id:"weekly-review",icon:"📅",title:"Le mini-bilan du dimanche",desc:"Prends cinq minutes pour regarder tes dépenses de la semaine.",done:"Bilan express terminé : tu sais où tu vas."}
+];
+let done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch{}
+const defaultSelected=["pause","subscriptions","pleasure","basket"];let selected=defaultSelected;try{const saved=JSON.parse(localStorage.getItem(SELECT_KEY)||"null");if(Array.isArray(saved))selected=saved.filter(id=>challenges.some(c=>c.id===id))}catch{}
+function readState(){try{return JSON.parse(localStorage.getItem("bep-mobile-v1")||"{}")}catch{return {}}}
+function monthlyStats(){const s=readState(),now=new Date(),items=(Array.isArray(s.expenses)?s.expenses:[]).filter(p=>{const d=new Date(p.at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});const total=items.reduce((n,p)=>n+Math.max(0,Number(p.amount)||0),0),impulsive=items.filter(p=>p.psychology==="impulsive"||p.psychology==="pressure").length;const categories={};items.forEach(p=>{const k=p.category||"Autre";categories[k]=(categories[k]||0)+Math.max(0,Number(p.amount)||0)});return {items,total,impulsive,categories}}
+function setTab(tab){const panel=$("purchases");if(!panel)return;panel.querySelectorAll("[data-spend-tab]").forEach(b=>{const active=b.dataset.spendTab===tab;b.setAttribute("aria-selected",String(active));b.tabIndex=active?0:-1;});panel.querySelectorAll(":scope > [data-spend-view]").forEach(v=>{v.hidden=v.dataset.spendView!==tab;});}
+function currentBudgetState(){
+ const s=readState(),position=window.BEPFinancialEngine.calculate({incomes:s.incomes,legacyIncome:s.income,budgets:s.budgets,goals:s.goals,expenses:s.expenses}),amount=Math.max(0,Number($("purchaseAmount")?.value)||0);
+ return {known:position.income>0,available:position.available,amount,exceeds:position.income>0&&amount>position.available};
+}
+function currentScore(){const psychology=$("psychology")?.value||"reflective",need=$("need")?.value||"yes",delay=$("delay")?.value||"now",budget=currentBudgetState();let score=45;score+=psychology==="reflective"?20:psychology==="spontaneous"?8:psychology==="impulsive"?-12:-20;score+=need==="yes"?20:need==="uncertain"?8:-5;score+=delay==="24h"?15:delay==="7d"?18:delay==="already_done"?5:0;if(budget.known&&budget.amount>0){const ratio=budget.available>0?budget.amount/budget.available:2;score+=ratio<=.05?15:ratio<=.15?8:ratio<=.3?0:-12;if(budget.exceeds)score=Math.min(score,35)}else score+=5;return Math.max(0,Math.min(100,Math.round(score)))}
+function scoreCopy(score){if(score>=85)return ["Décision au top !","Ton achat semble cohérent. Garde simplement un œil sur ton enveloppe."];if(score>=70)return ["Bonne réflexion !","Quelques vérifications et tu peux décider sereinement."];if(score>=50)return ["Prends encore un instant.","Un petit recul peut t'aider à distinguer envie, besoin et budget."];return ["Attention au craquage !","La meilleure décision, pour l'instant, est peut-être de ralentir."]}
+function updateScore(){const score=currentScore(),budget=currentBudgetState(),ring=$("bepSpendScoreRing"),number=$("bepSpendScoreNumber"),title=$("bepSpendScoreTitle"),desc=$("bepSpendScoreDesc"),bar=$("bepSpendScoreBar");if(!ring)return;const copy=budget.exceeds?["Hors budget : vigilance !",budget.available<0?"Ton montant restant disponible est déjà négatif ("+euro(budget.available)+"). Cet achat aggraverait le dépassement. Tu peux l'enregistrer, mais sois vigilant.":"Cet achat dépasse ton montant restant disponible de "+euro(budget.amount-budget.available)+". Il est hors budget. Tu peux l'enregistrer, mais sois vigilant."]:scoreCopy(score);ring.style.setProperty("--score",score);number.textContent=String(score);title.textContent=copy[0];desc.textContent=copy[1];bar.style.width=score+"%"}
+function updateHero(){const stats=monthlyStats();const amount=$("bepSpendMonthTotal"),count=$("bepSpendMonthCount"),decisions=$("bepSpendMonthDecisions"),label=$("bepSpendMonthLabel");if(amount)amount.textContent=euro(stats.total);if(count)count.textContent=stats.items.length+" achat"+(stats.items.length>1?"s":"");if(decisions)decisions.textContent=stats.impulsive+" achat"+(stats.impulsive>1?"s":"")+" sous impulsion";if(label)label.textContent="Dépensé en "+new Date().toLocaleDateString("fr-FR",{month:"short"}).replace(".","")}
+function renderChallenges(){
+const host=$("bepSpendChallengeGrid");if(!host)return;
+const chosen=challenges.filter(c=>selected.includes(c.id));
+const completed=chosen.filter(c=>done[c.id]).length;
+const status=$("bepSpendChallengeStatus");
+if(status)status.textContent=selected.length?completed+" / "+selected.length+" défis choisis relevés. À toi de jouer !":"Choisis quelques défis pour commencer. Tu peux changer ta sélection quand tu veux.";
+const chooser='<details class="bep-spend-challenge-picker"><summary><span>＋ Choisir les défis que je veux relever</span><small>'+selected.length+' sélectionné'+(selected.length>1?'s':'')+' · '+challenges.length+' idées</small></summary><div class="bep-spend-challenge-options"><p>Pioche ceux qui te plaisent. Tu peux en choisir autant que tu veux.</p>'+challenges.map(c=>'<label class="bep-spend-challenge-option"><input type="checkbox" data-challenge-select="'+c.id+'" '+(selected.includes(c.id)?'checked':'')+'><span>'+c.icon+' '+c.title+'</span></label>').join("")+'</div></details>';
+const cards=chosen.map(c=>'<article class="bep-spend-challenge '+(done[c.id]?"is-done":"")+'"><span class="bep-spend-challenge-icon" aria-hidden="true">'+c.icon+'</span><b>'+c.title+'</b><p>'+c.desc+'</p><button type="button" data-spend-challenge="'+c.id+'" aria-pressed="'+Boolean(done[c.id])+'">'+(done[c.id]?"Défi validé ✓":"Je relève le défi")+'</button>'+(done[c.id]?'<small class="bep-spend-challenge-done">'+c.done+'</small>':'')+'</article>').join("");
+host.innerHTML=chooser+(cards?'<div class="bep-spend-challenge-grid-inner">'+cards+'</div>':'<div class="bep-spend-empty">Aucun défi sélectionné pour le moment. Ouvre le menu ci-dessus et compose ta propre liste !</div>');
+host.querySelectorAll("[data-challenge-select]").forEach(input=>input.addEventListener("change",()=>{const id=input.dataset.challengeSelect;selected=input.checked?[...selected,id]:selected.filter(x=>x!==id);try{localStorage.setItem(SELECT_KEY,JSON.stringify(selected))}catch{}renderChallenges()}));
+host.querySelectorAll("[data-spend-challenge]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.spendChallenge;done[id]=!done[id];try{localStorage.setItem(KEY,JSON.stringify(done))}catch{}renderChallenges()}));
+}
+function renderBalance(){const stats=monthlyStats(),avg=stats.items.length?stats.total/stats.items.length:0,rate=stats.items.length?Math.round(stats.impulsive/stats.items.length*100):0;const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};set("bepSpendBalanceTotal",euro(stats.total));set("bepSpendBalanceCount",String(stats.items.length));set("bepSpendBalanceAverage",euro(avg));set("bepSpendBalanceImpulse",rate+" %");const host=$("bepSpendCategoryList");if(host){const rows=Object.entries(stats.categories).sort((a,b)=>b[1]-a[1]).slice(0,5);host.innerHTML=rows.length?rows.map(([name,value])=>'<div class="bep-spend-category-row"><span>'+name.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</span><b>'+euro(value)+'</b></div>').join(""):'<div class="bep-spend-empty">Tes premières dépenses apparaîtront ici. Enregistre un achat pour commencer ton bilan.</div>'}}
+function init(){mountFinancialEntryDialogs();mountFinancialConfirmDialog();const panel=$("purchases"),form=$("purchaseForm");if(!panel||!form||$("bepSpendExperience"))return;
+const hero=document.createElement("section");hero.id="bepSpendExperience";hero.className="bep-spend-hero";hero.innerHTML='<div class="bep-spend-hero-top"><span class="bep-spend-kicker">TES DÉPENSES, EN TOUTE SIMPLICITÉ</span><span class="bep-spend-pill">BEP · MON QUOTIDIEN</span></div><div class="bep-spend-hero-main"><div><h1>Garde le contrôle<br>sans te compliquer la vie.</h1><p>Note tes achats en quelques secondes. BEP t’aide ensuite à mieux comprendre tes habitudes.</p></div><svg class="bep-spend-mascot" viewBox="0 0 120 120" role="img" aria-label="Mascotte BEP"><circle cx="60" cy="60" r="55" fill="#fff" opacity=".72"/><path d="M29 45c0-18 13-30 31-30s31 12 31 30v34c0 13-13 22-31 22S29 92 29 79Z" fill="#fff" stroke="#b9d3c2" stroke-width="3"/><rect x="23" y="43" width="74" height="45" rx="19" fill="#173f35" stroke="#d7b65e" stroke-width="4"/><rect x="31" y="50" width="58" height="31" rx="13" fill="#0b2822"/><circle cx="47" cy="64" r="4.5" fill="#76e3b7"/><circle cx="73" cy="64" r="4.5" fill="#76e3b7"/><path d="M48 73q12 7 24 0" stroke="#76e3b7" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M60 15V7m-6 0h12" stroke="#c49a42" stroke-width="3" stroke-linecap="round"/><circle cx="96" cy="25" r="12" fill="#ffdf88"/><path d="m96 18 2.2 5.1 5.5.5-4.2 3.5 1.3 5.3-4.8-2.8-4.8 2.8 1.3-5.3-4.2-3.5 5.5-.5Z" fill="#9c7628"/></svg></div><div class="bep-spend-stats"><div class="bep-spend-stat"><span id="bepSpendMonthLabel">Dépenses du mois</span><strong id="bepSpendMonthTotal">0,00 €</strong></div><div class="bep-spend-stat"><span>Achats enregistrés</span><strong id="bepSpendMonthCount">0 achat</strong></div><div class="bep-spend-stat"><span>Sous impulsion</span><strong id="bepSpendMonthDecisions">0 achat</strong></div></div>';
+const score=document.createElement("div");score.className="bep-spend-score bep-spend-view";score.dataset.spendView="radar";score.id="bepSpendScore";score.hidden=true;score.innerHTML='<div class="bep-spend-score-ring" id="bepSpendScoreRing"><strong id="bepSpendScoreNumber">—</strong></div><div class="bep-spend-score-copy"><b id="bepSpendScoreTitle">Ton repère BEP</b><span id="bepSpendScoreDesc">Un indicateur pédagogique, sans jugement.</span><div class="bep-spend-score-track"><i id="bepSpendScoreBar"></i></div></div>';
+const challenge=document.createElement("section");challenge.className="bep-spend-view";challenge.dataset.spendView="challenges";challenge.hidden=true;challenge.innerHTML='<article class="card"><div class="card-head"><div><p class="eyebrow">PETITES HABITUDES, GRANDES VICTOIRES</p><h2>Mes défis BEP</h2></div><span class="tag">À ton rythme</span></div><p class="bep-spend-challenge-status" id="bepSpendChallengeStatus"></p><div class="bep-spend-challenge-grid" id="bepSpendChallengeGrid"></div></article>';
+const balance=document.createElement("section");balance.className="bep-spend-view";balance.dataset.spendView="balance";balance.hidden=true;balance.innerHTML='<article class="card"><p class="eyebrow">MON MOIS EN UN COUP D’ŒIL</p><h2>Je comprends mes habitudes</h2><div class="bep-spend-insight-grid"><div class="bep-spend-insight"><span>Total des achats enregistrés</span><strong id="bepSpendBalanceTotal">0,00 €</strong><p>Sur le mois en cours</p></div><div class="bep-spend-insight"><span>Nombre d’achats</span><strong id="bepSpendBalanceCount">0</strong><p>Achats enregistrés</p></div><div class="bep-spend-insight"><span>Panier moyen</span><strong id="bepSpendBalanceAverage">0,00 €</strong><p>Par achat</p></div><div class="bep-spend-insight"><span>Achats sous impulsion</span><strong id="bepSpendBalanceImpulse">0 %</strong><p>Spontanés difficiles à différer ou sous pression</p></div><div class="bep-spend-insight bep-spend-insight-wide"><span>Mes principaux postes</span><div class="bep-spend-category-list" id="bepSpendCategoryList"></div></div></div></article>';
+panel.insertBefore(hero,panel.firstChild);
+const entry=panel.querySelector(".purchase-entry-card");
+const advice=panel.querySelector(".ai-card");
+const history=$( "purchaseRows" )?.closest("article.card");
+const radar=document.createElement("section");radar.className="bep-spend-view bep-spend-radar";radar.dataset.spendView="radar";radar.id="bepSpendRadar";
+[advice,entry,history].forEach(node=>{if(node)radar.appendChild(node);});
+const actionGrid=document.createElement("div");actionGrid.className="bep-spend-action-grid";
+const addButton=document.createElement("button");addButton.type="button";addButton.id="bepAddPurchase";addButton.className="bep-spend-action-tile bep-spend-action-tile--manual";addButton.innerHTML='<span class="bep-spend-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="bep-spend-action-label">Ajouter une dépense</span><span class="bep-spend-action-arrow" aria-hidden="true">›</span>';
+const guideButton=document.createElement("button");guideButton.type="button";guideButton.className="bep-spend-action-tile bep-spend-action-tile--guide";guideButton.innerHTML='<span class="bep-spend-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3ZM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="bep-spend-action-label">Me guider sur mes dépenses</span><span class="bep-spend-action-arrow" aria-hidden="true">›</span>';
+guideButton.addEventListener("click",()=>window.BEP_OPEN_ADVICE?.());actionGrid.append(addButton,guideButton);
+if(entry)radar.insertBefore(actionGrid,entry);
+if(advice)actionGrid.after(advice);
+if(history){const oldTitle=history.querySelector("h2");const details=document.createElement("details");details.className="bep-spend-history-details";details.id="bepSpendPurchaseHistory";const summary=document.createElement("summary");summary.textContent="Historique des achats";summary.setAttribute("aria-label","Ouvrir ou fermer l’historique des achats");details.appendChild(summary);[...history.childNodes].forEach(node=>{if(node!==oldTitle)details.appendChild(node)});oldTitle?.remove();history.appendChild(details);details.open=false;}
+panel.insertBefore(radar,hero.nextSibling);
+if(entry){
+ const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter un achat";
+ const intro=document.createElement("p");intro.className="bep-spend-form-intro";intro.textContent="Saisis le montant de ton achat. BEP mettra à jour tes dépenses après validation.";entry.insertBefore(intro,form);
+ const merchantField=$("merchant")?.closest(".field"),cityField=$("city")?.closest(".field"),amountField=$("purchaseAmount")?.closest(".field"),categoryField=$("purchaseCategory")?.closest(".field");
+ const psychologyField=$("psychology")?.closest(".field"),needField=$("need")?.closest(".field"),delayField=$("delay")?.closest(".field");
+ const oldTwo=cityField?.parentElement?.classList.contains("two")?cityField.parentElement:null;
+ const quick=document.createElement("div");quick.className="bep-spend-quick";
+ const amountWrap=document.createElement("div");amountWrap.className="bep-spend-amount-field";
+ if(amountField){amountField.classList.add("bep-spend-amount");amountWrap.appendChild(amountField)}
+ const basics=document.createElement("div");basics.className="bep-spend-basics";
+ if(cityField)cityField.remove();
+ if(merchantField){const merchantLabel=merchantField.querySelector("label");if(merchantLabel)merchantLabel.textContent="Commerçant / enseigne";$("merchant").required=false;$("merchant").placeholder="Ex. Carrefour, boulangerie, pharmacie…";}
+ if(categoryField){const l=categoryField.querySelector("label");if(l)l.textContent="Catégorie proposée par BEP";$("purchaseCategory").required=false;$("purchaseCategory").placeholder="Suggestion automatique";basics.appendChild(categoryField)}
+ quick.append(amountWrap,basics);
+ const chips=document.createElement("div");chips.className="bep-spend-category-chips";chips.setAttribute("aria-label","Catégories rapides");chips.innerHTML=['Alimentation','Transport et carburant','Restaurant et sorties','Maison et décoration','Vêtements et chaussures','Santé et pharmacie'].map((x,i)=>'<button type="button" data-spend-category="'+x+'">'+['🥑','🚗','☕','🏠','🛍️','✚'][i]+' '+x+'</button>').join("");
+ if(categoryField){const hint=document.createElement("small");hint.className="bep-spend-auto-hint";hint.textContent="BEP propose une catégorie à partir de ta description. Tu peux la modifier.";categoryField.appendChild(hint);categoryField.appendChild(chips)}
+ const advanced=document.createElement("details");advanced.className="bep-spend-advanced";advanced.innerHTML='<summary><span>Personnaliser mon analyse</span><small> — Facultatif</small></summary><div class="bep-spend-advanced-body"></div>';
+ const advancedBody=advanced.querySelector(".bep-spend-advanced-body");
+ [merchantField,psychologyField,needField,delayField].forEach(el=>{if(el)advancedBody.appendChild(el)});
+ if(oldTwo&&oldTwo.children.length===0)oldTwo.remove();
+ const actions=form.querySelector(".purchase-actions"),note=document.createElement("p");note.className="bep-spend-form-note";note.textContent="Tes réponses détaillées permettent à BEP d’affiner son conseil. Tu peux les renseigner maintenant ou plus tard.";
+ form.insertBefore(quick,form.firstChild);
+ if(actions){form.insertBefore(advanced,actions);actions.querySelector("#purchaseSubmit").textContent="+ Ajouter un achat";actions.classList.add("bep-spend-submit-row")}
+ form.appendChild(note);
+ const amount=$("purchaseAmount");if(amount){amount.placeholder="0,00";amount.setAttribute("aria-label","Montant de ton achat en euros")}if(amountField){const amountLabel=amountField.querySelector("label");if(amountLabel)amountLabel.textContent="Saisis le montant de ton achat (€)"}
+ chips.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const input=$("purchaseCategory");if(!input)return;input.value=b.dataset.spendCategory;input.dataset.autoSuggested="0";input.dispatchEvent(new Event("input",{bubbles:true}));chips.querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b))}));
+ if(amount)amount.addEventListener("input",()=>{updateScore();const s=$("bepSpendScore");if(s)s.hidden=!(Number(amount.value)>0)});
+ const category=$("purchaseCategory");if(category)category.addEventListener("input",()=>chips.querySelectorAll("button").forEach(b=>b.classList.toggle("selected",b.dataset.spendCategory.toLowerCase()===category.value.toLowerCase())));
+}
+radar.insertBefore(score,entry?.nextSibling||null);panel.insertBefore(challenge,radar.nextSibling);panel.insertBefore(balance,challenge.nextSibling);
+function mountQuickExpenseModal(panel,entry,trigger){
+ if(!panel||!entry||$("bepQuickExpenseDialog"))return;
+ const dialog=document.createElement("dialog");dialog.id="bepQuickExpenseDialog";dialog.className="bep-quick-expense-dialog";dialog.setAttribute("aria-labelledby","bepQuickExpenseTitle");
+ dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE RAPIDE</p><h2 id="bepQuickExpenseTitle">Ajouter un achat</h2><p>Quelques secondes suffisent.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';
+ panel.appendChild(dialog);entry.querySelectorAll(".bep-receipt-capture,#receiptImportButton").forEach(node=>node.remove());dialog.querySelector(".bep-quick-expense-body").appendChild(entry);
+ const open=()=>{if(dialog.open)return;$("purchaseSubmit")?.classList.remove("hidden");$("purchaseNew")?.classList.add("hidden");dialog.showModal();setTimeout(()=>$("purchaseAmount")?.focus(),80)};
+ const close=()=>{if(dialog.open)dialog.close()};
+ window.BEP_OPEN_PURCHASE_DIALOG=open;
+ trigger?.addEventListener("click",open);
+ dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);
+ dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
+ dialog.addEventListener("close",()=>{trigger?.focus()});
+ window.addEventListener("bep:expense-saved",close);
+}
+
+function mountFinancialEntryDialogs(){
+ const definitions=[["income","+ Ajouter un revenu","+ Ajouter un revenu","#incomeEditorDetails"],["income-checkup","Faire le point sur mes revenus","Faire le point sur mes revenus","#incomeCheckupDetails"],["charge","Ajouter une charge","+ Ajouter une charge","#budgetEditorDetails"],["charge-checkup","Sélectionner mes charges","Sélectionner mes charges","#budgetCheckupDetails"],["savings-goal","Créer un objectif d’épargne","Créer un objectif d’épargne",".savings-objective-form"],["savings-movement","Enregistrer un mouvement","Enregistrer un versement ou un retrait",".savings-movement-form"],["monthly-create","Créer un mois de budget","Créer un mois","#monthlyBudgetCreateForm"],["monthly-item","Ajouter une ligne au budget mensuel","+ Ajouter une ligne au budget mensuel","#monthlyBudgetItemForm"],["profile","Modifier mon profil","Modifier mon profil","#profileForm"],["overdraft","Découvert autorisé","Gérer mon découvert autorisé",".overdraft-permission-card"]];
+ const dialogs=new Map();
+ for(const [id,title,buttonText,selector] of definitions){const source=document.querySelector(selector);if(!source||dialogs.has(id))continue;const card=source.closest(".budget-action-card");const trigger=document.createElement("button");trigger.type="button";trigger.className="primary full bep-entry-trigger";trigger.textContent=buttonText;trigger.dataset.entryDialog=id;source.parentNode.insertBefore(trigger,source);const dialog=document.createElement("dialog");dialog.className="bep-quick-expense-dialog bep-entry-dialog";dialog.id="bepEntryDialog-"+id;dialog.setAttribute("aria-labelledby","bepEntryTitle-"+id);dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">SAISIE BEP</p><h2 id="bepEntryTitle-'+id+'"></h2><p>Renseigne les informations puis confirme.</p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-quick-expense-body"></div></div>';dialog.querySelector("h2").textContent=title;document.body.appendChild(dialog);const body=dialog.querySelector(".bep-quick-expense-body");if(source.tagName==="DETAILS"){source.open=true;source.querySelector(":scope > summary")?.classList.add("bep-entry-summary-hidden")}body.appendChild(source);const open=()=>{if(dialog.open)return;source.hidden=false;if(source.tagName==="DETAILS")source.open=true;dialog.showModal();const field=source.querySelector("input:not([type=checkbox]),select,textarea,button");setTimeout(()=>field?.focus(),60)};const close=()=>{if(dialog.open)dialog.close()};if(card){card.classList.add("budget-action-card--interactive");card.setAttribute("role","button");card.setAttribute("tabindex","0");card.setAttribute("aria-label",title);trigger.hidden=true;const activate=event=>{if(event.target.closest("button,a,input,select,textarea,summary,details"))return;open()};card.addEventListener("click",activate);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})}trigger.addEventListener("click",open);dialog.querySelector(".bep-quick-expense-close").addEventListener("click",close);dialog.addEventListener("click",event=>{if(event.target===dialog)close()});dialog.addEventListener("close",()=>{if(card)card.focus();else trigger.focus()});window.addEventListener("bep:entry-saved",event=>{if(event.detail?.id===id)close()});dialogs.set(id,{open,close,dialog,trigger})}
+ window.BEP_OPEN_ENTRY_DIALOG=id=>id==="purchase"?(window.BEP_OPEN_PURCHASE_DIALOG?.()):dialogs.get(id)?.open();
+}
+
+function mountFinancialConfirmDialog(){
+ if($("bepConfirmDialog"))return;
+ const dialog=document.createElement("dialog");dialog.id="bepConfirmDialog";dialog.className="bep-quick-expense-dialog bep-entry-dialog";
+ dialog.innerHTML='<div class="bep-quick-expense-panel"><header class="bep-quick-expense-head"><div><p class="eyebrow">CONFIRMATION</p><h2 class="bep-confirm-title">Confirmer cette action</h2><p class="bep-confirm-message"></p></div><button type="button" class="bep-quick-expense-close" aria-label="Fermer">×</button></header><div class="bep-confirm-actions"><button type="button" class="secondary bep-confirm-cancel">Annuler</button><button type="button" class="primary bep-confirm-accept">Confirmer</button></div></div>';
+ document.body.appendChild(dialog);
+ window.BEP_CONFIRM_ACTION=(message,title="Confirmer cette action")=>new Promise(resolve=>{
+  dialog.querySelector(".bep-confirm-title").textContent=title;dialog.querySelector(".bep-confirm-message").textContent=message;
+  const finish=value=>{dialog.close();resolve(value)};
+  dialog.querySelector(".bep-confirm-accept").onclick=()=>finish(true);
+  dialog.querySelector(".bep-confirm-cancel").onclick=()=>finish(false);
+  dialog.querySelector(".bep-quick-expense-close").onclick=()=>finish(false);
+  dialog.oncancel=event=>{event.preventDefault();finish(false)};
+  dialog.showModal();
+ });
+}
+
+mountQuickExpenseModal(panel,entry,addButton);
+const purchaseHistory=$("bepSpendPurchaseHistory");
+function focusPurchaseHistory(filter){
+ if(!purchaseHistory)return;
+ if(filter==="impulsive")window.BEP_SET_IMPULSIVE_PURCHASES?.(true);
+ else window.BEP_SET_IMPULSIVE_PURCHASES?.(false);
+ purchaseHistory.open=true;
+ if(purchaseHistory.closest(".panel")&&!purchaseHistory.closest(".panel").classList.contains("active"))window.BEP_OPEN_PURCHASES?.();
+ window.setTimeout(()=>purchaseHistory.scrollIntoView({behavior:"smooth",block:"start"}),90);
+}
+const statTargets=[["bepSpendMonthTotal",null],["bepSpendMonthCount",null],["bepSpendMonthDecisions","impulsive"]];
+statTargets.forEach(([id,filter])=>{
+ const stat=$(id)?.closest(".bep-spend-stat");
+ if(!stat)return;
+ stat.classList.add("bep-spend-stat-link");
+ stat.setAttribute("role","button");stat.setAttribute("tabindex","0");
+ stat.setAttribute("aria-haspopup","true");
+ stat.setAttribute("aria-label",filter==="impulsive"?"Voir les achats sous impulsion":"Voir l’historique des achats");
+ const activate=()=>focusPurchaseHistory(filter);
+ stat.addEventListener("click",activate);
+ stat.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();activate()}});
+});
+window.addEventListener("bep:purchase-filter",()=>{if(purchaseHistory)purchaseHistory.open=true});
+
+// The former nav reference was never declared; the radar view is the default view.
+setTab("radar");
+["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
+form.addEventListener("submit",()=>{setTimeout(()=>{updateHero();renderBalance();updateScore();const s=$("bepSpendScore");if(s)s.hidden=true},80)});
+const rows=$("purchaseRows");if(rows&&"MutationObserver"in window)new MutationObserver(()=>{updateHero();renderBalance()}).observe(rows,{childList:true,subtree:true});
+renderChallenges();updateHero();renderBalance();updateScore();window.addEventListener("bep:state-rendered",()=>{updateHero();renderBalance()});window.addEventListener("bep:auth-ready",()=>{updateHero();renderBalance()});window.addEventListener("pageshow",()=>{updateHero();renderBalance()});document.addEventListener("visibilitychange",()=>{if(!document.hidden){updateHero();renderBalance()}});
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+})();

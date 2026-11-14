@@ -1,0 +1,122 @@
+/* BEP authentication screen — align the brand banner and page background */
+.auth-gate {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(208, 229, 217, .72) 0%, transparent 54%),
+    linear-gradient(145deg, #eef4f0 0%, #f5f8f6 54%, #eaf1ec 100%);
+}
+.auth-card {
+  width: min(100%, 460px);
+  padding: clamp(20px, 4.5vw, 30px);
+  border: 1px solid #dfe9e3;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 18px 55px rgba(16, 46, 41, .11);
+}
+.auth-brand-banner {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  margin: 0 0 18px;
+  border: 1px solid rgba(16, 46, 41, .12);
+  border-radius: 15px;
+  background: #102e29;
+  box-shadow: 0 7px 18px rgba(16, 46, 41, .12);
+  aspect-ratio: 1000 / 250;
+}
+.auth-brand-banner svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.auth-card > .muted { margin-bottom: 18px; }
+.auth-forgot-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  margin: 2px 0 8px;
+  color: #176b50;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.auth-forgot-link:hover { color: #102e29; text-decoration: underline; }
+.auth-back-login { margin-top: 8px; }
+#forgotPasswordForm, #resetPasswordForm { margin-top: 12px; }
+#forgotPasswordForm .secondary, #resetPasswordForm .secondary { margin-top: 8px; }
+.auth-card .auth-divider { margin: 16px 0; }
+@media (max-width: 480px) {
+  .auth-gate { padding: 14px 10px; }
+  .auth-card { padding: 20px 17px; border-radius: 21px; }
+  .auth-brand-banner { margin-bottom: 15px; border-radius: 12px; }
+}
+
+/* Auth visual cleanup — 2026-11-13 */
+.auth-card { padding-bottom: 18px; }
+@media (max-width: 480px) { .auth-card { padding-bottom: 14px; } }
+
+/* Auth refinement — transparent logo artwork, single banner tone, tighter card footer */
+.auth-gate .auth-card .auth-brand-banner {
+  background: #145b46 !important;
+  box-shadow: 0 5px 16px rgba(16, 46, 41, .10);
+}
+.auth-gate .auth-card { padding-bottom: 10px !important; }
+.auth-gate .auth-card .auth-forgot-link {
+  min-height: 24px;
+  margin: 0 0 2px;
+}
+.auth-gate .auth-card #authMessage:empty { display: none !important; }
+@media (max-width: 480px) {
+  .auth-gate .auth-card { padding-bottom: 9px !important; }
+}
+
+
+/* Authentication form spacing and centered recovery action. */
+.auth-gate .auth-card{padding:22px 28px 20px!important;}
+.auth-gate .auth-brand-banner{width:100%;aspect-ratio:700/160;margin:0 auto 16px!important;border-radius:12px!important;overflow:hidden;background:#145b46!important;}
+.auth-gate .auth-brand-banner svg{display:block;width:100%;height:100%;}
+.auth-gate .auth-switch{margin:12px 0!important;gap:10px!important;}
+.auth-gate .google-login{margin-bottom:16px!important;min-height:54px;}
+.auth-gate .auth-divider{margin:16px 0!important;}
+.auth-gate .auth-card label{margin:13px 0!important;}
+.auth-gate .auth-card input{min-height:50px;}
+.auth-gate .auth-card form .primary{min-height:52px;margin-top:2px;}
+.auth-gate .auth-card .auth-forgot-link{display:flex;justify-content:center;align-items:center;width:100%;min-height:30px;margin:5px auto 0!important;text-align:center;}
+.auth-gate .auth-card #authMessage:empty{display:none!important;}
+@media(max-width:480px){.auth-gate{padding:14px 10px}.auth-gate .auth-card{padding:18px 16px 16px!important}.auth-gate .auth-brand-banner{margin-bottom:14px!important}.auth-gate .auth-card label{margin:11px 0!important}}
+
+/* Final authentication layout — match approved BEP login mockup */
+.auth-gate .auth-card{width:min(100%,520px)!important;padding:24px 28px 22px!important;overflow:hidden}
+.auth-gate .auth-brand-banner{display:block!important;width:100%!important;height:auto!important;aspect-ratio:700/160!important;margin:0 auto 20px!important;padding:0!important;border:0!important;border-radius:12px!important;background:#145b46!important;box-shadow:none!important;overflow:hidden!important}
+.auth-gate .auth-brand-banner svg{display:block!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important}
+.auth-gate .auth-switch{display:flex!important;gap:10px!important;margin:0 0 18px!important}
+.auth-gate .auth-switch button{min-height:48px}
+.auth-gate .google-login{min-height:56px!important;margin:0 0 18px!important}
+.auth-gate .auth-divider{margin:18px 0!important}
+.auth-gate .auth-card label{margin:14px 0!important}
+.auth-gate .auth-card input{min-height:52px!important}
+.auth-gate .auth-card form .primary{min-height:54px!important;margin-top:4px!important}
+.auth-gate .auth-card .auth-forgot-link{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-height:34px!important;margin:8px auto 0!important;text-align:center!important}
+.auth-gate .auth-card #authMessage:empty{display:none!important}
+@media(max-width:480px){.auth-gate .auth-card{padding:18px 16px 18px!important}.auth-gate .auth-brand-banner{margin-bottom:16px!important}.auth-gate .auth-switch{margin-bottom:15px!important}.auth-gate .google-login{margin-bottom:15px!important}.auth-gate .auth-card label{margin:12px 0!important}}
+
+/* Auth visibility guard: the advice robot must never appear over the signed-out gate. */
+body:has(#authGate:not([hidden])) #bepAdviceDock,
+body:has(#authGate:not([hidden])) #bepAdviceRobot{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+
+/* RATE_LIMITED: dedicated, accessible explanation screen */
+.rate-limit-page{width:min(100% - 28px,620px);max-height:calc(100dvh - 28px);overflow:auto;margin:14px auto;padding:clamp(22px,5vw,38px);border:1px solid #dce8e1;border-radius:26px;background:#fff;box-shadow:0 20px 65px rgba(16,46,41,.12);color:#18332b;text-align:left}
+.rate-limit-page[hidden]{display:none!important}
+.rate-limit-illustration{display:grid;place-items:center;width:100%;height:126px;margin:0 auto 8px;border-radius:20px;background:linear-gradient(135deg,#f1f7f2,#fbf8ed)}
+.rate-limit-illustration svg{width:210px;height:148px;max-height:100%}
+.rate-limit-eyebrow{margin:12px 0 8px;color:#98732d;font-size:11px;font-weight:800;letter-spacing:2px;text-align:center}
+.rate-limit-page h1{margin:0 auto 12px;max-width:480px;color:#102e29;font:800 clamp(23px,5vw,31px)/1.16 Manrope,'DM Sans',sans-serif;letter-spacing:-.8px;text-align:center}
+.rate-limit-lead{max-width:500px;margin:0 auto 20px;color:#53675d;font-size:14px;line-height:1.65;text-align:center}
+.rate-limit-status{display:flex;align-items:center;gap:12px;margin:0 0 18px;padding:14px 16px;border:1px solid #f0dfb8;border-radius:15px;background:#fffaf0}
+.rate-limit-status strong,.rate-limit-status small{display:block}.rate-limit-status strong{font-size:14px;color:#684d1e}.rate-limit-status small{margin-top:3px;color:#816c48;font-size:12px}
+.rate-limit-pulse{width:11px;height:11px;flex:0 0 11px;border-radius:50%;background:#d39b35;box-shadow:0 0 0 5px #f8ebcd}
+.rate-limit-steps{display:grid;gap:10px}.rate-limit-steps article{display:flex;gap:13px;padding:13px 14px;border:1px solid #e7eee9;border-radius:14px;background:#fbfcfb}.rate-limit-steps article>span{display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;border-radius:10px;background:#eaf3ed;color:#176b50;font-size:11px;font-weight:800}.rate-limit-steps strong{display:block;margin:1px 0 4px;color:#173b30;font-size:13px}.rate-limit-steps p{margin:0;color:#5d6c64;font-size:12px;line-height:1.55}
+.rate-limit-countdown{display:grid;justify-items:center;gap:4px;margin:18px 0 12px;padding:14px;border-radius:15px;background:#f0f6f1}.rate-limit-countdown small{color:#60746a;font-size:11px}.rate-limit-countdown strong{color:#176b50;font-size:26px;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.rate-limit-warning{margin:0 0 16px;padding:11px 13px;border-left:3px solid #d1a24b;border-radius:8px;background:#fffaf0;color:#725b32;font-size:11px;line-height:1.55}
+.rate-limit-back{display:block;width:100%;min-height:48px;border:0;border-radius:13px;background:#176b50;color:#fff;font:700 14px 'DM Sans',sans-serif;cursor:pointer}.rate-limit-back:hover{background:#12583f}.rate-limit-back:focus-visible{outline:3px solid #d9b65f;outline-offset:3px}
+.rate-limit-footnote{margin:13px 0 0;color:#829087;font-size:10px;line-height:1.5;text-align:center}.rate-limit-footnote code{color:#53675d}
+@media(max-width:480px){.rate-limit-page{width:calc(100% - 20px);margin:10px auto;padding:20px 16px;border-radius:21px}.rate-limit-illustration{height:105px}.rate-limit-steps article{padding:11px}.rate-limit-lead{font-size:13px}}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 72" role="img" aria-label="BEP — Build, Earn & Preserve">
+  <g fill="none" stroke="#e8c66f" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 53C23 36 38 30 53 35s23 10 40-7" stroke-width="4.5"/>
+    <path d="M25 37V22h9v15M46 32V13h9v19M67 27V5h9v22" stroke-width="4"/>
+  </g>
+  <text x="105" y="48" fill="#f1d78f" font-family="Arial,Helvetica,sans-serif" font-size="46" font-style="italic" font-weight="700" letter-spacing="-2.5">BEP</text>
+  <text x="107" y="65" fill="#d5e4dc" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="2">BUILD · EARN · PRESERVE</text>
+</svg>

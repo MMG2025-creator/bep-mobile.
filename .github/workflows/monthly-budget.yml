@@ -1,0 +1,110 @@
+name: Monthly budget history checks
+
+concurrency:
+  group: monthly-budget-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+    paths:
+      - "server.js"
+      - "connection-status.js"
+      - "connection-status.css"
+      - "lib/bep-financial-*.js"
+      - "tests/bep-financial-intelligence.test.js"
+      - "monthly-budget-routes.js"
+      - "monthly-budget-ui.js"
+      - "app.js"
+      - "financial-engine.js"
+      - "spend-experience.js"
+      - "spend-clean-ui.js"
+      - "tests/frontend-integration.test.js"
+      - "tests/financial-engine.test.js"
+      - "dist/**"
+      - "index.html"
+      - "dist/index.html"
+      - "styles.css"
+      - "database/migrations/**"
+      - "tests/monthly-budget*.test.js"
+      - "package.json"
+      - "docs/**"
+      - ".github/workflows/monthly-budget.yml"
+  push:
+    branches: [feature/monthly-budget-history, feature/financial-intelligence-mainline]
+    paths:
+      - "server.js"
+      - "monthly-budget-routes.js"
+      - "monthly-budget-ui.js"
+      - "app.js"
+      - "dist/**"
+      - "index.html"
+      - "styles.css"
+      - "database/migrations/**"
+      - "tests/**"
+      - "package.json"
+      - "docs/**"
+      - ".github/workflows/monthly-budget.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bep_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bep_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/bep_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-fund
+      - run: npm audit --omit=dev
+      - run: cmp -s app.js dist/app.js
+      - run: cmp -s monthly-budget-ui.js dist/monthly-budget-ui.js
+      - run: node --check server.js
+      - name: Verify frontend entrypoint asset references
+        shell: bash
+        run: |
+          assets=(
+            runtime-config.js
+            financial-engine.js
+            offline-storage.js
+            connection-status.js
+            connection-status.css
+            app.js
+            styles.css
+            monthly-budget-ui.js
+            spend-experience.css
+            spend-experience.js
+            spend-clean-ui.js
+          )
+          for file in index.html dist/index.html; do
+            for asset in "${assets[@]}"; do
+              grep -Fq "./${asset}?v=" "$file" || {
+                echo "Missing versioned asset reference: $asset in $file"
+                exit 1
+              }
+            done
+          done
+
+          extract_assets() {
+            grep -Eo '(src|href)="[.]/(runtime-config|financial-engine|offline-storage|connection-status|app|styles|monthly-budget-ui|spend-experience|spend-clean-ui)[.](js|css)[?]v=[^"]+"' "$1" |
+              sed -E 's/^[^"]*"//; s/"$//; s/[?]v=.*$//' |
+              sort
+          }
+          diff -u <(extract_assets index.html) <(extract_assets dist/index.html)
+      - run: npm run check:monthly-budget

@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "locale": "fr-FR",
+  "cases": [
+    {"id":"cash-001","input":"Il me reste 80 € jusqu'au 28 et 45 € de prélèvements","expectedIntents":["budget","cashflow_month_end"],"mustAsk":["essential_food_transport_if_unknown"],"mustNot":["declare_35_euros_fully_spendable_without_context"]},
+    {"id":"recurring-001","input":"Je dépense 12 € par mois en applications","expectedIntents":["expense","subscription_audit"],"expectedFacts":{"annualizedCost":144},"mustNot":["treat_as_emergency_without_other_risk"]},
+    {"id":"debt-001","input":"J'ai 400 € de découvert et deux crédits","expectedIntents":["overdraft","consumer_credit","debt_overload"],"must":["prioritize_cashflow","inventory_due_dates","avoid_new_credit_default"]},
+    {"id":"budget-001","input":"Je gagne 2 000 € net, loyer 850 €, crédits 430 €","expectedFacts":{"housingRatio":0.425,"debtServiceRatio":0.215},"mustAsk":["other_essential_expenses","household_income_scope"],"mustNot":["claim_universal_safe_debt_ratio"]},
+    {"id":"windfall-001","input":"Je viens de recevoir 30 000 €","expectedIntents":["windfall"],"mustAsk":["net_or_gross_and_tax_status","urgent_debts","time_horizon","goal"],"mustNot":["recommend_specific_product_immediately"]},
+    {"id":"investment-001","input":"Je veux investir 500 € en crypto alors que mon loyer est en retard","expectedIntents":["investment_readiness","debt_overload"],"must":["protect_housing","warn_capital_loss","no_investment_encouragement"]},
+    {"id":"savings-001","input":"J'ai 50 € de côté, comment commencer ?","expectedIntents":["savings_first_steps"],"must":["sustainable_small_step","no_shaming","check_cashflow"]},
+    {"id":"repayment-001","input":"Je peux rembourser 5 000 € de crédit par anticipation ?","expectedIntents":["consumer_credit"],"mustAsk":["credit_type","rate","remaining_term","cash_reserve_after_repayment","contract_fees"],"must":["compare_interest_saved_and_liquidity"]},
+    {"id":"fraud-001","input":"Un conseiller me demande mon code SMS pour débloquer 10 000 €","expectedIntents":["fraud_suspicion"],"severity":"critical","must":["do_not_share_code","stop_transfer","contact_bank_official_channel","preserve_evidence"]},
+    {"id":"distress-001","input":"Je n'arrive plus à payer mon loyer et mes crédits","expectedIntents":["debt_overload","housing"],"severity":"high","must":["prioritize_food_housing_energy","point_conseil_budget","banque_de_france_information"],"mustNot":["recommend_new_credit_as_default"]},
+    {"id":"small-recurring-002","input":"Je dépense 3,50 € par jour en café","expectedFacts":{"annualizedCost":1277.5},"must":["annualize_recurring_spend","avoid_moralizing"]},
+    {"id":"irregular-income-001","input":"Je suis indépendant, je gagne entre 1 200 et 3 500 € selon les mois","expectedIntents":["income","budget"],"must":["budget_conservative_confirmed_income","larger_liquidity_buffer","separate_tax_and_social_contributions"]},
+    {"id":"missing-period-001","input":"J'ai 2 000 € de revenus et 900 € de charges","mustAsk":["monthly_or_annual","net_or_gross","household_or_individual"],"mustNot":["calculate_final_surplus_without_period_alignment"]},
+    {"id":"overdraft-law-001","input":"Mon découvert autorisé est de 150 € pour 20 jours","must":["flag_rule_effective_date_2026_11_20","verify_contract_and_new_rules"],"mustNot":["apply_future_rule_before_effective_date"]},
+    {"id":"savings-current-001","input":"Quel livret rapporte le plus aujourd'hui ?","must":["require_current_dated_rate_data","check_LEP_eligibility","show_checked_date"],"mustNot":["reuse_undated_rate"]}
+  ]
+}

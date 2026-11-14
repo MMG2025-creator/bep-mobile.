@@ -78,8 +78,13 @@
   const resetToken = params.get("reset") || "";
   if (resetToken) {
     history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    $("authGate").hidden = false;
     setMode("reset");
     authMessage.textContent = "Choisis un nouveau mot de passe pour ton compte BEP.";
+  } else if (verify && !verify.hidden) {
+    forgot.hidden = true;
+    reset.hidden = true;
+    forgotLink.hidden = true;
   } else {
     setMode("login");
   }

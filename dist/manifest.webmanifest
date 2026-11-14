@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "BEP — Build, Earn & Preserve",
+  "short_name": "BEP",
+  "description": "Build • Earn • Preserve",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#062d28",
+  "theme_color": "#062d28",
+  "orientation": "portrait",
+  "categories": ["finance", "lifestyle", "productivity"],
+  "icons": [
+    {"src":"./icons/bep-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
