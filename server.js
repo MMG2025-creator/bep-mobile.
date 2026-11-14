@@ -34,12 +34,14 @@ function readDeviceCookie(req){
  return a.length===b.length&&crypto.timingSafeEqual(a,b)?id:null;
 }
 function ensureDeviceCookie(req,res){
+ if(req.bepDeviceId)return req.bepDeviceId;
  let id=readDeviceCookie(req);
  if(!id){
   id=crypto.randomBytes(32).toString("hex");
   const signature=crypto.createHmac("sha256",process.env.SESSION_SECRET).update("bep-device:"+id).digest("hex");
   res.append("Set-Cookie","bep_device="+id+"."+signature+"; Path=/api; Max-Age=31536000; HttpOnly; Secure; SameSite=None");
  }
+ req.bepDeviceId=id;
  return id;
 }
 function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
