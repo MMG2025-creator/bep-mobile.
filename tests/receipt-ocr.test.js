@@ -38,7 +38,7 @@ test("extracts purchase time and classifies a card terminal receipt",()=>{
  assert.ok(result.confidence.time>=.9);
 });
 test("recognizes an online order screenshot and extracts its total",()=>{
- const result=extract(["Amazon.fr","Commande confirmée","Date de commande : 11/11/2026","Total de la commande : 42,90 €"].join("\\n"));
+ const result=extract(["Amazon.fr","Commande confirmée","Date de commande : 11/11/2026","Total de la commande : 42,90 €"].join("\n"));
  assert.equal(result.date,"2026-11-11");
  assert.equal(result.amount,42.9);
  assert.equal(result.documentType,"commande_web");
