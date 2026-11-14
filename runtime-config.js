@@ -1,2 +1,2 @@
-/* Runtime API target. Staging builds may replace this file with their isolated API URL. */
-window.BEP_API_BASE = window.BEP_API_BASE || "https://bep-v2-api.onrender.com";
+/* Isolated BEP Coach functional-test frontend. Never point this build at production. */
+window.BEP_API_BASE = "https://bep-gemini-agent-test-api-j65o.onrender.com";
