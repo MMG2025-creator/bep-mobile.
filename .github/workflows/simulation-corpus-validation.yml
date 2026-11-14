@@ -1,12 +1,11 @@
-name: Simulation corpus validation
+name: Simulation corpus JSON validation
 on:
   pull_request:
     branches:
       - deployment-test/BEP-v1.6-pre-prod-v2-20261114
     paths:
-      - "scripts/seed-coach-simulation.js"
-      - "lib/bep-agent/worker.js"
-      - "database/migrations/20261114_bep_coach_simulation.sql"
+      - "scripts/generate-coach-simulation.js"
+      - "simulation/**"
       - "package.json"
       - ".github/workflows/simulation-corpus-validation.yml"
 jobs:
@@ -17,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install --ignore-scripts
-      - run: node --check scripts/seed-coach-simulation.js
-      - run: node --check lib/bep-agent/worker.js
+      - run: node --check scripts/generate-coach-simulation.js
+      - run: npm run simulation:generate
+      - run: node -e "const c=require('./simulation/data/coach-corpus.json'); if(c.tables.profiles.records.length!==10 || c.tables.monthlySnapshots.records.length!==30 || c.tables.conversations.records.length!==120) process.exit(1)"
       - run: npm test
