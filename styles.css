@@ -1562,3 +1562,21 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .topbar .settings-icon-btn .settings-close-icon{display:none!important;grid-area:1/1;width:22px;height:22px}
 .topbar .settings-icon-btn[aria-expanded="true"] .settings-person-icon{display:none!important}
 .topbar .settings-icon-btn[aria-expanded="true"] .settings-close-icon{display:block!important}
+
+
+/* Compact paired action tiles for income and charges. */
+.budget-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 18px;align-items:stretch}
+.budget-action-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;min-width:0;min-height:154px;margin:0;padding:17px;border:1px solid #d7e9df;border-radius:19px;background:linear-gradient(145deg,#f4faf6 0%,#fff 78%);box-shadow:0 5px 16px #173c2908;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.budget-action-card--assistant{border-color:#f0dfc8;background:linear-gradient(145deg,#fff8ee 0%,#fff 78%)}
+.budget-action-card--interactive:hover{transform:translateY(-2px);border-color:#a8cdb8;box-shadow:0 9px 22px #173c2912}
+.budget-action-card--interactive:focus-visible{outline:3px solid #b9dfca;outline-offset:3px}
+.budget-action-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:14px;background:#e4f2e9;color:#176b50}
+.budget-action-card--assistant .budget-action-icon{background:#fff0d9;color:#b47b27}
+.budget-action-icon svg{width:25px;height:25px}
+.budget-action-copy{min-width:0;padding-right:26px}
+.budget-action-copy h3{margin:0;color:#123b34;font:800 16px/1.25 Manrope,sans-serif;letter-spacing:-.25px}
+.budget-action-copy p{display:none}
+.budget-action-card--interactive:after{content:"›";position:absolute;right:15px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:#176b50;color:#fff;font:500 27px/1 Arial,sans-serif}
+.budget-action-card .bep-entry-trigger{display:none!important}
+.budget-action-card .budget-action-details{display:none!important}
+@media(max-width:390px){.budget-action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.budget-action-card{min-height:132px;padding:13px;border-radius:16px}.budget-action-copy h3{font-size:14px}.budget-action-icon{width:38px;height:38px}.budget-action-card--interactive:after{right:10px;width:27px;height:27px}}

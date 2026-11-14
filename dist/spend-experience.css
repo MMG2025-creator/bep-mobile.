@@ -726,3 +726,18 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 .budget-action-details .budget-checkup-note{font-size:14px;line-height:1.55}
 @media(max-width:640px){.budget-action-grid{gap:10px}.budget-action-card{padding:14px;gap:10px;border-radius:17px}.budget-action-icon{width:40px;height:40px;flex-basis:40px;border-radius:13px}.budget-action-copy h3{font-size:16px}.budget-action-copy p{font-size:13px}.budget-action-details>summary{min-height:40px;padding:9px 10px;font-size:13px}}
 @media(max-width:380px){.budget-action-grid{grid-template-columns:1fr}.budget-action-card{min-height:0}}
+
+
+/* Compact two-tile entry point for the spending workspace. */
+#purchases .bep-spend-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
+#purchases .bep-spend-action-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:13px;min-width:0;min-height:154px;padding:17px;border:1px solid #d7e9df;border-radius:19px;background:linear-gradient(145deg,#f2faf5,#fff 78%);color:#123b34;text-align:left;cursor:pointer;box-shadow:0 5px 16px #173c2908;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+#purchases .bep-spend-action-tile--guide{border-color:#f0dfc8;background:linear-gradient(145deg,#fff7eb,#fff 78%)}
+#purchases .bep-spend-action-tile:hover{transform:translateY(-2px);box-shadow:0 9px 22px #173c2912}
+#purchases .bep-spend-action-tile:focus-visible{outline:3px solid #b9dfca;outline-offset:3px}
+#purchases .bep-spend-action-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:14px;background:#e4f2e9;color:#176b50}
+#purchases .bep-spend-action-tile--guide .bep-spend-action-icon{background:#fff0d9;color:#b47b27}
+#purchases .bep-spend-action-icon svg{width:25px;height:25px}
+#purchases .bep-spend-action-label{display:block;max-width:calc(100% - 22px);font:800 15px/1.25 'DM Sans',sans-serif;letter-spacing:-.2px}
+#purchases .bep-spend-action-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:#176b50;color:#fff;font:500 27px/1 Arial,sans-serif}
+#purchases .bep-spend-add-button{display:none!important}
+@media(max-width:390px){#purchases .bep-spend-action-grid{gap:8px}#purchases .bep-spend-action-tile{min-height:132px;padding:13px;border-radius:16px}#purchases .bep-spend-action-label{font-size:14px}#purchases .bep-spend-action-icon{width:38px;height:38px}#purchases .bep-spend-action-arrow{right:10px;width:27px;height:27px}}
