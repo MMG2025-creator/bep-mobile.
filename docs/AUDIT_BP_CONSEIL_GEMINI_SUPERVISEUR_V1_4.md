@@ -115,7 +115,7 @@ Ce nombre décrit le seed du code, pas le nombre réel de lignes actuellement en
 
 ### P1 — Fiabilité de l'agent
 
-4. **Décompte des tentatives incohérent** : `claim` incrémente déjà `attempts`, puis `fail` calcule le retry avec `attempts + 1`. La limite réelle de tentatives est donc inférieure à `max_attempts` (pour 3, deux essais seulement).
+4. **Tentatives de jobs** : après relecture du flux complet, le calcul actuel respecte bien `max_attempts` : `claim` renvoie la valeur antérieure à l'incrément, puis `fail` ajoute 1 pour décider du retry. Ce point n'est donc pas un défaut confirmé de la V1. Il reste nécessaire de couvrir les scénarios d'expiration de bail et de concurrence par des tests dédiés.
 5. **Jobs reportés sans trace de run** : lorsque le quota est atteint, le job est déplacé au lendemain mais marqué comme terminé dans l'objet de run local, puis aucun run n'est enregistré. L'état de file et le journal d'audit deviennent difficiles à interpréter.
 6. **Persistance des métriques non atomique** : `recordRun` écrit le run, met à jour l'usage et agrège les métriques en requêtes séparées. Une erreur intermédiaire peut laisser des compteurs incohérents.
 7. **Cadence non garantie** : les intervalles en mémoire et le plan Render Free ne garantissent ni disponibilité permanente ni exécution à heure fixe. Il faut un ordonnanceur durable ou un service toujours actif, avec surveillance du retard de file.
