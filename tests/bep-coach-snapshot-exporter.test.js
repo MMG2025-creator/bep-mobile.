@@ -5,9 +5,13 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { sourceFingerprint: canonicalFingerprint } = require("../lib/bep-agent/source-fingerprint");
 const {
-  sourceFingerprint, mergeApprovedKnowledge, publishSnapshotsAtomically
+  sourceFingerprint, mergeApprovedKnowledge, buildSnapshots,
+  validateSnapshots, publishSnapshotsAtomically
 } = require("../lib/bep-coach-snapshot-exporter");
+
+const repoRoot = path.resolve(__dirname, "..");
 
 function source(overrides = {}) {
   return {
@@ -21,11 +25,17 @@ function overlay(overrides = {}) {
   return {
     slug: base.slug, category: "budget", title: "Approved title", content: "Approved body",
     keywords: ["approved"], source_name: "Approved source", source_url: "https://approved.test",
-    evidence_level: "approved", source_version: base.version, source_digest: sourceFingerprint(base),
+    evidence_level: "approved", source_version: base.version, source_digest: canonicalFingerprint(base),
     version: 1, active: true, ...overrides
   };
 }
 
+test("uses the canonical BEP source fingerprint without reimplementing it", () => {
+  assert.equal(sourceFingerprint, canonicalFingerprint);
+  assert.equal(sourceFingerprint(source()).length, 64);
+  assert.equal(sourceFingerprint(source()), sourceFingerprint(source({ keywords: ["changed"] })));
+  assert.notEqual(sourceFingerprint(source()), sourceFingerprint(source({ content: "changed" })));
+});
 test("uses only a matching active approved overlay", () => {
   const result = mergeApprovedKnowledge([source()], [overlay()]);
   assert.equal(result.length, 1);
@@ -41,13 +51,25 @@ test("stale overlays are ignored", () => {
 test("overlays without an active source are ignored", () => {
   assert.deepEqual(mergeApprovedKnowledge([], [overlay()]), []);
 });
-test("fingerprint is identical to the BEP source fingerprint contract", () => {
-  assert.equal(sourceFingerprint(source()).length, 64);
-  // The established BEP fingerprint intentionally excludes keywords.
-  assert.equal(sourceFingerprint(source()), sourceFingerprint(source({ keywords: ["changed"] })));
-  assert.notEqual(sourceFingerprint(source()), sourceFingerprint(source({ content: "changed" })));
+test("builds and validates snapshots from actual versioned Coach rules and regression cases", () => {
+  const snapshots = buildSnapshots({
+    sourceRows: [source()], overlayRows: [], repoRoot,
+    sourceRevision: "synthetic-test-revision",
+    generatedAt: "2026-11-14T12:00:00.000Z"
+  });
+  assert.equal(validateSnapshots(snapshots), true);
+  assert.equal(snapshots.knowledge.documents.length, 1);
+  assert.ok(snapshots.reasoning.scenarios.length > 0);
+  assert.ok(snapshots.reasoning.regression_cases.cases.length > 0);
+  assert.equal(snapshots.reasoning.provenance.database_connection_used, false);
+  assert.equal(snapshots.knowledge.provenance.database_connection_used, true);
 });
-test("publication validates before replacing snapshots", () => {
+test("strict allowlist rejects unexpected exported fields", () => {
+  const snapshots = buildSnapshots({ sourceRows: [source()], overlayRows: [], repoRoot });
+  snapshots.knowledge.documents[0].approved_by = "must-not-export";
+  assert.throws(() => validateSnapshots(snapshots), /Unexpected field/);
+});
+test("publication validates before replacing snapshots and preserves last good data on invalid input", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bep-export-test-"));
   const data = path.join(dir, "data");
   fs.mkdirSync(data);
