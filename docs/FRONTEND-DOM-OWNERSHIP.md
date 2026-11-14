@@ -28,3 +28,12 @@ Un écran peut être construit ou modifié par plusieurs couches successives : H
 ## Principe de prévention
 
 **Ne jamais considérer une modification CSS/HTML comme livrée tant que la couche finale qui reconstruit le composant n'a pas été vérifiée.** Les sources et `dist/` doivent être traitées comme un ensemble de publication synchronisé.
+
+## Évolution de la page Dépenses — actions et historique interactif (14 novembre 2026)
+
+- Le DOM final reste construit par `spend-clean-ui.js` ; toute modification de l'ordre visuel ou des cartes d'action doit être faite dans ce constructeur, puis répliquée dans `dist/`.
+- L'ordre cible est : synthèse et indicateurs, historique des achats, puis actions d'ajout/import.
+- Les indicateurs sont des commandes accessibles au clavier : « Dépenses du mois » filtre le mois courant, « Achats enregistrés » affiche toute la liste et « Sous impulsion » filtre les achats impulsifs ou sous pression. Ils ouvrent tous l'accordéon de l'historique.
+- Les deux actions principales sont « Ajouter une dépense » et « Importer une photo ou une preuve d'achat ». Le bouton d'ajout conserve son écouteur d'ouverture de saisie rapide ; l'import conserve le déclenchement du champ de fichier `#receiptFile`.
+- Ne pas réintroduire « Me guider sur mes dépenses » dans cette zone : ce n'est pas une action de la page Dépenses.
+- Après chaque changement, contrôler l'ouverture des filtres, les trois états de liste, les actions d'ajout/import, le responsive mobile, le chargement CSS v8, ainsi que l'identité des fichiers source et `dist/`.
