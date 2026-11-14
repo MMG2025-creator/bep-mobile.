@@ -584,17 +584,21 @@ async function prepareReceiptImageForOcr(file){
 $("receiptImportButton")?.addEventListener("click",()=> $("receiptFile")?.click());
 async function processReceiptFile(file,input){
  if(!file)return;
- const status=$("receiptStatus");status.hidden=false;status.textContent="Préparation de la photo…";
+ const status=$("receiptStatus");status.hidden=false;status.classList.remove("is-success","is-error");status.classList.add("is-processing");status.dataset.stage="prepare";status.style.setProperty("--receipt-progress","6%");status.textContent="Préparation de la photo…";
+ const receiptStage=(stage,message,progress)=>{status.dataset.stage=stage;status.style.setProperty("--receipt-progress",Math.max(4,Math.min(100,progress))+"%");status.textContent=message};
  let worker;
  try{
   if(!/^image\/[a-z0-9.+-]+$/i.test(file.type))throw Error("Format non pris en charge. Importe une image lisible par ton navigateur.");
   if(file.size>12*1024*1024)throw Error("Cette photo dépasse la limite actuelle de 12 Mo. Réduis-la ou compresse-la, ou prends une capture d’écran. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».");
   if(!window.BEPReceiptOCR)throw Error("Le moteur d'extraction BEP n'est pas disponible. Saisis les informations manuellement.");
+  receiptStage("engine","Préparation du moteur de lecture…",12);
   await loadTesseract();
+  receiptStage("image","Optimisation de la photo…",24);
   const ocrImage=await prepareReceiptImageForOcr(file);
-  status.textContent="Lecture du justificatif sur cet appareil…";
-  worker=await window.Tesseract.createWorker("fra+eng",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="Lecture du justificatif : "+Math.round((m.progress||0)*100)+" %"}});
+  receiptStage("recognition","Lecture du justificatif sur cet appareil…",28);
+  worker=await window.Tesseract.createWorker("fra+eng",1,{logger:m=>{if(m.status==="recognizing text"){const pct=Math.round((m.progress||0)*100);receiptStage("recognition","Lecture du justificatif : "+pct+" %",28+pct*.62)}else if(m.status==="loading language traineddata")receiptStage("engine","Chargement des langues de lecture…",18)}});
   const result=await worker.recognize(ocrImage);
+  receiptStage("extract","Lecture terminée. Extraction des informations…",94);
   const rawText=String(result.data?.text||"").trim();
   if(!rawText)throw Error("Aucun texte lisible. Tu peux saisir les informations manuellement.");
   const extracted=window.BEPReceiptOCR.extract(rawText);
@@ -609,9 +613,9 @@ async function processReceiptFile(file,input){
   const fields=[["commerçant",extracted.confidence.merchant],["montant",extracted.confidence.amount],["date",extracted.confidence.date],["heure",extracted.confidence.time||0],["catégorie",extracted.confidence.category],["support",extracted.confidence.documentType||0]].map(([name,value])=>name+" : "+confidenceLabel(value)).join(" · ");
   receiptCaptureText="Preuve d’achat importée · "+(extracted.merchant||"Enseigne non identifiée")+" · "+(Number.isFinite(extracted.amount)?extracted.amount.toFixed(2)+" €":"montant à vérifier");
   const dateLabel=extracted.date?"Date proposée : "+new Date(extracted.date+"T12:00:00").toLocaleDateString("fr-FR")+(extracted.time?" à "+extracted.time:"")+". ":"Date non identifiée. ";const documentLabels={ticket_caisse:"ticket de caisse",commande_web:"commande web",facture:"facture",releve_bancaire:"relevé bancaire",affichage_ou_borne:"écran ou borne",ecran_ou_document:"écran ou document",inconnu:"support non identifié"};const documentLabel="Support détecté : "+(documentLabels[extracted.documentType]||"support non identifié")+". ";
-  status.textContent=documentLabel+(Number.isFinite(extracted.amount)&&extracted.amount>0?"Montant proposé : "+extracted.amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(extracted.merchant?"Enseigne : "+extracted.merchant+". ":"")+(extracted.city?"Ville : "+extracted.city+". ":"")+dateLabel+"Confiance — "+fields+". Vérifie et corrige chaque champ avant d’enregistrer. La photo n’est pas conservée par BEP."+(extracted.ambiguous?" Plusieurs montants ont été détectés : contrôle le total.":"");
- }catch(err){const reason=String(err?.message||"Lecture impossible.");const photoHelp="\n\nLa photo est peut-être trop lourde ou difficile à décoder. Essaie de la réduire ou de la compresser, ou prends une capture d’écran du justificatif. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».";status.textContent=reason+photoHelp}
- finally{if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
+  status.classList.remove("is-processing","is-error");status.classList.add("is-success");status.dataset.stage="review";status.style.setProperty("--receipt-progress","100%");status.textContent="Lecture terminée. "+documentLabel+(Number.isFinite(extracted.amount)&&extracted.amount>0?"Montant proposé : "+extracted.amount.toFixed(2).replace(".",",")+" €. ":"Montant non identifié avec certitude. ")+(extracted.merchant?"Enseigne : "+extracted.merchant+". ":"")+(extracted.city?"Ville : "+extracted.city+". ":"")+dateLabel+"Confiance — "+fields+". Vérifie et corrige chaque champ avant d’enregistrer. La photo n’est pas conservée par BEP."+(extracted.ambiguous?" Plusieurs montants ont été détectés : contrôle le total.":"");
+ }catch(err){status.classList.remove("is-processing","is-success");status.classList.add("is-error");status.dataset.stage="error";const reason=String(err?.message||"Lecture impossible.");const photoHelp="\n\nLa photo est peut-être trop lourde ou difficile à décoder. Essaie de la réduire ou de la compresser, ou prends une capture d’écran du justificatif. Tu peux aussi saisir directement le montant dans le champ « Montant (€) ».";status.textContent=reason+photoHelp}
+ finally{status.classList.remove("is-processing");if(worker)await worker.terminate().catch(()=>{});if(input)input.value="";if(window.BEP_OPEN_PURCHASE_DIALOG)window.BEP_OPEN_PURCHASE_DIALOG();}
 }
 if($("receiptFile"))$("receiptFile").onchange=e=>processReceiptFile(e.target.files?.[0],e.target);
 
