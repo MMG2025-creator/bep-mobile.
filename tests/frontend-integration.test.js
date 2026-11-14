@@ -154,3 +154,26 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
   assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
  }
 });
+
+
+test("purchase statistics navigate to an opened purchases history accordion",()=>{
+ const spend=read("spend-experience.js");
+ assert.match(spend,/details\.id="bepSpendPurchaseHistory"/);
+ assert.match(spend,/details\.open=true/);
+ assert.match(spend,/focusPurchaseHistory\(filter\)/);
+ for(const id of ["bepSpendMonthTotal","bepSpendMonthCount","bepSpendMonthDecisions"])assert.ok(spend.includes('["'+id+'"'),"missing stat shortcut "+id);
+ assert.match(spend,/setAttribute\("role","button"\)/);
+ assert.match(spend,/keydown/);
+ assert.match(spend,/purchaseHistory\.open=true/);
+ const app=read("app.js");
+ assert.ok(app.includes("window.BEP_SET_IMPULSIVE_PURCHASES="));
+ assert.ok(app.includes("window.BEP_OPEN_PURCHASES="));
+ for(const file of ["spend-experience.css","dist/spend-experience.css"]){
+  const css=read(file);
+  assert.match(css,/#purchases \.bep-spend-history-details>#purchaseRows\s*\{[^}]*overflow-y:auto/s);
+ }
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
+ }
+});

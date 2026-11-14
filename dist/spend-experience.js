@@ -62,7 +62,7 @@ const radar=document.createElement("section");radar.className="bep-spend-view be
 [advice,entry,history].forEach(node=>{if(node)radar.appendChild(node);});
 const addButton=document.createElement("button");addButton.type="button";addButton.id="bepAddPurchase";addButton.className="bep-spend-add-button";addButton.textContent="+ Ajouter un achat";
 if(entry)radar.insertBefore(addButton,entry);
-if(history){const oldTitle=history.querySelector("h2");const details=document.createElement("details");details.className="bep-spend-history-details";const summary=document.createElement("summary");summary.textContent="Historique des achats";details.appendChild(summary);[...history.childNodes].forEach(node=>{if(node!==oldTitle)details.appendChild(node)});oldTitle?.remove();history.appendChild(details);}
+if(history){const oldTitle=history.querySelector("h2");const details=document.createElement("details");details.className="bep-spend-history-details";details.id="bepSpendPurchaseHistory";const summary=document.createElement("summary");summary.textContent="Historique des achats";summary.setAttribute("aria-label","Ouvrir ou fermer l’historique des achats");details.appendChild(summary);[...history.childNodes].forEach(node=>{if(node!==oldTitle)details.appendChild(node)});oldTitle?.remove();history.appendChild(details);details.open=true;}
 panel.insertBefore(radar,hero.nextSibling);
 if(entry){
  const heading=entry.querySelector("h2");if(heading)heading.textContent="Ajouter un achat";
@@ -133,6 +133,28 @@ function mountFinancialConfirmDialog(){
 }
 
 mountQuickExpenseModal(panel,entry,addButton);
+const purchaseHistory=$("bepSpendPurchaseHistory");
+function focusPurchaseHistory(filter){
+ if(!purchaseHistory)return;
+ if(filter==="impulsive")window.BEP_SET_IMPULSIVE_PURCHASES?.(true);
+ else window.BEP_SET_IMPULSIVE_PURCHASES?.(false);
+ purchaseHistory.open=true;
+ if(purchaseHistory.closest(".panel")&&!purchaseHistory.closest(".panel").classList.contains("active"))window.BEP_OPEN_PURCHASES?.();
+ window.setTimeout(()=>purchaseHistory.scrollIntoView({behavior:"smooth",block:"start"}),90);
+}
+const statTargets=[["bepSpendMonthTotal",null],["bepSpendMonthCount",null],["bepSpendMonthDecisions","impulsive"]];
+statTargets.forEach(([id,filter])=>{
+ const stat=$(id)?.closest(".bep-spend-stat");
+ if(!stat)return;
+ stat.classList.add("bep-spend-stat-link");
+ stat.setAttribute("role","button");stat.setAttribute("tabindex","0");
+ stat.setAttribute("aria-label",filter==="impulsive"?"Voir les achats sous impulsion":"Voir l’historique des achats");
+ const activate=()=>focusPurchaseHistory(filter);
+ stat.addEventListener("click",activate);
+ stat.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();activate()}});
+});
+window.addEventListener("bep:purchase-filter",()=>{if(purchaseHistory)purchaseHistory.open=true});
+
 nav.querySelector("[data-spend-tab=radar]")?.addEventListener("click",()=>window.BEP_OPEN_PURCHASE_DIALOG?.());
 setTab("radar");
 ["psychology","need","delay","purchaseAmount"].forEach(id=>$(id)?.addEventListener("input",updateScore));["psychology","need","delay"].forEach(id=>$(id)?.addEventListener("change",updateScore));
