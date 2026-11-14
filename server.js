@@ -56,7 +56,7 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
   );
   const count=Number(result.rows[0].request_count),remaining=Math.max(0,max-count),retryAfter=Math.max(1,Math.ceil((resetAt-now)/1000));
   res.setHeader("RateLimit-Limit",String(max));res.setHeader("RateLimit-Remaining",String(remaining));res.setHeader("RateLimit-Reset",String(retryAfter));
-  if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED"})}
+  if(count>max){res.setHeader("Retry-After",String(retryAfter));if(scope==="auth"&&req.method==="GET"&&req.path==="/google"&&req.accepts("html"))return res.redirect(303,FRONTEND_ORIGIN+"/?login=rate_limited&retry="+retryAfter);return res.status(429).json({error:"RATE_LIMITED"})}
   if(Math.random()<0.01)pool.query("DELETE FROM bep_rate_limits WHERE expires_at<NOW()").catch(e=>console.error("Rate limit cleanup failed",e.message));
   next();
  }catch(e){console.error("Device rate limiter unavailable",e.message);return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"})}
