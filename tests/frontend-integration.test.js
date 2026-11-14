@@ -21,6 +21,16 @@ test("both HTML builds expose the current budget, savings and overdraft interfac
  }
 });
 
+test("profile settings open directly into one editable form in both published HTML builds",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.equal((html.match(/id="profileSettingsDialog"/g)||[]).length,1,file+" must expose exactly one profile dialog");
+  assert.equal((html.match(/id="profileForm"/g)||[]).length,1,file+" must expose exactly one profile form");
+  assert.match(html,/<dialog class="settings-modal" id="profileSettingsDialog"[\s\S]*?<form id="profileForm">[\s\S]*?id="profileFirstName"[\s\S]*?id="profileLastName"[\s\S]*?id="profilePhone"/);
+  assert.match(html,/id="openProfileDialog"[^>]*aria-controls="profileSettingsDialog"/);
+ }
+});
+
 test("settings show the package version and home shortcut filters impulsive purchases",()=>{
  const html=read("index.html"),dist=read("dist/index.html"),app=read("app.js");
  for(const source of [html,dist])assert.match(source,/settings-app-version/);
