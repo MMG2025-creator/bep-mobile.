@@ -245,3 +245,9 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=112&bep=local-clear-render-guard-20261114/);
 });
+
+test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
+ const spend=read("spend-clean-ui.js");
+ assert.match(spend,/if\(row\.hidden!==shouldHide\)row\.hidden=shouldHide/);
+ assert.equal(spend,read("dist/spend-clean-ui.js"));
+});
