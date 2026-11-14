@@ -21,11 +21,32 @@ app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
 app.use(express.json({limit:"1mb"}));
+function readDeviceCookie(req){
+ const raw=String(req.headers.cookie||"").split(";").map(v=>v.trim()).find(v=>v.startsWith("bep_device="));
+ if(!raw)return null;
+ const token=decodeURIComponent(raw.slice("bep_device=".length));
+ const parts=token.split(".");
+ if(parts.length!==2||!process.env.SESSION_SECRET)return null;
+ const [id,signature]=parts;
+ if(!/^[a-f0-9]{64}$/.test(id)||!/^[a-f0-9]{64}$/.test(signature))return null;
+ const expected=crypto.createHmac("sha256",process.env.SESSION_SECRET).update("bep-device:"+id).digest("hex");
+ const a=Buffer.from(signature,"hex"),b=Buffer.from(expected,"hex");
+ return a.length===b.length&&crypto.timingSafeEqual(a,b)?id:null;
+}
+function ensureDeviceCookie(req,res){
+ let id=readDeviceCookie(req);
+ if(!id){
+  id=crypto.randomBytes(32).toString("hex");
+  const signature=crypto.createHmac("sha256",process.env.SESSION_SECRET).update("bep-device:"+id).digest("hex");
+  res.append("Set-Cookie","bep_device="+id+"."+signature+"; Path=/api; Max-Age=31536000; HttpOnly; Secure; SameSite=None");
+ }
+ return id;
+}
 function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
- if(!pool)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
+ if(!pool||!process.env.SESSION_SECRET)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
  const now=Date.now(),windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
- const ip=String(req.ip||req.socket.remoteAddress||"unknown");
- const key=crypto.createHash("sha256").update(scope+":"+ip).digest("hex");
+ const deviceId=ensureDeviceCookie(req,res);
+ const key=crypto.createHash("sha256").update(scope+":device:"+deviceId).digest("hex");
  try{
   const result=await pool.query(
    "INSERT INTO bep_rate_limits(bucket_key,window_start_ms,request_count,expires_at) VALUES($1,$2,1,to_timestamp(($2::bigint+$3::bigint)/1000.0)) ON CONFLICT(bucket_key) DO UPDATE SET request_count=CASE WHEN bep_rate_limits.window_start_ms=EXCLUDED.window_start_ms THEN bep_rate_limits.request_count+1 ELSE 1 END,window_start_ms=EXCLUDED.window_start_ms,expires_at=EXCLUDED.expires_at RETURNING request_count",
@@ -36,7 +57,7 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
   if(count>max){res.setHeader("Retry-After",String(retryAfter));return res.status(429).json({error:"RATE_LIMITED"})}
   if(Math.random()<0.01)pool.query("DELETE FROM bep_rate_limits WHERE expires_at<NOW()").catch(e=>console.error("Rate limit cleanup failed",e.message));
   next();
- }catch(e){console.error("Shared rate limiter unavailable",e.message);return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"})}
+ }catch(e){console.error("Device rate limiter unavailable",e.message);return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"})}
 }}
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
 app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
