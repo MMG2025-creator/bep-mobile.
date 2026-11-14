@@ -68,6 +68,7 @@
 #purchases.bep-expenses-page .bep-expenses-stats>button span{color:#6b8177;font:600 12px/1.3 "DM Sans",sans-serif}
 #purchases.bep-expenses-page .bep-expenses-stats>button strong{color:#175c45;font:800 clamp(18px,2.4vw,25px)/1.1 Manrope,"DM Sans",sans-serif;font-variant-numeric:tabular-nums}
 #purchases.bep-expenses-page .bep-expenses-stats>button small{color:#668274;font:600 10px/1.3 "DM Sans",sans-serif}
+#purchases.bep-expenses-page #bepAddPurchase{min-height:132px!important;padding:16px 42px 16px 16px!important;gap:10px!important}
 #purchases.bep-expenses-page .bep-expenses-action-tile--manual{border-color:#176b50!important;background:linear-gradient(145deg,#176b50,#104f3c 82%)!important;color:#fff!important;box-shadow:0 7px 18px #173c2918!important}
 #purchases.bep-expenses-page .bep-expenses-action-tile--manual .bep-expenses-action-icon{background:#ffffff24;color:#fff}
 #purchases.bep-expenses-page .bep-expenses-action-tile--manual .bep-expenses-action-arrow{background:#fff;color:#176b50}
@@ -78,4 +79,4 @@
 #purchases.bep-expenses-page .bep-expenses-import-hint{text-align:left;padding:0 4px;font-size:11px}
 #purchases.bep-expenses-page .bep-expenses-history-accordion{scroll-margin-top:18px}
 #purchases.bep-expenses-page #purchaseRows .purchase-row[hidden]{display:none!important}
-@media(max-width:640px){#purchases.bep-expenses-page .bep-expenses-stats>button{min-height:82px;padding:10px 8px;gap:5px}#purchases.bep-expenses-page .bep-expenses-stats>button span{font-size:10px}#purchases.bep-expenses-page .bep-expenses-stats>button small{font-size:9px}}
+@media(max-width:640px){#purchases.bep-expenses-page #bepAddPurchase{min-height:116px!important;padding:12px 32px 12px 10px!important;gap:7px!important}#purchases.bep-expenses-page .bep-expenses-stats>button{min-height:82px;padding:10px 8px;gap:5px}#purchases.bep-expenses-page .bep-expenses-stats>button span{font-size:10px}#purchases.bep-expenses-page .bep-expenses-stats>button small{font-size:9px}}
