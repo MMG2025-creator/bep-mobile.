@@ -1,0 +1,16 @@
+name: Module boundary checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  module-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check module boundaries and integration contracts
+        run: node --test tests/module-boundaries.test.js
