@@ -22,16 +22,13 @@ Run from the repository root:
 BEP_KNOWLEDGE_READONLY_DATABASE_URL='postgresql://...' npm run export:coach-snapshots
 ```
 
-The exporter writes:
-- `services/gemini-agent/data/knowledge-bep-coach.json`
-- `services/gemini-agent/data/reasoning-bep-coach.json`
-
-It stages both files in a temporary directory and swaps the snapshot directory atomically. If export, validation, or publication fails, the last known-good directory is retained.
+The exporter stages both files in a temporary directory and performs a rollback-capable directory replacement. The replacement uses two filesystem renames, not a single atomic exchange; there can be a very short interval in which the target directory path is absent. If export, validation, or publication fails, the last known-good directory is restored where the filesystem permits.
 
 ## Snapshot contents and provenance
 
-- Knowledge is read from active rows in `bep_financial_knowledge`, merged with approved overlays only when `source_version` and `source_digest` match the current source. A matching inactive overlay suppresses its source document. Stale/orphan overlays are ignored.
-- The exporter deliberately omits `approved_by` and all user-specific data.
+- Knowledge is read from active rows in `bep_financial_knowledge`, merged with approved overlays only when `source_version` and the canonical BEP `source_digest` match the current source. The exporter imports the canonical helper from `lib/bep-agent/source-fingerprint.js`; it does not reimplement the fingerprint.
+- A matching inactive overlay suppresses its source document. Stale/orphan overlays are ignored.
+- The exporter deliberately omits `approved_by` and all user-specific data; document fields are constrained by a strict allowlist.
 - Reasoning scenarios, guardrails and regression cases currently remain sourced from the versioned repository rule files because no PostgreSQL reasoning table is defined in the inspected schema. Their provenance is explicitly labelled as repository rules, not database-exported data.
 
 ## Gemini endpoints
