@@ -22,7 +22,7 @@ test("Gemini knowledge review merges only approved overlays whose source version
  const good=overlay(base);
  const staleVersion=overlay({...base,slug:"stale-version"},{slug:"stale-version",source_version:2});
  const staleDigest=overlay(base,{slug:"stale-digest",source_digest:"invalid"});
- const inactive=overlay(base,{slug:"inactive",active:false});
+ const inactiveSource={...base,slug:"inactive"};\n const inactive=overlay(inactiveSource,{active:false});
  const pool=poolFor([base,{...base,slug:"stale-version"},{...base,slug:"stale-digest"},{...base,slug:"inactive"}],[good,staleVersion,staleDigest,inactive]);
  const result=await loadSharedKnowledge(pool);
  const bySlug=new Map(result.docs.map(x=>[x.slug,x]));
