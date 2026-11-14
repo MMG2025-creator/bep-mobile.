@@ -71,6 +71,7 @@ try{
   const normalized=answer.replace(/[^0-9]/g,"");
   const match=item.expected==="dépasse"||item.expected==="inférieur"?answer.toLowerCase().includes(item.expected):item.expected==="Épargne sécurité"?answer.includes(item.expected):normalized.includes(item.expected);
   check(result.status===200&&result.data.mode==="structured"&&match,"Question structurée "+item.name+" incorrecte : "+answer);
+  record("Question métier : "+item.name,true,"HTTP 200 — mode structured — "+item.question);
  }
  record("Questions métier structurées",true,"Revenus, charges, dépenses, objectifs et contrôle d'achat hors disponible");
  const numeric=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Combien me reste-t-il ?",financialContext:context})});
