@@ -1,0 +1,38 @@
+name: BEP full regression suite
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [integration/v1.3-baseline-20261114]
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/bep_full_test
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/bep_full_test
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bep_full_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bep_full_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-fund
+      - name: Run complete Node test suite
+        run: npm test
+      - name: Run production asset and monthly-budget checks
+        run: npm run check:monthly-budget

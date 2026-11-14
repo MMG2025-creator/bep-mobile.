@@ -9,6 +9,16 @@ const cases=require("../lib/bep-agent/quality-cases");
 const fs=require("node:fs");
 const path=require("node:path");
 
+test("schema migration is opt-in and never runs as part of the normal server start",()=>{
+ const pkg=JSON.parse(fs.readFileSync(path.join(__dirname,"..","package.json"),"utf8"));
+ const migration=fs.readFileSync(path.join(__dirname,"..","scripts","migrate-bep-agent.js"),"utf8");
+ const repository=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","repository.js"),"utf8");
+ assert.equal(pkg.scripts.start,"node server.js");
+ assert.match(migration,/BEP_AGENT_SCHEMA_MIGRATE!==\"true\"/);
+ assert.match(migration,/readConfig\(\)\.enabled/);
+ assert.match(repository,/20261114_bep_gemini_agent\.sql/);
+ assert.doesNotMatch(repository,/CREATE TABLE IF NOT EXISTS/);
+});
 test("agent remains disabled by default and fails closed without separate billing confirmation",()=>{
  assert.equal(readConfig({}).enabled,false);
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}).enabled,false);

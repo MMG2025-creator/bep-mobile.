@@ -11,7 +11,7 @@ const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
 const corpus=[
  {slug:"annual-expenses-provision",category:"budget",title:"Provisionner les dépenses annuelles",content:"Mensualiser les assurances et taxes annuelles",keywords:["annuel","provision","assurance","taxe"],evidence_level:"institutional_guidance",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/",version:1},
  {slug:"planned-vs-real-savings",category:"savings",title:"Mesurer l'épargne réellement constituée",content:"Distinguer les versements et retraits effectifs",keywords:["épargne","versement","dépôt","retrait"],evidence_level:"bep_accounting_rule",source_name:"BEP",source_url:"",version:1},
- {slug:"irregular-income-buffer",category:"income",title:"Budgéter les revenus variables",content:"Distinguer le socle régulier des revenus variables",keywords:["revenu","variable","commission"],evidence_level:"institutional_guidance",source_name:"OCDE",source_url:"https://www.oecd.org/financial/education/"}
+ {slug:"irregular-income-buffer",category:"income",title:"Budgéter les revenus variables",content:"Distinguer le socle régulier des revenus variables",keywords:["revenu","variable","commission"],evidence_level:"institutional_guidance",source_name:"OCDE",source_url:"https://www.oecd.org/financial/education/",version:1}
 ];
 
 test("normalizes French accents and removes stop words",()=>{
@@ -76,6 +76,7 @@ test("personal knowledge retrieval is scoped to the authenticated user and accep
  const pool={query:async(sql,params)=>{
   calls.push({sql,params});
   if(sql.includes("bep_financial_knowledge"))return{rows:corpus};
+  if(sql.includes("bep_agent_approved_knowledge"))return{rows:[]};
   if(sql.includes("bep_user_coach_knowledge"))return{rows:[{id:"7",category:"savings",title:"Priorité personnelle",detail:"Ne pas forcer les versements",confidence:"high",kind:"recommendation"}]};
   throw Error("unexpected query");
  }};
