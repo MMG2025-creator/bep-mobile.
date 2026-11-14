@@ -34,13 +34,13 @@ jobs:
           node-version: "20"
       - name: Syntax checks
         run: |
-          node --check lib/bep-coach-snapshot-exporter.js\n          node --check lib/bep-exporter-role-check.js\n          node --check scripts/check-bep-exporter-db-role.js
+          node --check lib/bep-coach-snapshot-exporter.js
           node --check lib/bep-exporter-role-check.js
           node --check scripts/export-bep-coach-snapshots.js
           node --check scripts/check-bep-exporter-db-role.js
           node --check services/gemini-agent/server.js
       - name: Unit tests (no database connection)
-        run: node --test tests/bep-coach-snapshot-exporter.test.js tests/bep-exporter-role-check.test.js tests/bep-exporter-role-check.test.js
+        run: node --test tests/bep-coach-snapshot-exporter.test.js tests/bep-exporter-role-check.test.js
       - name: Verify Gemini service has no database integration
         run: |
           if grep -R -nE --include='*.js' --include='*.json' 'require\(["\x27]pg["\x27]\)|DATABASE_URL|BEP_KNOWLEDGE_READONLY_DATABASE_URL' services/gemini-agent; then
