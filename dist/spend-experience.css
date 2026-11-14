@@ -741,3 +741,14 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #purchases .bep-spend-action-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:#176b50;color:#fff;font:500 27px/1 Arial,sans-serif}
 #purchases .bep-spend-add-button{display:none!important}
 @media(max-width:390px){#purchases .bep-spend-action-grid{gap:8px}#purchases .bep-spend-action-tile{min-height:132px;padding:13px;border-radius:16px}#purchases .bep-spend-action-label{font-size:14px}#purchases .bep-spend-action-icon{width:38px;height:38px}#purchases .bep-spend-action-arrow{right:10px;width:27px;height:27px}}
+
+
+/* Keep the two budget actions side by side on every mobile width.
+   This intentionally overrides the legacy <=380px single-column rule above. */
+@media(max-width:640px){
+  .budget-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+  .budget-action-card{min-width:0;min-height:132px;padding:12px;gap:9px}
+  .budget-action-copy{min-width:0;padding-right:20px}
+  .budget-action-copy h3{font-size:14px;overflow-wrap:anywhere}
+  .budget-action-icon{width:36px;height:36px;flex:0 0 36px}
+}
