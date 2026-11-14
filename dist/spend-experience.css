@@ -675,3 +675,20 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 .bep-spend-history-details>.purchase-longpress-hint,
 .bep-spend-history-details>#purchaseRows{margin-left:14px;margin-right:14px}
 .bep-spend-history-details>#purchaseRows{margin-bottom:14px}
+
+
+/* Purchase history accordion: internal list scroll, with clear room for the floating advice dock. */
+#purchases .bep-spend-history-details>#purchaseRows{
+ max-height:min(52vh,540px);
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ -webkit-overflow-scrolling:touch;
+ touch-action:pan-y;
+ scrollbar-width:thin;
+ padding-bottom:104px;
+ scroll-padding-bottom:104px;
+}
+#purchases .bep-spend-history-details>#purchaseRows .purchase-row{scroll-margin-block:12px}
+@media(max-width:560px){
+ #purchases .bep-spend-history-details>#purchaseRows{max-height:48vh;padding-bottom:112px;scroll-padding-bottom:112px}
+}
