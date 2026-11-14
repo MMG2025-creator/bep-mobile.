@@ -1,6 +1,6 @@
 "use strict";
 (function(){
- const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+ const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
  const KEY="bep-device-id-v1";
  let deviceId="";
  try{
