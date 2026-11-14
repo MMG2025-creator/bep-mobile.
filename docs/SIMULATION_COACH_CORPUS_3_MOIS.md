@@ -22,3 +22,14 @@ Un script ou un outil d'analyse peut charger directement le fichier JSON avec `r
 
 ## Limites
 Les réponses Coach sont des exemples synthétiques écrits pour couvrir des intentions et comportements. Elles ne sont pas des réponses réellement émises par l'endpoint Coach. Le JSON est un jeu de test local, pas une base persistante multi-utilisateur ni une preuve de qualité en production. Il peut ensuite être transformé vers le schéma SQL final par un adaptateur dédié, sans changer le corpus source.
+
+## Analyse Gemini locale (optionnelle)
+
+Le script `npm run simulation:analyze` charge et valide le corpus local, vérifie que chaque enregistrement porte `synthetic: true`, puis envoie uniquement ces exemples fictifs à Gemini. Il ne lit aucune variable de connexion PostgreSQL, n'appelle pas l'endpoint Coach et ne modifie aucune donnée métier. Le rapport est écrit localement dans `simulation/output/coach-quality-review.json`.
+
+L'exécution exige une activation explicite et une clé dédiée :
+```bash
+BEP_SIMULATION_GEMINI_ENABLED=true BEP_AGENT_GEMINI_API_KEY=... npm run simulation:analyze
+```
+
+L'analyse est désactivée par défaut. Elle est limitée à un appel, à un corpus de taille bornée et à une sortie structurée filtrée par des validateurs locaux. Les résultats portent uniquement sur la qualité des exemples synthétiques ; ils ne démontrent pas la qualité des réponses réellement produites par le Coach. Aucun secret ne doit être placé dans le dépôt.
