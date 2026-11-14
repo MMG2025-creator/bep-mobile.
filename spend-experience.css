@@ -657,3 +657,21 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
     font-size:14px;
   }
 }
+
+
+/* Purchase dashboard shortcuts + always-open purchase history accordion */
+.bep-spend-stats .bep-spend-stat-link{cursor:pointer;position:relative;transition:border-color .15s,transform .15s,box-shadow .15s}
+.bep-spend-stats .bep-spend-stat-link:hover{border-color:#8fbda5;box-shadow:0 5px 18px rgba(18,75,55,.09);transform:translateY(-1px)}
+.bep-spend-stats .bep-spend-stat-link:focus-visible{outline:3px solid #9bcbb6;outline-offset:3px}
+.bep-spend-stats .bep-spend-stat-link::after{content:"Voir l’historique  ›";display:block;margin-top:8px;color:#176b50;font-size:11px;font-weight:700}
+.bep-spend-stats .bep-spend-stat-link:last-child::after{content:"Voir les achats concernés  ›"}
+.bep-spend-history-details{border:1px solid #dce9e1;border-radius:16px;background:#fff;overflow:hidden}
+.bep-spend-history-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:14px 18px;cursor:pointer;list-style:none;font-weight:800;color:#123b34}
+.bep-spend-history-details>summary::-webkit-details-marker{display:none}
+.bep-spend-history-details>summary::after{content:"−";display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#edf5f0;color:#176b50;font-size:20px}
+.bep-spend-history-details:not([open])>summary::after{content:"＋"}
+.bep-spend-history-details[open]>summary{border-bottom:1px solid #e7eee9}
+.bep-spend-history-details>#purchaseBulkToolbar,
+.bep-spend-history-details>.purchase-longpress-hint,
+.bep-spend-history-details>#purchaseRows{margin-left:14px;margin-right:14px}
+.bep-spend-history-details>#purchaseRows{margin-bottom:14px}
