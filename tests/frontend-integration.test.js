@@ -218,3 +218,16 @@ test("clearing local data resets every collection required by the first render",
  assert.match(js,/defaults=\{income:0,incomes:\[\],budgets:\[\],expenses:\[\],goals:\[\],transactions:\[\]/);
  assert.match(js,/state=\{\.\.\.defaults\};syncIncomeTotal\(\);/);
 });
+
+
+test("successful local-data clearing does not re-render the cleared application state",()=>{
+ const app=read("app.js");
+ const start=app.indexOf('$("deleteBtn").onclick=async()=>{');
+ const end=app.indexOf('$("deleteAccountBtn").onclick=async()=>{',start);
+ assert.ok(start>=0&&end>start,"local clear handler must exist");
+ const handler=app.slice(start,end);
+ assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
+ assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
+ assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=112&bep=local-clear-render-guard-20261114/);
+});
