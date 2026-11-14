@@ -1602,3 +1602,31 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .budget-action-card .bep-entry-trigger{display:none!important}
 .budget-action-card .budget-action-details{display:none!important}
 @media(max-width:390px){.budget-action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.budget-action-card{min-height:132px;padding:13px;border-radius:16px}.budget-action-copy h3{font-size:14px}.budget-action-icon{width:38px;height:38px}.budget-action-card--interactive:after{right:10px;width:27px;height:27px}}
+
+/* BEP budget action micro-animations: incoming money and recurring bill. */
+.income-manual-entry,.charges-manual-entry{position:relative;isolation:isolate;overflow:hidden}
+.income-manual-entry::before,.charges-manual-entry::before{content:"";position:absolute;z-index:0;pointer-events:none;right:22px;top:19px;width:39px;height:25px;border-radius:4px;opacity:.72}
+.income-manual-entry::before{border:1px solid #c6a64e;background:linear-gradient(135deg,#fff0b4,#d8b95d);box-shadow:inset 0 0 0 3px #fff8d7,0 4px 10px #8c74252b;animation:bepIncomeNoteFloat 4.4s ease-in-out infinite}
+.income-manual-entry .budget-action-icon{position:relative;animation:bepIncomeIconPulse 3.8s ease-in-out infinite}
+.income-manual-entry .budget-action-icon::after{content:"€";position:absolute;right:-7px;top:-8px;display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#f4d978;color:#176b50;font:800 11px/1 Georgia,serif;box-shadow:0 2px 5px #173c2926;animation:bepIncomeCoinRise 3.4s ease-in-out infinite}
+.charges-manual-entry::before{width:34px;height:40px;top:15px;right:25px;border:1px solid #9bc9ad;border-radius:6px;background:linear-gradient(#176b50 0 8px,#f8fffa 8px);box-shadow:0 4px 10px #173c2920;animation:bepChargeCalendarFloat 5s ease-in-out infinite}
+.charges-manual-entry::after{content:"";position:absolute;z-index:0;pointer-events:none;right:34px;top:33px;width:16px;height:2px;background:#a5cdb4;box-shadow:0 7px 0 #a5cdb4,0 14px 0 #a5cdb4;opacity:.8}
+.charges-manual-entry .budget-action-icon{position:relative;animation:bepChargeIconPulse 4.2s ease-in-out infinite}
+.charges-manual-entry .budget-action-icon::after{content:"✓";position:absolute;right:-7px;top:-7px;display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#d8f0df;color:#176b50;font:800 11px/1 Arial,sans-serif;box-shadow:0 2px 5px #173c2926;animation:bepChargeCheck 4.2s ease-in-out infinite}
+.income-manual-entry>* , .charges-manual-entry>*{position:relative;z-index:1}
+@keyframes bepIncomeNoteFloat{0%,100%{translate:0 0;rotate:-8deg}50%{translate:0 -8px;rotate:4deg}}
+@keyframes bepIncomeIconPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bepIncomeCoinRise{0%,100%{transform:translateY(3px);opacity:.75}50%{transform:translateY(-5px);opacity:1}}
+@keyframes bepChargeCalendarFloat{0%,100%{translate:0 0;rotate:3deg}50%{translate:0 -6px;rotate:-3deg}}
+@keyframes bepChargeIconPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes bepChargeCheck{0%,70%,100%{scale:1}82%{scale:1.16}}
+/* Clear, persistent progress feedback while a receipt is prepared and read locally. */
+#receiptStatus.is-processing,#receiptStatus.is-success,#receiptStatus.is-error{position:relative;display:block!important;margin:12px 0;padding:13px 14px 16px 44px;border:1px solid #cfe3d6;border-radius:14px;background:#f3faf5;color:#245b45;font:500 13px/1.55 Manrope,Arial,sans-serif;white-space:pre-line;overflow:hidden}
+#receiptStatus.is-processing::before{content:"";position:absolute;left:15px;top:15px;width:17px;height:17px;border:2px solid #c8ded0;border-top-color:#176b50;border-radius:50%;animation:bepReceiptSpin .8s linear infinite}
+#receiptStatus.is-processing::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:4px;background:linear-gradient(90deg,#176b50 var(--receipt-progress,8%),#dcebe1 var(--receipt-progress,8%));transition:background .25s ease}
+#receiptStatus.is-success{border-color:#b9dec7;background:#eff9f2;color:#176b50}
+#receiptStatus.is-success::before{content:"✓";position:absolute;left:14px;top:13px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#d9f0e0;color:#176b50;font:800 13px/1 Arial,sans-serif}
+#receiptStatus.is-error{border-color:#edc8bd;background:#fff6f2;color:#8d3e2b}
+#receiptStatus.is-error::before{content:"!";position:absolute;left:14px;top:13px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#f8e0d8;color:#a0442c;font:800 13px/1 Arial,sans-serif}
+@keyframes bepReceiptSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.income-manual-entry::before,.income-manual-entry .budget-action-icon,.income-manual-entry .budget-action-icon::after,.charges-manual-entry::before,.charges-manual-entry .budget-action-icon,.charges-manual-entry .budget-action-icon::after,#receiptStatus.is-processing::before{animation:none!important}}
