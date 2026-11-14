@@ -17,11 +17,11 @@ test("corpus is synthetic, complete and validated before analysis", () => {
 });
 test("rejects any record not explicitly marked synthetic", () => {
   const corpus=buildCorpus();
-  corpus.tables.conversations.records[0].synthetic=false;
+  corpus.tables.profiles.records[0].synthetic=false;
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bep-sim-"));
   const file=path.join(dir,"corpus.json");
   fs.writeFileSync(file,JSON.stringify(corpus));
-  assert.throws(()=>loadAndValidateCorpus(file),/Non-synthetic/);
+  assert.throws(()=>loadAndValidateCorpus(file),/Invalid synthetic profile/);
   fs.rmSync(dir,{recursive:true,force:true});
 });
 test("filters malformed findings and unknown conversation identifiers", () => {
