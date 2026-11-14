@@ -24,7 +24,7 @@ It excludes user-specific data, accounts, sessions, conversations, financial rec
 
 Before either table is read, a read-only catalog preflight must fail closed unless the connected identity has:
 - no elevated or inherited role attributes (superuser, create-role, create-database, replication, bypass-RLS);
-- no database CREATE/TEMP or non-system schema CREATE privileges;
+- no database CREATE or non-system schema CREATE privileges;
 - SELECT and no write/trigger/reference privilege on exactly the two approved relations;
 - no access to other application relations or sequences.
 
