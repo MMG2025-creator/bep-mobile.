@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEP — Recette fonctionnelle Coach</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;max-width:900px;margin:40px auto;padding:0 20px;color:#17211f}
+h1{font-size:1.6rem}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f4;padding:18px;border-radius:10px}
+small{color:#58635f}
+</style>
+</head>
+<body>
+<h1>Recette fonctionnelle — Coach BEP</h1>
+<p>Environnement technique isolé. Données synthétiques uniquement. Aucun appel à la production.</p>
+<p id="status">Tests en cours…</p>
+<pre id="results">Initialisation…</pre>
+<script src="./runtime-config.js"></script>
+<script>
+(async()=>{
+"use strict";
+const EXPECTED="https://bep-coach-functional-test-api-vouu.onrender.com";
+const API=String(window.BEP_API_BASE||"").replace(/\\/+$/,"");
+const out=document.getElementById("results");
+const status=document.getElementById("status");
+const results=[];
+const record=(name,ok,detail)=>results.push({test:name,result:ok?"PASS":"FAIL",detail});
+const request=async(path,options={})=>{
+ const response=await fetch(API+path,{cache:"no-store",credentials:options.credentials||"include",...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});
+ let data={};try{data=await response.json()}catch{}
+ return {status:response.status,ok:response.ok,data};
+};
+const check=(condition,message)=>{if(!condition)throw new Error(message||"Assertion failed")};
+try{
+ check(API===EXPECTED,"La configuration API ne pointe pas vers l'API de test attendue.");
+ record("Configuration API isolée",true,API);
+ const session=await request("/api/test/session",{method:"POST",body:"{}"});
+ check(session.status===200&&session.data.testOnly===true,"Session technique non créée : HTTP "+session.status);
+ record("Création de session QA",true,"HTTP 200 — compte technique uniquement");
+ const auth=await request("/api/auth/status");
+ check(auth.status===200&&!!auth.data.user,"Session non reconnue par l'API.");
+ record("Authentification et session",true,"HTTP 200 — session authentifiée");
+ const denied=await request("/api/coach/knowledge",{credentials:"omit"});
+ check(denied.status===401&&denied.data.error==="AUTH_REQUIRED","La route protégée n'a pas refusé l'accès anonyme.");
+ record("Protection des routes Coach",true,"HTTP 401 sans cookie");
+ const aiStatus=await request("/api/ai/status");
+ check(aiStatus.status===200&&aiStatus.data.available===false&&aiStatus.data.mode==="structured","Le statut IA n'indique pas le mode structuré sans Gemini.");
+ record("Disponibilité IA sans Gemini",true,"Mode structured, provider externe désactivé");
+ const context={income:4500,charges:3200,available:1300,budgets:[{label:"Loyer",amount:1400}],expenses:[{amount:350}],goals:[{name:"Épargne sécurité"}]};
+ const advice=await request("/api/ai/advice",{method:"POST",body:JSON.stringify({zone:"budget",financialContext:context})});
+ check(advice.status===200&&advice.data.provider==="bep-structured"&&typeof advice.data.answer==="string"&&advice.data.answer.length>20,"Conseil budget invalide.");
+ record("Conseil budget chiffré",true,"HTTP 200 — moteur bep-structured — réponse produite");
+ const numeric=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Combien me reste-t-il ?",financialContext:context})});
+ check(numeric.status===200&&numeric.data.mode==="structured"&&numeric.data.answer.includes("1"),"Réponse chiffrée structurée invalide.");
+ record("Question chiffrée Coach",true,"HTTP 200 — mode structured — disponible transmis 1 300 €");
+ const open=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Comment réduire mes dépenses ce mois-ci ?",financialContext:context})});
+ check(open.status===200&&open.data.mode==="structured-fallback"&&open.data.provider==="bep-structured","Le fallback sans Gemini n'est pas utilisé.");
+ record("Question ouverte sans Gemini",true,"HTTP 200 — fallback structuré — aucun remplacement payant");
+ const before=await request("/api/coach/knowledge");
+ check(before.status===200&&Array.isArray(before.data.items),"Lecture initiale des connaissances impossible.");
+ record("Lecture des connaissances Coach",true,"HTTP 200");
+ const title="Repère QA Coach BEP";
+ const imported=await request("/api/coach/knowledge",{method:"POST",body:JSON.stringify({source_provider:"other",items:[{id:"qa-functional-20261114",kind:"knowledge",category:"general",title,detail:"Entrée technique temporaire utilisée pour vérifier la persistance du Coach en environnement de test.",priority:"low",confidence:"high",evidence:["Test fonctionnel isolé"]}]})});
+ check(imported.status===201&&imported.data.inserted===1,"Import de connaissance impossible.");
+ const after=await request("/api/coach/knowledge");
+ check(after.status===200&&after.data.items.some(x=>x.title===title),"La connaissance importée n'est pas relue depuis PostgreSQL.");
+ record("Persistance des connaissances",true,"Import HTTP 201, puis relecture confirmée depuis la base de test");
+ const invalid=await request("/api/ai/advice",{method:"POST",body:JSON.stringify({zone:"invalid",financialContext:{}})});
+ check(invalid.status===400,"Une zone invalide n'a pas été rejetée.");
+ record("Validation des entrées",true,"HTTP 400 sur zone invalide");
+ const finalStatus=await request("/api/ai/status");
+ check(finalStatus.status===200&&Number(finalStatus.data.used)===0&&Number(finalStatus.data.globalUsed)===0,"Un quota IA a été consommé.");
+ record("Absence de consommation Gemini",true,"Quota utilisateur 0 — quota global 0");
+ const failures=results.filter(x=>x.result==="FAIL");
+ status.textContent=failures.length?"Recette terminée — échecs détectés":"Recette terminée — tous les contrôles réussis";
+ out.textContent=JSON.stringify({api:API,total:results.length,passed:results.length-failures.length,failed:failures.length,results},null,2);
+}catch(error){
+ record("Arrêt de la recette",false,String(error&&error.message||error));
+ status.textContent="Recette interrompue — voir le détail";
+ out.textContent=JSON.stringify({api:API,total:results.length,passed:results.filter(x=>x.result==="PASS").length,failed:results.filter(x=>x.result==="FAIL").length,results,error:String(error&&error.stack||error)},null,2);
+}
+})();
+</script>
+</body>
+</html>
