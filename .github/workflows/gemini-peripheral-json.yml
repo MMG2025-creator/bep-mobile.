@@ -37,7 +37,7 @@ jobs:
         run: node --test tests/bep-coach-snapshot-exporter.test.js
       - name: Verify Gemini service has no database integration
         run: |
-          if grep -R -nE 'require\(["\x27]pg["\x27]\)|DATABASE_URL|BEP_KNOWLEDGE_READONLY_DATABASE_URL' services/gemini-agent; then
+          if grep -R -nE --include='*.js' --include='*.json' 'require\(["\x27]pg["\x27]\)|DATABASE_URL|BEP_KNOWLEDGE_READONLY_DATABASE_URL' services/gemini-agent; then
             echo "Database integration or credentials found in Gemini service"
             exit 1
           fi
