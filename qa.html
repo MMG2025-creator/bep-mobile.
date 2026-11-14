@@ -51,6 +51,26 @@ try{
  const advice=await request("/api/ai/advice",{method:"POST",body:JSON.stringify({zone:"budget",financialContext:context})});
  check(advice.status===200&&advice.data.provider==="bep-structured"&&typeof advice.data.answer==="string"&&advice.data.answer.length>20,"Conseil budget invalide.");
  record("Conseil budget chiffré",true,"HTTP 200 — moteur bep-structured — réponse produite");
+ for(const zone of ["home","income","charges","savings","purchases"]){
+  const result=await request("/api/ai/advice",{method:"POST",body:JSON.stringify({zone,financialContext:context})});
+  check(result.status===200&&result.data.provider==="bep-structured"&&typeof result.data.answer==="string"&&result.data.answer.length>20,"Échec du conseil zone "+zone+" : HTTP "+result.status);
+ }
+ record("Couverture des 6 zones de conseil",true,"home, budget, income, charges, savings et purchases — HTTP 200");
+ const structuredCases=[
+  {name:"Revenus",question:"Combien de revenus ai-je ?",expected:"4500"},
+  {name:"Charges",question:"Quel est le total de mes charges ?",expected:"3200"},
+  {name:"Dépenses",question:"Quel est le total de mes dépenses ?",expected:"350"},
+  {name:"Objectifs",question:"Quels sont mes objectifs d'épargne ?",expected:"Épargne sécurité"},
+  {name:"Achat hors budget",question:"Puis-je acheter un article à 1 500 € ?",expected:"dépasse"}
+ ];
+ for(const item of structuredCases){
+  const result=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:item.question,financialContext:context})});
+  const answer=String(result.data.answer||"");
+  const normalized=answer.replace(/[^0-9]/g,"");
+  const match=item.expected==="dépasse"?answer.toLowerCase().includes("dépasse"):item.expected==="Épargne sécurité"?answer.includes(item.expected):normalized.includes(item.expected);
+  check(result.status===200&&result.data.mode==="structured"&&match,"Question structurée "+item.name+" incorrecte : "+answer);
+ }
+ record("Questions métier structurées",true,"Revenus, charges, dépenses, objectifs et contrôle d'achat hors disponible");
  const numeric=await request("/api/ai/chat",{method:"POST",body:JSON.stringify({question:"Combien me reste-t-il ?",financialContext:context})});
  check(numeric.status===200&&numeric.data.mode==="structured"&&numeric.data.answer.replace(/[^0-9]/g,"").includes("1300"),"Réponse chiffrée structurée invalide : "+String(numeric.data.answer||""));
  record("Question chiffrée Coach",true,"HTTP 200 — mode structured — disponible transmis 1 300 €");
