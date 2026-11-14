@@ -177,3 +177,17 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
   assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
  }
 });
+
+
+test("API rate limits are keyed by a persistent per-device identifier, with high IP abuse guard",()=>{
+ const server=read("server.js"),device=read("device-identity.js");
+ assert.match(server,/Access-Control-Allow-Headers","Content-Type, X-BEP-Device-ID"/);
+ assert.match(server,/req\.get\("X-BEP-Device-ID"\)/);
+ assert.match(server,/device:\+deviceId/);
+ assert.match(server,/scope:"auth",ipMax:10000/);
+ assert.match(server,/scope:"api",ipMax:100000/);
+ assert.match(device,/localStorage\.getItem\(KEY\)/);
+ assert.match(device,/crypto\.randomUUID\(\)/);
+ assert.match(device,/headers\.set\("X-BEP-Device-ID",deviceId\)/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/device-identity\.js\?v=1/);
+});
