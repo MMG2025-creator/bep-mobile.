@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v10";
+const CACHE_NAME="bep-shell-v11";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
@@ -62,7 +62,7 @@ self.addEventListener("fetch",event=>{
   if(request.mode==="navigate"){
     event.respondWith((async()=>{
       try{
-        const response=await fetch(request);
+        const response=await fetch(request,{cache:"no-store"});
         if(response&&response.ok){const cache=await caches.open(CACHE_NAME);cache.put("./index.html",response.clone());}
         return response;
       }catch(_error){
