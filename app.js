@@ -11,6 +11,37 @@ function syncIncomeTotal(){state.income=totalIncome()}
 function migrateIncomeState(){const legacyIncome=Math.max(0,Number(state.income)||0),needsMigration=!Array.isArray(state.incomes)||(!state.incomes.length&&legacyIncome>0);if(needsMigration)state.incomes=legacyIncome>0?[{id:crypto.randomUUID(),label:"Revenu principal",type:"Autre revenu",amount:legacyIncome,source:"migration"}]:[];syncIncomeTotal();return needsMigration}
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0);
 function notify(s){const t=$("toast");if(!t)return;t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4200)}
+function installBepAlert(){
+ if(window.BEP_SHOW_ALERT)return;
+ const style=document.createElement("style");style.id="bep-alert-dialog-style";style.textContent=`
+ .bep-alert-dialog{width:min(440px,calc(100vw - 32px));max-width:none;margin:auto;padding:0;border:1px solid #dce8e1;border-radius:22px;background:#fff;color:#172824;box-shadow:0 22px 70px #102e2933;overflow:visible}
+ .bep-alert-dialog::backdrop{background:rgba(16,46,41,.48);backdrop-filter:blur(3px)}
+ .bep-alert-window{padding:26px 26px 22px;text-align:left}
+ .bep-alert-symbol{display:grid;place-items:center;width:48px;height:48px;margin:0 0 18px;border-radius:16px;background:#edf5ef;color:#176b50}
+ .bep-alert-symbol svg{width:25px;height:25px;display:block}
+ .bep-alert-title{margin:0 0 9px;color:#102e29;font:700 21px/1.25 Manrope,'DM Sans',sans-serif;letter-spacing:-.35px}
+ .bep-alert-message{margin:0;color:#52635c;font:400 15px/1.6 'DM Sans',sans-serif;white-space:pre-line}
+ .bep-alert-actions{display:flex;justify-content:flex-end;margin-top:24px}
+ .bep-alert-confirm{min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#176b50;color:#fff;font:700 14px 'DM Sans',sans-serif;cursor:pointer;transition:background .15s,transform .15s}
+ .bep-alert-confirm:hover{background:#12583f}.bep-alert-confirm:active{transform:translateY(1px)}
+ .bep-alert-confirm:focus-visible{outline:3px solid #b8d9c7;outline-offset:3px}
+ @media(max-width:480px){.bep-alert-dialog{width:calc(100vw - 28px);border-radius:20px}.bep-alert-window{padding:23px 21px 19px}.bep-alert-title{font-size:19px}.bep-alert-message{font-size:14px}}
+ @media(prefers-reduced-motion:no-preference){.bep-alert-dialog[open]{animation:bep-alert-in .16s ease-out}@keyframes bep-alert-in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}}
+ `;document.head.appendChild(style);
+ const dialog=document.createElement("dialog");dialog.className="bep-alert-dialog";dialog.setAttribute("aria-labelledby","bepAlertTitle");dialog.setAttribute("aria-describedby","bepAlertMessage");
+ const windowBox=document.createElement("div");windowBox.className="bep-alert-window";
+ const symbol=document.createElement("div");symbol.className="bep-alert-symbol";symbol.setAttribute("aria-hidden","true");symbol.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.6 17.2A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 3h.01"/></svg>';
+ const title=document.createElement("h2");title.className="bep-alert-title";title.id="bepAlertTitle";
+ const message=document.createElement("p");message.className="bep-alert-message";message.id="bepAlertMessage";
+ const actions=document.createElement("div");actions.className="bep-alert-actions";
+ const confirm=document.createElement("button");confirm.type="button";confirm.className="bep-alert-confirm";confirm.textContent="J’ai compris";
+ actions.appendChild(confirm);windowBox.append(symbol,title,message,actions);dialog.appendChild(windowBox);document.body.appendChild(dialog);
+ const close=()=>{if(dialog.open)dialog.close()};
+ confirm.addEventListener("click",close);dialog.addEventListener("click",event=>{if(event.target===dialog)close()});
+ dialog.addEventListener("close",()=>{if(dialog.returnValue!=="")dialog.returnValue="";});
+ window.BEP_SHOW_ALERT=(text,heading="Information")=>{title.textContent=heading==="Plafond de découvert atteint"?"Achat non autorisé":heading;message.textContent=String(text||"");if(!dialog.open)dialog.showModal();confirm.focus()};
+}
+installBepAlert();
 window.addEventListener("bep:offline-conflict",()=>notify("Synchronisation suspendue : le compte a changé sur un autre appareil. Tes données locales sont préservées, aucune donnée distante n’a été écrasée."));
 window.addEventListener("bep:offline-synced",()=>{dispatchLegacyBudgetChanged();notify("Synchronisation BEP terminée.")});
 window.addEventListener("bep:offline-sync-error",e=>notify("Synchronisation en attente : "+(e.detail?.message||"connexion indisponible.")));
@@ -553,7 +584,7 @@ $("purchaseForm").onsubmit=e=>{
  const p={...previous,id:editingPurchaseId||crypto.randomUUID(),captureMode:editingPurchaseId?(previous.captureMode||"manual"):(receiptCaptureText?"receipt":"manual"),captureText:editingPurchaseId?(previous.captureText||""):(receiptCaptureText||$("purchaseDescription")?.value||""),label:purchaseLabel,notes:$("purchaseNotes")?.value.trim()||"",city:$("city")?.value.trim()||"",amount,category,psychology:$("psychology")?.value||"reflective",moodAfter:$("moodAfter")?.value||"",need:$("need")?.value||"yes",delay:$("delay")?.value||"now",at:(()=>{const date=$("purchaseDate")?.value||localPurchaseDate();return date?new Date(date+"T12:00:00").toISOString():new Date().toISOString()})()};
  const wasEditing=Boolean(editingPurchaseId),beforeExpenses=(state.expenses||[]).slice(),nextExpenses=wasEditing?beforeExpenses.map(x=>x.id===editingPurchaseId?p:x):[p,...beforeExpenses];
  const projectedAvailable=financialPosition({expenses:nextExpenses}).available;
- if(!overdraftCapacityAllows(projectedAvailable)){const message="Dépense refusée : cet achat dépasserait le disponible et la capacité de découvert autorisée. Aucun achat n’a été enregistré.";if(window.BEP_SHOW_ALERT)window.BEP_SHOW_ALERT(message,"Plafond de découvert atteint");else window.alert(message);return;}
+ if(!overdraftCapacityAllows(projectedAvailable)){const message="Dépense refusée : cet achat dépasserait le disponible et la capacité de découvert autorisée. Aucun achat n’a été enregistré.";if(window.BEP_SHOW_ALERT)window.BEP_SHOW_ALERT(message,"Achat non autorisé");else window.alert(message);return;}
  state.expenses=nextExpenses;
  if(save()===false){state.expenses=beforeExpenses;return}
  showPurchaseAdvice(p);cancelPurchaseEdit();$("purchaseSubmit").classList.add("hidden");$("purchaseNew")?.classList.remove("hidden");notify(wasEditing?"Achat modifié":"Achat enregistré");window.dispatchEvent(new CustomEvent("bep:expense-saved"));
