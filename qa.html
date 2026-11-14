@@ -82,10 +82,10 @@ try{
  record("Lecture des connaissances Coach",true,"HTTP 200");
  const title="Repère QA Coach BEP";
  const imported=await request("/api/coach/knowledge",{method:"POST",body:JSON.stringify({source_provider:"other",items:[{id:"qa-functional-20261114",kind:"knowledge",category:"general",title,detail:"Entrée technique temporaire utilisée pour vérifier la persistance du Coach en environnement de test.",priority:"low",confidence:"high",evidence:["Test fonctionnel isolé"]}]})});
- check(imported.status===201&&imported.data.inserted===1,"Import de connaissance impossible.");
+ check(imported.status===201&&(imported.data.inserted===0||imported.data.inserted===1),"Import de connaissance impossible.");
  const after=await request("/api/coach/knowledge");
  check(after.status===200&&after.data.items.some(x=>x.title===title),"La connaissance importée n'est pas relue depuis PostgreSQL.");
- record("Persistance des connaissances",true,"Import HTTP 201, puis relecture confirmée depuis la base de test");
+ record("Persistance des connaissances",true,"HTTP 201, insertion ou rejeu idempotent, puis relecture confirmée depuis la base de test");
  const invalid=await request("/api/ai/advice",{method:"POST",body:JSON.stringify({zone:"invalid",financialContext:{}})});
  check(invalid.status===400,"Une zone invalide n'a pas été rejetée.");
  record("Validation des entrées",true,"HTTP 400 sur zone invalide");
