@@ -20,7 +20,8 @@ small{color:#58635f}
 (async()=>{
 "use strict";
 const EXPECTED="https://bep-coach-functional-test-api-vouu.onrender.com";
-const rawApi=String(window.BEP_API_BASE||"");\nconst API=rawApi.endsWith("/")?rawApi.slice(0,-1):rawApi;
+const rawApi=String(window.BEP_API_BASE||"");
+const API=rawApi.endsWith("/")?rawApi.slice(0,-1):rawApi;
 const out=document.getElementById("results");
 const status=document.getElementById("status");
 const results=[];
