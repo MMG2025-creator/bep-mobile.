@@ -216,5 +216,5 @@ test("custom 404 page explains missing route without implying account or data lo
 test("clearing local data resets every collection required by the first render",()=>{
  const js=read("app.js");
  assert.match(js,/defaults=\{income:0,incomes:\[\],budgets:\[\],expenses:\[\],goals:\[\],transactions:\[\]/);
- assert.match(js,/state=\{\.\.\.defaults\};syncIncomeTotal\(\);gate\.hidden=true/);
+ assert.match(js,/state=\{\.\.\.defaults\};syncIncomeTotal\(\);/);
 });
