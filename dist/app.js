@@ -276,7 +276,7 @@ $("deleteBtn").onclick=async()=>{
   window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));
   state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";
   authMessage.textContent="Les données locales de cet appareil ont été effacées. Les données de ton compte restent conservées sur BEP.";
-  render();notify("Données locales effacées");
+  notify("Données locales effacées");
  }catch(error){window.BEP_SHOW_ALERT(error.message||"Impossible d’effacer les données locales.","Effacement non effectué")}
  finally{button.disabled=false;button.textContent="Effacer les données de cet appareil"}
 };
