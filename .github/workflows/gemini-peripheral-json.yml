@@ -1,13 +1,15 @@
 name: BEP Gemini peripheral JSON service checks
-
 on:
   push:
     branches: [feature/gemini-peripheral-json-service-v1]
     paths:
       - "services/gemini-agent/**"
       - "lib/bep-coach-snapshot-exporter.js"
+      - "lib/bep-exporter-role-check.js"
       - "scripts/export-bep-coach-snapshots.js"
+      - "scripts/check-bep-exporter-db-role.js"
       - "tests/bep-coach-snapshot-exporter.test.js"
+      - "tests/bep-exporter-role-check.test.js"
       - "src/coach/knowledge/financialCoachKnowledge.fr.js"
       - "src/coach/knowledge/coachRegressionCases.fr.json"
       - ".github/workflows/gemini-peripheral-json.yml"
@@ -15,11 +17,13 @@ on:
     paths:
       - "services/gemini-agent/**"
       - "lib/bep-coach-snapshot-exporter.js"
+      - "lib/bep-exporter-role-check.js"
       - "scripts/export-bep-coach-snapshots.js"
+      - "scripts/check-bep-exporter-db-role.js"
       - "tests/bep-coach-snapshot-exporter.test.js"
+      - "tests/bep-exporter-role-check.test.js"
       - "src/coach/knowledge/financialCoachKnowledge.fr.js"
       - "src/coach/knowledge/coachRegressionCases.fr.json"
-
 jobs:
   validate-read-only-exporter:
     runs-on: ubuntu-latest
@@ -31,10 +35,12 @@ jobs:
       - name: Syntax checks
         run: |
           node --check lib/bep-coach-snapshot-exporter.js
+          node --check lib/bep-exporter-role-check.js
           node --check scripts/export-bep-coach-snapshots.js
+          node --check scripts/check-bep-exporter-db-role.js
           node --check services/gemini-agent/server.js
       - name: Unit tests (no database connection)
-        run: node --test tests/bep-coach-snapshot-exporter.test.js
+        run: node --test tests/bep-coach-snapshot-exporter.test.js tests/bep-exporter-role-check.test.js
       - name: Verify Gemini service has no database integration
         run: |
           if grep -R -nE --include='*.js' --include='*.json' 'require\(["\x27]pg["\x27]\)|DATABASE_URL|BEP_KNOWLEDGE_READONLY_DATABASE_URL' services/gemini-agent; then
