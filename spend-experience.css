@@ -1,63 +1,63 @@
 /* BEP Spend Experience — playful decision coach */
-:root{--sp-ink:#173a32;--sp-green:#176b50;--sp-mint:#eaf6ef;--sp-yellow:#fff4cf;--sp-blue:#eaf2ff;--sp-line:#e3ece6}
+#purchases{--sp-ink:#173a32;--sp-green:#176b50;--sp-mint:#eaf6ef;--sp-yellow:#fff4cf;--sp-blue:#eaf2ff;--sp-line:#e3ece6}
 #purchases.panel{display:none}#purchases.panel.active{display:grid;gap:14px}
-.bep-spend-hero{position:relative;overflow:hidden;border:1px solid #dcebe1;border-radius:24px;padding:22px;background:linear-gradient(135deg,#f0f8f2 0%,#f7f8ff 54%,#fff7df 100%);box-shadow:0 12px 30px #173c2910}
-.bep-spend-hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-100px;background:#dff1e5;opacity:.7}
-.bep-spend-hero-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.bep-spend-kicker{font-size:10px;font-weight:800;letter-spacing:1.7px;color:#56816c}
-.bep-spend-pill{font-size:10px;font-weight:800;padding:7px 10px;border-radius:99px;background:#fff;border:1px solid #dcebe1;color:#35644e}
-.bep-spend-hero-main{position:relative;z-index:1;display:grid;grid-template-columns:1fr 112px;gap:12px;align-items:center;margin-top:13px}
-.bep-spend-hero h1{font:800 clamp(25px,6vw,34px)/1.08 Manrope,sans-serif;letter-spacing:-1px;color:#173a32;margin:0 0 9px}
-.bep-spend-hero p{font-size:13px;line-height:1.55;color:#60776c;margin:0;max-width:430px}
-.bep-spend-mascot{width:108px;height:108px;filter:drop-shadow(0 8px 10px #214c3220)}
-.bep-spend-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:19px}
-.bep-spend-stat{background:#ffffffc9;border:1px solid #e0ebe3;border-radius:14px;padding:11px 12px;min-width:0}
-.bep-spend-stat span{display:block;color:#71847a;font-size:10px;line-height:1.35}
-.bep-spend-stat strong{display:block;color:#1c5942;font:800 clamp(15px,4vw,19px) Manrope;margin-top:5px;overflow-wrap:anywhere}
-.bep-spend-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:5px;background:#edf3ef;border:1px solid #e1ebe4;border-radius:15px}
-.bep-spend-nav button{border:0;background:transparent;border-radius:11px;padding:11px 6px;font:700 12px 'DM Sans',sans-serif;color:#6a7d72;cursor:pointer}
-.bep-spend-nav button[aria-selected=true]{background:white;color:#174f3c;box-shadow:0 2px 8px #173c2912}
-.bep-spend-view[hidden]{display:none!important}
-.bep-spend-score{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:14px;background:#fff;border:1px solid var(--sp-line);border-radius:18px;padding:15px;margin:0 0 13px}
-.bep-spend-score-ring{--score:0;width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#1a9568 calc(var(--score)*1%),#edf2ee 0);position:relative}
-.bep-spend-score-ring:before{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
-.bep-spend-score-ring strong{position:relative;z-index:1;font:800 20px Manrope;color:#174f3c}
-.bep-spend-score-copy b{display:block;font:800 14px Manrope;color:#173a32}
-.bep-spend-score-copy span{display:block;font-size:11px;line-height:1.45;color:#718078;margin-top:4px}
-.bep-spend-score-track{height:6px;border-radius:9px;background:#edf2ee;overflow:hidden;margin-top:8px}
-.bep-spend-score-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0c45c,#1b9668);border-radius:9px;transition:width .2s ease}
+#purchases .bep-spend-hero{position:relative;overflow:hidden;border:1px solid #dcebe1;border-radius:24px;padding:22px;background:linear-gradient(135deg,#f0f8f2 0%,#f7f8ff 54%,#fff7df 100%);box-shadow:0 12px 30px #173c2910}
+#purchases .bep-spend-hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-100px;background:#dff1e5;opacity:.7}
+#purchases .bep-spend-hero-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
+#purchases .bep-spend-kicker{font-size:10px;font-weight:800;letter-spacing:1.7px;color:#56816c}
+#purchases .bep-spend-pill{font-size:10px;font-weight:800;padding:7px 10px;border-radius:99px;background:#fff;border:1px solid #dcebe1;color:#35644e}
+#purchases .bep-spend-hero-main{position:relative;z-index:1;display:grid;grid-template-columns:1fr 112px;gap:12px;align-items:center;margin-top:13px}
+#purchases .bep-spend-hero h1{font:800 clamp(25px,6vw,34px)/1.08 Manrope,sans-serif;letter-spacing:-1px;color:#173a32;margin:0 0 9px}
+#purchases .bep-spend-hero p{font-size:13px;line-height:1.55;color:#60776c;margin:0;max-width:430px}
+#purchases .bep-spend-mascot{width:108px;height:108px;filter:drop-shadow(0 8px 10px #214c3220)}
+#purchases .bep-spend-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:19px}
+#purchases .bep-spend-stat{background:#ffffffc9;border:1px solid #e0ebe3;border-radius:14px;padding:11px 12px;min-width:0}
+#purchases .bep-spend-stat span{display:block;color:#71847a;font-size:10px;line-height:1.35}
+#purchases .bep-spend-stat strong{display:block;color:#1c5942;font:800 clamp(15px,4vw,19px) Manrope;margin-top:5px;overflow-wrap:anywhere}
+#purchases .bep-spend-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:5px;background:#edf3ef;border:1px solid #e1ebe4;border-radius:15px}
+#purchases .bep-spend-nav button{border:0;background:transparent;border-radius:11px;padding:11px 6px;font:700 12px 'DM Sans',sans-serif;color:#6a7d72;cursor:pointer}
+#purchases .bep-spend-nav button[aria-selected=true]{background:white;color:#174f3c;box-shadow:0 2px 8px #173c2912}
+#purchases .bep-spend-view[hidden]{display:none!important}
+#purchases .bep-spend-score{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:14px;background:#fff;border:1px solid var(--sp-line);border-radius:18px;padding:15px;margin:0 0 13px}
+#purchases .bep-spend-score-ring{--score:0;width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#1a9568 calc(var(--score)*1%),#edf2ee 0);position:relative}
+#purchases .bep-spend-score-ring:before{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
+#purchases .bep-spend-score-ring strong{position:relative;z-index:1;font:800 20px Manrope;color:#174f3c}
+#purchases .bep-spend-score-copy b{display:block;font:800 14px Manrope;color:#173a32}
+#purchases .bep-spend-score-copy span{display:block;font-size:11px;line-height:1.45;color:#718078;margin-top:4px}
+#purchases .bep-spend-score-track{height:6px;border-radius:9px;background:#edf2ee;overflow:hidden;margin-top:8px}
+#purchases .bep-spend-score-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0c45c,#1b9668);border-radius:9px;transition:width .2s ease}
 #purchases .purchase-entry-card{border:1px solid #dfeae3;box-shadow:0 7px 22px #173c290b}
 #purchases .purchase-entry-card h2{font-size:18px;margin-bottom:5px}
-.bep-spend-form-intro{font-size:12px;color:#718078;line-height:1.5;margin:0 0 14px}
+#purchases .bep-spend-form-intro{font-size:12px;color:#718078;line-height:1.5;margin:0 0 14px}
 #purchases .purchase-entry-card .field label{color:#405b4e}
 #purchases .purchase-entry-card input,#purchases .purchase-entry-card select{border-radius:12px}
-.bep-spend-form-note{display:flex;gap:8px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:#f2f7f3;color:#587366;font-size:11px;line-height:1.45;margin:12px 0}
-.bep-spend-challenge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.bep-spend-challenge{background:#fff;border:1px solid var(--sp-line);border-radius:17px;padding:14px;display:flex;flex-direction:column;min-height:170px}
-.bep-spend-challenge:nth-child(1){background:linear-gradient(145deg,#f0f8f2,#fff)}
-.bep-spend-challenge:nth-child(2){background:linear-gradient(145deg,#fff7df,#fff)}
-.bep-spend-challenge:nth-child(3){background:linear-gradient(145deg,#eef4ff,#fff)}
-.bep-spend-challenge:nth-child(4){background:linear-gradient(145deg,#f5efff,#fff)}
-.bep-spend-challenge-icon{width:35px;height:35px;border-radius:12px;background:#ffffffc9;display:grid;place-items:center;font-size:18px;margin-bottom:11px}
-.bep-spend-challenge b{font:800 13px Manrope;color:#23483a}
-.bep-spend-challenge p{font-size:11px;line-height:1.45;color:#718078;margin:6px 0 12px;flex:1}
-.bep-spend-challenge button{border:1px solid #d6e5da;border-radius:10px;background:#fff;padding:9px 10px;color:#286047;font-size:11px;font-weight:800;cursor:pointer}
-.bep-spend-challenge.is-done button{background:#e3f4e9;border-color:#b9dec6;color:#176b50}
-.bep-spend-challenge-status{font-size:11px;color:#5f786a;margin:0 0 12px}
-.bep-spend-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.bep-spend-insight{border:1px solid var(--sp-line);border-radius:15px;padding:14px;background:#fff}
-.bep-spend-insight span{display:block;font-size:10px;color:#78877f}
-.bep-spend-insight strong{display:block;font:800 19px Manrope;color:#1c5942;margin-top:6px}
-.bep-spend-insight p{font-size:10px;color:#7b8981;margin:4px 0 0;line-height:1.4}
-.bep-spend-insight-wide{grid-column:1/-1}
-.bep-spend-category-list{display:grid;gap:8px;margin-top:12px}
-.bep-spend-category-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#526b5d}
-.bep-spend-category-row b{color:#23483a}
-.bep-spend-empty{padding:20px;text-align:center;background:#f7faf7;border:1px dashed #d8e5dc;border-radius:14px;color:#718078;font-size:12px;line-height:1.5}
+#purchases .bep-spend-form-note{display:flex;gap:8px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:#f2f7f3;color:#587366;font-size:11px;line-height:1.45;margin:12px 0}
+#purchases .bep-spend-challenge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#purchases .bep-spend-challenge{background:#fff;border:1px solid var(--sp-line);border-radius:17px;padding:14px;display:flex;flex-direction:column;min-height:170px}
+#purchases .bep-spend-challenge:nth-child(1){background:linear-gradient(145deg,#f0f8f2,#fff)}
+#purchases .bep-spend-challenge:nth-child(2){background:linear-gradient(145deg,#fff7df,#fff)}
+#purchases .bep-spend-challenge:nth-child(3){background:linear-gradient(145deg,#eef4ff,#fff)}
+#purchases .bep-spend-challenge:nth-child(4){background:linear-gradient(145deg,#f5efff,#fff)}
+#purchases .bep-spend-challenge-icon{width:35px;height:35px;border-radius:12px;background:#ffffffc9;display:grid;place-items:center;font-size:18px;margin-bottom:11px}
+#purchases .bep-spend-challenge b{font:800 13px Manrope;color:#23483a}
+#purchases .bep-spend-challenge p{font-size:11px;line-height:1.45;color:#718078;margin:6px 0 12px;flex:1}
+#purchases .bep-spend-challenge button{border:1px solid #d6e5da;border-radius:10px;background:#fff;padding:9px 10px;color:#286047;font-size:11px;font-weight:800;cursor:pointer}
+#purchases .bep-spend-challenge.is-done button{background:#e3f4e9;border-color:#b9dec6;color:#176b50}
+#purchases .bep-spend-challenge-status{font-size:11px;color:#5f786a;margin:0 0 12px}
+#purchases .bep-spend-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#purchases .bep-spend-insight{border:1px solid var(--sp-line);border-radius:15px;padding:14px;background:#fff}
+#purchases .bep-spend-insight span{display:block;font-size:10px;color:#78877f}
+#purchases .bep-spend-insight strong{display:block;font:800 19px Manrope;color:#1c5942;margin-top:6px}
+#purchases .bep-spend-insight p{font-size:10px;color:#7b8981;margin:4px 0 0;line-height:1.4}
+#purchases .bep-spend-insight-wide{grid-column:1/-1}
+#purchases .bep-spend-category-list{display:grid;gap:8px;margin-top:12px}
+#purchases .bep-spend-category-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#526b5d}
+#purchases .bep-spend-category-row b{color:#23483a}
+#purchases .bep-spend-empty{padding:20px;text-align:center;background:#f7faf7;border:1px dashed #d8e5dc;border-radius:14px;color:#718078;font-size:12px;line-height:1.5}
 #purchases .ai-card{border-color:#e5eadf;background:linear-gradient(135deg,#fff,#f7faf6)}
 #purchases .purchase-row{border-radius:12px;padding:12px 10px}
-@media(max-width:430px){.bep-spend-hero{padding:18px}.bep-spend-hero-main{grid-template-columns:1fr 84px}.bep-spend-mascot{width:84px;height:84px}.bep-spend-stats{gap:6px}.bep-spend-stat{padding:9px 8px}.bep-spend-nav button{font-size:11px}.bep-spend-challenge-grid{gap:8px}.bep-spend-challenge{padding:11px;min-height:180px}}
-@media(prefers-reduced-motion:reduce){.bep-spend-score-track i{transition:none}}
+@media(max-width:430px){#purchases .bep-spend-hero{padding:18px}#purchases .bep-spend-hero-main{grid-template-columns:1fr 84px}#purchases .bep-spend-mascot{width:84px;height:84px}#purchases .bep-spend-stats{gap:6px}#purchases .bep-spend-stat{padding:9px 8px}#purchases .bep-spend-nav button{font-size:11px}#purchases .bep-spend-challenge-grid{gap:8px}#purchases .bep-spend-challenge{padding:11px;min-height:180px}}
+@media(prefers-reduced-motion:reduce){#purchases .bep-spend-score-track i{transition:none}}
 
 
 /* Quick-entry redesign */
@@ -123,215 +123,215 @@
 #purchases .bep-spend-challenge-grid-inner{margin-top:0}
 
 /* Quick expense dialog and persistent BEP coach shortcut */
-.bep-coach-mascot{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;padding:5px;border:1px solid #dce9df;border-radius:15px;background:linear-gradient(145deg,#fff,#edf6f0);box-shadow:0 3px 10px #173c2910;cursor:pointer}
-.bep-coach-mascot svg{width:100%;height:100%}
-.bep-coach-mascot:focus-visible,.bep-quick-expense:focus-visible{outline:3px solid #d7b65e;outline-offset:3px}
-.bep-quick-expense{position:fixed;z-index:70;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;min-height:54px;padding:0 20px;border:0;border-radius:999px;background:#176b50;color:#fff;font:800 15px 'DM Sans',sans-serif;box-shadow:0 8px 24px #10372f38;cursor:pointer}
-.bep-quick-expense span{font-size:23px;line-height:1}
-.bep-quick-expense-dialog{width:min(92vw,520px);max-width:520px;max-height:min(88dvh,820px);padding:0;border:0;border-radius:22px;background:transparent;overflow:visible}
-.bep-quick-expense-dialog::backdrop{background:rgba(8,27,21,.58);backdrop-filter:blur(3px)}
-.bep-quick-expense-panel{display:flex;flex-direction:column;max-height:min(88dvh,820px);overflow:hidden;border-radius:22px;background:#f7faf7;box-shadow:0 24px 70px #061a1260}
-.bep-quick-expense-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 14px;background:linear-gradient(120deg,#10372f,#176b50);color:#fff}
-.bep-quick-expense-head .eyebrow{margin:0 0 5px;color:#cce5d5}
-.bep-quick-expense-head h2{margin:0;font:800 21px Manrope,sans-serif;color:#fff}
-.bep-quick-expense-head p:last-child{margin:5px 0 0;color:#e0eee5;font-size:14px}
-.bep-quick-expense-close{width:42px;height:42px;flex:0 0 42px;border:1px solid #ffffff55;border-radius:50%;background:#ffffff18;color:#fff;font-size:28px;line-height:1;cursor:pointer}
-.bep-quick-expense-body{overflow-y:auto;overscroll-behavior:contain;padding:12px 16px max(18px,env(safe-area-inset-bottom))}
-.bep-quick-expense-body .purchase-entry-card{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
-.bep-quick-expense-body .purchase-entry-card>h2,.bep-quick-expense-body .bep-spend-form-intro{display:none}
-.bep-quick-expense-body .bep-spend-amount input{min-height:64px;font-size:28px}
-.bep-quick-expense-body .bep-spend-basics .field label{font-size:14px}
-.bep-quick-expense-body .bep-spend-basics input{min-height:50px;font-size:16px}
-.bep-quick-expense-body .bep-spend-category-chips button{font-size:12px;min-height:38px}
-.bep-quick-expense-body .bep-spend-advanced summary{font-size:14px;min-height:48px}
-.bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{min-height:54px;font-size:16px}
-.bep-quick-expense-body .bep-spend-form-note{font-size:13px}
-@media(max-width:480px){.bep-quick-expense-dialog{width:calc(100vw - 20px);max-height:90dvh}.bep-quick-expense-panel{max-height:90dvh}.bep-quick-expense-head{padding:16px}.bep-quick-expense-body{padding:10px 12px max(14px,env(safe-area-inset-bottom))}.bep-quick-expense{right:12px;bottom:max(14px,env(safe-area-inset-bottom));min-height:52px;padding:0 16px;font-size:14px}}
-@media(prefers-reduced-motion:reduce){.bep-quick-expense,.bep-coach-mascot{transition:none}}
+#purchases .bep-coach-mascot{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;padding:5px;border:1px solid #dce9df;border-radius:15px;background:linear-gradient(145deg,#fff,#edf6f0);box-shadow:0 3px 10px #173c2910;cursor:pointer}
+#purchases .bep-coach-mascot svg{width:100%;height:100%}
+#purchases .bep-coach-mascot:focus-visible,#purchases .bep-quick-expense:focus-visible{outline:3px solid #d7b65e;outline-offset:3px}
+#purchases .bep-quick-expense{position:fixed;z-index:70;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;min-height:54px;padding:0 20px;border:0;border-radius:999px;background:#176b50;color:#fff;font:800 15px 'DM Sans',sans-serif;box-shadow:0 8px 24px #10372f38;cursor:pointer}
+#purchases .bep-quick-expense span{font-size:23px;line-height:1}
+#purchases .bep-quick-expense-dialog{width:min(92vw,520px);max-width:520px;max-height:min(88dvh,820px);padding:0;border:0;border-radius:22px;background:transparent;overflow:visible}
+#purchases .bep-quick-expense-dialog::backdrop{background:rgba(8,27,21,.58);backdrop-filter:blur(3px)}
+#purchases .bep-quick-expense-panel{display:flex;flex-direction:column;max-height:min(88dvh,820px);overflow:hidden;border-radius:22px;background:#f7faf7;box-shadow:0 24px 70px #061a1260}
+#purchases .bep-quick-expense-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 14px;background:linear-gradient(120deg,#10372f,#176b50);color:#fff}
+#purchases .bep-quick-expense-head .eyebrow{margin:0 0 5px;color:#cce5d5}
+#purchases .bep-quick-expense-head h2{margin:0;font:800 21px Manrope,sans-serif;color:#fff}
+#purchases .bep-quick-expense-head p:last-child{margin:5px 0 0;color:#e0eee5;font-size:14px}
+#purchases .bep-quick-expense-close{width:42px;height:42px;flex:0 0 42px;border:1px solid #ffffff55;border-radius:50%;background:#ffffff18;color:#fff;font-size:28px;line-height:1;cursor:pointer}
+#purchases .bep-quick-expense-body{overflow-y:auto;overscroll-behavior:contain;padding:12px 16px max(18px,env(safe-area-inset-bottom))}
+#purchases .bep-quick-expense-body .purchase-entry-card{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+#purchases .bep-quick-expense-body .purchase-entry-card>h2,#purchases .bep-quick-expense-body .bep-spend-form-intro{display:none}
+#purchases .bep-quick-expense-body .bep-spend-amount input{min-height:64px;font-size:28px}
+#purchases .bep-quick-expense-body .bep-spend-basics .field label{font-size:14px}
+#purchases .bep-quick-expense-body .bep-spend-basics input{min-height:50px;font-size:16px}
+#purchases .bep-quick-expense-body .bep-spend-category-chips button{font-size:12px;min-height:38px}
+#purchases .bep-quick-expense-body .bep-spend-advanced summary{font-size:14px;min-height:48px}
+#purchases .bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{min-height:54px;font-size:16px}
+#purchases .bep-quick-expense-body .bep-spend-form-note{font-size:13px}
+@media(max-width:480px){#purchases .bep-quick-expense-dialog{width:calc(100vw - 20px);max-height:90dvh}#purchases .bep-quick-expense-panel{max-height:90dvh}#purchases .bep-quick-expense-head{padding:16px}#purchases .bep-quick-expense-body{padding:10px 12px max(14px,env(safe-area-inset-bottom))}#purchases .bep-quick-expense{right:12px;bottom:max(14px,env(safe-area-inset-bottom));min-height:52px;padding:0 16px;font-size:14px}}
+@media(prefers-reduced-motion:reduce){#purchases .bep-quick-expense,#purchases .bep-coach-mascot{transition:none}}
 
 /* Keep the simplified form styling when rendered inside the native dialog. */
-.bep-quick-expense-body .bep-spend-quick{display:grid;gap:14px}
-.bep-quick-expense-body .bep-spend-amount{margin:0}
-.bep-quick-expense-body .bep-spend-amount label,.bep-quick-expense-body .bep-spend-basics .field label{display:block;font-size:14px;font-weight:800;line-height:1.4}
-.bep-quick-expense-body .bep-spend-amount input{width:100%;min-height:64px;padding:12px 15px;border:1.5px solid #cfe1d4;border-radius:15px;background:#f7fbf8;color:#174b39;font-size:28px;font-weight:800}
-.bep-quick-expense-body .bep-spend-basics{display:grid;grid-template-columns:1fr;gap:12px}
-.bep-quick-expense-body .bep-spend-basics .field{margin:0}
-.bep-quick-expense-body .bep-spend-basics input{width:100%;min-height:50px;padding:12px;border:1px solid #dce9df;border-radius:12px;font-size:16px}
-.bep-quick-expense-body .bep-spend-category-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
-.bep-quick-expense-body .bep-spend-category-chips button{min-height:38px;padding:7px 10px;border:1px solid #e0eae3;border-radius:99px;background:#f8faf8;color:#60766a;font-size:12px}
-.bep-quick-expense-body .bep-spend-category-chips button.selected{background:#e7f4eb;border-color:#a9d1b7;color:#1b6848}
-.bep-quick-expense-body .bep-spend-advanced{margin-top:14px;border:1px solid #e5ece6;border-radius:14px;background:#fbfcfb}
-.bep-quick-expense-body .bep-spend-advanced summary{min-height:48px;padding:13px 14px;font-size:14px;font-weight:800}
-.bep-quick-expense-body .bep-spend-advanced-body{display:grid;gap:12px;padding:0 14px 14px}
-.bep-quick-expense-body .bep-spend-advanced-body .field{margin:0}
-.bep-quick-expense-body .bep-spend-submit-row{display:grid;gap:8px;margin-top:14px}
-.bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{width:100%;min-height:54px;border-radius:14px;font-size:16px;font-weight:800}
+#purchases .bep-quick-expense-body .bep-spend-quick{display:grid;gap:14px}
+#purchases .bep-quick-expense-body .bep-spend-amount{margin:0}
+#purchases .bep-quick-expense-body .bep-spend-amount label,#purchases .bep-quick-expense-body .bep-spend-basics .field label{display:block;font-size:14px;font-weight:800;line-height:1.4}
+#purchases .bep-quick-expense-body .bep-spend-amount input{width:100%;min-height:64px;padding:12px 15px;border:1.5px solid #cfe1d4;border-radius:15px;background:#f7fbf8;color:#174b39;font-size:28px;font-weight:800}
+#purchases .bep-quick-expense-body .bep-spend-basics{display:grid;grid-template-columns:1fr;gap:12px}
+#purchases .bep-quick-expense-body .bep-spend-basics .field{margin:0}
+#purchases .bep-quick-expense-body .bep-spend-basics input{width:100%;min-height:50px;padding:12px;border:1px solid #dce9df;border-radius:12px;font-size:16px}
+#purchases .bep-quick-expense-body .bep-spend-category-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+#purchases .bep-quick-expense-body .bep-spend-category-chips button{min-height:38px;padding:7px 10px;border:1px solid #e0eae3;border-radius:99px;background:#f8faf8;color:#60766a;font-size:12px}
+#purchases .bep-quick-expense-body .bep-spend-category-chips button.selected{background:#e7f4eb;border-color:#a9d1b7;color:#1b6848}
+#purchases .bep-quick-expense-body .bep-spend-advanced{margin-top:14px;border:1px solid #e5ece6;border-radius:14px;background:#fbfcfb}
+#purchases .bep-quick-expense-body .bep-spend-advanced summary{min-height:48px;padding:13px 14px;font-size:14px;font-weight:800}
+#purchases .bep-quick-expense-body .bep-spend-advanced-body{display:grid;gap:12px;padding:0 14px 14px}
+#purchases .bep-quick-expense-body .bep-spend-advanced-body .field{margin:0}
+#purchases .bep-quick-expense-body .bep-spend-submit-row{display:grid;gap:8px;margin-top:14px}
+#purchases .bep-quick-expense-body .bep-spend-submit-row #purchaseSubmit{width:100%;min-height:54px;border-radius:14px;font-size:16px;font-weight:800}
 
-.bep-entry-trigger{margin:12px 0;min-height:48px;font-size:15px}
-.bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
-.bep-entry-dialog .bep-quick-expense-body>details{display:block!important}
-.bep-entry-dialog .bep-entry-summary-hidden{display:none!important}
-.bep-entry-dialog .bep-quick-expense-body form{display:grid;gap:13px}
-.bep-entry-dialog .bep-quick-expense-body .field{margin:0}
-.bep-entry-dialog .bep-quick-expense-body input:not([type=checkbox]),.bep-entry-dialog .bep-quick-expense-body select,.bep-entry-dialog .bep-quick-expense-body textarea{min-height:48px;font-size:16px}
-.bep-entry-dialog .bep-quick-expense-body button[type=submit]{min-height:52px;font-size:15px}
-.bep-entry-dialog .bep-quick-expense-body .budget-checkup-group{margin:12px 0}
-.bep-entry-dialog .bep-quick-expense-body .budget-checkup-row{padding:12px 8px;gap:10px}
-.bep-receipt-capture{padding:12px;border:1px dashed #a9cdb5;border-radius:14px;background:#f5faf6}
-.bep-receipt-capture input[type=file]{width:100%;min-height:48px;font-size:14px}
-.bep-receipt-capture .hint{margin:8px 0 0;font-size:13px;line-height:1.45}
-@media(max-width:480px){.bep-entry-dialog .bep-quick-expense-body{padding:12px 14px max(18px,env(safe-area-inset-bottom))}.bep-entry-trigger{min-height:50px}}
+#purchases .bep-entry-trigger{margin:12px 0;min-height:48px;font-size:15px}
+#purchases .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+#purchases .bep-entry-dialog .bep-quick-expense-body>details{display:block!important}
+#purchases .bep-entry-dialog .bep-entry-summary-hidden{display:none!important}
+#purchases .bep-entry-dialog .bep-quick-expense-body form{display:grid;gap:13px}
+#purchases .bep-entry-dialog .bep-quick-expense-body .field{margin:0}
+#purchases .bep-entry-dialog .bep-quick-expense-body input:not([type=checkbox]),#purchases .bep-entry-dialog .bep-quick-expense-body select,#purchases .bep-entry-dialog .bep-quick-expense-body textarea{min-height:48px;font-size:16px}
+#purchases .bep-entry-dialog .bep-quick-expense-body button[type=submit]{min-height:52px;font-size:15px}
+#purchases .bep-entry-dialog .bep-quick-expense-body .budget-checkup-group{margin:12px 0}
+#purchases .bep-entry-dialog .bep-quick-expense-body .budget-checkup-row{padding:12px 8px;gap:10px}
+#purchases .bep-receipt-capture{padding:12px;border:1px dashed #a9cdb5;border-radius:14px;background:#f5faf6}
+#purchases .bep-receipt-capture input[type=file]{width:100%;min-height:48px;font-size:14px}
+#purchases .bep-receipt-capture .hint{margin:8px 0 0;font-size:13px;line-height:1.45}
+@media(max-width:480px){#purchases .bep-entry-dialog .bep-quick-expense-body{padding:12px 14px max(18px,env(safe-area-inset-bottom))}#purchases .bep-entry-trigger{min-height:50px}}
 /* The global expense shortcut is hidden throughout the Budget workspace. */
-body:has(#budget.active) #bepQuickExpense{display:none!important}
+#purchases body:has(#budget.active) #bepQuickExpense{display:none!important}
 
 /* Saved income sources: compact collapsible section in Budget > Income. */
-.income-saved-details{margin:14px 0;border:1px solid #dce9e1;border-radius:16px;background:#fff;overflow:hidden}
-.income-saved-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:14px 16px;list-style:none;font-weight:800;cursor:pointer}
-.income-saved-details>summary::-webkit-details-marker{display:none}
-.income-saved-toggle{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e8f3ee;color:#176b50;font-size:22px;line-height:1;flex:0 0 30px}
-.income-saved-details[open] .income-saved-toggle{transform:rotate(45deg)}
-.income-saved-details>#incomeRows{padding:0 14px 12px}
-.income-saved-details>#incomeRows:empty{padding:0}
+#purchases .income-saved-details{margin:14px 0;border:1px solid #dce9e1;border-radius:16px;background:#fff;overflow:hidden}
+#purchases .income-saved-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:14px 16px;list-style:none;font-weight:800;cursor:pointer}
+#purchases .income-saved-details>summary::-webkit-details-marker{display:none}
+#purchases .income-saved-toggle{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e8f3ee;color:#176b50;font-size:22px;line-height:1;flex:0 0 30px}
+#purchases .income-saved-details[open] .income-saved-toggle{transform:rotate(45deg)}
+#purchases .income-saved-details>#incomeRows{padding:0 14px 12px}
+#purchases .income-saved-details>#incomeRows:empty{padding:0}
 
 
 /* Budget > Revenus: compact hierarchy and real action buttons. */
-#budgetModuleIncome .income-card{display:grid;gap:12px;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fff;box-shadow:0 5px 18px #173c2908}
-#budgetModuleIncome .income-card>.card-head{margin:0;align-items:flex-start}
-#budgetModuleIncome .income-card>.card-head h2{margin:0 0 4px;font-size:20px;letter-spacing:-.35px}
-#budgetModuleIncome .income-card>.card-head .hint{margin:0;font-size:13px;line-height:1.45}
-#budgetModuleIncome .income-total{margin:0;padding:14px 16px;border:1px solid #d8e9df;border-radius:14px;background:#eaf5ef}
-#budgetModuleIncome .income-total strong{font-size:clamp(22px,4vw,27px);letter-spacing:-.5px}
-#budgetModuleIncome .income-checkup{margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
-#budgetModuleIncome .income-checkup-head{margin:0 0 12px}
-#budgetModuleIncome .income-checkup-head h3{margin:8px 0 6px;font-size:16px;line-height:1.3}
-#budgetModuleIncome .income-checkup-head .hint{margin:0;font-size:13px;line-height:1.55}
-#budgetModuleIncome .income-checkup>details{margin:0}
-#budgetModuleIncome .bep-entry-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:0;padding:0 15px;border:1px solid #dce9e1;border-radius:12px;background:#edf6f0;color:#176b50;font-size:13px;font-weight:800;text-align:left;box-shadow:none}
-#budgetModuleIncome .bep-entry-trigger:hover{background:#e2f0e7}
-#budgetModuleIncome .income-saved-details{margin:0;border-radius:14px}
-#budgetModuleIncome .income-saved-details>summary{min-height:50px;padding:10px 14px;font-size:14px}
-#budgetModuleIncome #incomeEditorDetails{margin:0;border:0;background:transparent}
-#budgetModuleIncome #incomeEditorDetails>summary{display:none!important}
-#budgetModuleIncome .bep-entry-dialog{width:min(92vw,560px)}
-#budgetModuleIncome .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
-#budgetModuleIncome .bep-entry-dialog .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
-#budgetModuleIncome .bep-entry-dialog .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
-#budgetModuleIncome .bep-entry-dialog .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
-#budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
-#budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
-#budgetModuleIncome .bep-entry-dialog .income-form{gap:12px}
+#purchases #budgetModuleIncome .income-card{display:grid;gap:12px;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fff;box-shadow:0 5px 18px #173c2908}
+#purchases #budgetModuleIncome .income-card>.card-head{margin:0;align-items:flex-start}
+#purchases #budgetModuleIncome .income-card>.card-head h2{margin:0 0 4px;font-size:20px;letter-spacing:-.35px}
+#purchases #budgetModuleIncome .income-card>.card-head .hint{margin:0;font-size:13px;line-height:1.45}
+#purchases #budgetModuleIncome .income-total{margin:0;padding:14px 16px;border:1px solid #d8e9df;border-radius:14px;background:#eaf5ef}
+#purchases #budgetModuleIncome .income-total strong{font-size:clamp(22px,4vw,27px);letter-spacing:-.5px}
+#purchases #budgetModuleIncome .income-checkup{margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
+#purchases #budgetModuleIncome .income-checkup-head{margin:0 0 12px}
+#purchases #budgetModuleIncome .income-checkup-head h3{margin:8px 0 6px;font-size:16px;line-height:1.3}
+#purchases #budgetModuleIncome .income-checkup-head .hint{margin:0;font-size:13px;line-height:1.55}
+#purchases #budgetModuleIncome .income-checkup>details{margin:0}
+#purchases #budgetModuleIncome .bep-entry-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:0;padding:0 15px;border:1px solid #dce9e1;border-radius:12px;background:#edf6f0;color:#176b50;font-size:13px;font-weight:800;text-align:left;box-shadow:none}
+#purchases #budgetModuleIncome .bep-entry-trigger:hover{background:#e2f0e7}
+#purchases #budgetModuleIncome .income-saved-details{margin:0;border-radius:14px}
+#purchases #budgetModuleIncome .income-saved-details>summary{min-height:50px;padding:10px 14px;font-size:14px}
+#purchases #budgetModuleIncome #incomeEditorDetails{margin:0;border:0;background:transparent}
+#purchases #budgetModuleIncome #incomeEditorDetails>summary{display:none!important}
+#purchases #budgetModuleIncome .bep-entry-dialog{width:min(92vw,560px)}
+#purchases #budgetModuleIncome .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+#purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
+#purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
+#purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
+#purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
+#purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
+#purchases #budgetModuleIncome .bep-entry-dialog .income-form{gap:12px}
 @media(max-width:560px){
- #budgetModuleIncome .income-card{padding:15px;gap:10px}
- #budgetModuleIncome .income-checkup{padding:13px}
- #budgetModuleIncome .bep-entry-dialog .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}
- #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{grid-column:2}
+ #purchases #budgetModuleIncome .income-card{padding:15px;gap:10px}
+ #purchases #budgetModuleIncome .income-checkup{padding:13px}
+ #purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}
+ #purchases #budgetModuleIncome .bep-entry-dialog .budget-checkup-row input[data-income-amount]{grid-column:2}
 }
 
 
 /* Budget > Mes revenus: paired actions, then full-width saved sources. */
-#budgetModuleIncome .income-actions-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
-#budgetModuleIncome .income-actions-grid>.income-checkup,#budgetModuleIncome .income-manual-entry{min-width:0;margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
-#budgetModuleIncome .income-checkup-head{margin:0 0 14px}
-#budgetModuleIncome .income-checkup-head h3,#budgetModuleIncome .income-manual-entry h3{margin:8px 0 6px;font-size:16px;line-height:1.35}
-#budgetModuleIncome .income-manual-entry>.hint{margin:0 0 14px;font-size:13px;line-height:1.5}
-#budgetModuleIncome .income-manual-entry #incomeEditorDetails{margin:0;border:0;background:transparent}
-#budgetModuleIncome .income-manual-entry .bep-entry-trigger{margin-top:14px}
-#budgetModuleIncome #incomeRows .rowitem{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto) auto;align-items:center;column-gap:14px}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child{min-width:0}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child b,#budgetModuleIncome #incomeRows .rowitem>span:first-child small{display:block;overflow-wrap:anywhere}
-#budgetModuleIncome #incomeRows .rowitem> b{min-width:112px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-#budgetModuleIncome #incomeRows .record-actions{display:flex;justify-content:flex-end;gap:6px}
-@media(max-width:640px){#budgetModuleIncome .income-actions-grid{grid-template-columns:1fr}#budgetModuleIncome #incomeRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
+#purchases #budgetModuleIncome .income-actions-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#purchases #budgetModuleIncome .income-actions-grid>.income-checkup,#purchases #budgetModuleIncome .income-manual-entry{min-width:0;margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
+#purchases #budgetModuleIncome .income-checkup-head{margin:0 0 14px}
+#purchases #budgetModuleIncome .income-checkup-head h3,#purchases #budgetModuleIncome .income-manual-entry h3{margin:8px 0 6px;font-size:16px;line-height:1.35}
+#purchases #budgetModuleIncome .income-manual-entry>.hint{margin:0 0 14px;font-size:13px;line-height:1.5}
+#purchases #budgetModuleIncome .income-manual-entry #incomeEditorDetails{margin:0;border:0;background:transparent}
+#purchases #budgetModuleIncome .income-manual-entry .bep-entry-trigger{margin-top:14px}
+#purchases #budgetModuleIncome #incomeRows .rowitem{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto) auto;align-items:center;column-gap:14px}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child{min-width:0}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child b,#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child small{display:block;overflow-wrap:anywhere}
+#purchases #budgetModuleIncome #incomeRows .rowitem> b{min-width:112px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#purchases #budgetModuleIncome #incomeRows .record-actions{display:flex;justify-content:flex-end;gap:6px}
+@media(max-width:640px){#purchases #budgetModuleIncome .income-actions-grid{grid-template-columns:1fr}#purchases #budgetModuleIncome #incomeRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
 
 /* Budget > Mes charges: paired assistant and manual entry, then saved charges. */
-#budgetModuleCharges .charges-card{display:grid;gap:12px;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fff;box-shadow:0 5px 18px #173c2908}
-#budgetModuleCharges .charges-card>.card-head{margin:0;align-items:flex-start}
-#budgetModuleCharges .charges-card>.card-head h2{margin:0 0 4px;font-size:20px;letter-spacing:-.35px}
-#budgetModuleCharges .charges-card>.card-head .hint{margin:0;font-size:13px;line-height:1.45}
-#budgetModuleCharges .income-total{margin:0;padding:14px 16px;border:1px solid #d8e9df;border-radius:14px;background:#eaf5ef}
-#budgetModuleCharges .income-total strong{font-size:clamp(22px,4vw,27px);letter-spacing:-.5px}
-#budgetModuleCharges .charges-actions-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
-#budgetModuleCharges .charges-actions-grid>.charges-checkup,#budgetModuleCharges .charges-manual-entry{min-width:0;margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
-#budgetModuleCharges .charges-checkup .budget-checkup-head{margin:0 0 12px}
-#budgetModuleCharges .charges-checkup .budget-checkup-head h3,#budgetModuleCharges .charges-manual-entry h3{margin:8px 0 6px;font-size:16px;line-height:1.35}
-#budgetModuleCharges .charges-manual-entry>.hint{margin:0 0 14px;font-size:13px;line-height:1.5}
-#budgetModuleCharges .charges-manual-entry #budgetEditorDetails{margin:0;border:0;background:transparent}
-#budgetModuleCharges .charges-manual-entry .bep-entry-trigger{margin-top:14px}
-#budgetModuleCharges .charges-checkup .bep-entry-trigger{margin-top:14px}
-#budgetModuleCharges .budget-editor>summary{display:none!important}
-#budgetModuleCharges .charges-card #budgetRows .rowitem{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto) auto;align-items:center;column-gap:14px}
-#budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child{min-width:0}
-#budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child b,#budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child small{display:block;overflow-wrap:anywhere}
-#budgetModuleCharges .charges-card #budgetRows .rowitem>b{min-width:112px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-#budgetModuleCharges .charges-card #budgetRows .record-actions{display:flex;justify-content:flex-end;gap:6px}
-#budgetModuleCharges .bep-entry-dialog{width:min(92vw,560px)}
-#budgetModuleCharges .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
-#budgetModuleCharges .bep-entry-dialog .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
-#budgetModuleCharges .bep-entry-dialog .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
-#budgetModuleCharges .bep-entry-dialog .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
-#budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
-#budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
-@media(max-width:640px){#budgetModuleCharges .charges-actions-grid{grid-template-columns:1fr}#budgetModuleCharges .charges-card{padding:15px;gap:10px}#budgetModuleCharges .charges-actions-grid>.charges-checkup,#budgetModuleCharges .charges-manual-entry{padding:13px}#budgetModuleCharges .charges-card #budgetRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
+#purchases #budgetModuleCharges .charges-card{display:grid;gap:12px;padding:20px;border:1px solid #dce9e1;border-radius:20px;background:#fff;box-shadow:0 5px 18px #173c2908}
+#purchases #budgetModuleCharges .charges-card>.card-head{margin:0;align-items:flex-start}
+#purchases #budgetModuleCharges .charges-card>.card-head h2{margin:0 0 4px;font-size:20px;letter-spacing:-.35px}
+#purchases #budgetModuleCharges .charges-card>.card-head .hint{margin:0;font-size:13px;line-height:1.45}
+#purchases #budgetModuleCharges .income-total{margin:0;padding:14px 16px;border:1px solid #d8e9df;border-radius:14px;background:#eaf5ef}
+#purchases #budgetModuleCharges .income-total strong{font-size:clamp(22px,4vw,27px);letter-spacing:-.5px}
+#purchases #budgetModuleCharges .charges-actions-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#purchases #budgetModuleCharges .charges-actions-grid>.charges-checkup,#purchases #budgetModuleCharges .charges-manual-entry{min-width:0;margin:0;padding:16px;border:1px solid #e1ebe4;border-radius:16px;background:#fbfdfb;box-shadow:none}
+#purchases #budgetModuleCharges .charges-checkup .budget-checkup-head{margin:0 0 12px}
+#purchases #budgetModuleCharges .charges-checkup .budget-checkup-head h3,#purchases #budgetModuleCharges .charges-manual-entry h3{margin:8px 0 6px;font-size:16px;line-height:1.35}
+#purchases #budgetModuleCharges .charges-manual-entry>.hint{margin:0 0 14px;font-size:13px;line-height:1.5}
+#purchases #budgetModuleCharges .charges-manual-entry #budgetEditorDetails{margin:0;border:0;background:transparent}
+#purchases #budgetModuleCharges .charges-manual-entry .bep-entry-trigger{margin-top:14px}
+#purchases #budgetModuleCharges .charges-checkup .bep-entry-trigger{margin-top:14px}
+#purchases #budgetModuleCharges .budget-editor>summary{display:none!important}
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto) auto;align-items:center;column-gap:14px}
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child{min-width:0}
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child b,#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem>span:first-child small{display:block;overflow-wrap:anywhere}
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem>b{min-width:112px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#purchases #budgetModuleCharges .charges-card #budgetRows .record-actions{display:flex;justify-content:flex-end;gap:6px}
+#purchases #budgetModuleCharges .bep-entry-dialog{width:min(92vw,560px)}
+#purchases #budgetModuleCharges .bep-entry-dialog .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+#purchases #budgetModuleCharges .bep-entry-dialog .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
+#purchases #budgetModuleCharges .bep-entry-dialog .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
+#purchases #budgetModuleCharges .bep-entry-dialog .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
+#purchases #budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
+#purchases #budgetModuleCharges .bep-entry-dialog .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
+@media(max-width:640px){#purchases #budgetModuleCharges .charges-actions-grid{grid-template-columns:1fr}#purchases #budgetModuleCharges .charges-card{padding:15px;gap:10px}#purchases #budgetModuleCharges .charges-actions-grid>.charges-checkup,#purchases #budgetModuleCharges .charges-manual-entry{padding:13px}#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem{grid-template-columns:minmax(0,1fr) minmax(100px,auto) auto;column-gap:8px}}
 
 /* Charge dialogs are mounted at document level; scope their contents by form. */
-.bep-entry-dialog:has(#budgetCheckupForm){width:min(92vw,560px)}
-.bep-entry-dialog:has(#budgetCheckupForm) .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
-.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
-.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
-.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
-.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
-.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
-@media(max-width:560px){.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}.bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{grid-column:2}}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm){width:min(92vw,560px)}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .bep-quick-expense-body{padding:16px 18px max(20px,env(safe-area-inset-bottom))}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-note{margin:0 0 12px;font-size:12px;line-height:1.5;color:#60766a}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-group h4{margin:10px 0 7px;color:#245b42;font-size:13px}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{display:grid;grid-template-columns:18px minmax(0,1fr) minmax(105px,135px);align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid #edf2ee;font-size:12px}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[type=checkbox]{width:17px;height:17px;accent-color:#176b50}
+#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{width:100%;min-width:0;min-height:40px;font-size:14px}
+@media(max-width:560px){#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row{grid-template-columns:18px minmax(0,1fr);gap:7px}#purchases .bep-entry-dialog:has(#budgetCheckupForm) .budget-checkup-row input[data-checkup-amount]{grid-column:2}}
 
 /* Budget > Mes revenus: match the solid green action buttons used in Mes charges. */
-#budgetModuleIncome .bep-entry-trigger{background:#176b50;border-color:#176b50;color:#fff}
-#budgetModuleIncome .bep-entry-trigger:hover{background:#12583f;border-color:#12583f;color:#fff}
-#budgetModuleIncome .bep-entry-trigger:focus-visible{outline:3px solid #cce8d7;outline-offset:2px}
+#purchases #budgetModuleIncome .bep-entry-trigger{background:#176b50;border-color:#176b50;color:#fff}
+#purchases #budgetModuleIncome .bep-entry-trigger:hover{background:#12583f;border-color:#12583f;color:#fff}
+#purchases #budgetModuleIncome .bep-entry-trigger:focus-visible{outline:3px solid #cce8d7;outline-offset:2px}
 
 /* Keep saved income typography identical to saved charges. */
-#budgetModuleIncome .income-saved-details>summary{font-size:16px;line-height:1.4}
-#budgetModuleIncome #incomeRows .rowitem{font-size:14px;line-height:1.45}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
-#budgetModuleIncome #incomeRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
+#purchases #budgetModuleIncome .income-saved-details>summary{font-size:16px;line-height:1.4}
+#purchases #budgetModuleIncome #incomeRows .rowitem{font-size:14px;line-height:1.45}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
+#purchases #budgetModuleIncome #incomeRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
 
 /* Final typography parity: saved income rows use the same scale as saved charges. */
-#budgetModuleIncome .income-saved-details>summary,
-#budgetModuleCharges .income-saved-details>summary{font-size:16px!important;line-height:1.4;font-weight:800}
-#budgetModuleIncome #incomeRows .rowitem,
-#budgetModuleCharges #budgetRows .rowitem{font-size:14px;line-height:1.45}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child b,
-#budgetModuleCharges #budgetRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
-#budgetModuleIncome #incomeRows .rowitem>span:first-child small,
-#budgetModuleCharges #budgetRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
-#budgetModuleIncome #incomeRows .rowitem>b,
-#budgetModuleCharges #budgetRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
+#purchases #budgetModuleIncome .income-saved-details>summary,
+#purchases #budgetModuleCharges .income-saved-details>summary{font-size:16px!important;line-height:1.4;font-weight:800}
+#purchases #budgetModuleIncome #incomeRows .rowitem,
+#purchases #budgetModuleCharges #budgetRows .rowitem{font-size:14px;line-height:1.45}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child b,
+#purchases #budgetModuleCharges #budgetRows .rowitem>span:first-child b{font-size:14px;line-height:1.4;font-weight:700}
+#purchases #budgetModuleIncome #incomeRows .rowitem>span:first-child small,
+#purchases #budgetModuleCharges #budgetRows .rowitem>span:first-child small{font-size:12px;line-height:1.4}
+#purchases #budgetModuleIncome #incomeRows .rowitem>b,
+#purchases #budgetModuleCharges #budgetRows .rowitem>b{font-size:14px;line-height:1.4;font-weight:700}
 
 /* Explicit IDs avoid parent-scope differences between the income and charges accordions. */
-#incomeSavedDetails>summary,#chargesSavedDetails>summary{font-size:16px!important;line-height:1.4!important;font-weight:800!important}
-#incomeRows .rowitem,#budgetRows .rowitem{font-size:14px!important;line-height:1.45!important}
-#incomeRows .rowitem>span:first-child b,#budgetRows .rowitem>span:first-child b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
-#incomeRows .rowitem>span:first-child small,#budgetRows .rowitem>span:first-child small{font-size:12px!important;line-height:1.4!important}
-#incomeRows .rowitem>b,#budgetRows .rowitem>b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
+#purchases #incomeSavedDetails>summary,#purchases #chargesSavedDetails>summary{font-size:16px!important;line-height:1.4!important;font-weight:800!important}
+#purchases #incomeRows .rowitem,#purchases #budgetRows .rowitem{font-size:14px!important;line-height:1.45!important}
+#purchases #incomeRows .rowitem>span:first-child b,#purchases #budgetRows .rowitem>span:first-child b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
+#purchases #incomeRows .rowitem>span:first-child small,#purchases #budgetRows .rowitem>span:first-child small{font-size:12px!important;line-height:1.4!important}
+#purchases #incomeRows .rowitem>b,#purchases #budgetRows .rowitem>b{font-size:14px!important;line-height:1.4!important;font-weight:700!important}
 
 /* Expenses refresh: keep the hero, simplify the navigation and open purchase entry in a modal. */
-.bep-spend-nav{grid-template-columns:1fr}
-.bep-spend-nav button[data-spend-tab="challenges"],
-.bep-spend-nav button[data-spend-tab="balance"]{display:none!important}
-.bep-spend-add-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;margin:0 0 14px;padding:14px 18px;border:1px solid #176b50;border-radius:14px;background:#176b50;color:#fff;font:800 16px/1.25 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 5px 14px #176b5020}
-.bep-spend-add-button:hover{background:#12583f;border-color:#12583f}
-.bep-spend-add-button:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
-.bep-spend-history-details{border:1px solid #e1ebe4;border-radius:16px;background:#fff;overflow:hidden}
-.bep-spend-history-details>summary{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:14px 16px;color:#173a32;font:800 16px/1.4 'DM Sans',sans-serif;cursor:pointer;list-style:none}
-.bep-spend-history-details>summary::-webkit-details-marker{display:none}
-.bep-spend-history-details>summary:after{content:"＋";display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eaf5ef;color:#176b50;font-size:20px}
-.bep-spend-history-details[open]>summary:after{content:"−"}
-.bep-spend-history-details>#purchaseBulkToolbar,.bep-spend-history-details>.purchase-longpress-hint,.bep-spend-history-details>#purchaseRows{margin-left:14px;margin-right:14px}
-.bep-spend-history-details>#purchaseRows{margin-bottom:14px}
-.bep-quick-expense-dialog .bep-quick-expense-panel{max-height:min(90vh,900px);overflow:auto}
-.bep-quick-expense-dialog .bep-quick-expense-body .bep-spend-amount label{font-size:15px;font-weight:800}
-.bep-quick-expense-dialog .bep-quick-expense-body #purchaseAmount{min-height:58px;font-size:22px;font-weight:800}
-@media(max-width:480px){.bep-spend-add-button{min-height:54px;font-size:16px}.bep-spend-history-details>summary{min-height:52px}}
+#purchases .bep-spend-nav{grid-template-columns:1fr}
+#purchases .bep-spend-nav button[data-spend-tab="challenges"],
+#purchases .bep-spend-nav button[data-spend-tab="balance"]{display:none!important}
+#purchases .bep-spend-add-button{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;margin:0 0 14px;padding:14px 18px;border:1px solid #176b50;border-radius:14px;background:#176b50;color:#fff;font:800 16px/1.25 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 5px 14px #176b5020}
+#purchases .bep-spend-add-button:hover{background:#12583f;border-color:#12583f}
+#purchases .bep-spend-add-button:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
+#purchases .bep-spend-history-details{border:1px solid #e1ebe4;border-radius:16px;background:#fff;overflow:hidden}
+#purchases .bep-spend-history-details>summary{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:14px 16px;color:#173a32;font:800 16px/1.4 'DM Sans',sans-serif;cursor:pointer;list-style:none}
+#purchases .bep-spend-history-details>summary::-webkit-details-marker{display:none}
+#purchases .bep-spend-history-details>summary:after{content:"＋";display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eaf5ef;color:#176b50;font-size:20px}
+#purchases .bep-spend-history-details[open]>summary:after{content:"−"}
+#purchases .bep-spend-history-details>#purchaseBulkToolbar,#purchases .bep-spend-history-details>.purchase-longpress-hint,#purchases .bep-spend-history-details>#purchaseRows{margin-left:14px;margin-right:14px}
+#purchases .bep-spend-history-details>#purchaseRows{margin-bottom:14px}
+#purchases .bep-quick-expense-dialog .bep-quick-expense-panel{max-height:min(90vh,900px);overflow:auto}
+#purchases .bep-quick-expense-dialog .bep-quick-expense-body .bep-spend-amount label{font-size:15px;font-weight:800}
+#purchases .bep-quick-expense-dialog .bep-quick-expense-body #purchaseAmount{min-height:58px;font-size:22px;font-weight:800}
+@media(max-width:480px){#purchases .bep-spend-add-button{min-height:54px;font-size:16px}#purchases .bep-spend-history-details>summary{min-height:52px}}
 
 /* Remove the redundant secondary action from the simplified purchase flow. */
 #purchases #purchaseNew{display:none!important}
@@ -341,18 +341,18 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 #purchases ::selection{background:#ccefe0;color:#123b34}
 
 /* Long-press multi-selection for saved income, charges and monthly lines */
-.multi-select-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:8px 0;border:1px solid #dce9df;border-radius:12px;background:#f4faf6;color:#174f3c;font-size:12px;font-weight:700}
-.multi-select-toolbar.hidden{display:none!important}
-.multi-select-toolbar button{border:1px solid #cbded1;border-radius:9px;background:#fff;color:#175b43;padding:7px 10px;font:600 12px inherit;cursor:pointer}
-.multi-select-toolbar button[data-multi-delete],.multi-select-toolbar button[data-month-delete]{background:#176b50;border-color:#176b50;color:#fff}
-.multi-select-check{width:18px;height:18px;flex:0 0 auto;margin:0 10px 0 0;accent-color:#176b50}
-#incomeRows .rowitem.is-selected,#budgetRows .rowitem.is-selected,#monthlyBudgetItems .monthly-budget-row.is-selected{background:#eef8f1;outline:1px solid #a9d6ba}
-#incomeRows .rowitem,#budgetRows .rowitem,#monthlyBudgetItems .monthly-budget-row{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+#purchases .multi-select-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:8px 0;border:1px solid #dce9df;border-radius:12px;background:#f4faf6;color:#174f3c;font-size:12px;font-weight:700}
+#purchases .multi-select-toolbar.hidden{display:none!important}
+#purchases .multi-select-toolbar button{border:1px solid #cbded1;border-radius:9px;background:#fff;color:#175b43;padding:7px 10px;font:600 12px inherit;cursor:pointer}
+#purchases .multi-select-toolbar button[data-multi-delete],#purchases .multi-select-toolbar button[data-month-delete]{background:#176b50;border-color:#176b50;color:#fff}
+#purchases .multi-select-check{width:18px;height:18px;flex:0 0 auto;margin:0 10px 0 0;accent-color:#176b50}
+#purchases #incomeRows .rowitem.is-selected,#purchases #budgetRows .rowitem.is-selected,#purchases #monthlyBudgetItems .monthly-budget-row.is-selected{background:#eef8f1;outline:1px solid #a9d6ba}
+#purchases #incomeRows .rowitem,#purchases #budgetRows .rowitem,#purchases #monthlyBudgetItems .monthly-budget-row{touch-action:pan-y;user-select:none;-webkit-user-select:none}
 
 /* Budget test pass: normalize saved income and charge rows independently of legacy .rowitem rules.
    The label stays flexible; the amount and controls occupy a fixed intrinsic action track. */
-#budgetModuleIncome #incomeRows .saved-income-row,
-#budgetModuleCharges #budgetRows .saved-charge-row{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) max-content !important;
   align-items:center !important;
@@ -363,31 +363,31 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   box-sizing:border-box !important;
   padding:14px 0 !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main{
   grid-column:1;
   min-width:0 !important;
   width:100% !important;
   display:block !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main > span,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main > span{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main > span,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main > span{
   display:block !important;
   min-width:0 !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main b,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main b{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main b,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main b{
   display:block !important;
   overflow-wrap:anywhere !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main small,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main small{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-main small,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-main small{
   display:block !important;
   margin-top:3px !important;
   overflow-wrap:anywhere !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
   grid-column:2;
   display:grid !important;
   grid-template-columns:max-content 32px 32px !important;
@@ -400,16 +400,16 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   margin:0 !important;
   white-space:nowrap !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions > b,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions > b{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions > b,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions > b{
   min-width:0 !important;
   margin:0 !important;
   text-align:right !important;
   white-space:nowrap !important;
   font-variant-numeric:tabular-nums !important;
 }
-#budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
-#budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
+#purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
+#purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
   display:grid !important;
   place-items:center !important;
   width:32px !important;
@@ -418,37 +418,37 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   padding:0 !important;
 }
 @media(max-width:640px){
-  #budgetModuleIncome #incomeRows .saved-income-row,
-  #budgetModuleCharges #budgetRows .saved-charge-row{column-gap:7px !important;padding:13px 0 !important}
-  #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
-  #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
+  #purchases #budgetModuleIncome #incomeRows .saved-income-row,
+  #purchases #budgetModuleCharges #budgetRows .saved-charge-row{column-gap:7px !important;padding:13px 0 !important}
+  #purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions,
+  #purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions{
     grid-template-columns:max-content 28px 28px !important;
     gap:4px !important;
   }
-  #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
-  #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
+  #purchases #budgetModuleIncome #incomeRows .saved-income-row > .purchase-row-actions button,
+  #purchases #budgetModuleCharges #budgetRows .saved-charge-row > .purchase-row-actions button{
     width:28px !important;height:28px !important;min-width:28px !important;
   }
 }
 
 
 /* Production fix: match the legacy charges selector specificity so the saved rows keep a stable two-column layout. */
-#budgetModuleIncome #incomeRows .rowitem.saved-income-row,
-#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
+#purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) max-content !important;
   align-items:center !important;
   column-gap:10px !important;
   min-width:0 !important;
 }
-#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-main,
-#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-main{
+#purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-main,
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-main{
   grid-column:1 !important;
   min-width:0 !important;
   width:100% !important;
 }
-#budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
-#budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
+#purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+#purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
   grid-column:2 !important;
   display:grid !important;
   grid-template-columns:max-content 32px 32px !important;
@@ -461,18 +461,18 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   margin:0 !important;
 }
 @media(max-width:640px){
-  #budgetModuleIncome #incomeRows .rowitem.saved-income-row,
-  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
+  #purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row,
+  #purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row{
     grid-template-columns:minmax(0,1fr) max-content !important;
     column-gap:7px !important;
   }
-  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
-  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
+  #purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions,
+  #purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions{
     grid-template-columns:max-content 28px 28px !important;
     gap:4px !important;
   }
-  #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions button,
-  #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions button{
+  #purchases #budgetModuleIncome #incomeRows .rowitem.saved-income-row > .purchase-row-actions button,
+  #purchases #budgetModuleCharges .charges-card #budgetRows .rowitem.saved-charge-row > .purchase-row-actions button{
     width:28px !important;height:28px !important;min-width:28px !important;
   }
 }
