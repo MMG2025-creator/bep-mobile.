@@ -54,6 +54,8 @@ async function main() {
  const client = await pool.connect();
  try {
   await client.query("BEGIN");
+  const agentMigration = fs.readFileSync(path.join(__dirname,"..","database","migrations","20261114_bep_gemini_agent.sql"),"utf8");
+  await client.query(agentMigration);
   const migration = fs.readFileSync(path.join(__dirname,"..","database","migrations","20261114_bep_coach_simulation.sql"),"utf8");
   await client.query(migration);
   // Idempotence limitée aux identifiants réservés au corpus SIM-*.
@@ -95,8 +97,9 @@ async function main() {
     }
    }
   }
+  await client.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('coach_quality_review',$1::jsonb) ON CONFLICT DO NOTHING",[JSON.stringify({source:"synthetic_simulation",range:"2026-09/2026-11"})]);
   await client.query("COMMIT");
-  console.log(JSON.stringify({ok:true,profiles:profiles.length,months:monthCount,conversations:conversationCount,syntheticOnly:true,range:"2026-09 to 2026-11",database:"bep_test_db"}));
+  console.log(JSON.stringify({ok:true,profiles:profiles.length,months:monthCount,conversations:conversationCount,qualityReviewQueued:true,syntheticOnly:true,range:"2026-09 to 2026-11",database:"bep_test_db"}));
  } catch(e) { await client.query("ROLLBACK").catch(()=>{}); throw e; }
  finally { client.release(); await pool.end(); }
 }
