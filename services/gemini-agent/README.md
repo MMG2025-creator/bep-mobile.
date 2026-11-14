@@ -1,35 +1,47 @@
 # BEP Gemini peripheral JSON service
 
-This service is deliberately separate from the BEP application runtime. Its binding data-flow contract is documented in [DATA_FLOW_CONTRACT.md](./DATA_FLOW_CONTRACT.md). The PostgreSQL shared knowledge corpus is the source of truth; the only permitted direction is database → read-only export → JSON snapshots → Gemini. JSON → database is formally prohibited until the project owner explicitly authorizes it in writing.
+This service is deliberately separate from the BEP application runtime. Its binding data-flow contract is documented in [DATA_FLOW_CONTRACT.md](./DATA_FLOW_CONTRACT.md).
 
 ## Data boundary
 
-- Reads versioned, general-purpose knowledge from repository source files.
-- Generates two JSON snapshots at startup:
-  - `data/knowledge-bep-coach.json`
-  - `data/reasoning-bep-coach.json`
-- Does not create a PostgreSQL pool, read environment database URLs, or access user accounts, sessions, conversations, or personal financial records.
-- Does not write to BEP production or alter the Coach runtime.
+The PostgreSQL shared knowledge corpus is the source of truth for approved shared knowledge. The permitted flow is:
 
-## Snapshot endpoints
+`BEP PostgreSQL (SELECT only) -> trusted BEP exporter -> versioned JSON snapshots -> Gemini GET endpoints`
+
+JSON -> PostgreSQL is formally prohibited. The Gemini service has no PostgreSQL dependency, connection pool, database credential, or import/write-back capability.
+
+The trusted exporter is `scripts/export-bep-coach-snapshots.js` at the BEP repository root. It must run only in a trusted BEP environment with a dedicated PostgreSQL identity granted SELECT on exactly:
+- `bep_financial_knowledge`
+- `bep_agent_approved_knowledge`
+
+Configure only `BEP_KNOWLEDGE_READONLY_DATABASE_URL` in that trusted exporter environment. Never configure it in the Gemini service. The database role must be read-only at the PostgreSQL privilege level; the script additionally opens a `BEGIN READ ONLY` transaction and executes only two SELECT statements.
+
+Run from the repository root:
+
+```sh
+BEP_KNOWLEDGE_READONLY_DATABASE_URL='postgresql://...' npm run export:coach-snapshots
+```
+
+The exporter writes:
+- `services/gemini-agent/data/knowledge-bep-coach.json`
+- `services/gemini-agent/data/reasoning-bep-coach.json`
+
+It stages both files in a temporary directory and swaps the snapshot directory atomically. If export, validation, or publication fails, the last known-good directory is retained.
+
+## Snapshot contents and provenance
+
+- Knowledge is read from active rows in `bep_financial_knowledge`, merged with approved overlays only when `source_version` and `source_digest` match the current source. A matching inactive overlay suppresses its source document. Stale/orphan overlays are ignored.
+- The exporter deliberately omits `approved_by` and all user-specific data.
+- Reasoning scenarios, guardrails and regression cases currently remain sourced from the versioned repository rule files because no PostgreSQL reasoning table is defined in the inspected schema. Their provenance is explicitly labelled as repository rules, not database-exported data.
+
+## Gemini endpoints
 
 - `GET /api/health`
 - `GET /api/knowledge`
 - `GET /api/reasoning`
 
-The endpoints expose only general BEP knowledge and reasoning rules. They are read-only.
+All other HTTP methods are rejected. Do not add database access or JSON-to-database ingestion.
 
-## Render configuration
+## Deployment gate
 
-For the existing dedicated Gemini test service:
-
-- Root Directory: `services/gemini-agent`
-- Build Command: `npm install`
-- Start Command: `npm start`
-- Auto-Deploy: keep disabled until the pre-deployment checks are complete.
-
-The service must be deployed from a branch containing this directory. Do not configure `DATABASE_URL` or any BEP production database credential on this service.
-
-## Snapshot provenance and refresh
-
-Important: the current Git-source snapshot builder is a development placeholder, not the production synchronization mechanism. The required database-to-JSON read-only exporter has not yet been implemented. Do not deploy this service as a synchronized Gemini knowledge source until that exporter is implemented and verified. Never add a JSON-to-database import path.
+The exporter implementation does not authorize deployment, live database access, automatic scheduling, Render changes, or publication to a running service. Those require separate approval. Do not use the Git-source placeholder builder as a production synchronization mechanism.
