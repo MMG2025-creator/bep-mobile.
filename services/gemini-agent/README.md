@@ -10,29 +10,37 @@ The PostgreSQL shared knowledge corpus is the source of truth. The permitted flo
 
 JSON -> PostgreSQL is prohibited. Gemini has no PostgreSQL dependency, connection pool, database credential, or import/write-back capability.
 
-The trusted exporter runs only in the BEP repository environment. It requires a dedicated PostgreSQL identity with SELECT on exactly `public.bep_financial_knowledge` and `public.bep_agent_approved_knowledge`.
+The trusted exporter runs only in the BEP repository environment. It requires the dedicated PostgreSQL identity `bep_knowledge_exporter` with SELECT on exactly `public.bep_financial_knowledge` and `public.bep_agent_approved_knowledge`. The role was provisioned and its six write privileges on those two tables were independently verified as false.
 
-Configure `BEP_KNOWLEDGE_READONLY_DATABASE_URL` only in that trusted exporter environment, never in Gemini. Before any knowledge SELECT, the exporter runs a read-only catalog preflight and fails closed unless the identity has:
+Configure `BEP_KNOWLEDGE_READONLY_DATABASE_URL` only as a GitHub Actions repository secret for the trusted exporter workflow, never in Gemini, Render, source files, or workflow logs. Add the secret through the repository's Settings > Secrets and variables > Actions interface. Do not paste the connection string into issues, commits, or chat.
+
+Before any knowledge SELECT, the exporter runs a read-only catalog preflight and fails closed unless the identity has:
 - no superuser, create-role, create-database, replication or bypass-RLS attributes, including inherited role attributes;
 - no database CREATE or non-system schema CREATE privilege;
 - SELECT and no write/trigger/reference privilege on exactly the two approved tables;
 - no other application relation or sequence access.
 
-Run the read-only privilege check:
+## Controlled manual export
 
-```sh
-BEP_KNOWLEDGE_READONLY_DATABASE_URL='postgresql://...' npm run check:coach-exporter-role
-```
+The workflow `.github/workflows/bep-gemini-snapshot-export.yml` is manually triggered only and is restricted to `feature/gemini-peripheral-json-service-v1`.
 
-This command performs catalog SELECTs only. It does not create roles, grant privileges, or change schema/data. No role has been created or modified by this implementation.
+After the repository secret `BEP_KNOWLEDGE_READONLY_DATABASE_URL` has been configured:
+1. Open the repository's Actions tab.
+2. Select **BEP controlled Gemini snapshot export**.
+3. Select **Run workflow** on branch `feature/gemini-peripheral-json-service-v1`.
+4. Inspect the run result and its role-preflight/export summary.
 
-Only after the check passes, the export command can be run:
+The workflow:
+- installs dependencies without lifecycle scripts or lockfile changes;
+- runs the exporter-role preflight;
+- runs the exporter, which uses `BEGIN READ ONLY` and exactly two SELECT statements;
+- validates the snapshot schemas and field allowlist;
+- commits only `services/gemini-agent/data/knowledge-bep-coach.json` and `services/gemini-agent/data/reasoning-bep-coach.json` to the same dedicated branch;
+- does not deploy, schedule recurring exports, or write to PostgreSQL.
 
-```sh
-BEP_KNOWLEDGE_READONLY_DATABASE_URL='postgresql://...' npm run export:coach-snapshots
-```
+The workflow requires the repository's GitHub Actions token to have Contents write permission for that branch. If branch protection blocks the push, the run fails without bypassing branch protection; publish the validated files through the normal reviewed Git workflow instead.
 
-The export itself uses `BEGIN READ ONLY` and exactly two SELECT statements. Its publication uses staging and rollback-capable directory renames; those renames are not one filesystem-atomic exchange and briefly leave the destination path absent.
+The exporter's publication uses staging and rollback-capable directory renames; those renames are not one filesystem-atomic exchange and briefly leave the destination path absent. A failed export preserves the last known-good snapshot files.
 
 ## Snapshot contents
 
@@ -49,6 +57,6 @@ The export itself uses `BEGIN READ ONLY` and exactly two SELECT statements. Its 
 
 All other HTTP methods are rejected. No database integration or JSON-to-database ingestion may be added.
 
-## Deployment gate
+## Deployment boundary
 
-This implementation does not authorize running the preflight against a live database, exporting real data, scheduling, Render changes, deployment, or publication to a running service. Each requires separate owner authorization. The Git-source placeholder builder is not a production synchronization mechanism.
+The manual export workflow does not deploy or publish to the running Gemini service. Render configuration, branch changes, service deployment, recurring scheduling, and production publication remain separate operations requiring explicit owner authorization. The existing Render Gemini test service must be verified against this branch and these snapshot paths before any deployment change.
