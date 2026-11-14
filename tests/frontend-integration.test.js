@@ -154,3 +154,22 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
   assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
  }
 });
+
+
+test("purchase history remains scrollable, long-press selectable and clear of the advice dock",()=>{
+ const app=read("app.js");
+ assert.match(app,/row\.addEventListener\("pointerdown",start\)/,"purchase rows must keep long-press selection");
+ assert.match(app,/purchaseSelectionMode=true;purchaseSelection\.add\(row\.dataset\.purchaseRow\)/);
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/#purchaseRows\s*\{[^}]*overflow-y:auto/s);
+  assert.match(css,/#purchaseRows\s*\{[^}]*max-height:/s);
+  assert.match(css,/#purchases\.panel\.active\s*\{[^}]*padding-bottom:/s);
+  assert.match(css,/\.bep-advice-dock\s*\{[^}]*pointer-events:none/s);
+  assert.match(css,/\.bep-advice-dock \.bep-advice-robot\s*\{[^}]*pointer-events:auto/s);
+ }
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/styles\.css\?v=(99|101)&bep=purchases-scroll-dock-20261114/);
+ }
+});
