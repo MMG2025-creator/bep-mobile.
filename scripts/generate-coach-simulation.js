@@ -1,5 +1,6 @@
 "use strict";
 // Génère une base temporaire JSON : aucune connexion réseau ou base SQL.
+// Le corpus est consommé localement par l'analyseur Gemini facultatif.
 const fs = require("node:fs");
 const path = require("node:path");
 
