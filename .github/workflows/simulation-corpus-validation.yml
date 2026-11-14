@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - run: npm ci --ignore-scripts
       - run: node --check scripts/generate-coach-simulation.js
       - run: npm run simulation:generate
       - run: node -e "const c=require('./simulation/data/coach-corpus.json'); if(c.tables.profiles.records.length!==10 || c.tables.monthlySnapshots.records.length!==30 || c.tables.conversations.records.length!==120) process.exit(1)"
