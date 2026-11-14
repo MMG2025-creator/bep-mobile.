@@ -207,3 +207,8 @@ test("RATE_LIMITED opens a visual explanation with a retry countdown",()=>{
  for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="rateLimitPage"/);assert.match(html,/Une courte pause est nécessaire/);assert.match(html,/auth-recovery\.css\?v=6/)}
  for(const file of ["auth-recovery.css","dist/auth-recovery.css"]){const css=read(file);assert.match(css,/\.rate-limit-page/);assert.match(css,/\.rate-limit-countdown/)}
 });
+
+
+test("custom 404 page explains missing route without implying account or data loss",()=>{
+ for(const file of ["404.html","dist/404.html"]){const html=read(file);assert.match(html,/<title>Page introuvable — BEP<\/title>/);assert.match(html,/>404</);assert.match(html,/Cette page n’existe pas ici/);assert.match(html,/Cela ne signifie pas que ton compte a été supprimé/);assert.match(html,/href=\"\/\">Retourner à l’accueil BEP/);}
+});
