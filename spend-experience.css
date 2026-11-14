@@ -692,3 +692,9 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
 @media(max-width:560px){
  #purchases .bep-spend-history-details>#purchaseRows{max-height:48vh;padding-bottom:112px;scroll-padding-bottom:112px}
 }
+
+/* Accessible clickable monthly spend indicators. */
+#purchases .bep-spend-stat-link{cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+#purchases .bep-spend-stat-link:hover{border-color:#b8d5c2;box-shadow:0 5px 14px #173c2910}
+#purchases .bep-spend-stat-link:active{transform:translateY(1px)}
+#purchases .bep-spend-stat-link:focus-visible{outline:3px solid #cce8d7;outline-offset:3px}
