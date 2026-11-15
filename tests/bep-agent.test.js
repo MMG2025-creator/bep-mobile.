@@ -4,7 +4,7 @@ const assert=require("node:assert/strict");
 const {readConfig}=require("../lib/bep-agent/config");
 const {GeminiClient}=require("../lib/bep-agent/gemini-client");
 const {startBepAgent}=require("../lib/bep-agent");
-const {validateKnowledgeProposal,sourceDigest,runQualityReview}=require("../lib/bep-agent/worker");
+const {validateKnowledgeProposal,sourceDigest,runQualityReview,runKnowledgeReview,loadDocumentaryJson,DOCUMENTARY_JSON_FILES}=require("../lib/bep-agent/worker");
 const cases=require("../lib/bep-agent/quality-cases");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -60,6 +60,23 @@ test("knowledge proposals must preserve the source provenance supplied by BEP",(
  assert.equal(validateKnowledgeProposal({...valid,source_url:"https://example.com"},source),null);
  assert.equal(validateKnowledgeProposal({...valid,proposal_type:"invent"},source),null);
  assert.equal(validateKnowledgeProposal(valid,undefined),null);
+});
+test("Gemini documentary review loads only allowlisted local JSON files and fingerprints them",()=>{
+ const files=loadDocumentaryJson();
+ assert.deepEqual(files.map(x=>x.path),DOCUMENTARY_JSON_FILES);
+ assert.equal(files.length,3);
+ for(const file of files){assert.match(file.digest,/^[a-f0-9]{64}$/);assert.ok(file.content&&typeof file.content==="object")}
+ assert.throws(()=>loadDocumentaryJson({maxTotalChars:10}),/exceeds configured limit/);
+});
+test("knowledge review sends documentary JSON context and DB records to Gemini without external search",async()=>{
+ let prompt="";
+ const pool={query:async()=>({rows:[{slug:"budget-baseline",category:"budget",title:"Budget",content:"Séparer charges fixes et variables.",source_name:"Banque de France",source_url:"https://www.mesquestionsdargent.fr/",evidence_level:"institutional_guidance",version:1}]})};
+ const result=await runKnowledgeReview({pool,client:{generateJson:async input=>{prompt=input.prompt;return{value:{proposals:[]},usage:{totalTokenCount:12}}}}});
+ for(const file of DOCUMENTARY_JSON_FILES)assert.ok(prompt.includes(file));
+ assert.ok(prompt.includes("Fiches PostgreSQL actives"));
+ assert.equal(result.summary.databaseDocumentsReviewed,1);
+ assert.deepEqual(result.summary.documentaryJsonFiles.map(x=>x.path),DOCUMENTARY_JSON_FILES);
+ assert.equal(result.candidatesCreated,0);
 });
 test("quality review reports clearly that it has not executed real Coach responses",async()=>{
  const result=await runQualityReview({pool:{query:async()=>({rows:[]})},client:{generateJson:async()=>({value:{findings:[]},usage:null})}});
