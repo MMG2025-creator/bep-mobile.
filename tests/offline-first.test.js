@@ -89,6 +89,9 @@ test("offline queue serializes snapshots and obtains an authoritative baseline b
  assert.match(js,/let enqueueChain=Promise\.resolve\(\)/);
  assert.match(js,/JSON\.parse\(JSON\.stringify\(payload\)\)/);
  assert.match(js,/fetchCurrentBaseline\(\)/);
+ assert.match(js,/function deletionOnlySnapshot\(local,remote\)/);
+ assert.match(js,/stable\(comparable\(local\)\)!==stable\(comparable\(remote\)\)/);
+ assert.match(js,/missing-baseline-or-stale-local-snapshot/);
  assert.match(js,/if\(!existing&&!baseline\)await fetchCurrentBaseline\(\)/);
  assert.match(app,/Modification conservée sur cet appareil, mais synchronisation suspendue/);
 });
@@ -99,6 +102,7 @@ test("explicit charge deletions are persisted as a server-side tombstone ledger"
  assert.match(app,/rememberDeletedRecords\("budgets",Array\.from\(ids,String\)\)/);
  assert.match(server,/INVALID_DELETION_LEDGER/);
  assert.match(server,/deletedRecords\};/);
+ assert.match(server,/Array\.isArray\(previous\.deletedRecords\?\.\[key\]\)/);
  assert.match(merge,/normalizeDeletedRecords/);
  assert.match(merge,/merged\[key\]=merged\[key\]\.filter/);
 });
