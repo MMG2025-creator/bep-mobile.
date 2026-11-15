@@ -272,7 +272,7 @@ test("receipt import opens the validation dialog immediately, announces progress
   "function fingerprintReceiptText(value)",
   "function findExistingReceiptMatch(extracted,fingerprint)",
   "purchase.receiptFingerprint===fingerprint",
-  'purchase.captureMode!=="receipt"',
+  "const capture=String(purchase.captureText||\"\")",
   "oldMerchant===merchant",
   "Math.abs(oldAmount-amount)<0.01",
   "localPurchaseDate(purchase.at)===date",
