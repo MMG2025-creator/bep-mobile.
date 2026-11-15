@@ -1,6 +1,12 @@
 "use strict";
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),bcrypt=require("bcryptjs");
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
+const {ensureBepAdminSchema,createBepAdminRouter}=require("./admin/bep-admin");
+const {ensureBepAdminAuthSchema,createBepAdminAuthRouter,requireIndependentBepAdmin}=require("./admin/bep-admin-auth");
+const BEP_ADMIN_AUTH_ENABLED=process.env.BEP_ADMIN_AUTH_ENABLED==="true";
+const BEP_ADMIN_EMAILS=String(process.env.BEP_ADMIN_EMAILS||"mmsignenoir@gmail.com").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
+const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
+const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {startBepAgent}=require("./lib/bep-agent");
@@ -21,6 +27,7 @@ app.use((req,res,next)=>{
 app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
+app.use("/api/admin/console/import",express.json({limit:"5mb"}));
 app.use(express.json({limit:"1mb"}));
 function readDeviceCookie(req){
  const raw=String(req.headers.cookie||"").split(";").map(v=>v.trim()).find(v=>v.startsWith("bep_device="));
@@ -64,8 +71,15 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
 }}
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
 app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
+app.use("/api/admin/auth",rateLimit({windowMs:15*60*1000,max:10,scope:"admin-auth"}));
 app.use("/api",rateLimit({windowMs:60*1000,max:120,scope:"api"}));
 if(pool&&process.env.SESSION_SECRET)app.use(session({store:new PgSession({pool,tableName:"user_sessions",createTableIfMissing:true}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:true,sameSite:"none",maxAge:604800000}}));
+if(BEP_ADMIN_AUTH_ENABLED){
+ app.use("/api/admin/auth",createBepAdminAuthRouter({pool,bcrypt,allowedEmails:BEP_ADMIN_EMAILS,sendCode:(email,code,purpose)=>sendVerificationEmail(email,code,purpose==="reset"?"password_reset":"email_verification")}));
+}
+if(BEP_ADMIN_ENABLED&&BEP_ADMIN_AUTH_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY){
+ app.use("/api/admin/console",createBepAdminRouter({pool,requireAdmin:requireIndependentBepAdmin}));
+}else if(BEP_ADMIN_ENABLED){console.warn("BEP admin console remains disabled: independent admin authentication is not ready");}
 async function init(){if(!pool)return;await pool.query("CREATE TABLE IF NOT EXISTS bep_users(id TEXT PRIMARY KEY,email TEXT NOT NULL UNIQUE,display_name TEXT,avatar_url TEXT,password_hash TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"); await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS password_hash TEXT");await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT TRUE");await pool.query("CREATE TABLE IF NOT EXISTS bep_email_verifications(email TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,code_hash TEXT NOT NULL,expires_at TIMESTAMPTZ NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_password_reset_tokens(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,expires_at TIMESTAMPTZ NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE INDEX IF NOT EXISTS bep_password_reset_tokens_expiry ON bep_password_reset_tokens(expires_at)");await pool.query("CREATE UNIQUE INDEX IF NOT EXISTS bep_password_reset_tokens_user_unique ON bep_password_reset_tokens(user_id)");await pool.query("CREATE TABLE IF NOT EXISTS bep_user_data(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,payload JSONB NOT NULL DEFAULT '{\"income\":0,\"budgets\":[],\"expenses\":[],\"goals\":[]}'::jsonb,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_states(state TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_state_tokens(token_hash TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");
 await pool.query("CREATE TABLE IF NOT EXISTS bep_user_ai(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,provider TEXT NOT NULL,model TEXT NOT NULL,endpoint TEXT,encrypted_key TEXT NOT NULL,key_iv TEXT NOT NULL,key_tag TEXT NOT NULL,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
 await pool.query("CREATE TABLE IF NOT EXISTS bep_ai_monthly_usage(user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,month_key TEXT NOT NULL,used INTEGER NOT NULL DEFAULT 0,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),PRIMARY KEY(user_id,month_key))");
@@ -89,6 +103,8 @@ await pool.query("CREATE INDEX IF NOT EXISTS bep_budget_audit_log_user_created_i
 await pool.query("CREATE TABLE IF NOT EXISTS bep_financial_knowledge(slug TEXT PRIMARY KEY,category TEXT NOT NULL,title TEXT NOT NULL,content TEXT NOT NULL,keywords JSONB NOT NULL DEFAULT '[]'::jsonb,source_name TEXT NOT NULL,source_url TEXT NOT NULL DEFAULT '',evidence_level TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,active BOOLEAN NOT NULL DEFAULT TRUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
 await pool.query("CREATE INDEX IF NOT EXISTS bep_financial_knowledge_active_category ON bep_financial_knowledge(active,category)");
 for(const item of financialKnowledgeSeed){await pool.query("INSERT INTO bep_financial_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,TRUE) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_financial_knowledge.version+1,active=TRUE,updated_at=NOW() WHERE bep_financial_knowledge.content IS DISTINCT FROM EXCLUDED.content OR bep_financial_knowledge.title IS DISTINCT FROM EXCLUDED.title OR bep_financial_knowledge.source_url IS DISTINCT FROM EXCLUDED.source_url",[item.slug,item.category,item.title,item.content,JSON.stringify(item.keywords),item.source_name,item.source_url,item.evidence_level])}
+if(BEP_ADMIN_AUTH_ENABLED)await ensureBepAdminAuthSchema(pool);
+if(BEP_ADMIN_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY)await ensureBepAdminSchema(pool);
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
 function requireBepAgentAdmin(req,res,next){
