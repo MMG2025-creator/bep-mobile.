@@ -41,3 +41,24 @@ test("offline merge unions append-only savings operations by stable id",()=>{
  const merged=mergeOfflinePayload(base,local,remote);
  assert.deepEqual(merged.savingsOperations.map(item=>item.id).sort(),["deposit-mobile","deposit-pc"]);
 });
+
+
+test("a durable budget deletion marker prevents a stale device from resurrecting a deleted charge",()=>{
+ const deleted={id:"charge-test-r5",label:"test R5",amount:12};
+ const base={budgets:[],deletedRecords:{budgets:[]}};
+ const local={budgets:[deleted],deletedRecords:{budgets:[]}};
+ const remote={budgets:[deleted],deletedRecords:{budgets:["charge-test-r5"]}};
+ const merged=mergeOfflinePayload(base,local,remote);
+ assert.deepEqual(merged.budgets,[]);
+ assert.deepEqual(merged.deletedRecords.budgets,["charge-test-r5"]);
+});
+
+test("a local deletion marker removes a charge even when the server still has its old copy",()=>{
+ const charge={id:"charge-test-r",label:"test R",amount:10};
+ const base={budgets:[charge],deletedRecords:{budgets:[]}};
+ const local={budgets:[],deletedRecords:{budgets:["charge-test-r"]}};
+ const remote={budgets:[charge],deletedRecords:{budgets:[]}};
+ const merged=mergeOfflinePayload(base,local,remote);
+ assert.deepEqual(merged.budgets,[]);
+ assert.deepEqual(merged.deletedRecords.budgets,["charge-test-r"]);
+});
