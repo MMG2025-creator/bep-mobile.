@@ -188,7 +188,7 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
+  assert.match(html,/spend-experience\.css\?v=33&bep=mobile-two-column-budget-tiles-20261114/);
  }
 });
 
