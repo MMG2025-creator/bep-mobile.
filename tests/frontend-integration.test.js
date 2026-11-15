@@ -323,5 +323,14 @@ test("monthly budget visual workspace uses synchronized client assets and publis
   assert.match(html,/monthly-budget-ui\.css\?v=1&bep=monthly-visual-workspace-20261115/);
   assert.match(html,/monthly-budget-ui\.js\?v=15&bep=month-calendar-on-demand-20261115/);
  }
- for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
+ for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
+});
+
+test("monthly calendar collapses when the active month chip is tapped again and the header includes motion pictograms",()=>{
+ const js=read("monthly-budget-ui.js"),css=read("monthly-budget-ui.css"),html=read("index.html");
+ assert.match(js,/selectedMonth === current\?\.monthKey && monthDetailsExpanded/);
+ assert.match(js,/monthDetailsExpanded = false;[\s\S]{0,100}renderMonthlyVisuals\(\)/);
+ assert.match(html,/monthly-budget-heading-art/);
+ assert.match(css,/@keyframes monthlyBudgetFloat/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
