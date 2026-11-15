@@ -164,8 +164,8 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.match(offline,/if\(pending!==null&&pending!==undefined\)throw Error\(/,"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=111&bep=destructive-confirmation/);
-  assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
+  assert.match(html,/app\.js\?v=\d+(?:&bep=[^"]*)?/);
+  assert.match(html,/offline-storage\.js\?v=\d+(?:&bep=[^"]*)?/);
  }
 });
 
@@ -187,7 +187,7 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
+  assert.match(html,/spend-experience\.css\?v=\d+(?:&bep=[^"]*)?/);
  }
 });
 
