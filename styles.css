@@ -1710,6 +1710,12 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .welcome-mascot.bep-home-mascot-button{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
 .welcome-mascot .welcome-bot{width:100%;height:calc(100% - 24px);overflow:visible;transition:filter .25s ease}
 .welcome-mascot .welcome-bot path,.welcome-mascot .welcome-bot rect,.welcome-mascot .welcome-bot ellipse{transform-box:fill-box}
+.welcome-mascot .home-robot-eyes{transform-origin:center;animation:bepRobotBlink 5s infinite}
+.welcome-mascot .home-robot-mouth{transform-origin:center;transition:transform .2s ease}
+.welcome-mascot .home-robot-arms{transform-origin:center;transition:transform .25s ease}
+.welcome-mascot[data-state="advice"] .home-robot-arms{transform:rotate(-5deg)}
+.welcome-mascot[data-state="thinking"] .home-robot-mouth{transform:scaleX(.55)}
+@keyframes bepRobotBlink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.12)}}
 .welcome-mascot .home-mascot-status{display:block;max-width:100%;padding:4px 8px;border:1px solid rgba(204,246,224,.35);border-radius:999px;background:rgba(2,42,35,.72);color:#e8fff2;font-size:9px;font-weight:700;line-height:1.2;text-align:center;white-space:nowrap;opacity:.9}
 .welcome-mascot:focus-visible{outline:3px solid #f0c85d;outline-offset:5px;border-radius:18px}
 .welcome-mascot[data-state="thinking"] .welcome-bot{filter:drop-shadow(0 0 10px rgba(120,255,200,.8))}
