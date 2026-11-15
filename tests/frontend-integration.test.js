@@ -285,3 +285,11 @@ test("receipt imports persist a stable OCR fingerprint and compare with earlier 
   "window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION"
  ])assert.ok(app.includes(marker),"missing duplicate-receipt control: "+marker);
 });
+
+
+test("receipt duplicate detection compares persisted OCR identity and the API rejects repeated fingerprints",()=>{
+ const app=read("app.js"),dist=read("dist/app.js"),server=read("server.js");
+ assert.equal(app,dist,"published app.js and dist/app.js must remain identical");
+ for(const marker of ["const identity=purchase.receiptIdentity","oldMerchant===merchant","Math.round(oldAmount*100)===Math.round(amount*100)","oldDate===date","identity:true"])assert.ok(app.includes(marker),"missing persisted receipt identity comparison: "+marker);
+ for(const marker of ["knownReceiptFingerprints","incomingReceiptFingerprints","INVALID_RECEIPT_FINGERPRINT","DUPLICATE_RECEIPT","previousExpenseIds.has(expense.id)"])assert.ok(server.includes(marker),"missing server-side receipt idempotency guard: "+marker);
+});
