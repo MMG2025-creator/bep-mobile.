@@ -14,7 +14,7 @@ test("overdraft permission UI is part of income and mirrored in production asset
   assert.match(html,/<section class="card overdraft-permission-card"/);
   assert.match(html,/id="overdraftForm"/);
   assert.match(html,/id="overdraftLimit"/);
-  assert.match(html,/id="overdraftValidUntil"/);
+  assert.match(html,/id="removeOverdraftBtn"/);\n  assert.doesNotMatch(html,/overdraftValidUntil|Valable jusqu/);
   assert.doesNotMatch(html,/id="treasuryForm"|id="expectedCreditForm"|id="overdraftUsed"/);
  }
  const dialogs=read("spend-experience.js");
@@ -34,13 +34,13 @@ test("overdraft only authorizes a negative projected balance and never changes f
  assert.match(app,/function availableBeforeSavings\(\)\{return financialPosition\(\{goals:\[\]\}\)\.available\}/);
  assert.doesNotMatch(app,/function available\(\)\{[^}]*overdraft/);
  assert.doesNotMatch(app,/function totalIncome\(\)[^}]*overdraft/);
- const allows=(balance,limit,valid=true)=>valid&&Number(balance)>=-Math.max(0,Number(limit)||0);
+ const allows=(balance,limit)=>Number(balance)>=-Math.max(0,Number(limit)||0);
  assert.equal(allows(-300,500),true);
  assert.equal(allows(-500,500),true);
  assert.equal(allows(-501,500),false);
  assert.equal(allows(-1,0),false);
  assert.equal(allows(100,0),true);
- assert.equal(allows(-100,500,false),false);
+ assert.equal(allows(-100,500),true);
 });
 
 test("savings and new expense entries check the projected balance against the overdraft permission",()=>{
@@ -63,11 +63,11 @@ test("standalone expenses module assets remain present and untouched",()=>{
  assert.match(read("app.js"),/function charges\(\)/);
 });
 
-test("API data whitelist preserves the bank overdraft permission and validates its expiry date",()=>{
+test("API data whitelist preserves only the bank overdraft limit without validity metadata",()=>{
  const server=read("server.js");
- assert.match(server,/const rawTreasury=Object\.prototype\.hasOwnProperty\.call\(p,"treasury"\)\?p\.treasury:previous\.treasury/);
- assert.match(server,/const treasury=\{overdraftLimit,validUntil\}/);
- assert.match(server,/coachProfile,treasury,deletedRecords\}/);
+ assert.match(server,/const rawTreasury=Object\\.prototype\\.hasOwnProperty\\.call\\(p,"treasury"\\)\\?p\\.treasury:previous\\.treasury/);
+ assert.match(server,/const treasury=\\{overdraftLimit\\}/);
+ assert.match(server,/coachProfile,treasury,deletedRecords\\}/);
  assert.match(server,/error:"INVALID_TREASURY"/);
- assert.match(server,/const validDate=!validUntil\|\|\(/);
+ assert.doesNotMatch(server,/validUntil|validDate/);
 });
