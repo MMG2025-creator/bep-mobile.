@@ -315,7 +315,7 @@ test("source and published homepage are one canonical HTML artifact with the pro
 
 test("homepage BEP mascot is an accessible Coach shortcut with dynamic states",()=>{
  const html=read("index.html");
- assert.match(html,/class="welcome-mascot bep-home-mascot-button" data-goto="coach"/);
+ assert.match(html,/class="welcome-mascot" data-goto="coach" data-state="idle"/);
  assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
  const app=read("app.js");
  assert.match(app,/function setHomeRobotState\(state,message\)/);
