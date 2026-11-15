@@ -161,7 +161,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(app.includes("window.BEPOffline.clearLocalData()"),"local clearing must clear offline baseline and identity");
  const offline=read("offline-storage.js");
  assert.ok(offline.includes("async function clearLocalData()"));
- assert.ok(offline.includes("if(pending)throw Error("),"pending offline changes must block local erasure");
+ assert.ok(offline.match(/if\\(pending!==null&&pending!==undefined\\)throw Error\\(/),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   assert.match(html,/app\.js\?v=111&bep=destructive-confirmation/);
