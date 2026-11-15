@@ -136,3 +136,41 @@ La charge cible initiale de cette recette métier est 30 VUs. Le palier 50 VUs e
 - [Artefact k6](https://github.com/MMG2025-creator/bep-mobile./actions/runs/43656665519/artifacts/14139517053)
 - [Script k6 exécuté](https://github.com/MMG2025-creator/bep-mobile./blob/test/k6-production-load-20261115/tests/load/k6-production.js)
 
+
+
+## Exécution de la recette métier — préflight automatisé (15 novembre 2026)
+
+- Workflow : [BEP business recipe preflight — run #43663137672](https://github.com/MMG2025-creator/bep-mobile./actions/runs/43663137672)
+- Branche : `test/k6-production-load-20261115`
+- Commit exécuté : `7b065c2485c91386cc8535b3222531ef5c73a328`
+- Runner GitHub Actions isolé, Node.js 22.23.4.
+- Aucun `DATABASE_URL` / `TEST_DATABASE_URL` fourni ; aucune écriture en production possible.
+
+### Résultat suite Node
+
+**FAIL — 106 tests : 99 PASS, 4 FAIL, 3 SKIP.**
+
+Échecs relevés dans `tests/frontend-integration.test.js` :
+
+1. Test 52 — `mobile connection status` : assertion CSS attend `padding-bottom:calc(104px + env(safe-area-inset-bottom))`, mais le CSS utilise une propriété raccourcie `padding:... calc(...)`. Assertion à vérifier.
+2. Test 59 — `destructive settings actions` : l'assertion « pending offline changes must block local erasure » échoue. Priorité d'investigation avant toute modification.
+3. Test 60 — `purchase statistics` : attente de `details.open=true` non retrouvée dans `spend-experience.js`. Comportement UX à vérifier.
+4. Test 65 — `successful local-data clearing` : le test attend `app.js?v=112&bep=local-clear-render-guard-20261114`, absent du HTML de cette branche. Vérifier la validité de l'assertion et la synchronisation des assets.
+
+Les tests nécessitant PostgreSQL sont SKIP, faute de `TEST_DATABASE_URL`. Aucun parcours navigateur ni session authentifiée n'a été exercé.
+
+### Cartographie API observée dans le code
+
+- Auth : `POST /api/auth/register`, `POST /api/auth/verify-email`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/status`.
+- Profil : `GET /api/me`, `PUT /api/profile`.
+- Données financières : `GET /api/data`, `PUT /api/data`.
+- Budgets : routeur sous `/api/budgets` avec `GET/POST /months`, `GET /months/:monthKey`, `GET /months/:monthKey/actuals`, `PUT /months/:monthKey`, `POST /months/:monthKey/close` et `/reopen`.
+- Les routes métier exigent une session ; les écritures sont également protégées par contrôle d'origine.
+
+### Blocages de la recette authentifiée
+
+- L'inscription e-mail nécessite un code de vérification envoyé par le service e-mail ; aucun compte/boîte de test ni secret dédié n'est fourni.
+- Aucun PostgreSQL de recette isolé n'est configuré dans le workflow.
+- Le test d'intégration budgétaire crée un schéma PostgreSQL temporaire et deux utilisateurs fictifs, puis supprime le schéma ; il doit être exécuté sur une base de recette dédiée, jamais sur la base de production sans isolation validée.
+
+**Verdict : préflight automatisé FAIL (4 assertions) ; recette métier authentifiée NOT RUN.** Aucun compte, aucune donnée financière et aucune écriture de production n'ont été créés.
