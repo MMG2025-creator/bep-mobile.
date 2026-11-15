@@ -63,7 +63,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
   const css=read(file);
   assert.match(css,/\.bep-footer\{display:flex;flex-direction:column/);
   assert.match(css,/\.bep-connection-status\{[^}]*position:static;z-index:auto/);
-  assert.match(css,/padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css,/padding:18px 12px calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
@@ -161,11 +161,11 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(app.includes("window.BEPOffline.clearLocalData()"),"local clearing must clear offline baseline and identity");
  const offline=read("offline-storage.js");
  assert.ok(offline.includes("async function clearLocalData()"));
- assert.ok(offline.includes("if(pending)throw Error("),"pending offline changes must block local erasure");
+ assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=111&bep=destructive-confirmation/);
-  assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
+  assert.match(html,/app\.js\?v=117&bep=receipt-progress-and-budget-motion-20261114/);
+  assert.match(html,/offline-storage\.js\?v=6&bep=robust-local-clear-20261114/);
  }
 });
 
@@ -173,7 +173,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
 test("purchase statistics navigate to an opened purchases history accordion",()=>{
  const spend=read("spend-experience.js");
  assert.match(spend,/details\.id="bepSpendPurchaseHistory"/);
- assert.match(spend,/details\.open=true/);
+ assert.match(spend,/purchaseHistory\.open=true/);
  assert.match(spend,/focusPurchaseHistory\(filter\)/);
  for(const id of ["bepSpendMonthTotal","bepSpendMonthCount","bepSpendMonthDecisions"])assert.ok(spend.includes('["'+id+'"'),"missing stat shortcut "+id);
  assert.match(spend,/setAttribute\("role","button"\)/);
@@ -188,7 +188,7 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/spend-experience\.css\?v=26&bep=purchase-accordion-shortcuts-20261114/);
+  assert.match(html,/spend-experience\.css\?v=33&bep=mobile-two-column-budget-tiles-20261114/);
  }
 });
 
@@ -243,11 +243,45 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=112&bep=local-clear-render-guard-20261114/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=117&bep=receipt-progress-and-budget-motion-20261114/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
  const spend=read("spend-clean-ui.js");
  assert.match(spend,/if\(row\.hidden!==shouldHide\)row\.hidden=shouldHide/);
  assert.equal(spend,read("dist/spend-clean-ui.js"));
+});
+
+test("savings movements reject dates before today with a persistent explicit message",()=>{
+ const app=read("app.js");
+ assert.ok(app.includes('savingsOperationDate").min=savingsToday'));
+ assert.ok(!app.includes('savingsOperationDate").max=savingsToday'));
+ assert.ok(app.includes("date<savingsToday"));
+ assert.ok(app.includes("La date de cette épargne ne peut pas être antérieure à aujourd’hui"));
+ assert.ok(app.includes('savingsOperationStatus");if(status)status.textContent=message'));
+});
+
+test("receipt import opens the validation dialog immediately, announces progress and blocks duplicate processing",()=>{
+ const app=read("app.js");
+ for(const marker of ["let receiptProcessing=false","if(receiptProcessing)","BEP_OPEN_PURCHASE_DIALOG?.()","Ticket importé. Analyse en cours","setAttribute(\"aria-busy\",\"true\")","submit.disabled=true","receiptProcessing=false"])assert.ok(app.includes(marker),"missing receipt UX marker: "+marker);
+});
+
+
+test("receipt imports persist a stable OCR fingerprint and compare with earlier receipt captures independently of edited form labels",()=>{
+ const app=read("app.js");
+ for(const marker of [
+  "function fingerprintReceiptText(value)",
+  "function findExistingReceiptMatch(extracted,fingerprint)",
+  "purchase.receiptFingerprint===fingerprint",
+  "const capture=String(purchase.captureText||\"\")",
+  "oldMerchant===merchant",
+  "Math.abs(oldAmount-amount)<0.01",
+  "localPurchaseDate(purchase.at)===date",
+  "receiptFingerprint:receiptCaptureText?receiptFingerprint",
+  "receiptIdentity:receiptCaptureText?receiptIdentity",
+  "Doublon certain : ce justificatif a déjà été importé",
+  "Correspondance probable avec un ancien ticket",
+  "if(receiptDuplicateMatch.exact){notify(message);return}",
+  "window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION"
+ ])assert.ok(app.includes(marker),"missing duplicate-receipt control: "+marker);
 });
