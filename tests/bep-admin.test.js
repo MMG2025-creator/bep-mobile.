@@ -58,3 +58,16 @@ test("admin JSON storage and import API are idempotent in isolated PostgreSQL", 
     await pool.end();
   }
 });
+
+
+test("admin page inline script parses and contains no active production mutation controls", () => {
+  const fs = require("node:fs");
+  const vm = require("node:vm");
+  const html = fs.readFileSync(require("node:path").join(__dirname, "../dist/admin.html"), "utf8");
+  const match = html.match(/<script>\s*([\s\S]*?)<\/script>/);
+  assert.ok(match, "inline admin script exists");
+  assert.doesNotThrow(() => new vm.Script(match[1]));
+  assert.match(html, /Synchronisation production : INACTIVE/);
+  assert.match(html, /Corrections financières : DÉSACTIVÉES/);
+  assert.match(html, /Suppression de compte : DÉSACTIVÉE/);
+});
