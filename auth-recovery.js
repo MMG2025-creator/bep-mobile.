@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const API = "https://bep-v2-api.onrender.com";
+  const API = String(window.BEP_API_BASE || window.location.origin).replace(/\/+$/, "");
   const $ = (id) => document.getElementById(id);
   const login = $("loginForm");
   const register = $("registerForm");
