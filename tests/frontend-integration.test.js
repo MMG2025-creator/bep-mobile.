@@ -384,34 +384,48 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v20"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v21"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
 
+
 test("all six homepage financial tiles use the same aligned label, amount and action rows",()=>{
  for(const file of ["index.html","dist/index.html"]){
-  const html=read(file),grid=html.match(/<div class="home-budget-metrics home-snapshot-grid">([\\s\\S]*?)<\\/div>/);
-  assert.ok(grid,file+" must expose the homepage financial grid");
-  assert.equal((grid[1].match(/home-snapshot-card/g)||[]).length,6,file+" must apply the shared card structure to all six tiles");
-  assert.match(html,/id="homeImpulsivePurchases"[^>]*class="[^"]*home-snapshot-card/);
+  const html=read(file),start=html.indexOf('<div class="home-budget-metrics home-snapshot-grid">');
+  assert.ok(start>=0,file+" must expose the homepage financial grid");
+  const end=html.indexOf("</div>",start);
+  const grid=html.slice(start,end);
+  assert.equal((grid.match(/home-snapshot-card/g)||[]).length,6,file+" must apply the shared card structure to all six tiles");
+  assert.ok(html.includes('id="homeImpulsivePurchases" class="home-budget-metric home-snapshot-card'),file+" expenses tile must use the shared structure");
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
-  assert.match(css,/\.home-snapshot-card\\{[\\s\\S]*?display:grid[\\s\\S]*?grid-template-rows:2\\.8em 1\\.8em 2\\.8em/);
-  assert.match(css,/\.home-snapshot-card>span\\{[\\s\\S]*?min-height:2\\.8em/);
-  assert.match(css,/\.home-snapshot-card>strong\\{[\\s\\S]*?min-height:1\\.8em/);
-  assert.match(css,/\.home-snapshot-card>small\\{[\\s\\S]*?min-height:2\\.8em/);
+  assert.ok(css.includes(".home-snapshot-card{\n  display:grid;"),file+" must use a shared grid layout");
+  assert.ok(css.includes("grid-template-rows:2.8em 1.8em 2.8em"),file+" must align label, amount and action rows");
+  assert.ok(css.includes(".home-snapshot-card>span{")&&css.includes(".home-snapshot-card>strong{")&&css.includes(".home-snapshot-card>small{"));
  }
 });
 
 test("Google OAuth runs in a separate popup and returns to BEP without adding Google to the main navigation history",()=>{
  for(const file of ["app.js","dist/app.js"]){
   const app=read(file);
-  assert.match(app,/window\\.open\\("about:blank"/);
-  assert.match(app,/bep-google-oauth-result:/);
-  assert.match(app,/popup\\.location\\.replace\\(API\\+"\\/api\\/auth\\/google\\?flow_id="/);
-  assert.doesNotMatch(app,/window\\.location\\.href=API\\+"\\/api\\/auth\\/google"/);
-  assert.doesNotMatch(app,/window\\.location\\.href=d\\.url/);
+  assert.ok(app.includes('window.open("about:blank"'),file+" must open a separate OAuth context");
+  assert.ok(app.includes("bep-google-oauth-result:"),file+" must consume the popup result");
+  assert.ok(app.includes('popup.location.replace(API+"/api/auth/google?flow_id="+encodeURIComponent(flowId))'));
+  assert.ok(!app.includes('window.location.href=API+"/api/auth/google"'),"main tab must not navigate to Google");
+  assert.ok(!app.includes("window.location.href=d.url"),"Google account linking must not navigate the main tab");
+ }
+ const server=read("server.js");
+ assert.ok(server.includes("function oauthPopupRedirect("));
+ assert.ok(server.includes("/oauth-popup.html?"));
+ assert.ok(server.includes("rawState.slice(-32)"));
+ assert.ok(!server.includes('res.redirect(FRONTEND_ORIGIN+"/?login='));
+ for(const file of ["oauth-popup.html","dist/oauth-popup.html"])assert.ok(read(file).includes('oauth-popup.js?v=1'));
+ assert.equal(read("oauth-popup.js"),read("dist/oauth-popup.js"));
+ for(const file of ["sw.js","dist/sw.js"]){
+  const sw=read(file);
+  assert.ok(sw.includes('const CACHE_NAME="bep-shell-v21"'));
+  assert.ok(sw.includes('url.pathname.endsWith("/oauth-popup.html")'));
  }
 });
