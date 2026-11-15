@@ -897,7 +897,7 @@ function syncChartZoom(){
  const modal=$("chartZoom"),body=$("chartZoomBody");if(!modal||modal.hidden)return;
  $("chartZoomTitle").textContent=$("chartTitle").textContent;$("chartZoomPeriod").textContent=$("chartPeriod").textContent;
  body.innerHTML='<div class="chart-zoom-viewport"><div class="chart-zoom-canvas">'+$("activeChart").innerHTML+'</div></div>';modal.classList.toggle("chart-zoom-wide",chartIndex===3);
- chartZoomScale=1;chartZoomX=0;chartZoomY=0;bindZoomPoints();bindChartZoomGestures();paintChartZoom();
+ chartZoomScale=1;chartZoomX=0;chartZoomY=0;bindZoomPoints();bindChartZoomGestures();paintChartZoom();replayPanelChartAnimations(body);
 }
 function bindChartZoomGestures(){
  const viewport=$("chartZoomBody").querySelector(".chart-zoom-viewport");if(!viewport)return;
