@@ -343,7 +343,20 @@ app.put("/api/data",auth,async(req,res)=>{
    if(next < -0.005){await client.query("ROLLBACK");return res.status(400).json({error:"SAVINGS_BALANCE_NEGATIVE"})}
    balances.set(o.goalId,next);
   }
-  const rawCoachProfile=Object.prototype.hasOwnProperty.call(p,"coachProfile")?p.coachProfile:previous.coachProfile;const coachProfile=Array.isArray(rawCoachProfile)?[...new Set(rawCoachProfile.filter(x=>["budget","spending","savings","goals","income","debt","planning","learning"].includes(x)))].slice(0,8):[];
+  const previousExpenses=Array.isArray(previous.expenses)?previous.expenses:[];
+   const previousExpenseIds=new Set(previousExpenses.map(item=>item&&typeof item.id==="string"?item.id:"").filter(Boolean));
+   const knownReceiptFingerprints=new Set(previousExpenses.map(item=>String(item?.receiptFingerprint||"")).filter(Boolean));
+   const incomingReceiptFingerprints=new Set();
+   for(const expense of (Array.isArray(p.expenses)?p.expenses:[])){
+    if(!expense||typeof expense!=="object"||Array.isArray(expense))continue;
+    const fingerprint=String(expense.receiptFingerprint||"");
+    if(fingerprint&&!/^[a-f0-9]{16}$/i.test(fingerprint)){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_RECEIPT_FINGERPRINT"});}
+    if(!fingerprint)continue;
+    const existingRecord=typeof expense.id==="string"&&previousExpenseIds.has(expense.id);
+    if(!existingRecord&&(knownReceiptFingerprints.has(fingerprint)||incomingReceiptFingerprints.has(fingerprint))){await client.query("ROLLBACK");return res.status(409).json({error:"DUPLICATE_RECEIPT",message:"Ce justificatif a déjà été enregistré."});}
+    incomingReceiptFingerprints.add(fingerprint);
+   }
+   const rawCoachProfile=Object.prototype.hasOwnProperty.call(p,"coachProfile")?p.coachProfile:previous.coachProfile;const coachProfile=Array.isArray(rawCoachProfile)?[...new Set(rawCoachProfile.filter(x=>["budget","spending","savings","goals","income","debt","planning","learning"].includes(x)))].slice(0,8):[];
   // Preserve the bank-authorized overdraft independently from monthly financial calculations.
   const rawTreasury=Object.prototype.hasOwnProperty.call(p,"treasury")?p.treasury:previous.treasury;
   const treasurySource=rawTreasury===undefined?{overdraftLimit:0,validUntil:""}:rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
