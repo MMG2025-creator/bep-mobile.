@@ -504,8 +504,9 @@
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
   $("monthlyBudgetMonthPrev").onclick = () => {
-    const index = months.findIndex(x => x.monthKey === current?.monthKey);
-    if (index > 0) loadMonth(months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey))[index - 1].monthKey);
+    const ordered = months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey));
+    const index = ordered.findIndex(x => x.monthKey === current?.monthKey);
+    if (index > 0) loadMonth(ordered[index - 1].monthKey);
   };
   $("monthlyBudgetMonthNext").onclick = () => {
     const ordered = months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey));
