@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#102e29">
+<title>BEP — Recherche documentaire du Coach</title>
+<style>
+:root{color-scheme:light;--ink:#17342b;--green:#176b50;--muted:#64756c;--line:#dce7df;--paper:#f5f8f5;--gold:#e8c66f}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#102e29;color:white;padding:22px max(20px,calc((100% - 960px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+header strong{font-size:18px;letter-spacing:.04em}header a{color:#f1d78f;text-decoration:none;font-size:14px}
+main{max-width:960px;margin:30px auto;padding:0 18px}.intro{margin-bottom:22px}.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(25px,4vw,36px);line-height:1.15;margin:7px 0 10px}.muted{color:var(--muted)}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 5px 20px #17342b08}
+.status{display:flex;align-items:flex-start;gap:12px}.dot{width:11px;height:11px;border-radius:50%;background:#c58b32;margin-top:6px;flex:none}.dot.on{background:#238653}.dot.off{background:#b94736}
+label{display:block;font-weight:700;margin:12px 0 6px}input,select,textarea{width:100%;border:1px solid #cbd9cf;border-radius:10px;padding:12px;font:inherit;color:var(--ink);background:white}textarea{min-height:110px;resize:vertical}
+button{border:0;border-radius:10px;padding:11px 17px;background:var(--green);color:white;font:700 14px inherit;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#edf3ee;color:var(--ink)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.notice{padding:12px 14px;border-radius:10px;background:#fff7e4;color:#70551a;margin-top:12px}.error{background:#fff0ed;color:#8d3024}.success{background:#eaf6ee;color:#205c38}
+.item{border-top:1px solid var(--line);padding:17px 0}.item:first-child{border-top:0}.item h3{margin:0 0 7px;font-size:17px}.item p{margin:7px 0}.meta{font-size:13px;color:var(--muted)}.item a{color:var(--green);overflow-wrap:anywhere}.tag{display:inline-block;background:#edf3ee;border-radius:30px;padding:3px 9px;font-size:12px;margin:4px 4px 4px 0}
+@media(max-width:600px){header{padding:17px 18px}main{margin:20px auto}.card{padding:17px}}
+</style>
+</head>
+<body>
+<header><strong>BEP · CENTRE DE CONNAISSANCES</strong><a href="./index.html">← Retour à BEP</a></header>
+<main>
+<section class="intro"><div class="eyebrow">Espace administrateur indépendant</div><h1>Recherche documentaire du Coach</h1><p class="muted">Recherche des sources externes, constitution de propositions et validation humaine avant toute intégration dans la base de connaissances BEP.</p></section>
+<section class="card"><div class="status"><span id="statusDot" class="dot"></span><div><strong id="statusTitle">Vérification des autorisations…</strong><div id="statusText" class="muted">Connexion sécurisée à l’API BEP.</div></div></div><div id="statusNotice" hidden></div></section>
+<section class="card"><h2>Nouvelle recherche</h2><p class="muted">La recherche Internet peut entraîner une facturation Google Gemini. Elle reste bloquée tant que les deux indicateurs d’activation et la clé dédiée ne sont pas configurés côté serveur.</p>
+<form id="researchForm"><label for="query">Sujet à documenter</label><textarea id="query" maxlength="500" required placeholder="Ex. : règles officielles du Livret A, plafonds et fiscalité en vigueur"></textarea><label for="category">Catégorie</label><select id="category"><option value="general">Général</option><option value="budget">Budget</option><option value="spending">Dépenses</option><option value="savings">Épargne</option><option value="debt">Endettement</option><option value="behavior">Comportements</option><option value="income">Revenus</option><option value="planning">Planification</option></select><div class="actions"><button id="researchButton" type="submit" disabled>Lancer la recherche</button><button class="secondary" id="refreshButton" type="button">Actualiser</button></div><div id="researchNotice" role="status" aria-live="polite"></div></form></section>
+<section class="card"><h2>Propositions en attente</h2><p class="muted">Aucune proposition n’est publiée automatiquement. Chaque fiche doit être vérifiée et approuvée individuellement.</p><div id="candidateList" class="muted">Chargement…</div></section>
+</main>
+<script>
+(()=>{"use strict";
+const API="https://bep-v2-api.onrender.com";
+const $=id=>document.getElementById(id);
+let enabled=false;
+function message(id,text,kind=""){const el=$(id);el.className=kind?"notice "+kind:"";el.textContent=text;el.hidden=!text}
+async function api(path,options={}){const r=await fetch(API+path,{...options,credentials:"include",cache:"no-store",headers:{"Content-Type":"application/json",...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(d.message||d.error||("HTTP "+r.status)),{status:r.status,data:d});return d}
+async function refreshStatus(){try{const s=await api("/api/admin/bep-coach/research/status");enabled=s.enabled===true;$("statusDot").className="dot "+(enabled?"on":"off");$("statusTitle").textContent=enabled?"Recherche Internet activée":"Recherche Internet désactivée";$("statusText").textContent=s.reason||"Service disponible."; $("researchButton").disabled=!enabled;message("statusNotice",enabled?"La recherche est activée. Les propositions resteront soumises à validation humaine.":"Le service est présent mais la recherche reste désactivée. Aucune requête externe ne sera lancée.",enabled?"success":"");}catch(e){enabled=false;$("researchButton").disabled=true;$("statusDot").className="dot off";$("statusTitle").textContent=e.status===401||e.status===403?"Accès administrateur requis":"API BEP indisponible";$("statusText").textContent=e.status===401||e.status===403?"Connecte-toi avec un compte administrateur BEP, puis recharge cette page.":"Impossible de vérifier le service.";message("statusNotice",e.message,"error")}}
+function addCandidate(item){const wrap=document.createElement("article");wrap.className="item";const title=document.createElement("h3");title.textContent=item.title||"Proposition sans titre";const meta=document.createElement("div");meta.className="meta";meta.textContent="Catégorie : "+(item.evidence_level||"source web")+" · Confiance : "+(item.confidence||"non précisée")+" · "+new Date(item.created_at).toLocaleString("fr-FR");const body=document.createElement("p");body.textContent=item.content||"";const source=document.createElement("a");source.href=item.source_url;source.target="_blank";source.rel="noopener noreferrer";source.textContent=(item.source_name||"Source")+" — "+item.source_url;const rationale=document.createElement("p");rationale.className="meta";rationale.textContent=item.rationale||"";const actions=document.createElement("div");actions.className="actions";for(const [decision,label] of [["approve","Approuver et intégrer"],["reject","Refuser"]]){const b=document.createElement("button");b.type="button";b.textContent=label;b.className=decision==="reject"?"secondary":"";b.addEventListener("click",async()=>{if(decision==="approve"&&!confirm("Confirmer l’intégration de cette fiche dans la base BEP ?"))return;b.disabled=true;try{await api("/api/admin/bep-agent/candidates/"+encodeURIComponent(item.id)+"/review",{method:"POST",body:JSON.stringify({decision})});await loadCandidates();}catch(e){alert("Action impossible : "+e.message);b.disabled=false}});actions.append(b)}wrap.append(title,meta,body,source,rationale,actions);return wrap}
+async function loadCandidates(){const box=$("candidateList");box.replaceChildren();try{const d=await api("/api/admin/bep-agent/candidates?status=pending");if(!d.items?.length){box.textContent="Aucune proposition en attente.";return}for(const item of d.items)box.append(addCandidate(item))}catch(e){box.textContent=e.status===401||e.status===403?"Accès administrateur requis.":"Impossible de charger les propositions : "+e.message}}
+$("researchForm").addEventListener("submit",async e=>{e.preventDefault();if(!enabled)return;const button=$("researchButton");button.disabled=true;message("researchNotice","Recherche en cours…");try{const d=await api("/api/admin/bep-coach/research",{method:"POST",body:JSON.stringify({query:$("query").value.trim(),category:$("category").value})});message("researchNotice",d.candidatesCreated+" proposition(s) créée(s). Aucune publication automatique.","success");$("query").value="";await loadCandidates()}catch(err){message("researchNotice",err.message,"error")}finally{button.disabled=!enabled}});
+$("refreshButton").addEventListener("click",async()=>{await refreshStatus();await loadCandidates()});
+(async()=>{await refreshStatus();await loadCandidates()})();
+})();
+</script>
+</body></html>
