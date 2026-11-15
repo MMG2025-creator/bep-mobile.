@@ -164,7 +164,27 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  if(!panel)return;
  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
  const ring=panel.querySelector("#savingsRing");
- if(ring){const target=Math.max(0,Math.min(100,Number.parseFloat(ring.dataset.chartTarget||ring.style.getPropertyValue("--ring"))||0));ring.style.transition="none";ring.style.setProperty("--ring","0%");const label=ring.querySelector("#savingsProgress");if(label)label.textContent="0 %";if(reduce){ring.style.setProperty("--ring",target+"%");if(label)label.textContent=Math.round(target)+" %"}else{void ring.offsetWidth;requestAnimationFrame(()=>{ring.style.transition="background 950ms cubic-bezier(.2,.7,.2,1)";ring.style.setProperty("--ring",target+"%");if(label)label.textContent=Math.round(target)+" %"})}}
+ if(ring){
+  const target=Math.max(0,Math.min(100,Number.parseFloat(ring.dataset.chartTarget)||0));
+  const label=ring.querySelector("#savingsProgress");
+  if(ring._progressFrame)cancelAnimationFrame(ring._progressFrame);
+  ring._progressFrame=0;
+  ring.style.transition="none";
+  ring.style.setProperty("--ring","0%");
+  if(label)label.textContent="0 %";
+  const paint=value=>{ring.style.setProperty("--ring",value+"%");if(label)label.textContent=Math.round(value)+" %"};
+  if(reduce||target===0)paint(target);
+  else{
+   const start=performance.now(),duration=950;
+   const tick=now=>{
+    const t=Math.min(1,(now-start)/duration),eased=1-Math.pow(1-t,3),value=target*eased;
+    paint(value);
+    if(t<1)ring._progressFrame=requestAnimationFrame(tick);
+    else ring._progressFrame=0;
+   };
+   ring._progressFrame=requestAnimationFrame(tick);
+  }
+ }
  const bars=[...panel.querySelectorAll(".savings-progress-track>span,.savings-goal-track>span,.capacity-track>i")];
  bars.forEach(el=>{const target=el.dataset.chartTarget||el.style.width;if(!target)return;el.style.transition="none";el.style.width="0%";if(reduce)el.style.width=target;else{void el.offsetWidth;requestAnimationFrame(()=>{el.style.transition="width 850ms cubic-bezier(.2,.7,.2,1)";el.style.width=target})}});
  const circles=[...panel.querySelectorAll(".donut-svg circle.chart-data-point")];
@@ -173,7 +193,7 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  rects.forEach((el,i)=>{el.style.transformBox="fill-box";el.style.transformOrigin="center bottom";el.style.transition="none";el.style.transform=reduce?"none":"scaleY(0)";if(!reduce)requestAnimationFrame(()=>{el.style.transition="transform 800ms cubic-bezier(.2,.7,.2,1) "+(i*65)+"ms";el.style.transform="scaleY(1)"})});
  panel.querySelectorAll(".chart-data-point:not(svg .chart-data-point)").forEach((el,i)=>{el.style.animation="none";if(!reduce){void el.offsetWidth;el.style.animation="bep-chart-enter 420ms ease both "+(i*45)+"ms"}});
 }
-function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel);if(id==="savings")replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
+function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
 function setBudgetModule(name){if(!["income","charges","monthly"].includes(name))return;activeBudgetModule=name;try{localStorage.setItem(ACTIVE_BUDGET_MODULE_KEY,name)}catch{}document.querySelectorAll("[data-budget-module]").forEach(button=>{const active=button.dataset.budgetModule===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active))});document.querySelectorAll(".budget-module").forEach(panel=>{panel.hidden=panel.id!=="budgetModule"+name.charAt(0).toUpperCase()+name.slice(1)});requestAnimationFrame(()=>replayPanelChartAnimations(document.getElementById("budgetModule"+name.charAt(0).toUpperCase()+name.slice(1))));document.querySelectorAll("[data-budget-advice]").forEach(advice=>{advice.hidden=advice.dataset.budgetAdvice!==name});if(document.getElementById("budget")?.classList.contains("active"))recordAdvice(name)}
 // Event delegation in capture phase: keeps budget tabs functional even when
