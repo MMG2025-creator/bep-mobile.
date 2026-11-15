@@ -122,14 +122,16 @@ app.post("/api/auth/verify-email",async(req,res)=>{try{const email=String(req.bo
 app.post("/api/auth/resend-verification",async(req,res)=>{try{const email=String(req.body?.email||"").trim().toLowerCase(),u=await pool.query("SELECT id,email_verified FROM bep_users WHERE email=$1 AND id LIKE 'email:%'",[email]);if(!u.rowCount||u.rows[0].email_verified)return res.json({ok:true});const code=String(crypto.randomInt(0,1000000)).padStart(6,"0"),codeHash=crypto.createHash("sha256").update(code).digest("hex");await pool.query("INSERT INTO bep_email_verifications(email,user_id,code_hash,expires_at) VALUES($1,$2,$3,NOW()+INTERVAL '10 minutes') ON CONFLICT(email) DO UPDATE SET code_hash=EXCLUDED.code_hash,expires_at=EXCLUDED.expires_at,attempts=0,created_at=NOW()",[email,u.rows[0].id,codeHash]);await sendVerificationEmail(email,code);res.json({ok:true})}catch(e){console.error("Resend verification failed",e.message);res.status(503).json({error:"EMAIL_SEND_FAILED",message:"Impossible d'envoyer le code pour le moment."})}});
 app.post("/api/auth/login",async(req,res)=>{try{const email=String(req.body?.email||"").trim().toLowerCase(),password=String(req.body?.password||"");const r=await pool.query("SELECT id,email,display_name,password_hash,email_verified FROM bep_users WHERE LOWER(email)=LOWER($1) ORDER BY created_at DESC",[email]);const matches=[];for(const candidate of r.rows){if(candidate.password_hash&&await bcrypt.compare(password,candidate.password_hash))matches.push(candidate)}if(!matches.length)return res.status(401).json({error:"LOGIN_INVALID",message:"Adresse e-mail ou mot de passe incorrect."});if(matches.length>1)return res.status(409).json({error:"ACCOUNT_AMBIGUOUS",message:"Plusieurs comptes utilisent cette adresse. La connexion est temporairement bloquée pour protéger tes données. Contacte le support BEP."});const u=matches[0];if(u.email_verified===false)return res.status(403).json({error:"EMAIL_NOT_VERIFIED",message:"Confirme ton adresse e-mail avant de te connecter."});req.session.regenerate(err=>{if(err)return res.status(500).json({error:"SESSION_ERROR"});req.session.user={id:u.id,email:u.email,name:u.display_name||"",picture:""};req.session.save(async e=>{if(e)return res.status(500).json({error:"SESSION_ERROR"});try{await keepSingleSession(u.id,req.sessionID);return res.json({ok:true,user:req.session.user})}catch(error){console.error("Single-session enforcement failed",error.message);return res.status(500).json({error:"SESSION_POLICY_FAILED"})}})})}catch(e){console.error("Login error",e.message);res.status(500).json({error:"LOGIN_FAILED"})}});
 function oauthPopupRedirect(res,result,flowId,retryAfter){
- const params=new URLSearchParams({result:String(result||"error")});
- if(typeof flowId==="string"&&/^[a-f0-9]{32}$/.test(flowId))params.set("flow_id",flowId);
+ const validFlowId=typeof flowId==="string"&&/^[a-f0-9]{32}$/.test(flowId);
+ const params=new URLSearchParams(validFlowId?{result:String(result||"error")}:{login:String(result||"error")});
+ if(validFlowId)params.set("flow_id",flowId);
  if(Number(retryAfter)>0)params.set("retry",String(Math.max(1,Math.ceil(Number(retryAfter)))));
- return res.redirect(303,FRONTEND_ORIGIN.replace(/\/+$/,"")+"/oauth-popup.html?"+params.toString());
+ const destination=validFlowId?"/oauth-popup.html?":"/?";
+ return res.redirect(303,FRONTEND_ORIGIN.replace(/\/+$/,"")+destination+params.toString());
 }
 function hashOAuthState(state){return crypto.createHash("sha256").update(state).digest("hex")}
 app.get("/api/auth/google",async(req,res)=>{
- const flowId=/^[a-f0-9]{32}$/.test(String(req.query.flow_id||""))?String(req.query.flow_id):crypto.randomBytes(16).toString("hex");
+ const flowId=/^[a-f0-9]{32}$/.test(String(req.query.flow_id||""))?String(req.query.flow_id):"";
  try{
   if(!configured())return oauthPopupRedirect(res,"google_config_error",flowId);
   const state=crypto.randomBytes(32).toString("hex")+flowId,tokenHash=hashOAuthState(state);
@@ -140,7 +142,7 @@ app.get("/api/auth/google",async(req,res)=>{
  }catch(e){console.error("OAuth start failed",e.message);return oauthPopupRedirect(res,"error",flowId)}
 });
 app.post("/api/auth/google/link/start",auth,async(req,res)=>{
- const flowId=/^[a-f0-9]{32}$/.test(String(req.body?.flowId||""))?String(req.body.flowId):crypto.randomBytes(16).toString("hex");
+ const flowId=/^[a-f0-9]{32}$/.test(String(req.body?.flowId||""))?String(req.body.flowId):"";
  try{
   const account=await pool.query("SELECT id,email,password_hash FROM bep_users WHERE id=$1",[req.session.user.id]);
   if(!account.rowCount)return res.status(404).json({error:"ACCOUNT_NOT_FOUND"});
