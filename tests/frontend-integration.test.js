@@ -292,3 +292,13 @@ test("receipt imports persist a stable OCR fingerprint and compare with earlier 
   "window.BEP_CONFIRM_ACTION?await window.BEP_CONFIRM_ACTION"
  ])assert.ok(app.includes(marker),"missing duplicate-receipt control: "+marker);
 });
+
+test("savings capacity uses the financial engine totals and excludes archived goals",()=>{
+ const app=read("app.js"),dist=read("dist/app.js"),engine=read("financial-engine.js");
+ for(const source of [app,dist]){
+  assert.match(source,/const position=financialPosition\(\);[\s\S]*?const plannedSavings=position\.plannedSavings;/);
+  assert.match(source,/fixedCharges=position\.plannedCharges,afterSavings=position\.plannedAvailable/);
+  assert.doesNotMatch(source,/const plannedSavings=\(state\.goals\|\|\[\]\)\.reduce/);
+ }
+ assert.match(engine,/goals\.filter\(x=>x&&!x\.archivedAt/);
+});
