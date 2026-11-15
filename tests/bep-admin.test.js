@@ -24,7 +24,8 @@ test("admin JSON storage and import API are idempotent in isolated PostgreSQL", 
     server = app.listen(0, "127.0.0.1");
     await new Promise((resolve) => server.once("listening", resolve));
     const address = server.address();
-    const secret = process.env.BEP_ADMIN_EXCHANGE_SECRET;
+    const secret = process.env.BEP_ADMIN_EXCHANGE_SECRET || "ci-only-admin-exchange-secret-32-bytes-min";
+    process.env.BEP_ADMIN_EXCHANGE_SECRET = secret;
     const document = signExport({
       schema: "bep-admin-export", schema_version: 1, export_id: exportId,
       generated_at: new Date().toISOString(), source_environment: "ci",
