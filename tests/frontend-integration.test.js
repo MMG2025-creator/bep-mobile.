@@ -311,3 +311,17 @@ test("source and published homepage are one canonical HTML artifact with the pro
  assert.match(source,/pwa\.js\?v=12/);
  assert.match(source,/home-financial-snapshot/);
 });
+
+
+test("monthly budget visual workspace uses synchronized client assets and published styles",()=>{
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.equal(read("monthly-budget-ui.css"),read("dist/monthly-budget-ui.css"));
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  for(const id of ["monthlyBudgetMonthStrip","monthlyBudgetMonthPrev","monthlyBudgetMonthNext","monthlyBudgetCalendar","monthlyBudgetAllocationDonut","monthlyBudgetCategoryDonut"])assert.ok(html.includes('id="'+id+'"'),file+" missing #"+id);
+  assert.match(html,/monthly-budget-ui\.css\?v=1&bep=monthly-visual-workspace-20261115/);
+  assert.match(html,/monthly-budget-ui\.js\?v=14&bep=monthly-budget-visual-workspace-20261115/);
+ }
+ for(const marker of ["function renderMonthlyVisuals()","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
+});
