@@ -43,6 +43,7 @@ jobs:
         run: npm test
 
       - name: Run monthly budget syntax and regression suite
+        if: always()
         run: npm run check:monthly-budget
 
       - name: Record test environment
