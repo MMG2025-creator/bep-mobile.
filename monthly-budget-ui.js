@@ -216,6 +216,99 @@
     });
     return result;
   }
+  function renderMonthlyVisuals() {
+    const strip = $("monthlyBudgetMonthStrip"), calendar = $("monthlyBudgetCalendar");
+    const previous = $("monthlyBudgetMonthPrev"), next = $("monthlyBudgetMonthNext");
+    const ordered = [...months].sort((a, b) => a.monthKey.localeCompare(b.monthKey));
+    const activeIndex = ordered.findIndex(x => x.monthKey === current?.monthKey);
+    if (strip) {
+      strip.innerHTML = ordered.slice(-7).map(x => {
+        const label = new Date(x.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "short" }).replace(".", "");
+        const selected = x.monthKey === current?.monthKey;
+        return '<button type="button" class="monthly-budget-month-chip' + (selected ? ' is-active' : '') + '" data-month-key="' + escapeHtml(x.monthKey) + '" aria-pressed="' + selected + '"><b>' + escapeHtml(label) + '</b><small>' + x.monthKey.slice(0, 4) + '</small>' + (x.status === "closed" ? '<i aria-label="Mois clôturé">✓</i>' : '') + '</button>';
+      }).join("");
+      strip.querySelectorAll("[data-month-key]").forEach(button => button.onclick = () => {
+        if (button.dataset.monthKey !== current?.monthKey) loadMonth(button.dataset.monthKey);
+      });
+    }
+    if (previous) previous.disabled = activeIndex <= 0;
+    if (next) next.disabled = activeIndex < 0 || activeIndex >= ordered.length - 1;
+    const monthTitle = $("monthlyBudgetCalendarTitle");
+    if (monthTitle && current) monthTitle.textContent = "Calendrier · " + new Date(current.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+    if (calendar && current) {
+      const [year, month] = current.monthKey.split("-").map(Number);
+      const first = new Date(year, month - 1, 1);
+      const days = new Date(year, month, 0).getDate();
+      const offset = (first.getDay() + 6) % 7;
+      const daily = new Map();
+      (actuals.expenses || []).forEach(expense => {
+        const date = new Date(expense.at);
+        if (!Number.isFinite(date.getTime()) || date.getFullYear() !== year || date.getMonth() !== month - 1) return;
+        const day = date.getDate(), currentDay = daily.get(day) || { count: 0, total: 0 };
+        currentDay.count += 1; currentDay.total += Number(expense.amount) || 0; daily.set(day, currentDay);
+      });
+      const today = new Date();
+      const cells = Array.from({ length: offset }, () => '<span class="monthly-budget-calendar-blank" aria-hidden="true"></span>');
+      for (let day = 1; day <= days; day++) {
+        const detail = daily.get(day), isToday = today.getFullYear() === year && today.getMonth() === month - 1 && today.getDate() === day;
+        const title = detail ? day + " : " + detail.count + " dépense(s), " + money(detail.total) : day + " · aucune dépense enregistrée";
+        cells.push('<span class="monthly-budget-calendar-day' + (detail ? ' has-spend' : '') + (isToday ? ' is-today' : '') + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(title) + '"><b>' + day + '</b>' + (detail ? '<small>' + detail.count + '</small>' : '') + '</span>');
+      }
+      calendar.innerHTML = cells.join("");
+      const count = [...daily.values()].reduce((n, x) => n + x.count, 0);
+      const summary = $("monthlyBudgetCalendarSummary");
+      if (summary) summary.textContent = count + " dépense" + (count > 1 ? "s" : "") + " · " + money([...daily.values()].reduce((n, x) => n + x.total, 0));
+    }
+
+    if (!current) return;
+    const sum = type => items.filter(x => x.itemType === type).reduce((n, x) => n + Math.max(0, Number(x.plannedAmount) || 0), 0);
+    const income = sum("income"), charges = sum("charge"), savings = sum("savings");
+    const available = financialPosition().available;
+    const denominator = Math.max(income, charges + savings + Math.max(0, available), 0);
+    const parts = [
+      { label: "Charges prévues", value: charges, color: "#176b50" },
+      { label: "Épargne prévue", value: savings, color: "#d4ae55" },
+      { label: "Disponible", value: Math.max(0, available), color: "#dce9e1" }
+    ];
+    let cursor = 0;
+    const stops = parts.map(part => {
+      const share = denominator > 0 ? part.value / denominator * 100 : 0;
+      const start = cursor; cursor += share;
+      return part.color + " " + start.toFixed(2) + "% " + cursor.toFixed(2) + "%";
+    });
+    const donut = $("monthlyBudgetAllocationDonut");
+    if (donut) donut.style.background = denominator > 0 ? "conic-gradient(" + stops.join(",") + ")" : "conic-gradient(#e8efea 0 100%)";
+    const availableLabel = $("monthlyBudgetDonutAvailable");
+    if (availableLabel) availableLabel.textContent = money(available);
+    const legend = $("monthlyBudgetAllocationLegend");
+    if (legend) legend.innerHTML = parts.map(part => '<div><i style="--legend-color:' + part.color + '"></i><span>' + part.label + '</span><b>' + money(part.value) + '</b></div>').join("");
+
+    const categories = new Map();
+    items.filter(x => x.itemType === "charge").forEach(x => {
+      const label = String(x.category || "Autres charges").trim() || "Autres charges";
+      categories.set(label, (categories.get(label) || 0) + Math.max(0, Number(x.plannedAmount) || 0));
+    });
+    const ranked = [...categories.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const total = ranked.reduce((n, x) => n + x[1], 0);
+    const palette = ["#176b50", "#d4ae55", "#6e9c88", "#91b9a6", "#a7b6ad"];
+    const categoryDonut = $("monthlyBudgetCategoryDonut");
+    if (categoryDonut) {
+      let point = 0;
+      const categoryStops = ranked.map(([label, value], index) => {
+        const share = total > 0 ? value / total * 100 : 0, start = point; point += share;
+        return palette[index] + " " + start.toFixed(2) + "% " + point.toFixed(2) + "%";
+      });
+      categoryDonut.style.background = total > 0 ? "conic-gradient(" + categoryStops.join(",") + ")" : "conic-gradient(#e8efea 0 100%)";
+      categoryDonut.classList.toggle("is-empty", total <= 0);
+    }
+    const categoryTotal = $("monthlyBudgetCategoryTotal");
+    if (categoryTotal) categoryTotal.textContent = money(total);
+    const categoryLegend = $("monthlyBudgetCategoryLegend");
+    if (categoryLegend) categoryLegend.innerHTML = ranked.length ? ranked.map(([label, value], index) =>
+      '<div><i style="--legend-color:' + palette[index] + '"></i><span>' + escapeHtml(label) + '</span><b>' + money(value) + '</b></div>'
+    ).join("") : '<p class="empty">Ajoute des charges pour voir leur répartition.</p>';
+  }
   function renderMonths() {
     const select = $("monthlyBudgetMonth");
     const selected = current?.monthKey || select.value;
@@ -229,6 +322,7 @@
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !navigator.onLine || cacheOnlyMode;
     applyOfflineReadOnly();
+    renderMonthlyVisuals();
   }
   function renderItems() {
     const labels = { income: "Revenus prévus", charge: "Charges prévues", savings: "Épargne prévue" };
@@ -302,6 +396,7 @@
     $("monthlyBudgetItemForm").hidden = current.status === "closed";
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = current.status === "closed";
+    renderMonthlyVisuals();
   }
   async function loadMonth(monthKey, options = {}) {
     const epoch = authEpoch;
@@ -408,6 +503,15 @@
   }
 
   $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
+  $("monthlyBudgetMonthPrev").onclick = () => {
+    const index = months.findIndex(x => x.monthKey === current?.monthKey);
+    if (index > 0) loadMonth(months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey))[index - 1].monthKey);
+  };
+  $("monthlyBudgetMonthNext").onclick = () => {
+    const ordered = months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey));
+    const index = ordered.findIndex(x => x.monthKey === current?.monthKey);
+    if (index >= 0 && index < ordered.length - 1) loadMonth(ordered[index + 1].monthKey);
+  };
   $("monthlyBudgetSearch").oninput = () => { if (current) renderItems(); };
   $("monthlyBudgetCreateForm").onsubmit = async event => {
     event.preventDefault();
