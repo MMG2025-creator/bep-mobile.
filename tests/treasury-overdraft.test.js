@@ -67,7 +67,7 @@ test("API data whitelist preserves the bank overdraft permission and validates i
  const server=read("server.js");
  assert.match(server,/const rawTreasury=Object\.prototype\.hasOwnProperty\.call\(p,"treasury"\)\?p\.treasury:previous\.treasury/);
  assert.match(server,/const treasury=\{overdraftLimit,validUntil\}/);
- assert.match(server,/coachProfile,treasury\}/);
+ assert.match(server,/coachProfile,treasury,deletedRecords\}/);
  assert.match(server,/error:"INVALID_TREASURY"/);
  assert.match(server,/const validDate=!validUntil\|\|\(/);
 });
