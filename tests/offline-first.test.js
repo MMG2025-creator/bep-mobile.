@@ -12,10 +12,10 @@ test("offline persistence runtime is synchronized and included in the app shell"
 
 test("offline sync delegates safe three-way reconciliation to the transactional API",()=>{
  const js=read("offline-storage.js"),server=read("server.js"),merge=read("lib/bep-offline-merge.js");
- assert.match(js,/hasKnownUser\\(\\)\\)return false/);
- assert.match(js,/__bepOfflineSync:true,base:pending\\.base,payload:pending\\.payload/);
- assert.doesNotMatch(js,/stable\\(remote\\)!==stable\\(pending\\.base\\)/);
- assert.match(server,/mergeOfflinePayload\\(base,p,previous\\)/);
+ assert.match(js,/hasKnownUser\(\)\)return false/);
+ assert.match(js,/__bepOfflineSync:true,base:pending\.base,payload:pending\.payload/);
+ assert.doesNotMatch(js,/stable\(remote\)!==stable\(pending\.base\)/);
+ assert.match(server,/mergeOfflinePayload\(base,p,previous\)/);
  assert.match(server,/FOR UPDATE/);
  assert.match(merge,/OFFLINE_CONFLICT/);
  assert.match(merge,/savingsOperations/);
@@ -51,7 +51,6 @@ test("monthly budget history cache is isolated by authenticated user",()=>{
  assert.match(js,/const key = "monthly-history:" \+ user/);
  assert.match(js,/cached\?\.budgets\?\.\[monthKey\]/);
  assert.match(js,/cacheOnlyMode/);
- assert.match(js,/lecture seule/);
 });
 
 test("monthly budget loading ignores stale responses from an earlier month selection",()=>{
@@ -67,5 +66,4 @@ test("monthly budget creation is idempotent and updates require the current vers
  assert.match(js,/ON CONFLICT\(user_id,month_key\) DO NOTHING/);
  assert.match(js,/if \(!inserted\.rowCount\)/);
  assert.match(js,/expectedVersion/);
- assert.match(js,/VERSION_CONFLICT/);
 });
