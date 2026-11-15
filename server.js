@@ -144,12 +144,15 @@ function oauthPopupRedirect(res,result,retryAfter){
 }
 function hashOAuthState(state){return crypto.createHash("sha256").update(state).digest("hex")}
 app.get("/api/auth/google",async(req,res)=>{
+ res.setHeader("Cache-Control","no-store, no-cache, must-revalidate, private");res.setHeader("Pragma","no-cache");
+ if(req.session?.user)return res.redirect(303,FRONTEND_ORIGIN.replace(/\/+$/,"")+"/?login=already_authenticated");
  try{if(!configured())return oauthPopupRedirect(res,"google_config_error");const state=crypto.randomBytes(32).toString("hex"),tokenHash=hashOAuthState(state);await pool.query("DELETE FROM bep_oauth_state_tokens WHERE expires_at<NOW()");await pool.query("INSERT INTO bep_oauth_state_tokens(token_hash,expires_at,flow,user_id) VALUES($1,NOW()+INTERVAL '10 minutes','login',NULL)",[tokenHash]);const p=new URLSearchParams({client_id:process.env.GOOGLE_CLIENT_ID,redirect_uri:process.env.GOOGLE_REDIRECT_URI,response_type:"code",scope:"openid email profile",state,prompt:"select_account"});res.redirect("https://accounts.google.com/o/oauth2/v2/auth?"+p)}catch(e){console.error("OAuth start failed",e.message);return oauthPopupRedirect(res,"error")}
 });
 app.post("/api/auth/google/link/start",auth,async(req,res)=>{
  try{const account=await pool.query("SELECT id,email,password_hash FROM bep_users WHERE id=$1",[req.session.user.id]);if(!account.rowCount)return res.status(404).json({error:"ACCOUNT_NOT_FOUND"});const u=account.rows[0];if(u.password_hash){const password=String(req.body?.password||"");if(!password||!await bcrypt.compare(password,u.password_hash))return res.status(401).json({error:"REAUTH_REQUIRED",message:"Confirme le mot de passe de ton compte BEP avant de continuer."});}const state=crypto.randomBytes(32).toString("hex"),tokenHash=hashOAuthState(state);await pool.query("DELETE FROM bep_oauth_state_tokens WHERE expires_at<NOW()");await pool.query("INSERT INTO bep_oauth_state_tokens(token_hash,expires_at,flow,user_id) VALUES($1,NOW()+INTERVAL '10 minutes','link',$2)",[tokenHash,u.id]);const p=new URLSearchParams({client_id:process.env.GOOGLE_CLIENT_ID,redirect_uri:process.env.GOOGLE_REDIRECT_URI,response_type:"code",scope:"openid email profile",state,prompt:"select_account"});res.json({url:"https://accounts.google.com/o/oauth2/v2/auth?"+p})}catch(e){console.error("Google link start failed",e.message);res.status(500).json({error:"LINK_START_FAILED"})}
 });
 app.get("/api/auth/google/callback",async(req,res)=>{
+ res.setHeader("Cache-Control","no-store, no-cache, must-revalidate, private");res.setHeader("Pragma","no-cache");
  let stage="callback";
  const rawState=String(req.query.state||"");
  try{
