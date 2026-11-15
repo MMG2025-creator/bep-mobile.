@@ -265,3 +265,20 @@ test("receipt import opens the validation dialog immediately, announces progress
  const app=read("app.js");
  for(const marker of ["let receiptProcessing=false","if(receiptProcessing)","BEP_OPEN_PURCHASE_DIALOG?.()","Ticket importé. Analyse en cours","setAttribute(\"aria-busy\",\"true\")","submit.disabled=true","receiptProcessing=false"])assert.ok(app.includes(marker),"missing receipt UX marker: "+marker);
 });
+
+\ntest("receipt imports persist a stable OCR fingerprint and compare with earlier receipt captures independently of edited form labels",()=>{
+ const app=read("app.js");
+ assert.match(app,/function fingerprintReceiptText\\(value\\)/);
+ assert.match(app,/function findExistingReceiptMatch\\(extracted,fingerprint\\)/);
+ assert.match(app,/purchase\\.receiptFingerprint===fingerprint/);
+ assert.match(app,/purchase\\.captureMode!==\\"receipt\\"/);
+ assert.match(app,/oldMerchant===merchant/);
+ assert.match(app,/Math\\.abs\\(oldAmount-amount\\)<0\\.01/);
+ assert.match(app,/localPurchaseDate\\(purchase\\.at\\)===date/);
+ assert.match(app,/receiptFingerprint:editingPurchaseId/);
+ assert.match(app,/receiptIdentity:editingPurchaseId/);
+ assert.match(app,/Doublon certain : ce justificatif a déjà été importé/);
+ assert.match(app,/Correspondance probable avec un ancien ticket/);
+ assert.match(app,/if\\(receiptDuplicateMatch\\.exact\\)\\{notify\\(message\\);return\\}/);
+ assert.match(app,/window\\.BEP_CONFIRM_ACTION\\?await window\\.BEP_CONFIRM_ACTION/);
+});
