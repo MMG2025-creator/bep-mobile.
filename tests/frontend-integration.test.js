@@ -388,3 +388,30 @@ test("service worker shell cache is advanced when monthly calendar HTML and asse
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
+
+test("all six homepage financial tiles use the same aligned label, amount and action rows",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file),grid=html.match(/<div class="home-budget-metrics home-snapshot-grid">([\\s\\S]*?)<\\/div>/);
+  assert.ok(grid,file+" must expose the homepage financial grid");
+  assert.equal((grid[1].match(/home-snapshot-card/g)||[]).length,6,file+" must apply the shared card structure to all six tiles");
+  assert.match(html,/id="homeImpulsivePurchases"[^>]*class="[^"]*home-snapshot-card/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.home-snapshot-card\\{[\\s\\S]*?display:grid[\\s\\S]*?grid-template-rows:2\\.8em 1\\.8em 2\\.8em/);
+  assert.match(css,/\.home-snapshot-card>span\\{[\\s\\S]*?min-height:2\\.8em/);
+  assert.match(css,/\.home-snapshot-card>strong\\{[\\s\\S]*?min-height:1\\.8em/);
+  assert.match(css,/\.home-snapshot-card>small\\{[\\s\\S]*?min-height:2\\.8em/);
+ }
+});
+
+test("Google OAuth runs in a separate popup and returns to BEP without adding Google to the main navigation history",()=>{
+ for(const file of ["app.js","dist/app.js"]){
+  const app=read(file);
+  assert.match(app,/window\\.open\\("about:blank"/);
+  assert.match(app,/bep-google-oauth-result:/);
+  assert.match(app,/popup\\.location\\.replace\\(API\\+"\\/api\\/auth\\/google\\?flow_id="/);
+  assert.doesNotMatch(app,/window\\.location\\.href=API\\+"\\/api\\/auth\\/google"/);
+  assert.doesNotMatch(app,/window\\.location\\.href=d\\.url/);
+ }
+});
