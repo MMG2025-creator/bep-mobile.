@@ -23,15 +23,17 @@ test("monthly budget history invokes the monthly-to-savings bridge after a confi
  const ui=read("monthly-budget-ui.js");
  assert.match(ui,/BEP_APPLY_MONTHLY_ITEMS/,"saving/loading current monthly lines must apply the savings and income bridge to the home state");
 });
-test("preview runtime configuration never defaults to the production API",()=>{
+test("source and published runtime configuration isolate preview API traffic",()=>{
  const vm=require("node:vm");
- const runtime=read("runtime-config.js");
- const preview={window:{location:{hostname:"bep-preview.onrender.com",origin:"https://bep-preview.onrender.com"}}};
- vm.runInNewContext(runtime,preview);
- assert.equal(preview.window.BEP_API_BASE,"https://bep-preview.onrender.com");
- const production={window:{location:{hostname:"bep-mobile.onrender.com",origin:"https://bep-mobile.onrender.com"}}};
- vm.runInNewContext(runtime,production);
- assert.equal(production.window.BEP_API_BASE,"https://bep-v2-api.onrender.com");
+ for(const file of ["runtime-config.js","dist/runtime-config.js"]){
+  const runtime=read(file);
+  const preview={window:{location:{hostname:"bep-preview.onrender.com",origin:"https://bep-preview.onrender.com"}}};
+  vm.runInNewContext(runtime,preview);
+  assert.equal(preview.window.BEP_API_BASE,"https://bep-preview.onrender.com",file+" must keep preview traffic off production");
+  const production={window:{location:{hostname:"bep-mobile.onrender.com",origin:"https://bep-mobile.onrender.com"}}};
+  vm.runInNewContext(runtime,production);
+  assert.equal(production.window.BEP_API_BASE,"https://bep-v2-api.onrender.com",file+" must retain the production API on the production host");
+ }
 });
 test("published home and entrypoint load the corrected savings and recovery assets",()=>{
  const html=read("dist/index.html");
