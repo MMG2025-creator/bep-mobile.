@@ -154,6 +154,31 @@
   </form>
   <div id="monthlyBudgetWorkspace" hidden>
     <div class="field monthly-budget-month-select"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="monthly-budget-month-navigation" aria-label="Navigation des mois">
+      <button type="button" id="monthlyBudgetMonthPrev" aria-label="Mois précédent">‹</button>
+      <div id="monthlyBudgetMonthStrip" class="monthly-budget-month-strip" aria-live="polite"></div>
+      <button type="button" id="monthlyBudgetMonthNext" aria-label="Mois suivant">›</button>
+    </div>
+    <div class="monthly-budget-visual-grid">
+      <section class="monthly-budget-visual-card monthly-budget-calendar-card" aria-labelledby="monthlyBudgetCalendarTitle">
+        <div class="monthly-budget-visual-heading"><div><p class="eyebrow">LE RYTHME DU MOIS</p><h3 id="monthlyBudgetCalendarTitle">Calendrier des dépenses</h3></div><span id="monthlyBudgetCalendarSummary" class="monthly-budget-visual-note">Aucune dépense réelle</span></div>
+        <div class="monthly-budget-calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div id="monthlyBudgetCalendar" class="monthly-budget-calendar" aria-label="Calendrier mensuel des dépenses"></div>
+        <div class="monthly-budget-calendar-legend"><span><i></i> Jour avec dépense</span><span><i class="today"></i> Aujourd’hui</span></div>
+      </section>
+      <section class="monthly-budget-visual-card monthly-budget-allocation-card" aria-labelledby="monthlyBudgetAllocationTitle">
+        <div class="monthly-budget-visual-heading"><div><p class="eyebrow">VUE D’ENSEMBLE</p><h3 id="monthlyBudgetAllocationTitle">Répartition du budget</h3></div><span class="monthly-budget-visual-note">Prévisionnel et réel</span></div>
+        <div class="monthly-budget-donut-layout">
+          <div id="monthlyBudgetAllocationDonut" class="monthly-budget-donut" role="img" aria-label="Répartition prévisionnelle du budget"><div><span>Disponible</span><strong id="monthlyBudgetDonutAvailable">0,00 €</strong></div></div>
+          <div id="monthlyBudgetAllocationLegend" class="monthly-budget-donut-legend"></div>
+        </div>
+        <div class="monthly-budget-category-chart">
+          <div class="monthly-budget-category-head"><b>Répartition des charges</b><span id="monthlyBudgetCategoryTotal">0,00 €</span></div>
+          <div id="monthlyBudgetCategoryDonut" class="monthly-budget-category-donut" role="img" aria-label="Répartition des charges par catégorie"></div>
+          <div id="monthlyBudgetCategoryLegend" class="monthly-budget-category-legend"></div>
+        </div>
+      </section>
+    </div>
     <div class="monthly-budget-metrics">
       <div><span>Revenus prévus</span><strong id="monthlyBudgetIncomeTotal">0,00 €</strong></div>
       <div><span>Charges prévues</span><strong id="monthlyBudgetChargesTotal">0,00 €</strong></div>
