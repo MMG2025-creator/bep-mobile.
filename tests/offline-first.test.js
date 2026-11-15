@@ -94,7 +94,7 @@ test("offline queue serializes snapshots and obtains an authoritative baseline b
  assert.match(js,/missing-baseline-or-stale-local-snapshot/);
  assert.match(js,/function markTrustedSnapshot\(\)/);
  assert.match(js,/const safePayload=remote\?deletionOnlySnapshot\(pending\.payload,remote\):null/);
- assert.match(js,/if\(!existing&&!baseline\)await fetchCurrentBaseline\(\)/);
+ assert.match(js,/if\(!base\)\{const remote=await fetchCurrentBaseline\(\)/);\n assert.match(js,/deletionOnlySnapshot\(payload,remote\)/);
  assert.match(app,/Modification conservée sur cet appareil, mais synchronisation suspendue/);
 });
 
