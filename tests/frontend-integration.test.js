@@ -313,6 +313,20 @@ test("source and published homepage are one canonical HTML artifact with the pro
 });
 
 
+test("homepage BEP mascot is an accessible Coach shortcut with dynamic states",()=>{
+ const html=read("index.html");
+ assert.match(html,/class="welcome-mascot bep-home-mascot-button" data-goto="coach"/);
+ assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
+ const app=read("app.js");
+ assert.match(app,/function setHomeRobotState\(state,message\)/);
+ assert.match(app,/setHomeRobotState\("thinking","J’analyse ta situation…"/);
+ assert.match(app,/setHomeRobotState\("advice","J’ai un conseil pour toi"\)/);
+ assert.equal(app,read("dist/app.js"));
+ assert.equal(read("index.html"),read("dist/index.html"));
+ assert.equal(read("styles.css"),read("dist/styles.css"));
+ assert.match(read("styles.css"),/bepRobotFloat/);
+});
+
 test("monthly budget visual workspace uses synchronized client assets and published styles",()=>{
  const js=read("monthly-budget-ui.js");
  assert.equal(js,read("dist/monthly-budget-ui.js"));
