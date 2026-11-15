@@ -831,7 +831,7 @@ function addCoachMessage(role,message){
  if(role!=="user"){const title=document.createElement("strong");title.textContent="Coach BEP";item.appendChild(title)}
  const p=document.createElement("p");p.textContent=message;item.appendChild(p);log.appendChild(item);log.scrollTop=log.scrollHeight;
 }
-let aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};
+let aiConnection={configured:false,provider:"bep-local",model:"bep-local-documentary",mode:"structured",personal:false,used:0,limit:0};
 const AI_ENABLED_KEY="bep-external-ai-enabled-v1";let aiCoachEnabled=false;try{localStorage.removeItem(AI_ENABLED_KEY)}catch{}
 async function loadAiConnection(){
  aiConnection={configured:false,mode:"structured",provider:"bep-local",model:"bep-local-documentary",personal:false,used:0,limit:0,financialIntelligence:{enabled:true}};
@@ -862,7 +862,7 @@ async function submitCoachQuestion(question){
     const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
    }
    
-  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le fournisseur IA n’a pas répondu correctement. Aucune réponse locale n’a été substituée. Détail : "+e.message}
+  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
  }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
   addCoachMessage("coach",coachReply(value));
  }else{
