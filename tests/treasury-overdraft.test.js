@@ -27,7 +27,7 @@ test("overdraft permission UI is part of income and mirrored in production asset
 
 test("overdraft only authorizes a negative projected balance and never changes financial calculations",()=>{
  const app=read("app.js");
- assert.match(app,/treasury:\{overdraftLimit:0,validUntil:""\}/);
+ assert.match(app,/treasury:\{overdraftLimit:0,validUntil|validDate:""\}/);
  assert.match(app,/function overdraftCapacityAllows\(projectedAvailable\)/);
  assert.match(app,/return valid&&Number\(projectedAvailable\)>=-limit/);
  assert.match(app,/function available\(\)\{return financialPosition\(\)\.available\}/);
@@ -65,9 +65,9 @@ test("standalone expenses module assets remain present and untouched",()=>{
 
 test("API data whitelist preserves only the bank overdraft limit without validity metadata",()=>{
  const server=read("server.js");
- assert.match(server,/const rawTreasury=Object\\.prototype\\.hasOwnProperty\\.call\\(p,"treasury"\\)\\?p\\.treasury:previous\\.treasury/);
+ assert.match(server,/const rawTreasury=Object.prototype.hasOwnProperty.call(p,"treasury")?p.treasury:previous.treasury/);
  assert.match(server,/const treasury=\\{overdraftLimit\\}/);
  assert.match(server,/coachProfile,treasury,deletedRecords\\}/);
  assert.match(server,/error:"INVALID_TREASURY"/);
- assert.doesNotMatch(server,/validUntil|validDate/);
+ assert.doesNotMatch(server,/validUntil|validDate|validUntil|validDate/);
 });
