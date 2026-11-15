@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=104&bep=uniform-home-metric-rows-20261115/);
+  assert.match(html,/styles\.css\?v=105&bep=uniform-home-metric-rows-20261115/);
   assert.match(html,/connection-status\.css\?v=2&bep=footer-centered-20261115/);
  }
 });
@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=118&bep=oauth-popup-history-isolation-20261115/);
+  assert.match(html,/app\.js\?v=119&bep=oauth-popup-history-isolation-20261115/);
   assert.match(html,/offline-storage\.js\?v=6&bep=robust-local-clear-20261114/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=118&bep=oauth-popup-history-isolation-20261115/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=119&bep=oauth-popup-history-isolation-20261115/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
