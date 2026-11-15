@@ -10,15 +10,16 @@ test("offline persistence runtime is synchronized and included in the app shell"
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/offline-storage\.js\?v=/);
 });
 
-test("offline sync is account-scoped and refuses to overwrite a changed remote snapshot",()=>{
- const js=read("offline-storage.js");
- assert.match(js,/hasKnownUser\(\)\)return false/);
- assert.match(js,/stable\(remote\)!==stable\(pending\.base\)/);
- assert.match(js,/bep:offline-conflict/);
- const conflict=js.indexOf('if(stable(remote)!==stable(pending.base))');
- assert.ok(conflict>=0&&js.indexOf('method:"PUT"',conflict)>conflict);
+test("offline sync delegates safe three-way reconciliation to the transactional API",()=>{
+ const js=read("offline-storage.js"),server=read("server.js"),merge=read("lib/bep-offline-merge.js");
+ assert.match(js,/hasKnownUser\\(\\)\\)return false/);
+ assert.match(js,/__bepOfflineSync:true,base:pending\\.base,payload:pending\\.payload/);
+ assert.doesNotMatch(js,/stable\\(remote\\)!==stable\\(pending\\.base\\)/);
+ assert.match(server,/mergeOfflinePayload\\(base,p,previous\\)/);
+ assert.match(server,/FOR UPDATE/);
+ assert.match(merge,/OFFLINE_CONFLICT/);
+ assert.match(merge,/savingsOperations/);
 });
-
 test("offline startup restores the local session and sets the remote baseline",()=>{
  const js=read("app.js");
  assert.match(js,/window\.BEPOffline\.hasTrustedSnapshot\(\)/);
