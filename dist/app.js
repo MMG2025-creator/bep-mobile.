@@ -141,7 +141,7 @@ document.querySelectorAll("[data-coach-theme]").forEach(input=>input.addEventLis
 renderCoachProfile();
 
 async function recordAdvice(id){
- const target=$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
+ const target=id==="home"?document.querySelector(".home-coach-card .ai-advice"):$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
  if(id==="home")setHomeRobotState("thinking","J’analyse ta situation…");
  if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode))){target.textContent=makeAdvice(id);if(id==="home")setHomeRobotState("idle","Ton Coach BEP est disponible");return}
  const context=currentFinancialContext(),fingerprint=JSON.stringify({zone:id,context,provider:aiConnection.provider,model:aiConnection.model});
