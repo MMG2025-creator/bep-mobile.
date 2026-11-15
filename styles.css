@@ -1668,3 +1668,35 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .coach-workspace .coach-info-panel{margin-top:0}
   .app:has(#coach.panel.active){min-height:0}
 }
+
+
+/* Uniform three-row structure for all six homepage financial tiles. */
+.home-snapshot-grid{grid-auto-rows:1fr;align-items:stretch}
+.home-snapshot-grid>.home-snapshot-card{height:100%;min-width:0}
+.home-snapshot-card{
+  display:grid;
+  grid-template-rows:2.8em 1.8em 2.8em;
+  align-content:space-between;
+  gap:6px;
+  height:100%;
+}
+.home-snapshot-card>span{
+  display:flex;
+  align-items:flex-start;
+  min-height:2.8em;
+  line-height:1.25;
+}
+.home-snapshot-card>strong{
+  display:flex;
+  align-items:center;
+  min-height:1.8em;
+  line-height:1.2;
+}
+.home-snapshot-card>small{
+  display:flex;
+  align-items:flex-end;
+  min-height:2.8em;
+  margin:0;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
