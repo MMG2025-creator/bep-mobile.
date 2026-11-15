@@ -31,7 +31,7 @@ test("offline startup restores the local session and sets the remote baseline",(
 test("source and published service workers use the same cache and include offline dependencies",()=>{
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
- assert.match(source,/bep-shell-v16/);
+ assert.match(source,/bep-shell-v17/);
  assert.match(source,/fetch\(request,\{cache:"no-store"\}\)/);
  assert.match(source,/caches\.match\(request,\{ignoreSearch:true\}\)/);
  assert.match(source,/offline-storage\.js/);
@@ -81,4 +81,30 @@ test("monthly budget creation is idempotent and updates require the current vers
  assert.match(js,/ON CONFLICT\(user_id,month_key\) DO NOTHING/);
  assert.match(js,/if \(!inserted\.rowCount\)/);
  assert.match(js,/expectedVersion/);
+});
+
+
+test("offline queue serializes snapshots and obtains an authoritative baseline before the first queue write",()=>{
+ const js=read("offline-storage.js"),app=read("app.js");
+ assert.match(js,/let enqueueChain=Promise\.resolve\(\)/);
+ assert.match(js,/JSON\.parse\(JSON\.stringify\(payload\)\)/);
+ assert.match(js,/fetchCurrentBaseline\(\)/);
+ assert.match(js,/function deletionOnlySnapshot\(local,remote\)/);
+ assert.match(js,/stable\(comparable\(local\)\)!==stable\(comparable\(remote\)\)/);
+ assert.match(js,/missing-baseline-or-stale-local-snapshot/);
+ assert.match(js,/function markTrustedSnapshot\(\)/);
+ assert.match(js,/const safePayload=remote\?deletionOnlySnapshot\(pending\.payload,remote\):null/);
+ assert.match(js,/if\(!base\)\{const remote=await fetchCurrentBaseline\(\)/);\n assert.match(js,/deletionOnlySnapshot\(payload,remote\)/);
+ assert.match(app,/Modification conservée sur cet appareil, mais synchronisation suspendue/);
+});
+
+test("explicit charge deletions are persisted as a server-side tombstone ledger",()=>{
+ const app=read("app.js"),server=read("server.js"),merge=read("lib/bep-offline-merge.js");
+ assert.match(app,/rememberDeletedRecords\("budgets",\[String\(id\)\]\)/);
+ assert.match(app,/rememberDeletedRecords\("budgets",Array\.from\(ids,String\)\)/);
+ assert.match(server,/INVALID_DELETION_LEDGER/);
+ assert.match(server,/deletedRecords\};/);
+ assert.match(server,/Array\.isArray\(previous\.deletedRecords\?\.\[key\]\)/);
+ assert.match(merge,/normalizeDeletedRecords/);
+ assert.match(merge,/merged\[key\]=merged\[key\]\.filter/);
 });

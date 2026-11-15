@@ -33,7 +33,7 @@ test("expense module opens accessible dialogs and reuses the existing form",()=>
 
 test("homepage mascot and expense form are present in the source interface",()=>{
  const html=read("index.html");
- assert.match(html,/class="bep-home-mascot"/);
+ assert.match(html,/class="welcome-mascot"/);
  assert.match(html,/id="purchaseForm"/);
  assert.match(html,/id="receiptFile"[^>]*accept="image\/\*"/);
 });
