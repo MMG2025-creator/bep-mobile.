@@ -1,6 +1,7 @@
 "use strict";
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),bcrypt=require("bcryptjs");
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
+const {ensureBepAdminSchema,createBepAdminRouter}=require("./admin/bep-admin");
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {startBepAgent}=require("./lib/bep-agent");
@@ -20,7 +21,7 @@ app.use((req,res,next)=>{
 app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
-app.use(express.json({limit:"1mb"}));
+app.use(express.json({limit:"5mb"}));
 function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
  if(!pool)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
  const now=Date.now(),windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
@@ -65,6 +66,7 @@ await pool.query("CREATE INDEX IF NOT EXISTS bep_budget_audit_log_user_created_i
 await pool.query("CREATE TABLE IF NOT EXISTS bep_financial_knowledge(slug TEXT PRIMARY KEY,category TEXT NOT NULL,title TEXT NOT NULL,content TEXT NOT NULL,keywords JSONB NOT NULL DEFAULT '[]'::jsonb,source_name TEXT NOT NULL,source_url TEXT NOT NULL DEFAULT '',evidence_level TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,active BOOLEAN NOT NULL DEFAULT TRUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
 await pool.query("CREATE INDEX IF NOT EXISTS bep_financial_knowledge_active_category ON bep_financial_knowledge(active,category)");
 for(const item of financialKnowledgeSeed){await pool.query("INSERT INTO bep_financial_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,TRUE) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,version=bep_financial_knowledge.version+1,active=TRUE,updated_at=NOW() WHERE bep_financial_knowledge.content IS DISTINCT FROM EXCLUDED.content OR bep_financial_knowledge.title IS DISTINCT FROM EXCLUDED.title OR bep_financial_knowledge.source_url IS DISTINCT FROM EXCLUDED.source_url",[item.slug,item.category,item.title,item.content,JSON.stringify(item.keywords),item.source_name,item.source_url,item.evidence_level])}
+ await ensureBepAdminSchema(pool);
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
 function requireBepAgentAdmin(req,res,next){
@@ -72,6 +74,8 @@ function requireBepAgentAdmin(req,res,next){
  if(!req.session?.user?.id||!allowed.includes(String(req.session.user.id)))return res.status(403).json({error:"AGENT_ADMIN_REQUIRED"});
  next();
 }
+app.use("/api/admin/console",createBepAdminRouter({pool,requireAdmin:requireBepAgentAdmin}));
+
 function coachTelemetry(req,res,next){
  if(!agentTelemetryReady)return next();
  const started=Date.now();let recorded=false;const send=res.json.bind(res);
