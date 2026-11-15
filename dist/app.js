@@ -519,7 +519,7 @@ backupImportButton?.addEventListener("click",async()=>{
   }
   state={...defaults,...imported};
   for(const key of ["incomes","budgets","expenses","goals","transactions","savingsOperations","coachProfile"])if(!Array.isArray(state[key]))state[key]=[];
-  if(!state.treasury||typeof state.treasury!=="object"||Array.isArray(state.treasury))state.treasury={overdraftLimit:0,validUntil:""};
+  if(!state.treasury||typeof state.treasury!=="object"||Array.isArray(state.treasury))state.treasury={overdraftLimit:0};
   syncIncomeTotal();render();dispatchLegacyBudgetChanged();backupPassword.value="";$("importFile").value="";
   backupStatus("backupImportStatus",window.bepSignedIn?"Restauration terminée : données enregistrées sur ton compte et cet appareil.":"Restauration locale terminée sur cet appareil.");
   window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"backup-restore"}}));
