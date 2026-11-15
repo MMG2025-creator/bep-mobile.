@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=102&bep=footer-center-advice-feedback-20261115/);
+  assert.match(html,/styles\.css\?v=103&bep=home-overdraft-cleanup-coach-mobile-compact-20261115/);
   assert.match(html,/connection-status\.css\?v=2&bep=footer-centered-20261115/);
  }
 });
@@ -384,7 +384,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v19"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v20"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
