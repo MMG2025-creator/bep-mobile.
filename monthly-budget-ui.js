@@ -217,6 +217,33 @@
     });
     return result;
   }
+  function openCalendarDayDetails(day) {
+    if (!current || !Number.isInteger(day)) return;
+    const dialog = $("monthlyBudgetDayDialog"), list = $("monthlyBudgetDayExpenses");
+    const title = $("monthlyBudgetDayTitle"), summary = $("monthlyBudgetDaySummary");
+    if (!dialog || !list || !title || !summary) return;
+    const [year, month] = current.monthKey.split("-").map(Number);
+    const dateLabel = new Date(year, month - 1, day, 12).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const expenses = (actuals.expenses || []).filter(expense => {
+      const date = new Date(expense.at);
+      return Number.isFinite(date.getTime()) && date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    }).sort((a, b) => new Date(a.at) - new Date(b.at));
+    if (!expenses.length) return;
+    const total = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+    title.textContent = dateLabel.charAt(0).toLocaleUpperCase("fr-FR") + dateLabel.slice(1);
+    summary.textContent = money(total) + " · " + expenses.length + " dépense" + (expenses.length > 1 ? "s" : "");
+    list.innerHTML = expenses.map(expense => {
+      const label = expense.label || expense.merchant || "Dépense";
+      const category = expense.category || "Sans catégorie";
+      const date = new Date(expense.at);
+      const time = Number.isFinite(date.getTime()) ? date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+      return '<article class="monthly-budget-day-expense"><span class="monthly-budget-day-expense-copy"><b>' + escapeHtml(label) +
+        '</b><small>' + escapeHtml(category) + (time ? ' · ' + escapeHtml(time) : '') +
+        '</small></span><strong>' + money(expense.amount) + '</strong></article>';
+    }).join("");
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+  }
   function renderMonthlyVisuals() {
     const strip = $("monthlyBudgetMonthStrip"), calendar = $("monthlyBudgetCalendar");
     const calendarCard = card.querySelector(".monthly-budget-calendar-card");
@@ -267,7 +294,8 @@
       for (let day = 1; day <= days; day++) {
         const detail = daily.get(day), isToday = today.getFullYear() === year && today.getMonth() === month - 1 && today.getDate() === day;
         const title = detail ? day + " : " + detail.count + " dépense(s), " + money(detail.total) : day + " · aucune dépense enregistrée";
-        cells.push('<span class="monthly-budget-calendar-day' + (detail ? ' has-spend' : '') + (isToday ? ' is-today' : '') + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(title) + '"><b>' + day + '</b>' + (detail ? '<small>' + detail.count + '</small>' : '') + '</span>');
+        if (detail) cells.push('<button type="button" class="monthly-budget-calendar-day has-spend monthly-budget-calendar-day-button' + (isToday ? ' is-today' : '') + '" data-day="' + day + '" title="' + escapeHtml(title) + '" aria-label="Afficher les dépenses du ' + day + '" aria-haspopup="dialog" aria-controls="monthlyBudgetDayDialog"><b>' + day + '</b><small>' + detail.count + '</small></button>');
+        else cells.push('<span class="monthly-budget-calendar-day' + (isToday ? ' is-today' : '') + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(title) + '"><b>' + day + '</b></span>');
       }
       calendar.innerHTML = cells.join("");
       const count = [...daily.values()].reduce((n, x) => n + x.count, 0);
@@ -517,6 +545,20 @@
     } finally { setBusy(false); applyOfflineReadOnly(); }
   }
 
+  const calendar = $("monthlyBudgetCalendar"), dayDialog = $("monthlyBudgetDayDialog");
+  let lastCalendarDayTrigger = null;
+  calendar?.addEventListener("click", event => {
+    const trigger = event.target.closest("[data-day]");
+    if (!trigger || !calendar.contains(trigger)) return;
+    lastCalendarDayTrigger = trigger;
+    openCalendarDayDetails(Number(trigger.dataset.day));
+  });
+  dayDialog?.querySelector("[data-close-monthly-day-dialog]")?.addEventListener("click", () => dayDialog.close());
+  dayDialog?.addEventListener("click", event => { if (event.target === dayDialog) dayDialog.close(); });
+  dayDialog?.addEventListener("close", () => {
+    if (lastCalendarDayTrigger?.isConnected) lastCalendarDayTrigger.focus();
+    lastCalendarDayTrigger = null;
+  });
   $("monthlyBudgetMonth").onchange = event => { monthDetailsExpanded = true; loadMonth(event.target.value); };
   $("monthlyBudgetMonthPrev").onclick = () => {
     monthDetailsExpanded = true;

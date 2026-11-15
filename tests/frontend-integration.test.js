@@ -320,8 +320,8 @@ test("monthly budget visual workspace uses synchronized client assets and publis
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   for(const id of ["monthlyBudgetMonthStrip","monthlyBudgetMonthPrev","monthlyBudgetMonthNext","monthlyBudgetCalendar","monthlyBudgetAllocationDonut","monthlyBudgetCategoryDonut"])assert.ok(html.includes('id="'+id+'"'),file+" missing #"+id);
-  assert.match(html,/monthly-budget-ui\.css\?v=3&bep=monthly-header-full-width-20261115/);
-  assert.match(html,/monthly-budget-ui\.js\?v=16&bep=calendar-toggle-and-header-motion-20261115/);
+  assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
  }
  for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
 });
@@ -351,5 +351,33 @@ test("budget has no robot shortcut or floating advice dock and monthly header us
   const css=read(file);
   assert.match(css,/\.monthly-budget-heading-copy\{max-width:100%!important;width:100%/);
   assert.match(css,/\.monthly-budget-heading-art\{top:12px!important/);
+ }
+});
+
+
+test("monthly expense calendar opens a read-only contextual detail dialog for days with expenses",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  for(const id of ["monthlyBudgetCalendar","monthlyBudgetDayDialog","monthlyBudgetDayTitle","monthlyBudgetDaySummary","monthlyBudgetDayExpenses"])assert.match(html,new RegExp('id="'+id+'"'));
+  assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
+ }
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.match(js,/data-day=/);
+ assert.match(js,/openCalendarDayDetails/);
+ assert.ok(js.includes("actuals.expenses || []"));
+ assert.ok(js.includes("showModal()"));
+ assert.match(js,/data-close-monthly-day-dialog/);
+ assert.ok(js.includes("event.target === dayDialog"));
+ assert.ok(js.includes('dayDialog?.addEventListener("close"'));
+ assert.ok(js.includes('expense.label || expense.merchant || "Dépense"'));
+ assert.ok(js.includes('expense.category || "Sans catégorie"'));
+ assert.match(js,/monthlyBudgetDayExpenses/);
+ for(const file of ["monthly-budget-ui.css","dist/monthly-budget-ui.css"]){
+  const css=read(file);
+  assert.ok(css.includes(".monthly-budget-day-dialog::backdrop"));
+  assert.ok(css.includes(".monthly-budget-calendar-day-button:focus-visible"));
+  assert.ok(css.includes("@media(max-width:480px){.monthly-budget-day-dialog"));
  }
 });
