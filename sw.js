@@ -63,6 +63,10 @@ self.addEventListener("fetch",event=>{
     })());
     return;
   }
+  if(url.pathname.endsWith("/oauth-popup.html")){
+    event.respondWith(fetch(request,{cache:"no-store"}).catch(()=>caches.match("./index.html")||Response.error()));
+    return;
+  }
   if(request.mode==="navigate"){
     event.respondWith((async()=>{
       try{
