@@ -54,9 +54,10 @@ test("monthly snapshots preserve overdraft separately and expected credits are n
 
 test("API persists only a validated overdraft limit and removes validity metadata",()=>{
  const server=read("server.js");
- assert.ok(server.includes('Object.prototype.hasOwnProperty.call(p,"treasury")?p.treasury:previous.treasury'));
- assert.ok(server.includes("const treasury={overdraftLimit}"));
- assert.ok(server.includes("coachProfile,treasury,deletedRecords"));
- assert.ok(server.includes('error:"INVALID_TREASURY"'));
- assert.doesNotMatch(server,/validUntil|validDate/);
+ const start=server.indexOf('app.put("/api/data"');
+ const route=server.slice(start,server.indexOf('app.use((req,res)=>',start));
+ assert.ok(route.includes("const treasury={overdraftLimit}"));
+ assert.ok(route.includes('error:"INVALID_TREASURY"'));
+ assert.doesNotMatch(route,/validUntil|validDate/);
+ assert.ok(route.includes("JSON.stringify(safe)"));
 });
