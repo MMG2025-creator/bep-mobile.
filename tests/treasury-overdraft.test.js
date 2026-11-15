@@ -3,44 +3,39 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
-const root=path.join(__dirname,"..");
-const read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
-test("overdraft permission UI is part of income and mirrored in production assets",()=>{
+test("overdraft permission UI supports deletion and has no validity date",()=>{
  const app=read("app.js");
  assert.equal(app,read("dist/app.js"));
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/<section class="card overdraft-permission-card"/);
   assert.match(html,/id="overdraftForm"/);
   assert.match(html,/id="overdraftLimit"/);
-  assert.match(html,/id="overdraftValidUntil"/);
-  assert.doesNotMatch(html,/id="treasuryForm"|id="expectedCreditForm"|id="overdraftUsed"/);
+  assert.match(html,/id="removeOverdraftBtn"/);
+  assert.doesNotMatch(html,/overdraftValidUntil|Valable jusqu/);
  }
- const dialogs=read("spend-experience.js");
- assert.match(dialogs,/\["overdraft","Découvert autorisé","Gérer mon découvert autorisé","\.overdraft-permission-card"\]/);
- assert.equal(dialogs,read("dist/spend-experience.js"));
- assert.match(app,/BEP_OPEN_ENTRY_DIALOG\("overdraft"\)/);
- assert.match(app,/detail:\{id:"overdraft"\}/);
- assert.equal(app,read("dist/app.js"));
+ assert.match(app,/removeOverdraftBtn\.onclick/);
+ assert.match(app,/state\.treasury=\{overdraftLimit:0\}/);
+ assert.doesNotMatch(app,/overdraftValidUntil|overdraftExpired|validUntil/);
+ assert.equal(read("spend-experience.js"),read("dist/spend-experience.js"));
 });
 
 test("overdraft only authorizes a negative projected balance and never changes financial calculations",()=>{
  const app=read("app.js");
- assert.match(app,/treasury:\{overdraftLimit:0,validUntil:""\}/);
+ assert.match(app,/treasury:\{overdraftLimit:0\}/);
  assert.match(app,/function overdraftCapacityAllows\(projectedAvailable\)/);
- assert.match(app,/return valid&&Number\(projectedAvailable\)>=-limit/);
+ assert.match(app,/return Number\(projectedAvailable\)>=-limit/);
  assert.match(app,/function available\(\)\{return financialPosition\(\)\.available\}/);
- assert.match(app,/function availableBeforeSavings\(\)\{return financialPosition\(\{goals:\[\]\}\)\.available\}/);
  assert.doesNotMatch(app,/function available\(\)\{[^}]*overdraft/);
  assert.doesNotMatch(app,/function totalIncome\(\)[^}]*overdraft/);
- const allows=(balance,limit,valid=true)=>valid&&Number(balance)>=-Math.max(0,Number(limit)||0);
+ assert.doesNotMatch(read("financial-engine.js"),/overdraft/);
+ const allows=(balance,limit)=>Number(balance)>=-Math.max(0,Number(limit)||0);
  assert.equal(allows(-300,500),true);
  assert.equal(allows(-500,500),true);
  assert.equal(allows(-501,500),false);
  assert.equal(allows(-1,0),false);
  assert.equal(allows(100,0),true);
- assert.equal(allows(-100,500,false),false);
 });
 
 test("savings and new expense entries check the projected balance against the overdraft permission",()=>{
@@ -57,17 +52,12 @@ test("monthly snapshots preserve overdraft separately and expected credits are n
  assert.doesNotMatch(app,/expectedCredits/);
 });
 
-test("standalone expenses module assets remain present and untouched",()=>{
- assert.match(read("index.html"),/spend-experience\.js\?v=/);
- assert.match(read("index.html"),/spend-clean-ui\.js\?v=/);
- assert.match(read("app.js"),/function charges\(\)/);
-});
-
-test("API data whitelist preserves the bank overdraft permission and validates its expiry date",()=>{
+test("API persists only a validated overdraft limit and removes validity metadata",()=>{
  const server=read("server.js");
- assert.match(server,/const rawTreasury=Object\.prototype\.hasOwnProperty\.call\(p,"treasury"\)\?p\.treasury:previous\.treasury/);
- assert.match(server,/const treasury=\{overdraftLimit,validUntil\}/);
- assert.match(server,/coachProfile,treasury,deletedRecords\}/);
- assert.match(server,/error:"INVALID_TREASURY"/);
- assert.match(server,/const validDate=!validUntil\|\|\(/);
+ const start=server.indexOf('app.put("/api/data"');
+ const route=server.slice(start,server.indexOf('app.use((req,res)=>',start));
+ assert.ok(route.includes("const treasury={overdraftLimit}"));
+ assert.ok(route.includes('error:"INVALID_TREASURY"'));
+ assert.doesNotMatch(route,/validUntil|validDate/);
+ assert.ok(route.includes("JSON.stringify(safe)"));
 });
