@@ -397,7 +397,7 @@ test("all six homepage financial tiles use the same aligned label, amount and ac
   const end=html.indexOf("</div>",start);
   const grid=html.slice(start,end);
   assert.equal((grid.match(/home-snapshot-card/g)||[]).length,6,file+" must apply the shared card structure to all six tiles");
-  assert.ok(html.includes('id="homeImpulsivePurchases" class="home-budget-metric home-snapshot-card'),file+" expenses tile must use the shared structure");
+  assert.ok(html.includes('class="home-budget-metric home-snapshot-card home-snapshot-action" id="homeImpulsivePurchases"'),file+" expenses tile must use the shared structure");
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
