@@ -115,6 +115,15 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
 });
+test("documentary JSON review uses a closed allowlist and never walks arbitrary repository files",()=>{
+ const worker=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","worker.js"),"utf8");
+ assert.match(worker,/DOCUMENTARY_JSON_FILES=Object\.freeze/);
+ assert.match(worker,/services\/coach-library\.json/);
+ assert.match(worker,/financialCoachSources\.fr\.json/);
+ assert.match(worker,/financialCoachSources\.additional\.fr\.json/);
+ assert.match(worker,/maxTotalChars=40000/);
+ assert.doesNotMatch(worker,/readdirSync|glob\(|walkDirectory/);
+});
 test("agent prompts are isolated from personal Coach context and contain explicit untrusted-data policy",()=>{
  const worker=fs.readFileSync(path.join(__dirname,"..","lib/bep-agent/worker.js"),"utf8");
  assert.match(worker,/Tu es un évaluateur interne du système BEP/);
