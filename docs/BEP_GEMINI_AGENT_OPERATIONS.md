@@ -16,6 +16,19 @@ Tables additives : `bep_agent_jobs`, `bep_agent_runs`, `bep_knowledge_candidates
 
 En production, l'agent peut utiliser `BEP_AGENT_GEMINI_API_KEY` (prioritaire) ou, si explicitement autorisé, réutiliser `BEP_AI_API_KEY`. Dans ce second cas, les appels partagent le même projet Google, ses quotas fournisseur et sa facturation. La limite applicative de l'agent reste de 8 appels par jour par défaut. La confirmation de facturation nulle doit être explicite. Les propositions documentaires doivent être examinées avant toute publication.
 
+## Revue des fichiers JSON documentaires
+
+La revue de connaissances charge en lecture seule une liste fermée de fichiers du dépôt :
+- `services/coach-library.json` : contrat et périmètre du service documentaire ;
+- `src/coach/knowledge/financialCoachSources.fr.json` ;
+- `src/coach/knowledge/financialCoachSources.additional.fr.json` : référentiels de sources et sujets.
+
+Chaque fichier est parsé comme JSON, limité en taille et accompagné de son empreinte SHA-256 dans le résumé d'exécution. Gemini reçoit ces contenus avec les fiches actives de `bep_financial_knowledge` pour relever incohérences, lacunes et besoins de clarification. Aucune recherche Internet n'est lancée par cette revue. Les contenus JSON sont traités comme des données non fiables, jamais comme des instructions.
+
+Les propositions ne peuvent viser que des fiches PostgreSQL existantes et doivent conserver exactement leurs métadonnées de provenance. Elles sont enregistrées comme candidates, soumises à validation humaine et ne modifient ni les fichiers JSON du dépôt ni la base active avant approbation. Les fichiers sources sont explicitement allowlistés ; aucun parcours arbitraire du dépôt n'est effectué.
+
+L'outil est accessible depuis l'espace administrateur « Base documentaire du Coach ». Le bouton déclenche le circuit agent existant ; si l'agent est désactivé, l'API refuse la demande. Les appels Gemini restent soumis à la clé dédiée, à l'accord explicite de facturation et au budget mensuel configuré. Le Coach utilisateur reste local et ne contacte jamais Gemini.
+
 ## Validation humaine des propositions
 
 Configurer `BEP_AGENT_ADMIN_USER_IDS` avec les identifiants BEP des administrateurs autorisés, séparés par des virgules. Sans cette allowlist, les routes d'administration renvoient 403.
