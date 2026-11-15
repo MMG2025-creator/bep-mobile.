@@ -1,6 +1,7 @@
 "use strict";
 const test=require("node:test"),assert=require("node:assert/strict");
 const {canonicalJson,sha256,signExport,verifyExport,accountRef,sanitizePayload}=require("../admin/bep-admin");
+const {normalizeEmail,hashCode,safeEqualHex,requireIndependentBepAdmin}=require("../admin/bep-admin-auth");
 test("canonical JSON is stable regardless of key order",()=>{assert.equal(canonicalJson({z:1,a:{y:2,x:3}}),canonicalJson({a:{x:3,y:2},z:1}));assert.equal(sha256({z:1,a:2}),sha256({a:2,z:1}));});
 test("signed exports verify and tampering is rejected",()=>{const secret="test-secret-with-enough-entropy",signed=signExport({schema:"bep-admin-export",schema_version:1,accounts:[]},secret);assert.equal(verifyExport(signed,secret),true);assert.equal(verifyExport({...signed,accounts:[{account_ref:"tampered"}]},secret),false);assert.equal(verifyExport(signed,"wrong-secret"),false);});
 test("account references are pseudonymous and stable",()=>{const first=accountRef("customer-internal-id","test-secret");assert.match(first,/^bep_[a-f0-9]{24}$/);assert.equal(first,accountRef("customer-internal-id","test-secret"));assert.notEqual(first,accountRef("another-id","test-secret"));});
@@ -72,3 +73,4 @@ test("admin page inline script parses and contains no active production mutation
   assert.match(html, /Corrections financières : DÉSACTIVÉES/);
   assert.match(html, /Suppression de compte : DÉSACTIVÉE/);
 });
+\n\ntest("independent admin auth normalizes email and compares one-time code hashes safely",()=>{const email=normalizeEmail("  MMSIGNENOIR@gmail.com ");assert.equal(email,"mmsignenoir@gmail.com");const hash=hashCode(email,"123456","a-session-pepper-that-is-long-enough");assert.match(hash,/^[a-f0-9]{64}$/);assert.equal(safeEqualHex(hash,hash),true);assert.equal(safeEqualHex(hash,hashCode(email,"654321","a-session-pepper-that-is-long-enough")),false);assert.equal(safeEqualHex("not-a-hash",hash),false)});\ntest("admin API guard rejects regular BEP sessions without independent authentication",()=>{const previous=process.env.BEP_AGENT_ADMIN_USER_IDS;delete process.env.BEP_AGENT_ADMIN_USER_IDS;let status=0,body=null;const res={status(code){status=code;return this},json(value){body=value;return this}};requireIndependentBepAdmin({session:{user:{id:"admin-user"}}},res,()=>{throw Error("regular BEP session must not pass")});assert.equal(status,401);assert.equal(body.error,"INDEPENDENT_ADMIN_AUTH_REQUIRED");if(previous!==undefined)process.env.BEP_AGENT_ADMIN_USER_IDS=previous});\n
