@@ -258,7 +258,50 @@ $("openLoginMethodsDialog")?.addEventListener("click",async()=>{
 });
 $("requestPasswordResetBtn").onclick=async()=>{const email=$("passwordResetEmail").value.trim().toLowerCase(),button=$("requestPasswordResetBtn"),status=$("passwordResetStatus");if(!email){status.textContent="Saisis l’adresse e-mail associée à ton compte.";return}button.disabled=true;status.textContent="Envoi en cours…";try{const r=await fetch(API+"/api/auth/forgot-password",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({email})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de traiter la demande.");status.textContent=d.message||"Si un compte correspond à cette adresse, un lien sécurisé sera envoyé."}catch(e){status.textContent=e.message||"Le service est temporairement indisponible."}finally{button.disabled=false}};
 
-$("linkGoogleBtn").onclick=async()=>{const button=$("linkGoogleBtn"),status=$("googleLinkStatus");button.disabled=true;status.textContent="Vérification du compte BEP…";try{const r=await fetch(API+"/api/auth/google/link/start",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("accountProofInput").value})});const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de démarrer l'association.");if(!d.url)throw Error("Adresse de connexion Google manquante.");window.location.href=d.url}catch(e){status.textContent=e.message;button.disabled=false}};
+const OAUTH_POPUP_RESULT_PREFIX="bep-google-oauth-result:";
+let activeGoogleOAuthPopup=null;
+function createOAuthFlowId(){const bytes=new Uint8Array(16);window.crypto.getRandomValues(bytes);return Array.from(bytes,value=>value.toString(16).padStart(2,"0")).join("")}
+function finishGoogleOAuthPopup(flow,result,retryAfter){
+ if(flow.timer)window.clearInterval(flow.timer);
+ if(activeGoogleOAuthPopup===flow)activeGoogleOAuthPopup=null;
+ try{localStorage.removeItem(flow.key)}catch{}
+ try{if(flow.popup&&!flow.popup.closed)flow.popup.close()}catch{}
+ if(flow.flow==="login"){
+  if(result==="success"){window.location.reload();return}
+  if(result==="rate_limited"){showRateLimitPage(retryAfter||60);return}
+  authMessage.textContent=result==="google_cancelled"?"Connexion Google interrompue. Tu peux réessayer.":(oauthMessages[result]||"La connexion Google n'a pas abouti. Tu peux réessayer.");
+  return;
+ }
+ if(flow.button)flow.button.disabled=false;
+ if(result==="google_linked"){flow.status.textContent=oauthMessages[result];refreshLoginMethodsStatus();return}
+ flow.status.textContent=result==="google_cancelled"?"Association Google interrompue. Tu peux réessayer.":(oauthMessages[result]||"L'association Google n'a pas abouti. Tu peux réessayer.");
+}
+function beginGoogleOAuthPopup(flowId,flowType,popup,status,button){
+ if(activeGoogleOAuthPopup){try{popup.close()}catch{};if(status)status.textContent="Une connexion Google est déjà en cours.";return null}
+ const flow={id:flowId,key:OAUTH_POPUP_RESULT_PREFIX+flowId,flow:flowType,popup,status,button,timer:0};
+ activeGoogleOAuthPopup=flow;
+ flow.timer=window.setInterval(()=>{
+  if(activeGoogleOAuthPopup!==flow){window.clearInterval(flow.timer);return}
+  let result=null;
+  try{result=JSON.parse(localStorage.getItem(flow.key)||"null")}catch{}
+  if(result&&result.id===flow.id){finishGoogleOAuthPopup(flow,result.result||"error",result.retryAfter);return}
+  if(!flow.popup||flow.popup.closed)finishGoogleOAuthPopup(flow,"google_cancelled");
+ },350);
+ return flow;
+}
+$("linkGoogleBtn").onclick=async()=>{
+ const button=$("linkGoogleBtn"),status=$("googleLinkStatus"),popup=window.open("about:blank","_blank","popup=yes,width=520,height=720");
+ if(!popup){status.textContent="Autorise l'ouverture d'une fenêtre pour poursuivre la connexion Google.";return}
+ button.disabled=true;status.textContent="Vérification du compte BEP…";
+ const flowId=createOAuthFlowId(),flow=beginGoogleOAuthPopup(flowId,"link",popup,status,button);
+ if(!flow){button.disabled=false;return}
+ try{
+  const r=await fetch(API+"/api/auth/google/link/start",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("accountProofInput").value,flowId})});
+  const d=await r.json();if(!r.ok)throw Error(d.message||"Impossible de démarrer l'association.");
+  if(!d.url)throw Error("Adresse de connexion Google manquante.");
+  if(activeGoogleOAuthPopup===flow&&!popup.closed)popup.location.replace(d.url);
+ }catch(e){if(activeGoogleOAuthPopup===flow)finishGoogleOAuthPopup(flow,"error");status.textContent=e.message;button.disabled=false}
+};
 
 function overdraftCapacityAllows(projectedAvailable){
  const limit=Math.max(0,Number(state.treasury?.overdraftLimit)||0),validUntil=String(state.treasury?.validUntil||"");
@@ -1019,7 +1062,12 @@ const gate=$("authGate"),loginForm=$("loginForm"),registerForm=$("registerForm")
 function showVerification(email,message){pendingVerificationEmail=String(email||"").trim().toLowerCase();if(pendingVerificationEmail)localStorage.setItem(PENDING_EMAIL_KEY,pendingVerificationEmail);loginForm.hidden=true;registerForm.hidden=true;verifyEmailForm.hidden=false;authMessage.textContent=message||("Code envoyé à "+pendingVerificationEmail+". Consulte Gmail puis reviens ici pour le saisir.")}
 function authMode(mode){const reg=mode==="register";loginForm.hidden=reg;registerForm.hidden=!reg;verifyEmailForm.hidden=true;$("showLogin").classList.toggle("active",!reg);$("showRegister").classList.toggle("active",reg);authMessage.textContent=""}
 $("showLogin").onclick=()=>authMode("login");$("showRegister").onclick=()=>authMode("register");
-$("googleLogin").onclick=()=>{window.location.href=API+"/api/auth/google"};
+$("googleLogin").onclick=()=>{
+ const popup=window.open("about:blank","_blank","popup=yes,width=520,height=720");
+ if(!popup){authMessage.textContent="Autorise l'ouverture d'une fenêtre pour poursuivre la connexion Google.";return}
+ const flowId=createOAuthFlowId(),flow=beginGoogleOAuthPopup(flowId,"login",popup,authMessage,null);
+ if(flow)popup.location.replace(API+"/api/auth/google?flow_id="+encodeURIComponent(flowId));
+};
 async function finishAuth(isNew){try{if(!isNew){const r=await fetch(API+"/api/data",{credentials:"include"});if(!r.ok)throw Error("Impossible de charger tes données.");const d=await r.json();state={...defaults,...(d.payload||{})};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}await window.BEPOffline.setBaseline(d.payload||{})}renderCoachProfile();await persistMigratedIncomeState()}else{const r=await fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});if(!r.ok)throw Error("Le compte est créé, mais la sauvegarde initiale a échoué.")}localStorage.removeItem(PENDING_EMAIL_KEY);pendingVerificationEmail="";window.bepSignedIn=true;if(window.BEPOffline){try{const authResponse=await fetch(API+"/api/auth/status",{credentials:"include",cache:"no-store"});const authData=await authResponse.json();window.BEPOffline.markKnownUser(authData.user?.id||authData.user?.email||"authenticated")}catch{window.BEPOffline.markKnownUser("authenticated")}window.BEPOffline.setBaseline(state)}window.dispatchEvent(new Event("bep:auth-ready"));gate.hidden=true;aiConnection={configured:false,provider:"",model:""};await loadAiConnection();tab("home");render()}catch(e){authMessage.textContent=e.message}}
 $("resendVerification").onclick=async()=>{if(!pendingVerificationEmail)return authMessage.textContent="Adresse e-mail manquante. Recommence l'inscription.";authMessage.textContent="Envoi du code…";try{const r=await fetch(API+"/api/auth/resend-verification",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:pendingVerificationEmail})});const d=await r.json();if(handleAuthRateLimit(r,d))return;if(!r.ok)throw Error(d.message||"Envoi impossible.");authMessage.textContent="Un nouveau code a été envoyé à "+pendingVerificationEmail+"."}catch(e){authMessage.textContent=e.message}};verifyEmailForm.onsubmit=async e=>{e.preventDefault();if(!pendingVerificationEmail)return authMessage.textContent="Adresse e-mail manquante. Recommence l'inscription.";authMessage.textContent="Vérification…";try{const r=await fetch(API+"/api/auth/verify-email",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:pendingVerificationEmail,code:$("verifyEmailCode").value})});const d=await r.json();if(handleAuthRateLimit(r,d))return;if(!r.ok)throw Error(d.message||"Vérification impossible.");await finishAuth(true)}catch(e){authMessage.textContent=e.message}};loginForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Connexion…";try{const r=await fetch(API+"/api/auth/login",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value,password:$("loginPassword").value})});const d=await r.json();if(handleAuthRateLimit(r,d))return;if(!r.ok)throw Error(d.message||"Connexion impossible.");await finishAuth(false)}catch(x){authMessage.textContent=x.message}};
 registerForm.onsubmit=async e=>{e.preventDefault();authMessage.textContent="Création du compte et envoi du code…";try{const email=$("registerEmail").value.trim().toLowerCase(),r=await fetch(API+"/api/auth/register",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("registerName").value,email,password:$("registerPassword").value})}),d=await r.json();if(handleAuthRateLimit(r,d))return;if(!r.ok){if(r.status===409){showVerification(email,"Un compte existe déjà avec cette adresse. Si l'inscription précédente a été interrompue, appuie sur « Renvoyer le code ».");return}throw Error(d.message||"Création impossible.")}showVerification(d.email,"Code envoyé à "+d.email+". Consulte Gmail puis reviens ici pour le saisir.")}catch(x){authMessage.textContent=x.message}};
