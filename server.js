@@ -24,7 +24,7 @@ app.use((req,res,next)=>{
  if(["POST","PUT","PATCH","DELETE"].includes(req.method)&&origin!==FRONTEND_ORIGIN)return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
  next();
 });
-app.use(helmet({contentSecurityPolicy:{directives:{
+app.use(helmet({crossOriginOpenerPolicy:{policy:"same-origin-allow-popups"},contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
 app.use("/api/admin/console/import",express.json({limit:"5mb"}));
