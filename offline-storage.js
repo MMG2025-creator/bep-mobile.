@@ -7,6 +7,7 @@ function openDb(){if(dbPromise)return dbPromise;dbPromise=new Promise((resolve,r
 async function read(key){try{const db=await openDb();return await new Promise((resolve,reject)=>{const r=db.transaction(STORE).objectStore(STORE).get(key);r.onsuccess=()=>resolve(r.result??null);r.onerror=()=>reject(r.error)})}catch{try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null}}}
 async function write(key,value){try{const db=await openDb();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(value,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch{try{localStorage.setItem(key,JSON.stringify(value))}catch{throw Error("Stockage local indisponible")}}}
 async function clear(key){try{const db=await openDb();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch{try{localStorage.removeItem(key)}catch{}}}
+async function clearIfQueuedAt(expected){try{const db=await openDb();return await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite"),store=tx.objectStore(STORE),get=store.get(queueKey());let removed=false;get.onsuccess=()=>{if(get.result?.queuedAt===expected){store.delete(queueKey());removed=true}};tx.oncomplete=()=>resolve(removed);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error("Queue update aborted"))})}catch{const current=await read(queueKey());if(current?.queuedAt!==expected)return false;try{localStorage.removeItem(queueKey());return true}catch{return false}}}
 function stable(value){if(Array.isArray(value))return "["+value.map(stable).join(",")+"]";if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+stable(value[k])).join(",")+"}";return JSON.stringify(value)}
 let baseline=null,baselineLoaded=false,flushing=false,baselineWrite=Promise.resolve();
 async function loadBaseline(){await baselineWrite;if(!baselineLoaded){baseline=await read(baselineKey());baselineLoaded=true}}
@@ -64,13 +65,13 @@ if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflic
 if(!saved.ok)throw Error("Synchronisation refusée ("+saved.status+")");
 const merged=savedData.payload&&typeof savedData.payload==="object"?savedData.payload:pending.payload;
 await setBaseline(merged);
-const latest=await read(queueKey());
-if(latest&&latest.queuedAt!==pending.queuedAt){
- latest.base=JSON.parse(JSON.stringify(merged));await write(queueKey(),latest);retry=true;
- window.dispatchEvent(new CustomEvent("bep:offline-pending",{detail:{queuedAt:latest.queuedAt}}));
+const removed=await clearIfQueuedAt(pending.queuedAt);
+if(!removed){
+ const latest=await read(queueKey());
+ if(latest){latest.base=JSON.parse(JSON.stringify(merged));await write(queueKey(),latest);retry=true;window.dispatchEvent(new CustomEvent("bep:offline-pending",{detail:{queuedAt:latest.queuedAt}}))}
+ else{try{localStorage.setItem(DATA_KEY,JSON.stringify(merged))}catch{}window.dispatchEvent(new CustomEvent("bep:offline-synced",{detail:{payload:merged}}))}
 }else{
  try{localStorage.setItem(DATA_KEY,JSON.stringify(merged))}catch{}
- await clear(queueKey());
  window.dispatchEvent(new CustomEvent("bep:offline-synced",{detail:{payload:merged}}));
 }
 return true
