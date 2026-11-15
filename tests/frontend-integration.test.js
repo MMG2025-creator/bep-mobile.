@@ -334,3 +334,22 @@ test("monthly calendar collapses when the active month chip is tapped again and 
  assert.match(css,/@keyframes monthlyBudgetFloat/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
+
+\ntest("budget coach is an inline mascot shortcut on every budget subpage, not a floating dock",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.equal((html.match(/id="budgetCoachLauncher"/g)||[]).length,1,file+" must expose one contextual Coach shortcut shared by budget subpages");
+  assert.doesNotMatch(html,/id="bepAdviceDock"|id="bepAdviceRobot"/);
+  assert.match(html,/<div class="budget-module-nav"[\s\S]*?<div class="budget-coach-entry">[\s\S]*?id="budgetCoachLauncher"/);
+  assert.match(html,/const dialog=document\.getElementById\("bepAdviceDialog"\),robot=document\.getElementById\("budgetCoachLauncher"\)/);
+  assert.match(html,/robot\.addEventListener\("click",\(\)=>dialog\.open\?close\(\):open\(\)\)/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.budget-coach-launcher[\s\S]*?\.budget-coach-robot-art/);
+ }
+ for(const file of ["spend-experience.css","dist/spend-experience.css"]){
+  const css=read(file);
+  assert.match(css,/#budgetModuleIncome \.income-card>\.card-head \.hint,[\s\S]*?#budgetModuleCharges \.charges-card>\.card-head \.hint/);
+ }
+});
