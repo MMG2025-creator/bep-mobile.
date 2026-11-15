@@ -19,6 +19,7 @@
   "limits": {
     "query_max_length": 500,
     "max_proposals_per_run": 5,
+    "max_calls_per_day": 2,
     "max_content_chars": 1800,
     "timeout_ms": 30000
   },
