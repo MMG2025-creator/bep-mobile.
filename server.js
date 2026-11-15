@@ -316,7 +316,7 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
     if(!match||candidate.proposal_type!=="update"||candidate.evidence_level!=="web_research_pending"||!/^https:\/\//.test(String(candidate.source_url||""))){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_INVALID"})}
     const category=match[1],sourceDoc={slug:candidate.source_slug,category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1};
     if(digestWebCandidate(candidate,category)!==candidate.source_digest||sourceFingerprint(sourceDoc)!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_CHANGED"})}
-    const keywords=[...new Set((String(candidate.title)+" "+String(candidate.content)).toLocaleLowerCase("fr").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").match(/[a-z0-9]{4,}/g)||[])].slice(0,20);
+    const keywords=[...new Set((String(candidate.title)+" "+String(candidate.content)).toLocaleLowerCase("fr").match(/[a-z0-9]{4,}/g)||[])].slice(0,20);
     const inserted=await client.query("INSERT INTO bep_financial_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,'web_research',1,TRUE) ON CONFLICT(slug) DO NOTHING RETURNING slug",[candidate.source_slug,category,candidate.title,candidate.content,JSON.stringify(keywords),candidate.source_name,candidate.source_url]);
     if(!inserted.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_KNOWLEDGE_ALREADY_EXISTS"})}
    }else{
