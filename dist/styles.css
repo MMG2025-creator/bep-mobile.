@@ -1655,16 +1655,3 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* Replay financial chart animations whenever a module is opened */
 @keyframes bep-chart-enter{from{opacity:.25;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.chart-data-point{animation:none!important;transition:none!important}}
-
-/* Budget page coach shortcut: inline, fully visible and non-obstructive. */
-.budget-coach-entry{display:flex;justify-content:flex-end;margin:0 0 14px}
-.budget-coach-launcher{display:inline-flex;align-items:center;gap:9px;min-height:54px;max-width:100%;padding:5px 12px 5px 6px;border:1px solid #d8e8de;border-radius:17px;background:linear-gradient(120deg,#f5faf6,#fff);color:#245b45;box-shadow:0 3px 12px #173c290c;text-align:left;cursor:pointer;touch-action:manipulation}
-.budget-coach-robot-art{display:block;width:42px;height:45px;flex:none;object-fit:contain}
-.budget-coach-launcher>span:nth-child(2){display:grid;gap:2px;min-width:0}
-.budget-coach-launcher strong{font:800 12px/1.2 Manrope,sans-serif}
-.budget-coach-launcher small{font:500 10px/1.25 Manrope,sans-serif;color:#718278}
-.budget-coach-entry-arrow{font-size:16px;color:#6b9a7e}
-.budget-coach-launcher:active{transform:scale(.98);background:#edf7f1}
-.budget-coach-launcher:focus-visible{outline:3px solid #80b99a;outline-offset:3px}
-@media(hover:hover){.budget-coach-launcher:hover{transform:translateY(-1px);box-shadow:0 6px 16px #173c2917}}
-@media(prefers-reduced-motion:reduce){.budget-coach-launcher{transition:none}}
