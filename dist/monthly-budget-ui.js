@@ -348,15 +348,17 @@
       renderMonths();
       renderItems();
       const currentMonthKey = monthNow();
+      let homeBridgeError = "";
       if (!fromCache && window.bepSignedIn && navigator.onLine && monthKey === currentMonthKey && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
         if (epoch === authEpoch && requestId === monthLoadSequence) {
           try { await window.BEP_APPLY_MONTHLY_ITEMS(monthKey, items); }
-          catch (bridgeError) { status("Budget mensuel chargé, mais le report vers l’accueil a échoué : " + bridgeError.message, true); }
+          catch (bridgeError) { homeBridgeError = bridgeError.message || "erreur inconnue"; }
         }
       }
-      status(fromCache
+      const loadStatus = fromCache
         ? "Copie locale consultée hors ligne · " + new Date((await readHistoryCache())?.savedAt || Date.now()).toLocaleString("fr-FR") + " · lecture seule."
-        : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version));
+        : (current.status === "closed" ? "Mois clôturé — consultation seule." : "Mois ouvert · version " + current.version);
+      status(loadStatus + (homeBridgeError ? " · Report vers l’accueil impossible : " + homeBridgeError : ""), Boolean(homeBridgeError));
     } catch (error) {
       if (requestId === monthLoadSequence && epoch === authEpoch)
         status("Impossible de charger ce mois : " + error.message, true);
@@ -501,10 +503,14 @@
       await cacheMonthBudget(current);
       items = current.items.map(x => ({ ...x, clientId: crypto.randomUUID(), plannedAmount: Number(x.plannedAmount) }));
       renderItems();
+      let homeBridgeError = "";
       if (current.monthKey === monthNow() && typeof window.BEP_APPLY_MONTHLY_ITEMS === "function") {
-        await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items);
+        try { await window.BEP_APPLY_MONTHLY_ITEMS(current.monthKey, items); }
+        catch (bridgeError) { homeBridgeError = bridgeError.message || "erreur inconnue"; }
       }
-      status("Budget enregistré · version " + current.version + (current.monthKey === monthNow() ? " · report accueil/épargne actualisé." : ""));
+      status("Budget enregistré · version " + current.version +
+        (current.monthKey === monthNow() ? (homeBridgeError ? " · report vers l’accueil impossible : " + homeBridgeError : " · report accueil/épargne actualisé.") : ""),
+        Boolean(homeBridgeError));
       try { await refreshMonthListOnly(); }
       catch (refreshError) {
         status("Budget mensuel enregistré · version " + current.version + ". Actualisation de la liste des mois impossible : " + refreshError.message, true);
