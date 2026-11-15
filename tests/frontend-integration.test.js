@@ -320,8 +320,8 @@ test("monthly budget visual workspace uses synchronized client assets and publis
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   for(const id of ["monthlyBudgetMonthStrip","monthlyBudgetMonthPrev","monthlyBudgetMonthNext","monthlyBudgetCalendar","monthlyBudgetAllocationDonut","monthlyBudgetCategoryDonut"])assert.ok(html.includes('id="'+id+'"'),file+" missing #"+id);
-  assert.match(html,/monthly-budget-ui\.css\?v=3&bep=monthly-header-full-width-20261115/);
-  assert.match(html,/monthly-budget-ui\.js\?v=16&bep=calendar-toggle-and-header-motion-20261115/);
+  assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
  }
  for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
 });
