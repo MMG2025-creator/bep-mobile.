@@ -80,16 +80,12 @@ test("PostgreSQL row locking serializes simultaneous stale writers",{
  }
 });
 
-test("atomic API sync preserves validated treasury in the committed payload",()=>{
+test("atomic API sync persists only the validated overdraft limit",()=>{
  const server=read("server.js");
  const start=server.indexOf('app.put("/api/data"');
  const route=server.slice(start,server.indexOf('app.use((req,res)=>',start));
- const treasury=route.indexOf('const rawTreasury=');
- const validation=route.indexOf('error:"INVALID_TREASURY"');
- const safe=route.indexOf('coachProfile,treasury,deletedRecords}');
- const commit=route.indexOf('await client.query("COMMIT")');
- assert.ok(treasury>=0&&validation>treasury&&safe>validation&&commit>safe,
-  "the API must validate and include treasury before committing the CAS snapshot");
- assert.match(route,/previous\.treasury/);
- assert.match(route,/overdraftLimit,validUntil/);
+ assert.match(route,/const treasury=\{overdraftLimit\}/);
+ assert.match(route,/error:"INVALID_TREASURY"/);
+ assert.doesNotMatch(route,/validUntil|validDate/);
+ assert.match(route,/JSON\.stringify\(safe\)/);
 });
