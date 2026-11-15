@@ -62,7 +62,7 @@ jobs:
               'Scope: public frontend assets, /api/health and unauthenticated /api/auth/status. No financial writes or authenticated user data.'
             ];
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
-            NODE
+          NODE
           else
             echo '## BEP production k6 load test' >> "$GITHUB_STEP_SUMMARY"
             echo 'No k6 summary was produced. Check the runner logs.' >> "$GITHUB_STEP_SUMMARY"
