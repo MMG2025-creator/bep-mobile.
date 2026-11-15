@@ -353,3 +353,31 @@ test("budget has no robot shortcut or floating advice dock and monthly header us
   assert.match(css,/\.monthly-budget-heading-art\{top:12px!important/);
  }
 });
+
+
+test("monthly expense calendar opens a read-only contextual detail dialog for days with expenses",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  for(const id of ["monthlyBudgetCalendar","monthlyBudgetDayDialog","monthlyBudgetDayTitle","monthlyBudgetDaySummary","monthlyBudgetDayExpenses"])assert.match(html,new RegExp('id="'+id+'"'));
+  assert.match(html,/monthly-budget-ui\\.css\\?v=4&bep=calendar-day-context-dialog-20261115/);
+  assert.match(html,/monthly-budget-ui\\.js\\?v=17&bep=calendar-day-context-dialog-20261115/);
+ }
+ const js=read("monthly-budget-ui.js");
+ assert.equal(js,read("dist/monthly-budget-ui.js"));
+ assert.match(js,/data-day=/);
+ assert.match(js,/openCalendarDayDetails/);
+ assert.match(js,/actuals\\.expenses \\|\\| \\[\\]/);
+ assert.match(js,/showModal\\(\\)/);
+ assert.match(js,/data-close-monthly-day-dialog/);
+ assert.match(js,/event\\.target === dayDialog/);
+ assert.match(js,/dayDialog\\?\\.addEventListener\\("close"/);
+ assert.match(js,/expense\\.label \\|\\| expense\\.merchant \\|\\| "Dépense"/);
+ assert.match(js,/expense\\.category \\|\\| "Sans catégorie"/);
+ assert.match(js,/monthlyBudgetDayExpenses/);
+ for(const file of ["monthly-budget-ui.css","dist/monthly-budget-ui.css"]){
+  const css=read(file);
+  assert.match(css,/\\.monthly-budget-day-dialog::backdrop/);
+  assert.match(css,/\\.monthly-budget-calendar-day-button:focus-visible/);
+  assert.match(css,/@media\\(max-width:480px\\).*monthly-budget-day-dialog/s);
+ }
+});
