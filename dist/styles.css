@@ -1517,28 +1517,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:380px){.home-overdraft-card{padding:15px}.home-overdraft-summary{align-items:flex-start;flex-direction:column;gap:6px}}
 
 
-/* Homepage financial snapshot: direct management shortcuts */
-.home-snapshot-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
-.home-snapshot-card{min-height:94px;justify-content:space-between;gap:6px;padding:12px 12px;text-align:left}
-.home-snapshot-action{width:100%;font:inherit;color:inherit;cursor:pointer;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
-.home-snapshot-action:hover{border-color:#9ccbb4;box-shadow:0 4px 13px rgba(16,46,41,.08);transform:translateY(-1px)}
-.home-snapshot-action:focus-visible{outline:3px solid #80b99a;outline-offset:2px}
-.home-snapshot-action small,.home-snapshot-static small{font-size:10px;line-height:1.3;color:var(--green);font-weight:700}
-.home-snapshot-static{cursor:default}
-.home-budget-available{grid-column:1;grid-row:2}
-.home-overdraft-mini{grid-column:2;grid-row:2;background:#f7faf8;border-color:#dce9e2}
-.home-overdraft-mini strong{font:800 clamp(14px,3.5vw,19px) Manrope,sans-serif;color:var(--forest);overflow-wrap:anywhere}
-.home-overdraft-mini #homeOverdraftStatus{font-size:10px;color:var(--muted);font-weight:700}
-.home-overdraft-mini #homeOverdraftStatus.overdraft-active{color:#176b50}
-.home-overdraft-mini #homeOverdraftStatus.overdraft-expired{color:#9a432c}
-@media(max-width:560px){.home-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-budget-available,.home-overdraft-mini{grid-row:auto;grid-column:auto}}
-@media(max-width:380px){.home-snapshot-card{min-height:88px;padding:10px 9px}.home-snapshot-card span{font-size:10px}.home-snapshot-card small{font-size:9px}}
-
-/* Apply shortcut affordance to every metric button, including the savings and overdraft tiles. */
-.home-snapshot-grid>button{font:inherit;text-align:left;color:inherit;cursor:pointer}
-.home-snapshot-grid>button:focus-visible{outline:3px solid #80b99a;outline-offset:2px}
-
-
 /* Desktop homepage snapshot: balanced 3 columns x 2 rows; mobile remains 2 x 3. */
 @media(min-width:561px){
  .home-snapshot-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
@@ -1726,3 +1704,28 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* Overdraft permission removal action */
 #removeOverdraftBtn{border-color:#e4c9c6;color:#9b3d36;background:#fff;}
 #removeOverdraftBtn:active{background:#fff5f4;}
+
+
+/* BEP Home robot — interactive assistant states */
+.welcome-mascot[data-goto="coach"]{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
+.welcome-mascot .welcome-bot{width:100%;height:calc(100% - 24px);overflow:visible;transition:filter .25s ease}
+.welcome-mascot .welcome-bot path,.welcome-mascot .welcome-bot rect,.welcome-mascot .welcome-bot ellipse{transform-box:fill-box}
+.welcome-mascot .home-robot-eyes{transform-origin:center;animation:bepRobotBlink 5s infinite}
+.welcome-mascot .home-robot-mouth{transform-origin:center;transition:transform .2s ease}
+.welcome-mascot .home-robot-arms{transform-origin:center;transition:transform .25s ease}
+.welcome-mascot[data-state="advice"] .home-robot-arms{transform:rotate(-5deg)}
+.welcome-mascot[data-state="thinking"] .home-robot-mouth{transform:scaleX(.55)}
+@keyframes bepRobotBlink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.12)}}
+.welcome-mascot .home-mascot-status{display:block;max-width:100%;padding:4px 8px;border:1px solid rgba(204,246,224,.35);border-radius:999px;background:rgba(2,42,35,.72);color:#e8fff2;font-size:9px;font-weight:700;line-height:1.2;text-align:center;white-space:nowrap;opacity:.9}
+.welcome-mascot:focus-visible{outline:3px solid #f0c85d;outline-offset:5px;border-radius:18px}
+.welcome-mascot[data-state="thinking"] .welcome-bot{filter:drop-shadow(0 0 10px rgba(120,255,200,.8))}
+.welcome-mascot[data-state="thinking"] .home-mascot-status{background:#0b7459;animation:bepRobotStatusPulse 1.1s ease-in-out infinite}
+.welcome-mascot[data-state="thinking"] .welcome-bot path:nth-of-type(3){animation:bepRobotThink 1s ease-in-out infinite}
+.welcome-mascot[data-state="advice"] .welcome-bot{filter:drop-shadow(0 0 12px rgba(240,200,93,.65))}
+.welcome-mascot[data-state="advice"] .home-mascot-status{border-color:#f0c85d;color:#fff4c8}
+.welcome-mascot[data-state="attention"] .home-mascot-status{background:#79502b;color:#fff5dc}
+@keyframes bepRobotFloat{0%,100%{margin-top:0}50%{margin-top:-7px}}
+@keyframes bepRobotThink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bepRobotStatusPulse{0%,100%{opacity:.75}50%{opacity:1}}
+@media(max-width:430px){.welcome-mascot[data-goto="coach"]{right:2%;width:30%;height:150px}.welcome-mascot .home-mascot-status{font-size:8px;padding:3px 6px}.welcome .welcome-copy{max-width:72%}}
+@media(prefers-reduced-motion:reduce){.welcome-mascot[data-goto="coach"],.welcome-mascot[data-state="thinking"] .home-mascot-status{animation:none!important}}
