@@ -1,0 +1,61 @@
+name: BEP business recipe preflight
+
+on:
+  push:
+    branches:
+      - test/k6-production-load-20261115
+    paths:
+      - server.js
+      - monthly-budget-routes.js
+      - tests/**
+      - package.json
+      - .github/workflows/bep-business-recipe-preflight.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bep-business-recipe-preflight
+  cancel-in-progress: false
+
+jobs:
+  automated-regression:
+    name: Non-destructive automated regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      # Deliberately no DATABASE_URL / TEST_DATABASE_URL:
+      # integration suites must skip rather than touch production data.
+    steps:
+      - name: Checkout isolated test branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run complete Node test suite
+        run: npm test
+
+      - name: Run monthly budget syntax and regression suite
+        run: npm run check:monthly-budget
+
+      - name: Record test environment
+        if: always()
+        run: |
+          {
+            echo "## BEP business recipe — automated preflight"
+            echo ""
+            echo "- Environment: isolated GitHub Actions runner"
+            echo "- Database credentials: not supplied"
+            echo "- Production writes: impossible in this workflow"
+            echo "- Integration tests requiring PostgreSQL: expected to skip without TEST_DATABASE_URL"
+            echo "- Node: $(node --version)"
+            echo "- npm: $(npm --version)"
+          } >> "$GITHUB_STEP_SUMMARY"
