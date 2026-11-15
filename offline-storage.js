@@ -58,7 +58,7 @@ async function clearLocalData(){
  dbPromise=null;baseline=null;baselineLoaded=false;baselineWrite=Promise.resolve();
 }
 async function flush(){if(flushing||!navigator.onLine||!window.bepSignedIn)return false;flushing=true;let retry=false;try{await loadBaseline();const pending=await read(queueKey());if(!pending)return true;if(!pending.base||typeof pending.base!=="object"||Array.isArray(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"missing-baseline"}}));return false}
-const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\\/+$/,"");
+const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
 const saved=await fetch(api+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({__bepOfflineSync:true,base:pending.base,payload:pending.payload})});
 const savedData=await saved.json().catch(()=>({}));
 if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:savedData.error||"remote-changed",path:savedData.conflictPath||""}}));return false}
