@@ -1083,5 +1083,6 @@ const oauthParams=new URLSearchParams(window.location.search);const oauthResult=
  }
 })();
 
+async function revealAdminKnowledgeAccess(){const card=$("adminKnowledgeAccess");if(!card||!window.bepSignedIn||window.bepOfflineMode)return;try{const response=await fetch(API+"/api/admin/bep-agent/overview",{credentials:"include",cache:"no-store"});card.hidden=!response.ok}catch{card.hidden=true}}window.addEventListener("bep:auth-ready",revealAdminKnowledgeAccess);if(window.bepSignedIn)revealAdminKnowledgeAccess();
 setupInlineVoice();setupPlaceSuggestions();setupPurchaseNatureSuggestions();if($("purchaseNotes"))$("purchaseNotes").addEventListener("input",()=>{const n=$("purchaseNotes").value.toLowerCase();if(/chauss|basket|sneaker|vêtement|textile|tenue/.test(n))$("purchaseCategory").value="Mode";else if(/ballon|raquette|fitness|équipement sportif/.test(n))$("purchaseCategory").value="Loisirs"});render();// Service worker disabled: always load the current published app and assets.
 })();
