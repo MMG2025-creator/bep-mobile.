@@ -1,12 +1,10 @@
 "use strict";
-const CACHE_NAME="bep-shell-v21";
+const CACHE_NAME="bep-shell-v22";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
   "./",
   "./index.html",
-  "./oauth-popup.html",
-  "./oauth-popup.js",
   "./manifest.webmanifest",
   "./styles.css",
   "./monthly-budget-ui.css",
@@ -61,10 +59,6 @@ self.addEventListener("fetch",event=>{
         return response;
       }catch(_error){return (await caches.match(request,{ignoreSearch:true}))||Response.error();}
     })());
-    return;
-  }
-  if(url.pathname.endsWith("/oauth-popup.html")){
-    event.respondWith(fetch(request,{cache:"no-store"}).catch(()=>caches.match("./index.html")||Response.error()));
     return;
   }
   if(request.mode==="navigate"){
