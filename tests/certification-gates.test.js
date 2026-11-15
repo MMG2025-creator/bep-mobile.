@@ -31,3 +31,11 @@ test("preview runtime configuration never defaults to the production API",()=>{
  vm.runInNewContext(runtime,production);
  assert.equal(production.window.BEP_API_BASE,"https://bep-v2-api.onrender.com");
 });
+test("published home and entrypoint load the corrected savings and recovery assets",()=>{
+ const html=read("dist/index.html");
+ assert.match(html,/id="homeSavingsPlanned"/,"published home must expose the planned savings amount");
+ assert.match(html,/offline-storage\\.js\\?v=7/,"published entrypoint must load the guarded offline runtime");
+ assert.match(html,/app\\.js\\?v=118/,"published entrypoint must load the savings renderer");
+ assert.match(html,/auth-recovery\\.js\\?v=3/,"published entrypoint must load environment-aware recovery");
+ assert.match(html,/monthly-budget-ui\\.js\\?v=14/,"published entrypoint must load the current-month bridge");
+});
