@@ -78,7 +78,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   assert.match(html,/styles\.css\?v=102&bep=footer-center-advice-feedback-20261115/);
-  assert.match(html,/connection-status\.css\?v=2&bep=footer-centered-20261115/);
+  assert.match(html,/connection-status\.css\?v=3&bep=compact-mobile-footer-20261115/);
  }
 });
 
