@@ -381,3 +381,10 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
   assert.ok(css.includes("@media(max-width:480px){.monthly-budget-day-dialog"));
  }
 });
+
+
+test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v19"/);
+ assert.equal(read("sw.js"),read("dist/sw.js"));
+ assert.match(read("pwa.js"),/updateViaCache:"none"/);
+});
