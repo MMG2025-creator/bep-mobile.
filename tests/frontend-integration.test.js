@@ -305,10 +305,10 @@ test("savings capacity uses the financial engine totals and excludes archived go
 
 test("published production homepage keeps its dist-specific design while using the current PWA bootstrap",()=>{
  const source=read("index.html"),published=read("dist/index.html");
- assert.match(source,/ui-polish\\.css\\?v=2/);
- assert.match(source,/settings\\.css\\?v=3/);
- assert.match(published,/ui-polish\\.css\\?v=4/);
- assert.match(published,/settings\\.css\\?v=4/);
- assert.match(published,/pwa\\.js\\?v=12/);
+ assert.match(source,/ui-polish\.css\?v=2/);
+ assert.match(source,/settings\.css\?v=3/);
+ assert.match(published,/ui-polish\.css\?v=4/);
+ assert.match(published,/settings\.css\?v=4/);
+ assert.match(published,/pwa\\.js\?v=12/);
  assert.notEqual(source,published,"dist/index.html intentionally carries production-specific presentation");
 });
