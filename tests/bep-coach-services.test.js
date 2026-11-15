@@ -2,6 +2,7 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb}=require("../lib/bep-coach-services");
+const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
 
 test("Coach knowledge and research services are independent JSON contracts",()=>{
  assert.equal(LIBRARY_CONFIG.service,"bep-coach-library");
@@ -56,4 +57,10 @@ test("grounded research stores only source-matched pending candidates",async()=>
  assert.equal(statements.length,2);
  assert.match(statements[1].sql,/bep_knowledge_candidates/);
  assert.equal(statements[1].params[6],"web_research_pending");
+});
+
+test("approved web candidate digest matches the shared source fingerprint contract",()=>{
+ const source={slug:"web-budget-0123456789abcdef01234567",category:"budget",title:"Budget",content:"Contenu",source_name:"Source",source_url:"https://example.org",evidence_level:"web_research_pending",version:1};
+ const candidate={source_slug:source.slug,title:source.title,content:source.content,source_name:source.source_name,source_url:source.source_url,evidence_level:source.evidence_level};
+ assert.equal(digestWebCandidate(candidate,source.category),sourceFingerprint(source));
 });
