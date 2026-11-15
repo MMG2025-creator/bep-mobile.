@@ -265,11 +265,12 @@
     if (!current) return;
     const sum = type => items.filter(x => x.itemType === type).reduce((n, x) => n + Math.max(0, Number(x.plannedAmount) || 0), 0);
     const income = sum("income"), charges = sum("charge"), savings = sum("savings");
-    const available = financialPosition().available;
-    const denominator = Math.max(income, charges + savings + Math.max(0, available), 0);
+    const position = financialPosition(), available = position.available, actualImpact = position.actualImpact;
+    const denominator = Math.max(income, charges + savings + actualImpact + Math.max(0, available), 0);
     const parts = [
       { label: "Charges prévues", value: charges, color: "#176b50" },
       { label: "Épargne prévue", value: savings, color: "#d4ae55" },
+      { label: "Dépassement réel", value: actualImpact, color: "#c47a45" },
       { label: "Disponible", value: Math.max(0, available), color: "#dce9e1" }
     ];
     let cursor = 0;
