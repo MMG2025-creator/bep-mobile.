@@ -1707,7 +1707,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 
 /* BEP Home robot — interactive assistant states */
-.welcome-mascot.bep-home-mascot-button{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
+.welcome-mascot[data-goto="coach"]{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
 .welcome-mascot .welcome-bot{width:100%;height:calc(100% - 24px);overflow:visible;transition:filter .25s ease}
 .welcome-mascot .welcome-bot path,.welcome-mascot .welcome-bot rect,.welcome-mascot .welcome-bot ellipse{transform-box:fill-box}
 .welcome-mascot .home-robot-eyes{transform-origin:center;animation:bepRobotBlink 5s infinite}
@@ -1727,5 +1727,5 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @keyframes bepRobotFloat{0%,100%{margin-top:0}50%{margin-top:-7px}}
 @keyframes bepRobotThink{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes bepRobotStatusPulse{0%,100%{opacity:.75}50%{opacity:1}}
-@media(max-width:430px){.welcome-mascot.bep-home-mascot-button{right:2%;width:30%;height:150px}.welcome-mascot .home-mascot-status{font-size:8px;padding:3px 6px}.welcome .welcome-copy{max-width:72%}}
-@media(prefers-reduced-motion:reduce){.welcome-mascot.bep-home-mascot-button,.welcome-mascot[data-state="thinking"] .home-mascot-status{animation:none!important}}
+@media(max-width:430px){.welcome-mascot[data-goto="coach"]{right:2%;width:30%;height:150px}.welcome-mascot .home-mascot-status{font-size:8px;padding:3px 6px}.welcome .welcome-copy{max-width:72%}}
+@media(prefers-reduced-motion:reduce){.welcome-mascot[data-goto="coach"],.welcome-mascot[data-state="thinking"] .home-mascot-status{animation:none!important}}
