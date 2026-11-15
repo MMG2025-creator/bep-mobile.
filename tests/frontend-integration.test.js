@@ -186,16 +186,20 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
  assert.match(spend,/setAttribute\("role","button"\)/);
  assert.match(spend,/keydown/);
  assert.match(spend,/purchaseHistory\.open=true/);
+ assert.match(spend,/decisions\.textContent=stats\.impulsive\+" achat"\+\(stats\.impulsive>1\?"s":""\)/);
+ assert.doesNotMatch(spend,/decisions\.textContent=stats\.impulsive[^;]*sous impulsion/);
  const app=read("app.js");
  assert.ok(app.includes("window.BEP_SET_IMPULSIVE_PURCHASES="));
  assert.ok(app.includes("window.BEP_OPEN_PURCHASES="));
  for(const file of ["spend-experience.css","dist/spend-experience.css"]){
   const css=read(file);
   assert.match(css,/#purchases \.bep-spend-history-details>#purchaseRows\s*\{[^}]*overflow-y:auto/s);
+  assert.match(css,/\.bep-spend-stat strong\{[^}]*max-width:100%[^}]*overflow-wrap:anywhere/s);
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/spend-experience\.css\?v=33&bep=mobile-two-column-budget-tiles-20261114/);
+  assert.match(html,/spend-experience\.css\?v=34&bep=compact-impulse-kpi-20261115/);
+  assert.match(html,/spend-experience\.js\?v=25&bep=compact-impulse-kpi-20261115/);
  }
 });
 
