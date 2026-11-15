@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=119&bep=oauth-popup-history-isolation-20261115/);
+  assert.match(html,/app\.js\?v=120&bep=google-oauth-direct-navigation-20261115/);
   assert.match(html,/offline-storage\.js\?v=6&bep=robust-local-clear-20261114/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=119&bep=oauth-popup-history-isolation-20261115/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=120&bep=google-oauth-direct-navigation-20261115/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
@@ -384,7 +384,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v21"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v22"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -407,27 +407,11 @@ test("all six homepage financial tiles use the same aligned label, amount and ac
  }
 });
 
-test("Google OAuth runs in a separate popup and returns to BEP without adding Google to the main navigation history",()=>{
- for(const file of ["app.js","dist/app.js"]){
-  const app=read(file);
-  assert.ok(app.includes('window.open("about:blank"'),file+" must open a separate OAuth context");
-  assert.ok(app.includes("bep-google-oauth-result:"),file+" must consume the popup result");
-  assert.ok(app.includes('popup.location.replace(API+"/api/auth/google?flow_id="+encodeURIComponent(flowId))'));
-  assert.ok(!app.includes('window.location.href=API+"/api/auth/google"'),"main tab must not navigate to Google");
-  assert.ok(!app.includes("window.location.href=d.url"),"Google account linking must not navigate the main tab");
- }
- const server=read("server.js");
- assert.ok(server.includes("function oauthPopupRedirect("));
- assert.ok(server.includes("/oauth-popup.html?"));
- assert.ok(server.includes("rawState.slice(-32)"));
- assert.ok(!server.includes('res.redirect(FRONTEND_ORIGIN+"/?login='));
- for(const file of ["oauth-popup.html","dist/oauth-popup.html"])assert.ok(read(file).includes('oauth-popup.js?v=1'));
- assert.equal(read("oauth-popup.js"),read("dist/oauth-popup.js"));
- for(const file of ["sw.js","dist/sw.js"]){
-  const sw=read(file);
-  assert.ok(sw.includes('const CACHE_NAME="bep-shell-v21"'));
-  assert.ok(sw.includes('url.pathname.endsWith("/oauth-popup.html")'));
- }
+test("Google OAuth uses direct navigation and does not create a separate popup",()=>{
+ for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.href=API+"/api/auth/google"'));assert.ok(app.includes("window.location.href=d.url"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
+ const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
+ for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v22/);assert.doesNotMatch(sw,/oauth-popup/);}
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=120&bep=google-oauth-direct-navigation-20261115/);
 });
 
 
