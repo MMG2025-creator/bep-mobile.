@@ -752,3 +752,11 @@ body:has(#budget.active) #bepQuickExpense{display:none!important}
   .budget-action-copy h3{font-size:14px;overflow-wrap:anywhere}
   .budget-action-icon{width:36px;height:36px;flex:0 0 36px}
 }
+
+/* Matching explanatory typography on Budget > Revenus and Budget > Charges. */
+#budgetModuleIncome .income-card>.card-head .hint,
+#budgetModuleCharges .charges-card>.card-head .hint{font-size:15px;line-height:1.55;color:#52665d}
+@media(max-width:640px){
+ #budgetModuleIncome .income-card>.card-head .hint,
+ #budgetModuleCharges .charges-card>.card-head .hint{font-size:15.5px;line-height:1.6}
+}
