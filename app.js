@@ -314,13 +314,13 @@ $("overdraftForm").onsubmit=e=>{
  const limit=Math.max(0,Number($("overdraftLimit").value)||0);
  if(limit<=0){notify("Indique un plafond supérieur à zéro.");return}
  state.treasury={overdraftLimit:limit};
- if(save()){notify("Découvert autorisé enregistré.");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
+ if(save()){if(removeOverdraftBtn)removeOverdraftBtn.hidden=false;notify("Découvert autorisé enregistré.");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
 };
 if(removeOverdraftBtn)removeOverdraftBtn.onclick=()=>{
  if(!(Number(state.treasury?.overdraftLimit)>0))return;
  if(!window.confirm("Supprimer cette autorisation de découvert ?"))return;
  state.treasury={overdraftLimit:0};
- if(save()){notify("Autorisation de découvert supprimée.");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
+ if(save()){if(removeOverdraftBtn)removeOverdraftBtn.hidden=true;notify("Autorisation de découvert supprimée.");window.dispatchEvent(new CustomEvent("bep:entry-saved",{detail:{id:"overdraft"}}))}
 };
 $("profileForm").onsubmit=async e=>{
  e.preventDefault();
