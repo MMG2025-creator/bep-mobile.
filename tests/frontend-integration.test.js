@@ -384,7 +384,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v22"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v23"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -408,9 +408,9 @@ test("all six homepage financial tiles use the same aligned label, amount and ac
 });
 
 test("Google OAuth uses direct navigation and does not create a separate popup",()=>{
- for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.href=API+"/api/auth/google"'));assert.ok(app.includes("window.location.href=d.url"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
+ for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.replace(API+"/api/auth/google")'));assert.ok(app.includes("window.location.replace(d.url)"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
  const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
- for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v22/);assert.doesNotMatch(sw,/oauth-popup/);}
+ for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v23/);assert.doesNotMatch(sw,/oauth-popup/);}
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=120&bep=google-oauth-direct-navigation-20261115/);
 });
 
