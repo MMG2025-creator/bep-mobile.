@@ -164,8 +164,8 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=111&bep=destructive-confirmation/);
-  assert.match(html,/offline-storage\.js\?v=5&bep=guarded-local-clear/);
+  assert.match(html,/app\.js\?v=117&bep=receipt-progress-and-budget-motion-20261114/);
+  assert.match(html,/offline-storage\.js\?v=6&bep=robust-local-clear-20261114/);
  }
 });
 
@@ -173,7 +173,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
 test("purchase statistics navigate to an opened purchases history accordion",()=>{
  const spend=read("spend-experience.js");
  assert.match(spend,/details\.id="bepSpendPurchaseHistory"/);
- assert.match(spend,/details\.open=true/);
+ assert.match(spend,/purchaseHistory\.open=true/);
  assert.match(spend,/focusPurchaseHistory\(filter\)/);
  for(const id of ["bepSpendMonthTotal","bepSpendMonthCount","bepSpendMonthDecisions"])assert.ok(spend.includes('["'+id+'"'),"missing stat shortcut "+id);
  assert.match(spend,/setAttribute\("role","button"\)/);
@@ -243,7 +243,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=112&bep=local-clear-render-guard-20261114/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=117&bep=receipt-progress-and-budget-motion-20261114/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
