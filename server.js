@@ -21,7 +21,8 @@ app.use((req,res,next)=>{
 app.use(helmet({contentSecurityPolicy:{directives:{
  defaultSrc:["'self'"],baseUri:["'self'"],fontSrc:["'self'","data:","https://fonts.gstatic.com"],formAction:["'self'"],frameAncestors:["'none'"],imgSrc:["'self'","data:","blob:"],objectSrc:["'none'"],scriptSrc:["'self'","https://cdnjs.cloudflare.com","https://cdn.jsdelivr.net"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],connectSrc:["'self'",FRONTEND_ORIGIN,"https://bep-v2-api.onrender.com"],workerSrc:["'self'","blob:","https://cdn.jsdelivr.net"]
 }}}));
-app.use(express.json({limit:"5mb"}));
+app.use("/api/admin/console/import",express.json({limit:"5mb"}));
+app.use(express.json({limit:"1mb"}));
 function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
  if(!pool)return res.status(503).json({error:"RATE_LIMIT_UNAVAILABLE"});
  const now=Date.now(),windowStart=Math.floor(now/windowMs)*windowMs,resetAt=windowStart+windowMs;
