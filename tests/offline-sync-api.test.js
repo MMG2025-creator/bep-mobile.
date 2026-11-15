@@ -7,18 +7,18 @@ const crypto=require("node:crypto");
 const {Pool}=require("pg");
 const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
-test("data writes compare the submitted baseline while holding the user row lock",()=>{
+test("data writes reconcile the submitted baseline under the user row lock before committing",()=>{
  const server=read("server.js");
  const start=server.indexOf('app.put("/api/data"');
  assert.ok(start>=0,"data PUT route exists");
  const route=server.slice(start,server.indexOf('app.use((req,res)=>',start));
  const begin=route.indexOf('await client.query("BEGIN")');
  const lock=route.indexOf('SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE');
- const compare=route.indexOf('canonical(previous)!==canonical(base)');
- const conflict=route.indexOf('res.status(409).json({error:"OFFLINE_CONFLICT"})');
+ const merge=route.indexOf('mergeOfflinePayload(base,p,previous)');
+ const conflict=route.indexOf('res.status(409).json({error:"OFFLINE_CONFLICT"');
  const update=route.indexOf('INSERT INTO bep_user_data(user_id,payload)');
- assert.ok(begin>=0&&lock>begin&&compare>lock&&conflict>compare&&update>conflict,
-  "the current snapshot must be locked and compared before any write");
+ assert.ok(begin>=0&&lock>begin&&merge>lock&&conflict>merge&&update>conflict,
+  "the current snapshot must be locked, reconciled and conflict-checked before any write");
  assert.match(route,/__bepOfflineSync===true/);
  assert.match(route,/req\.body\?\.base/);
  assert.match(route,/req\.body\?\.payload/);

@@ -5,6 +5,7 @@ const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {startBepAgent}=require("./lib/bep-agent");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
+const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null,agentEnabled=false,agentTelemetryReady=false;
@@ -282,7 +283,7 @@ app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT paylo
 app.put("/api/data",auth,async(req,res)=>{
  const offlineSync=req.body?.__bepOfflineSync===true;
  const base=offlineSync?req.body?.base:null;
- const p=offlineSync?req.body?.payload:req.body;
+ let p=offlineSync?req.body?.payload:req.body;
  if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000||
     (offlineSync&&(!base||typeof base!=="object"||Array.isArray(base)||JSON.stringify(base).length>500000)))return res.status(400).json({error:"INVALID_PAYLOAD"});
  const client=await pool.connect();
@@ -292,9 +293,10 @@ app.put("/api/data",auth,async(req,res)=>{
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   if(offlineSync){
-   const canonical=value=>Array.isArray(value)?"["+value.map(canonical).join(",")+"]":value&&typeof value==="object"?"{"+Object.keys(value).sort().map(key=>JSON.stringify(key)+":"+canonical(value[key])).join(",")+"}":JSON.stringify(value);
-   if(canonical(previous)!==canonical(base)){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_CONFLICT"});}
-  }else{
+    try{p=mergeOfflinePayload(base,p,previous)}
+    catch(error){await client.query("ROLLBACK");if(error.code==="OFFLINE_CONFLICT")return res.status(409).json({error:"OFFLINE_CONFLICT",conflictPath:String(error.path||"").slice(0,180)});throw error}
+    if(JSON.stringify(p).length>500000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_PAYLOAD"})}
+   }else{
    const financialKeys=["incomes","budgets","expenses","goals","transactions","savingsOperations"];
    const hasFinancialData=Number(previous.income)!==0||financialKeys.some(key=>Object.prototype.hasOwnProperty.call(previous,key)&&(!Array.isArray(previous[key])||previous[key].length>0));
    const hasOtherData=Object.entries(previous).some(([key,value])=>!["income",...financialKeys,"coachProfile"].includes(key)&&value!=null&&value!==""&&value!==false&&(!Array.isArray(value)||value.length>0)&&(!(value&&typeof value==="object")||Object.keys(value).length>0));

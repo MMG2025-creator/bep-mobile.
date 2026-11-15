@@ -7,6 +7,7 @@ function openDb(){if(dbPromise)return dbPromise;dbPromise=new Promise((resolve,r
 async function read(key){try{const db=await openDb();return await new Promise((resolve,reject)=>{const r=db.transaction(STORE).objectStore(STORE).get(key);r.onsuccess=()=>resolve(r.result??null);r.onerror=()=>reject(r.error)})}catch{try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null}}}
 async function write(key,value){try{const db=await openDb();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(value,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch{try{localStorage.setItem(key,JSON.stringify(value))}catch{throw Error("Stockage local indisponible")}}}
 async function clear(key){try{const db=await openDb();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch{try{localStorage.removeItem(key)}catch{}}}
+async function clearIfQueuedAt(expected){try{const db=await openDb();return await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite"),store=tx.objectStore(STORE),get=store.get(queueKey());let removed=false;get.onsuccess=()=>{if(get.result?.queuedAt===expected){store.delete(queueKey());removed=true}};tx.oncomplete=()=>resolve(removed);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error("Queue update aborted"))})}catch{const current=await read(queueKey());if(current?.queuedAt!==expected)return false;try{localStorage.removeItem(queueKey());return true}catch{return false}}}
 function stable(value){if(Array.isArray(value))return "["+value.map(stable).join(",")+"]";if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+stable(value[k])).join(",")+"}";return JSON.stringify(value)}
 let baseline=null,baselineLoaded=false,flushing=false,baselineWrite=Promise.resolve();
 async function loadBaseline(){await baselineWrite;if(!baselineLoaded){baseline=await read(baselineKey());baselineLoaded=true}}
@@ -56,12 +57,26 @@ async function clearLocalData(){
  try{dbPromise?.then(db=>db.close()).catch(()=>{})}catch{}
  dbPromise=null;baseline=null;baselineLoaded=false;baselineWrite=Promise.resolve();
 }
-async function flush(){if(flushing||!navigator.onLine||!window.bepSignedIn)return false;flushing=true;try{await loadBaseline();const pending=await read(queueKey());if(!pending)return true;if(!pending.base||typeof pending.base!=="object"||Array.isArray(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"missing-baseline"}}));return false}
+async function flush(){if(flushing||!navigator.onLine||!window.bepSignedIn)return false;flushing=true;let retry=false;try{await loadBaseline();const pending=await read(queueKey());if(!pending)return true;if(!pending.base||typeof pending.base!=="object"||Array.isArray(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"missing-baseline"}}));return false}
 const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
-const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});if(!response.ok)throw Error("Lecture du compte impossible ("+response.status+")");const server=await response.json(),remote=server.payload||{};
-if(stable(remote)!==stable(pending.base)){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:"remote-changed"}}));return false}
-const saved=await fetch(api+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({__bepOfflineSync:true,base:pending.base,payload:pending.payload})});const savedData=await saved.json().catch(()=>({}));if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:savedData.error||"remote-changed"}}));return false}if(!saved.ok)throw Error("Synchronisation refusée ("+saved.status+")");await setBaseline(savedData.payload&&typeof savedData.payload==="object"?savedData.payload:pending.payload);await clear(queueKey());window.dispatchEvent(new CustomEvent("bep:offline-synced"));return true
-}catch(error){window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));return false}finally{flushing=false}}
+const saved=await fetch(api+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({__bepOfflineSync:true,base:pending.base,payload:pending.payload})});
+const savedData=await saved.json().catch(()=>({}));
+if(saved.status===409){window.dispatchEvent(new CustomEvent("bep:offline-conflict",{detail:{reason:savedData.error||"remote-changed",path:savedData.conflictPath||""}}));return false}
+if(!saved.ok)throw Error("Synchronisation refusée ("+saved.status+")");
+const merged=savedData.payload&&typeof savedData.payload==="object"?savedData.payload:pending.payload;
+await setBaseline(merged);
+const removed=await clearIfQueuedAt(pending.queuedAt);
+if(!removed){
+ const latest=await read(queueKey());
+ if(latest){latest.base=JSON.parse(JSON.stringify(merged));await write(queueKey(),latest);retry=true;window.dispatchEvent(new CustomEvent("bep:offline-pending",{detail:{queuedAt:latest.queuedAt}}))}
+ else{try{localStorage.setItem(DATA_KEY,JSON.stringify(merged))}catch{}window.dispatchEvent(new CustomEvent("bep:offline-synced",{detail:{payload:merged}}))}
+}else{
+ try{localStorage.setItem(DATA_KEY,JSON.stringify(merged))}catch{}
+ window.dispatchEvent(new CustomEvent("bep:offline-synced",{detail:{payload:merged}}));
+}
+return true
+}catch(error){window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));return false}
+finally{flushing=false;if(retry&&navigator.onLine&&window.bepSignedIn)Promise.resolve().then(()=>flush())}}
 async function refreshAuthAndSync(){if(!navigator.onLine)return;try{const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");const r=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)return;const auth=await r.json();if(!auth.user)return;const identity=String(auth.user.id||auth.user.email||"authenticated");if(localStorage.getItem(USER_KEY)!==identity){localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}window.bepSignedIn=true;await flush()}catch{}}
 window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),stage,discardPending,clearLocalData,refreshAuthAndSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),hasTrustedSnapshot,markKnownUser:id=>{try{const next=String(id||"authenticated");if(localStorage.getItem(USER_KEY)!==next){localStorage.setItem(USER_KEY,next);localStorage.removeItem(SNAPSHOT_KEY);baseline=null;baselineLoaded=false}}catch{}}};
 window.addEventListener("online",()=>{refreshAuthAndSync()});

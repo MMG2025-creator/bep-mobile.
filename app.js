@@ -65,6 +65,7 @@ function rate(excludeGoalId){const goals=(state.goals||[]).filter(g=>!g.archived
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function dispatchLegacyBudgetChanged(){window.dispatchEvent(new CustomEvent("bep:legacy-budget-changed",{detail:{income:state.income,incomes:state.incomes,budgets:state.budgets,goals:state.goals}}))}
 function save(){try{localStorage.setItem(DB,JSON.stringify(state))}catch(e){notify("Enregistrement local impossible. Vérifie l’espace disponible sur cet appareil.");return false}render();if(window.BEPOffline){window.BEPOffline.enqueue(state).then(()=>{if(!window.bepSignedIn)notify("Données enregistrées sur cet appareil. Synchronisation à la reconnexion.");}).catch(()=>notify("Données conservées en mémoire locale, mais la file de synchronisation est indisponible."));}else if(window.bepSignedIn){fetch(API+"/api/data",{method:"PUT",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);dispatchLegacyBudgetChanged()}).catch(()=>notify("Données conservées sur cet appareil, synchronisation à vérifier."));}else dispatchLegacyBudgetChanged();return true}
+window.addEventListener("bep:offline-synced",event=>{const payload=event.detail?.payload;if(!payload||typeof payload!=="object")return;state={...defaults,...payload};if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];syncIncomeTotal();try{localStorage.setItem(DB,JSON.stringify(state))}catch{}render();dispatchLegacyBudgetChanged()});
 window.BEP_APPLY_MONTHLY_ITEMS=async(monthKey,monthlyItems)=>{
   const d=new Date(),localMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
   if(monthKey!==localMonth||!Array.isArray(monthlyItems))return false;
@@ -1013,7 +1014,7 @@ const oauthParams=new URLSearchParams(window.location.search);const oauthResult=
     if(pending){
      const synced=await window.BEPOffline.flush();
      if(!synced){window.bepSignedIn=false;window.bepOfflineMode=true;window.dispatchEvent(new Event("bep:auth-ready"));notify("Synchronisation suspendue : tes modifications locales sont conservées et aucune donnée distante n’a été remplacée.");return}
-     state={...defaults,...(pending.payload||{})};
+     let syncedPayload={};try{syncedPayload=JSON.parse(localStorage.getItem(DB)||"{}")}catch{}state={...defaults,...(syncedPayload&&Object.keys(syncedPayload).length?syncedPayload:(pending.payload||{}))};
      if(!Array.isArray(state.coachProfile))state.coachProfile=[];
      localStorage.setItem(DB,JSON.stringify(state));render();dispatchLegacyBudgetChanged();
     }else if(localStorage.getItem(DB)===localSnapshot){
