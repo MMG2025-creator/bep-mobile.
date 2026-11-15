@@ -24,6 +24,12 @@ Point d'entrée conversationnel : `POST /api/ai/chat`.
 
 Ce point d'entrée n'appelle ni `userAi()`, ni `invokeAi()`, ni `consumeBepAiQuota()`. Il ne transmet aucune donnée utilisateur à un fournisseur tiers.
 
+### 2. Espace administrateur — revue locale des JSON
+
+La revue Gemini documentaire utilise une allowlist de fichiers JSON versionnés dans le dépôt : le contrat `services/coach-library.json` et les deux référentiels `financialCoachSources.fr.json` et `financialCoachSources.additional.fr.json`. Le worker les lit en local, valide leur syntaxe JSON, applique une limite de taille et calcule leurs empreintes. Il les compare aux fiches actives de la bibliothèque PostgreSQL.
+
+Cette revue ne déclenche aucune recherche Internet. Gemini peut proposer des corrections ou clarifications uniquement sur des fiches PostgreSQL existantes, en préservant leurs métadonnées de provenance. Les propositions restent dans la file de validation humaine. Aucun JSON du dépôt et aucune fiche active ne sont écrasés automatiquement. Les appels du worker restent désactivés sans clé dédiée, autorisation explicite de facturation et budget mensuel.
+
 ### 2. Espace administrateur — recherche documentaire externe
 
 Le circuit `/api/admin/bep-coach/research` est distinct et protégé par authentification et contrôle administrateur.
