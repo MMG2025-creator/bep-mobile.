@@ -13,6 +13,7 @@
   let actualsError = "";
   let editingItemId = null;
   let monthSelectionMode = false;
+  let monthDetailsExpanded = false;
   let monthLoadSequence = 0;
   const monthSelection = new Set();
   function attachMonthLongPress() {
@@ -218,6 +219,8 @@
   }
   function renderMonthlyVisuals() {
     const strip = $("monthlyBudgetMonthStrip"), calendar = $("monthlyBudgetCalendar");
+    const calendarCard = card.querySelector(".monthly-budget-calendar-card");
+    if (calendarCard) calendarCard.hidden = !monthDetailsExpanded;
     const previous = $("monthlyBudgetMonthPrev"), next = $("monthlyBudgetMonthNext");
     const ordered = [...months].sort((a, b) => a.monthKey.localeCompare(b.monthKey));
     const activeIndex = ordered.findIndex(x => x.monthKey === current?.monthKey);
@@ -228,8 +231,18 @@
         return '<button type="button" class="monthly-budget-month-chip' + (selected ? ' is-active' : '') + '" data-month-key="' + escapeHtml(x.monthKey) + '" aria-pressed="' + selected + '"><b>' + escapeHtml(label) + '</b><small>' + x.monthKey.slice(0, 4) + '</small>' + (x.status === "closed" ? '<i aria-label="Mois clôturé">✓</i>' : '') + '</button>';
       }).join("");
       strip.querySelectorAll("[data-month-key]").forEach(button => {
-        button.disabled = loading || button.dataset.monthKey === current?.monthKey;
-        button.onclick = () => { if (button.dataset.monthKey !== current?.monthKey) loadMonth(button.dataset.monthKey); };
+        button.disabled = loading;
+        button.onclick = () => {
+          const selectedMonth = button.dataset.monthKey;
+          if (selectedMonth === current?.monthKey && monthDetailsExpanded) {
+            monthDetailsExpanded = false;
+            renderMonthlyVisuals();
+            return;
+          }
+          monthDetailsExpanded = true;
+          if (selectedMonth !== current?.monthKey) loadMonth(selectedMonth);
+          else renderMonthlyVisuals();
+        };
       });
     }
     if (previous) previous.disabled = loading || activeIndex <= 0;
@@ -504,13 +517,15 @@
     } finally { setBusy(false); applyOfflineReadOnly(); }
   }
 
-  $("monthlyBudgetMonth").onchange = event => loadMonth(event.target.value);
+  $("monthlyBudgetMonth").onchange = event => { monthDetailsExpanded = true; loadMonth(event.target.value); };
   $("monthlyBudgetMonthPrev").onclick = () => {
+    monthDetailsExpanded = true;
     const ordered = months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey));
     const index = ordered.findIndex(x => x.monthKey === current?.monthKey);
     if (index > 0) loadMonth(ordered[index - 1].monthKey);
   };
   $("monthlyBudgetMonthNext").onclick = () => {
+    monthDetailsExpanded = true;
     const ordered = months.slice().sort((a,b)=>a.monthKey.localeCompare(b.monthKey));
     const index = ordered.findIndex(x => x.monthKey === current?.monthKey);
     if (index >= 0 && index < ordered.length - 1) loadMonth(ordered[index + 1].monthKey);
