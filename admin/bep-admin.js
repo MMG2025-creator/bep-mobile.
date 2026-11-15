@@ -9,7 +9,7 @@ function canonicalJson(value) {
   return "{" + Object.keys(value).sort().map((key) => JSON.stringify(key) + ":" + canonicalJson(value[key])).join(",") + "}";
 }
 function sha256(value) { return crypto.createHash("sha256").update(typeof value === "string" ? value : canonicalJson(value)).digest("hex"); }
-function exchangeSecret() { return process.env.BEP_ADMIN_EXCHANGE_SECRET || process.env.SESSION_SECRET || ""; }
+function exchangeSecret() { const value = process.env.BEP_ADMIN_EXCHANGE_SECRET || process.env.SESSION_SECRET || ""; return value.length >= 32 ? value : ""; }
 function signExport(document, secret) {
   const unsigned = { ...document }; delete unsigned.signature;
   return { ...unsigned, signature: crypto.createHmac("sha256", secret).update(canonicalJson(unsigned)).digest("hex") };
@@ -23,7 +23,7 @@ function verifyExport(document, secret) {
 }
 function accountRef(userId, secret) { return "bep_" + crypto.createHmac("sha256", secret).update("bep-admin-account:" + String(userId)).digest("hex").slice(0, 24); }
 function sanitizePayload(value) {
-  const privateKey = /^(email|phone|phone_number|first_name|last_name|full_name|display_name|avatar_url|avatar|address|password|password_hash|token|access_token|refresh_token|secret|credential|credentials|iban|bic|google_sub|oauth|bank_account|account_number)$/i;
+  const privateKey = /^(email|phone|phone_number|first_name|last_name|name|user_name|username|user_id|userid|customer_id|owner_id|created_by|updated_by|full_name|display_name|avatar_url|avatar|address|password|password_hash|token|access_token|refresh_token|secret|credential|credentials|iban|bic|google_sub|oauth|bank_account|account_number)$/i;
   if (Array.isArray(value)) return value.map(sanitizePayload);
   if (value && typeof value === "object") {
     const out = {};
@@ -88,12 +88,16 @@ function createBepAdminRouter({ pool, requireAdmin }) {
     const document = req.body?.document && typeof req.body.document === "object" ? req.body.document : req.body;
     if (!document || typeof document !== "object" || Array.isArray(document) || JSON.stringify(document).length > 4500000 ||
         document.schema !== "bep-admin-export" || document.schema_version !== 1 || typeof document.export_id !== "string" ||
-        !/^[0-9a-f-]{36}$/i.test(document.export_id) || !Array.isArray(document.accounts) || document.accounts.length > 100 || !verifyExport(document, secret))
+        !/^[0-9a-f-]{36}$/i.test(document.export_id) || !Array.isArray(document.accounts) || document.accounts.length > 100 ||
+        !Number.isInteger(document.page) || document.page < 1 || !Number.isInteger(document.page_size) || document.page_size < 1 || document.page_size > 100 ||
+        document.accounts.length > document.page_size || typeof document.has_more !== "boolean" ||
+        typeof document.source_environment !== "string" || document.source_environment.length > 64 ||
+        typeof document.generated_at !== "string" || Number.isNaN(Date.parse(document.generated_at)) || !verifyExport(document, secret))
       return res.status(400).json({ error: "ADMIN_IMPORT_INVALID_OR_UNTRUSTED" });
     for (const account of document.accounts) {
       if (!account || typeof account.account_ref !== "string" || !/^bep_[a-f0-9]{24}$/.test(account.account_ref) ||
           typeof account.expected_hash !== "string" || !/^[a-f0-9]{64}$/.test(account.expected_hash) ||
-          !account.data || typeof account.data !== "object" || Array.isArray(account.data) || !Array.isArray(account.monthly_budgets))
+          !account.data || typeof account.data !== "object" || Array.isArray(account.data) || !Array.isArray(account.monthly_budgets) || canonicalJson(sanitizePayload(account.data)) !== canonicalJson(account.data) || canonicalJson(sanitizePayload(account.monthly_budgets)) !== canonicalJson(account.monthly_budgets))
         return res.status(400).json({ error: "ADMIN_IMPORT_SCHEMA_INVALID" });
     }
     const actor = accountRef(req.session.user.id, secret), client = await pool.connect();
