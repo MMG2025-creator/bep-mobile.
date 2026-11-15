@@ -195,7 +195,7 @@ test("purchase statistics navigate to an opened purchases history accordion",()=
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/spend-experience\.css\?v=33&bep=mobile-two-column-budget-tiles-20261114/);
+  assert.match(html,/spend-experience\.css\?v=34&bep=budget-copy-typography-20261115/);
  }
 });
 
@@ -320,7 +320,7 @@ test("monthly budget visual workspace uses synchronized client assets and publis
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   for(const id of ["monthlyBudgetMonthStrip","monthlyBudgetMonthPrev","monthlyBudgetMonthNext","monthlyBudgetCalendar","monthlyBudgetAllocationDonut","monthlyBudgetCategoryDonut"])assert.ok(html.includes('id="'+id+'"'),file+" missing #"+id);
-  assert.match(html,/monthly-budget-ui\.css\?v=2&bep=monthly-header-motion-20261115/);
+  assert.match(html,/monthly-budget-ui\.css\?v=3&bep=monthly-header-full-width-20261115/);
   assert.match(html,/monthly-budget-ui\.js\?v=16&bep=calendar-toggle-and-header-motion-20261115/);
  }
  for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
@@ -333,4 +333,23 @@ test("monthly calendar collapses when the active month chip is tapped again and 
  assert.match(html,/monthly-budget-heading-art/);
  assert.match(css,/@keyframes monthlyBudgetFloat/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+});
+
+
+test("budget has no robot shortcut or floating advice dock and monthly header uses full-width copy",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.doesNotMatch(html,/budgetCoachLauncher|budget-coach-entry|bepAdviceDock|bepAdviceRobot|bepAdviceDialog/);
+  assert.match(html,/data-tab="coach"/);
+  assert.match(html,/monthly-budget-heading-art/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.doesNotMatch(css,/budget-coach-launcher|budget-coach-robot-art/);
+ }
+ for(const file of ["monthly-budget-ui.css","dist/monthly-budget-ui.css"]){
+  const css=read(file);
+  assert.match(css,/\.monthly-budget-heading-copy\{max-width:100%!important;width:100%/);
+  assert.match(css,/\.monthly-budget-heading-art\{top:12px!important/);
+ }
 });
