@@ -293,9 +293,10 @@ app.put("/api/data",auth,async(req,res)=>{
   const current=await client.query("SELECT payload FROM bep_user_data WHERE user_id=$1 FOR UPDATE",[req.session.user.id]);
   const previous=current.rows[0]?.payload||{income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[]};
   if(offlineSync){
-   const canonical=value=>Array.isArray(value)?"["+value.map(canonical).join(",")+"]":value&&typeof value==="object"?"{"+Object.keys(value).sort().map(key=>JSON.stringify(key)+":"+canonical(value[key])).join(",")+"}":JSON.stringify(value);
-   if(canonical(previous)!==canonical(base)){await client.query("ROLLBACK");return res.status(409).json({error:"OFFLINE_CONFLICT"});}
-  }else{
+    try{p=mergeOfflinePayload(base,p,previous)}
+    catch(error){await client.query("ROLLBACK");if(error.code==="OFFLINE_CONFLICT")return res.status(409).json({error:"OFFLINE_CONFLICT",conflictPath:String(error.path||"").slice(0,180)});throw error}
+    if(JSON.stringify(p).length>500000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_PAYLOAD"})}
+   }else{
    const financialKeys=["incomes","budgets","expenses","goals","transactions","savingsOperations"];
    const hasFinancialData=Number(previous.income)!==0||financialKeys.some(key=>Object.prototype.hasOwnProperty.call(previous,key)&&(!Array.isArray(previous[key])||previous[key].length>0));
    const hasOtherData=Object.entries(previous).some(([key,value])=>!["income",...financialKeys,"coachProfile"].includes(key)&&value!=null&&value!==""&&value!==false&&(!Array.isArray(value)||value.length>0)&&(!(value&&typeof value==="object")||Object.keys(value).length>0));
