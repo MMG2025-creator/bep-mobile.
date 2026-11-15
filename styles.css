@@ -1633,3 +1633,38 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* Replay financial chart animations whenever a module is opened */
 @keyframes bep-chart-enter{from{opacity:.25;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.chart-data-point{animation:none!important;transition:none!important}}
+
+
+/* Production mobile refinements — home snapshot and Coach BEP */
+@media(max-width:600px){
+  .home-snapshot-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:1fr;
+    align-items:stretch;
+  }
+  .home-snapshot-grid>*{
+    height:100%;
+    min-height:96px;
+  }
+  .coach-workspace{
+    gap:12px;
+    padding:14px 12px;
+  }
+  .coach-workspace .coach-workspace-head{gap:10px}
+  .coach-workspace .coach-icon{margin-bottom:0}
+  .coach-workspace .coach-chat-log{gap:8px}
+  .coach-workspace .coach-message{
+    padding:10px 12px;
+    font-size:13px;
+    line-height:1.45;
+  }
+  .coach-workspace .coach-prompt-form{gap:7px}
+  .coach-workspace .coach-prompt-form textarea{
+    min-height:72px;
+    padding:10px 12px;
+  }
+  .coach-workspace .coach-prompt-form button,
+  .coach-workspace .coach-prompt-form button.primary{min-height:46px}
+  .coach-workspace .coach-info-panel{margin-top:0}
+  .app:has(#coach.panel.active){min-height:0}
+}
