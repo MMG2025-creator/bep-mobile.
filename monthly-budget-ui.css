@@ -1,0 +1,67 @@
+/* Monthly budget visual workspace — presentation only; calculations remain in monthly-budget-ui.js. */
+.monthly-budget-month-navigation{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;margin:12px 0 16px}
+.monthly-budget-month-navigation>button{width:38px;height:38px;border:1px solid #dce9e1;border-radius:13px;background:#fff;color:#176b50;font-size:24px;line-height:1;cursor:pointer;box-shadow:0 3px 10px #173c2909}
+.monthly-budget-month-navigation>button:disabled{opacity:.35;cursor:not-allowed}
+.monthly-budget-month-strip{display:flex;gap:7px;min-width:0;overflow-x:auto;padding:3px 2px 7px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.monthly-budget-month-chip{position:relative;display:flex;flex:0 0 62px;flex-direction:column;align-items:center;gap:2px;padding:9px 5px 8px;border:1px solid #e0eae4;border-radius:14px;background:#fff;color:#60786d;cursor:pointer;scroll-snap-align:center;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.monthly-budget-month-chip b{font:800 13px/1.2 Manrope,sans-serif;text-transform:capitalize}
+.monthly-budget-month-chip small{font-size:10px;color:#82948b}
+.monthly-budget-month-chip i{position:absolute;top:4px;right:6px;color:#b58a2d;font-size:9px;font-style:normal}
+.monthly-budget-month-chip.is-active{transform:translateY(-2px);border-color:#176b50;background:linear-gradient(145deg,#176b50,#0d4d3a);color:#fff;box-shadow:0 6px 15px #176b5025}
+.monthly-budget-month-chip.is-active small{color:#d7e9df}
+.monthly-budget-visual-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:12px;margin:0 0 17px}
+.monthly-budget-visual-card{min-width:0;padding:16px;border:1px solid #e0ebe4;border-radius:19px;background:linear-gradient(145deg,#fff 0%,#f8fbf9 100%);box-shadow:0 5px 18px #173c2908}
+.monthly-budget-visual-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:13px}
+.monthly-budget-visual-heading .eyebrow{margin:0 0 4px;color:#4b806a;font-size:9px;font-weight:800;letter-spacing:.12em}
+.monthly-budget-visual-heading h3{margin:0;color:#173f35;font:800 15px/1.25 Manrope,sans-serif}
+.monthly-budget-visual-note{flex:0 0 auto;max-width:45%;padding:5px 8px;border-radius:999px;background:#edf5ef;color:#557565;font-size:9px;line-height:1.3;text-align:right}
+.monthly-budget-calendar-weekdays,.monthly-budget-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.monthly-budget-calendar-weekdays{margin-bottom:6px}
+.monthly-budget-calendar-weekdays span{text-align:center;color:#87978f;font-size:10px;font-weight:700}
+.monthly-budget-calendar-day{position:relative;display:flex;min-width:0;min-height:39px;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:1px solid transparent;border-radius:10px;background:#f1f6f2;color:#4f685c;font-size:11px}
+.monthly-budget-calendar-day b{font-size:11px;font-weight:700}
+.monthly-budget-calendar-day small{color:#176b50;font-size:8px;font-weight:800;line-height:1}
+.monthly-budget-calendar-day.has-spend{border-color:#c4dfce;background:#e4f3e9;color:#175b43}
+.monthly-budget-calendar-day.is-today{outline:2px solid #d3b45d;outline-offset:-2px}
+.monthly-budget-calendar-day.is-today.has-spend{background:#d9eee1}
+.monthly-budget-calendar-blank{min-height:39px}
+.monthly-budget-calendar-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:11px;color:#788b81;font-size:9px}
+.monthly-budget-calendar-legend span{display:flex;align-items:center;gap:5px}
+.monthly-budget-calendar-legend i{width:8px;height:8px;border-radius:3px;background:#c4dfce}
+.monthly-budget-calendar-legend i.today{border:2px solid #d3b45d;background:transparent}
+.monthly-budget-donut-layout{display:flex;align-items:center;justify-content:center;gap:14px;padding:3px 0 13px}
+.monthly-budget-donut{display:grid;flex:0 0 118px;width:118px;height:118px;place-items:center;border-radius:50%;background:conic-gradient(#e8efea 0 100%);position:relative;transition:background .3s ease}
+.monthly-budget-donut:before{position:absolute;inset:11px;border-radius:50%;background:#fff;content:""}
+.monthly-budget-donut>div{position:relative;z-index:1;display:flex;max-width:88px;flex-direction:column;align-items:center;text-align:center}
+.monthly-budget-donut>div span{color:#84958c;font-size:9px}
+.monthly-budget-donut>div strong{margin-top:3px;color:#174f3c;font:800 12px/1.25 Manrope,sans-serif;overflow-wrap:anywhere}
+.monthly-budget-donut-legend,.monthly-budget-category-legend{display:grid;min-width:0;gap:7px}
+.monthly-budget-donut-legend>div,.monthly-budget-category-legend>div{display:grid;grid-template-columns:9px minmax(0,1fr) auto;align-items:center;gap:6px;color:#6f8278;font-size:9px}
+.monthly-budget-donut-legend i,.monthly-budget-category-legend i{width:8px;height:8px;border-radius:3px;background:var(--legend-color)}
+.monthly-budget-donut-legend b,.monthly-budget-category-legend b{color:#315c49;font-size:9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.monthly-budget-category-chart{padding-top:12px;border-top:1px solid #e7eee9}
+.monthly-budget-category-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:9px;color:#315746;font-size:10px}
+.monthly-budget-category-head span{font-variant-numeric:tabular-nums}
+.monthly-budget-category-donut{width:74px;height:74px;margin:0 auto 10px;border-radius:50%;background:conic-gradient(#e8efea 0 100%);position:relative;transition:background .3s ease}
+.monthly-budget-category-donut:after{position:absolute;inset:9px;border-radius:50%;background:#fff;content:""}
+.monthly-budget-category-donut.is-empty:after{background:#fff}
+.monthly-budget-category-legend{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}
+.monthly-budget-category-legend>div{grid-template-columns:8px minmax(0,1fr);gap:5px}
+.monthly-budget-category-legend b{grid-column:2;white-space:normal}
+.monthly-budget-category-legend .empty{grid-column:1/-1;margin:0;font-size:10px}
+@media(max-width:620px){
+ .monthly-budget-visual-grid{grid-template-columns:minmax(0,1fr)}
+ .monthly-budget-visual-card{padding:14px}
+ .monthly-budget-calendar-day,.monthly-budget-calendar-blank{min-height:42px}
+ .monthly-budget-donut-layout{justify-content:space-evenly}
+}
+@media(max-width:370px){
+ .monthly-budget-month-navigation{grid-template-columns:32px minmax(0,1fr) 32px;gap:5px}
+ .monthly-budget-month-navigation>button{width:32px;height:34px}
+ .monthly-budget-month-chip{flex-basis:55px}
+ .monthly-budget-calendar,.monthly-budget-calendar-weekdays{gap:3px}
+ .monthly-budget-calendar-day,.monthly-budget-calendar-blank{min-height:36px}
+ .monthly-budget-donut{flex-basis:104px;width:104px;height:104px}
+ .monthly-budget-donut-layout{gap:9px}
+}
+@media(prefers-reduced-motion:reduce){.monthly-budget-month-chip,.monthly-budget-donut,.monthly-budget-category-donut{transition:none}}
