@@ -26,10 +26,15 @@ test("both HTML builds expose the current budget, savings and overdraft interfac
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   assert.equal(new Set(ids).size,ids.length,file+" contains duplicate IDs");
-  for(const id of ["budget","budgetModuleIncome","budgetModuleCharges","incomeForm","overdraftForm","overdraftLimit","overdraftValidUntil","savingsModuleGoals","savingsModuleMovements","monthlyHistoryCard"])assert.ok(ids.includes(id),file+" missing #"+id);
+  for(const id of ["budget","budgetModuleIncome","budgetModuleCharges","incomeForm","overdraftForm","overdraftLimit","overdraftValidUntil","savingsModuleGoals","savingsModuleMovements","monthlyHistoryCard","homeSavingsCapital"])assert.ok(ids.includes(id),file+" missing #"+id);
   assert.match(html,/ui-polish\.css\?v=/);
   assert.match(html,/monthly-budget-ui\.js\?v=/);
  }
+});
+
+test("homepage savings capital mirrors the savings ledger total in both builds",()=>{
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/id="homeSavingsCapital"/);
+ for(const file of ["app.js","dist/app.js"])assert.match(read(file),/set\("homeSavingsCapital",money\(total\)\)/);
 });
 
 test("settings profile row is the direct edit-profile action in both builds",()=>{
