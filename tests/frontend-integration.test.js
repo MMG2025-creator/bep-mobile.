@@ -26,7 +26,7 @@ test("both HTML builds expose the current budget, savings and overdraft interfac
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   assert.equal(new Set(ids).size,ids.length,file+" contains duplicate IDs");
-  for(const id of ["budget","budgetModuleIncome","budgetModuleCharges","incomeForm","overdraftForm","overdraftLimit","overdraftValidUntil","savingsModuleGoals","savingsModuleMovements","monthlyHistoryCard","homeSavingsCapital"])assert.ok(ids.includes(id),file+" missing #"+id);
+  for(const id of ["budget","budgetModuleIncome","budgetModuleCharges","incomeForm","overdraftForm","overdraftLimit","removeOverdraftBtn","savingsModuleGoals","savingsModuleMovements","monthlyHistoryCard","homeSavingsCapital"])assert.ok(ids.includes(id),file+" missing #"+id);
   assert.match(html,/ui-polish\.css\?v=/);
   assert.match(html,/monthly-budget-ui\.js\?v=/);
  }
@@ -84,13 +84,13 @@ test("mobile connection status is centered below the BEP footer and stays clear 
 
 test("overdraft is a permission only and does not alter the financial engine",()=>{
  const app=read("app.js"),engine=read("financial-engine.js");
- assert.match(app,/treasury:\{overdraftLimit:0,validUntil:""\}/);
+ assert.match(app,/treasury:\{overdraftLimit:0\}/);
  assert.match(app,/function overdraftCapacityAllows\(projectedAvailable\)/);
- assert.match(app,/return valid&&Number\(projectedAvailable\)>=-limit/);
+ assert.match(app,/return Number\(projectedAvailable\)>=-limit/);
  assert.match(app,/function available\(\)\{return financialPosition\(\)\.available\}/);
  assert.match(app,/const projectedAvailable=availableBeforeSavings\(\)-otherGoals-m;[\s\S]{0,250}overdraftCapacityAllows\(projectedAvailable\)/);
  assert.match(app,/const projectedAvailable=financialPosition\(\{expenses:nextExpenses\}\)\.available;[\s\S]{0,250}overdraftCapacityAllows\(projectedAvailable\)/);
- assert.doesNotMatch(app,/expectedCredits|overdraftUsed/);
+ assert.doesNotMatch(app,/expectedCredits|overdraftUsed|overdraftValidUntil|validUntil/);
  assert.doesNotMatch(engine,/overdraft/);
 });
 
@@ -428,4 +428,10 @@ test("Google OAuth runs in a separate popup and returns to BEP without adding Go
   assert.ok(sw.includes('const CACHE_NAME="bep-shell-v21"'));
   assert.ok(sw.includes('url.pathname.endsWith("/oauth-popup.html")'));
  }
+});
+
+
+test("overdraft permission can be deleted and has no validity date",()=>{
+ for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="removeOverdraftBtn"/);assert.doesNotMatch(html,/overdraftValidUntil|Valable jusqu/);}
+ for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.match(app,/removeOverdraftBtn\.onclick/);assert.match(app,/state\.treasury=\{overdraftLimit:0\}/);assert.doesNotMatch(app,/overdraftValidUntil|overdraftExpired|validUntil/);}
 });

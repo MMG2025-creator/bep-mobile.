@@ -406,12 +406,10 @@ app.put("/api/data",auth,async(req,res)=>{
   const rawCoachProfile=Object.prototype.hasOwnProperty.call(p,"coachProfile")?p.coachProfile:previous.coachProfile;const coachProfile=Array.isArray(rawCoachProfile)?[...new Set(rawCoachProfile.filter(x=>["budget","spending","savings","goals","income","debt","planning","learning"].includes(x)))].slice(0,8):[];
   // Preserve the bank-authorized overdraft independently from monthly financial calculations.
   const rawTreasury=Object.prototype.hasOwnProperty.call(p,"treasury")?p.treasury:previous.treasury;
-  const treasurySource=rawTreasury===undefined?{overdraftLimit:0,validUntil:""}:rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
+  const treasurySource=rawTreasury===undefined?{overdraftLimit:0}:rawTreasury&&typeof rawTreasury==="object"&&!Array.isArray(rawTreasury)?rawTreasury:{};
   const overdraftLimit=Number(treasurySource.overdraftLimit);
-  const validUntil=String(treasurySource.validUntil||"");
-  const validDate=!validUntil||(/^\d{4}-\d{2}-\d{2}$/.test(validUntil)&&!Number.isNaN(Date.parse(validUntil+"T00:00:00Z"))&&new Date(validUntil+"T00:00:00Z").toISOString().slice(0,10)===validUntil);
-  if(!Number.isFinite(overdraftLimit)||overdraftLimit<0||overdraftLimit>1000000||!validDate){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_TREASURY"});}
-  const treasury={overdraftLimit,validUntil};
+  if(!Number.isFinite(overdraftLimit)||overdraftLimit<0||overdraftLimit>1000000){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_TREASURY"});}
+  const treasury={overdraftLimit};
   const rawDeletedRecords=p.deletedRecords&&typeof p.deletedRecords==="object"&&!Array.isArray(p.deletedRecords)?p.deletedRecords:{};const deletedRecords={};for(const key of ["incomes","budgets","expenses","goals","transactions"]){const previousIds=Array.isArray(previous.deletedRecords?.[key])?previous.deletedRecords[key]:[];const values=rawDeletedRecords[key]===undefined?previousIds:rawDeletedRecords[key];if(!Array.isArray(values)||values.length>10000||values.some(id=>typeof id!=="string"||!id.length||id.length>128)){await client.query("ROLLBACK");return res.status(400).json({error:"INVALID_DELETION_LEDGER"});}deletedRecords[key]=[...new Set([...previousIds,...values])].slice(-10000)}const safe={income:Number(p.income)||0,incomes:Array.isArray(p.incomes)?p.incomes:[],budgets:Array.isArray(p.budgets)?p.budgets:[],expenses:Array.isArray(p.expenses)?p.expenses:[],goals,transactions:Array.isArray(p.transactions)?p.transactions.slice(-2000):[],savingsOperations:incomingOps.slice(-5000),coachProfile,treasury,deletedRecords};
   await client.query("INSERT INTO bep_user_data(user_id,payload) VALUES($1,$2::jsonb) ON CONFLICT(user_id) DO UPDATE SET payload=EXCLUDED.payload,updated_at=NOW()",[req.session.user.id,JSON.stringify(safe)]);
   await client.query("COMMIT");
