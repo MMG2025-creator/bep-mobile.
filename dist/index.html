@@ -562,14 +562,14 @@
 <script>
 (function(){window.__bepStartupMetrics={started:performance.now()};const report=()=>{const nav=performance.getEntriesByType("navigation")[0],loader=document.getElementById("bepStartupLoader");if(!loader||loader.hidden){const metrics={domContentLoaded:nav?Math.round(nav.domContentLoadedEventEnd):null,windowLoad:nav?Math.round(nav.loadEventEnd):null,appReady:Math.round(performance.now())};console.info("[BEP performance]",metrics);window.__bepStartupMetrics={...metrics,reported:true};return true}return false};const watch=()=>{const loader=document.getElementById("bepStartupLoader");if(!loader)return;if(!report()){const observer=new MutationObserver(()=>{if(report())observer.disconnect()});observer.observe(loader,{attributes:true,attributeFilter:["hidden"]})}};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();if("PerformanceObserver"in window){try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(e.duration>80)console.info("[BEP long task]",Math.round(e.duration)+" ms")}).observe({type:"longtask",buffered:true})}catch{}}})();
 </script>
-<script src="./runtime-config.js?v=1"></script>
+<script src="./runtime-config.js?v=2&bep=preview-api-isolation-20261115"></script>
 <script src="./financial-engine.js?v=1"></script>
-<script src="./offline-storage.js?v=6&bep=robust-local-clear-20261114"></script>
+<script src="./offline-storage.js?v=7&bep=identity-guard-idempotent-sync-20261115"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=117&bep=receipt-progress-and-budget-motion-20261114"></script>
-<script src="./auth-recovery.js?v=2"></script>
-<script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
+<script src="./app.js?v=118&bep=monthly-savings-home-20261115"></script>
+<script src="./auth-recovery.js?v=3"></script>
+<script src="./monthly-budget-ui.js?v=14&bep=monthly-savings-home-bridge-20261115"></script>
 <script src="./pwa.js?v=11"></script>
 <script src="./connection-status.js?v=1"></script>
 <script src="./spend-experience.js?v=24&bep=short-month-label-20261114"></script>

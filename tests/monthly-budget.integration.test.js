@@ -8,7 +8,8 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { createMonthlyBudgetRouter } = require("../monthly-budget-routes");
 
-const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
+// Never fall back to DATABASE_URL: tests must not touch an application or production database.
+const databaseUrl = process.env.TEST_DATABASE_URL;
 if (!databaseUrl) {
   test("PostgreSQL integration suite requires TEST_DATABASE_URL", { skip: true }, () => {});
 } else {
