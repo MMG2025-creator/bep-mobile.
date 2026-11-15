@@ -39,3 +39,21 @@ test("web candidate digest is stable and category-bound",()=>{
  assert.equal(digestWebCandidate(candidate,"budget"),digestWebCandidate(candidate,"budget"));
  assert.notEqual(digestWebCandidate(candidate,"budget"),digestWebCandidate(candidate,"savings"));
 });
+
+test("grounded research stores only source-matched pending candidates",async()=>{
+ const statements=[];
+ const pool={query:async(sql,params)=>{statements.push({sql,params});return statements.length===1?{rowCount:1,rows:[{calls:1}]}:{rowCount:1,rows:[{id:42}]}}};
+ const fetchImpl=async(url,options)=>{
+  assert.match(url,/generativelanguage\.googleapis\.com/);
+  const body=JSON.parse(options.body);assert.deepEqual(body.tools,[{google_search:{}}]);
+  return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({proposals:[{title:"Aide au budget",content:"Repère pratique sourcé.",source_url:"https://www.service-public.fr/particuliers/vosdroits",source_name:"model name",confidence:"high",rationale:"Source officielle",keywords:["budget"]}]})}]},groundingMetadata:{webSearchQueries:["aide budget"],groundingChunks:[{web:{uri:"https://www.service-public.fr/particuliers/vosdroits",title:"Service Public"}}],searchEntryPoint:{renderedContent:"Google Search suggestions"}}}],usageMetadata:{totalTokenCount:50}})};
+ };
+ const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_COACH_RESEARCH_BILLING_APPROVED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
+ assert.equal(result.candidatesCreated,1);
+ assert.equal(result.candidates[0].id,42);
+ assert.equal(result.candidates[0].source.name,"Service Public");
+ assert.equal(result.searchEntryPoint,"Google Search suggestions");
+ assert.equal(statements.length,2);
+ assert.match(statements[1].sql,/bep_knowledge_candidates/);
+ assert.equal(statements[1].params[6],"web_research_pending");
+});
