@@ -1,0 +1,42 @@
+{
+  "service": "bep-coach-web-research",
+  "version": 1,
+  "enabled": false,
+  "provider": "gemini-google-search-grounding",
+  "model_env": "BEP_COACH_RESEARCH_MODEL",
+  "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
+  "required_gates": {
+    "feature_flag": "BEP_COACH_WEB_RESEARCH_ENABLED=true",
+    "billing_approval": "BEP_COACH_RESEARCH_BILLING_APPROVED=true",
+    "dedicated_agent_key": true
+  },
+  "api": {
+    "method": "POST",
+    "path": "/api/admin/bep-coach/research",
+    "authentication": "bep_session_and_agent_admin",
+    "cache": "no-store"
+  },
+  "limits": {
+    "query_max_length": 500,
+    "max_proposals_per_run": 5,
+    "max_content_chars": 1800,
+    "timeout_ms": 30000
+  },
+  "research_policy": {
+    "language": "fr",
+    "categories": ["budget", "spending", "savings", "debt", "behavior", "income", "planning", "general"],
+    "require_grounding_sources": true,
+    "require_https_source": true,
+    "reject_model_only_sources": true,
+    "treat_web_content_as_untrusted": true,
+    "automatic_publication": false,
+    "human_approval_required": true,
+    "destination": "existing_bep_knowledge_candidates",
+    "approved_destination": "existing_bep_financial_knowledge"
+  },
+  "billing": {
+    "automatic_activation": false,
+    "search_grounding_may_be_billable": true,
+    "never_enable_without_explicit_approval": true
+  }
+}
