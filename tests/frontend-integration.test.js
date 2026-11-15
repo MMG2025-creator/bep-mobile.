@@ -266,7 +266,8 @@ test("receipt import opens the validation dialog immediately, announces progress
  for(const marker of ["let receiptProcessing=false","if(receiptProcessing)","BEP_OPEN_PURCHASE_DIALOG?.()","Ticket importé. Analyse en cours","setAttribute(\"aria-busy\",\"true\")","submit.disabled=true","receiptProcessing=false"])assert.ok(app.includes(marker),"missing receipt UX marker: "+marker);
 });
 
-\ntest("receipt imports persist a stable OCR fingerprint and compare with earlier receipt captures independently of edited form labels",()=>{
+
+test("receipt imports persist a stable OCR fingerprint and compare with earlier receipt captures independently of edited form labels",()=>{
  const app=read("app.js");
  for(const marker of [
   "function fingerprintReceiptText(value)",
