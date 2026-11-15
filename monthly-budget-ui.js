@@ -227,12 +227,13 @@
         const selected = x.monthKey === current?.monthKey;
         return '<button type="button" class="monthly-budget-month-chip' + (selected ? ' is-active' : '') + '" data-month-key="' + escapeHtml(x.monthKey) + '" aria-pressed="' + selected + '"><b>' + escapeHtml(label) + '</b><small>' + x.monthKey.slice(0, 4) + '</small>' + (x.status === "closed" ? '<i aria-label="Mois clôturé">✓</i>' : '') + '</button>';
       }).join("");
-      strip.querySelectorAll("[data-month-key]").forEach(button => button.onclick = () => {
+      strip.querySelectorAll("[data-month-key]").forEach(button => button.disabled = loading || button.dataset.monthKey === current?.monthKey;
+      button.onclick = () => {
         if (button.dataset.monthKey !== current?.monthKey) loadMonth(button.dataset.monthKey);
       });
     }
-    if (previous) previous.disabled = activeIndex <= 0;
-    if (next) next.disabled = activeIndex < 0 || activeIndex >= ordered.length - 1;
+    if (previous) previous.disabled = loading || activeIndex <= 0;
+    if (next) next.disabled = loading || activeIndex < 0 || activeIndex >= ordered.length - 1;
     const monthTitle = $("monthlyBudgetCalendarTitle");
     if (monthTitle && current) monthTitle.textContent = "Calendrier · " + new Date(current.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
