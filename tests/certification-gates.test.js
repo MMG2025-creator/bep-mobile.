@@ -13,10 +13,10 @@ test("password recovery uses the configured API base and cannot call production 
  }
 });
 
-test("home dashboard exposes and renders the planned savings amount",()=>{
- const html=read("index.html"),app=read("app.js");
- assert.match(html,/id="homeSavingsPlanned"/,"home must expose a savings snapshot element");
- assert.match(app,/homeSavingsPlanned[^\n]{0,300}textContent/,"home render must update the savings snapshot from current state");
+test("published home dashboard exposes and renders the planned savings amount",()=>{
+ const html=read("dist/index.html"),app=read("dist/app.js");
+ assert.match(html,/id="homeSavingsPlanned"/,"published home must expose a savings snapshot element");
+ assert.match(app,/homeSavingsPlanned[^\n]{0,300}textContent/,"published home render must update the savings snapshot from current state");
 });
 
 test("monthly budget history invokes the monthly-to-savings bridge after a confirmed current-month save",()=>{
