@@ -1704,3 +1704,22 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 /* Overdraft permission removal action */
 #removeOverdraftBtn{border-color:#e4c9c6;color:#9b3d36;background:#fff;}
 #removeOverdraftBtn:active{background:#fff5f4;}
+
+
+/* BEP Home robot — interactive assistant states */
+.welcome-mascot.bep-home-mascot-button{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
+.welcome-mascot .welcome-bot{width:100%;height:calc(100% - 24px);overflow:visible;transition:filter .25s ease}
+.welcome-mascot .welcome-bot path,.welcome-mascot .welcome-bot rect,.welcome-mascot .welcome-bot ellipse{transform-box:fill-box}
+.welcome-mascot .home-mascot-status{display:block;max-width:100%;padding:4px 8px;border:1px solid rgba(204,246,224,.35);border-radius:999px;background:rgba(2,42,35,.72);color:#e8fff2;font-size:9px;font-weight:700;line-height:1.2;text-align:center;white-space:nowrap;opacity:.9}
+.welcome-mascot:focus-visible{outline:3px solid #f0c85d;outline-offset:5px;border-radius:18px}
+.welcome-mascot[data-state="thinking"] .welcome-bot{filter:drop-shadow(0 0 10px rgba(120,255,200,.8))}
+.welcome-mascot[data-state="thinking"] .home-mascot-status{background:#0b7459;animation:bepRobotStatusPulse 1.1s ease-in-out infinite}
+.welcome-mascot[data-state="thinking"] .welcome-bot path:nth-of-type(3){animation:bepRobotThink 1s ease-in-out infinite}
+.welcome-mascot[data-state="advice"] .welcome-bot{filter:drop-shadow(0 0 12px rgba(240,200,93,.65))}
+.welcome-mascot[data-state="advice"] .home-mascot-status{border-color:#f0c85d;color:#fff4c8}
+.welcome-mascot[data-state="attention"] .home-mascot-status{background:#79502b;color:#fff5dc}
+@keyframes bepRobotFloat{0%,100%{margin-top:0}50%{margin-top:-7px}}
+@keyframes bepRobotThink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bepRobotStatusPulse{0%,100%{opacity:.75}50%{opacity:1}}
+@media(max-width:430px){.welcome-mascot.bep-home-mascot-button{right:2%;width:30%;height:150px}.welcome-mascot .home-mascot-status{font-size:8px;padding:3px 6px}.welcome .welcome-copy{max-width:72%}}
+@media(prefers-reduced-motion:reduce){.welcome-mascot.bep-home-mascot-button,.welcome-mascot[data-state="thinking"] .home-mascot-status{animation:none!important}}
