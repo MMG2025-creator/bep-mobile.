@@ -248,7 +248,7 @@ app.post("/api/ai/chat",auth,async(req,res)=>{let quota=null;try{
  const p=req.body?.financialContext||{},structured=routeStructuredQuestion(q,p);
  if(structured){res.setHeader("Cache-Control","no-store");return res.json({answer:structured,provider:"bep-structured",model:"bep-financial-rules",mode:"structured",usage:null,quota:null,intelligence:{enabled:false,knowledge:[],context:{}}})}
  let cfg,key;try{({cfg,key}=await userAi(req.session.user.id));quota=await consumeBepAiQuota(req.session.user.id)}catch(error){
-  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:FINANCIAL_INTELLIGENCE_ENABLED}).catch(()=>({context:p,knowledge:[],prompt:""}));
+  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:true}).catch(()=>({context:p,knowledge:[],prompt:""}));
   const fallback=intelligence.knowledge?.length?"Je peux déjà m'appuyer sur les données et repères BEP disponibles. "+intelligence.knowledge.slice(0,3).map(x=>x.title+": "+x.content).join(" "):"Je peux répondre directement aux questions chiffrées présentes dans tes données BEP. Pour cette demande plus ouverte, le moteur conversationnel Gemini est momentanément indisponible. Aucun service payant n'a été sollicité.";
   return res.json({answer:fallback,provider:"bep-structured",model:"bep-financial-rules",mode:"structured-fallback",usage:null,quota:null,intelligence:{enabled:FINANCIAL_INTELLIGENCE_ENABLED,knowledge:(intelligence.knowledge||[]).map(x=>({title:x.title,source:x.source_name||"BEP"})),context:{}}});
  }
