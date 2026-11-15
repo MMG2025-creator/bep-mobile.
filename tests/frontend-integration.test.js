@@ -68,7 +68,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
   const css=read(file);
   assert.match(css,/\.bep-footer\{display:flex;flex-direction:column/);
   assert.match(css,/\.bep-connection-status\{[^}]*position:static;z-index:auto/);
-  assert.match(css,/padding:18px 12px calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css,/padding:12px 12px calc\(28px \+ env\(safe-area-inset-bottom\)\)/);
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
@@ -78,7 +78,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   assert.match(html,/styles\.css\?v=104&bep=uniform-home-metric-rows-20261115/);
-  assert.match(html,/connection-status\.css\?v=2&bep=footer-centered-20261115/);
+  assert.match(html,/connection-status\.css\?v=3&bep=compact-mobile-footer-20261115/);
  }
 });
 
