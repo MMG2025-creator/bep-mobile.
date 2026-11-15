@@ -68,7 +68,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
   const css=read(file);
   assert.match(css,/\.bep-footer\{display:flex;flex-direction:column/);
   assert.match(css,/\.bep-connection-status\{[^}]*position:static;z-index:auto/);
-  assert.match(css,/padding:18px 12px calc\(104px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css,/padding:12px 12px calc\(28px \+ env\(safe-area-inset-bottom\)\)/);
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
