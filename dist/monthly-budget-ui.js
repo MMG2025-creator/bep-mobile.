@@ -233,8 +233,14 @@
       strip.querySelectorAll("[data-month-key]").forEach(button => {
         button.disabled = loading;
         button.onclick = () => {
+          const selectedMonth = button.dataset.monthKey;
+          if (selectedMonth === current?.monthKey && monthDetailsExpanded) {
+            monthDetailsExpanded = false;
+            renderMonthlyVisuals();
+            return;
+          }
           monthDetailsExpanded = true;
-          if (button.dataset.monthKey !== current?.monthKey) loadMonth(button.dataset.monthKey);
+          if (selectedMonth !== current?.monthKey) loadMonth(selectedMonth);
           else renderMonthlyVisuals();
         };
       });
