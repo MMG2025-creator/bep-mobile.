@@ -174,3 +174,25 @@ Les tests nécessitant PostgreSQL sont SKIP, faute de `TEST_DATABASE_URL`. Aucun
 - Le test d'intégration budgétaire crée un schéma PostgreSQL temporaire et deux utilisateurs fictifs, puis supprime le schéma ; il doit être exécuté sur une base de recette dédiée, jamais sur la base de production sans isolation validée.
 
 **Verdict : préflight automatisé FAIL (4 assertions) ; recette métier authentifiée NOT RUN.** Aucun compte, aucune donnée financière et aucune écriture de production n'ont été créés.
+
+
+### Qualification des quatre échecs après revue du code source
+
+Relecture ciblée de `app.js`, `offline-storage.js`, `spend-experience.js`, `connection-status.css` et des tests :
+
+- **Test 52 — CSS mobile : assertion trop stricte.** Le CSS utilise `padding:18px 12px calc(104px + env(safe-area-inset-bottom))` ; le test cherche uniquement une déclaration littérale `padding-bottom`. Échec classé faux positif statique probable, contrôle visuel navigateur restant requis.
+- **Test 59 — effacement local : assertion obsolète.** Le code vérifie `BEPOffline.readPending()`, affiche une alerte et retourne avant l'effacement si une synchronisation est en attente. Le test attend une implémentation littérale `if(pending)throw Error(`. Garde-fou présent dans le code ; comportement navigateur restant à vérifier.
+- **Test 60 — historique des achats : assertion obsolète.** Le code ouvre l'accordéon par `purchaseHistory.open=true` dans `focusPurchaseHistory(filter)`. Le test cherche `details.open=true`. Comportement navigateur restant à vérifier.
+- **Test 65 — cache-busting : assertion de version périmée.** Le HTML utilise `app.js?v=117&bep=receipt-progress-and-budget-motion-20261114`, tandis que le test attend l'ancienne version `v=112`.
+
+Ces échecs ne démontrent pas quatre défauts fonctionnels. Ils révèlent des assertions trop littérales ou non actualisées. Ne pas changer le code métier pour satisfaire artificiellement ces expressions régulières ; corriger les assertions après validation du comportement attendu.
+
+### Second passage du contrôle budgétaire
+
+- Workflow : [BEP business recipe preflight — run #43663189812](https://github.com/MMG2025-creator/bep-mobile./actions/runs/43663189812)
+- Suite générale : 99 PASS, 4 FAIL (les mêmes assertions), 3 SKIP.
+- `npm run check:monthly-budget` : 65 PASS, 4 FAIL (les mêmes assertions frontend), 1 SKIP.
+- Vérifications syntaxiques préalables exécutées sans erreur signalée.
+- Tests PostgreSQL non exécutés faute de base de recette dédiée.
+
+**Verdict affiné :** quatre échecs de tests statiques non maintenus, aucun bug métier confirmé par ces assertions. Recette authentifiée et tests DB : NOT RUN.
