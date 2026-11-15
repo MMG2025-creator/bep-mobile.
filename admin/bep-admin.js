@@ -101,7 +101,12 @@ function createBepAdminRouter({ pool, requireAdmin }) {
       await client.query("BEGIN");
       const existing = await client.query("SELECT id FROM bep_admin_json_documents WHERE document_type='snapshot' AND source_export_id=$1", [document.export_id]);
       if (existing.rowCount) { await client.query("COMMIT"); return res.json({ ok: true, duplicate: true, document_id: existing.rows[0].id }); }
-      const inserted = await client.query("INSERT INTO bep_admin_json_documents(document_type,source_export_id,document,content_hash,created_by_ref) VALUES('snapshot',$1,$2::jsonb,$3,$4) RETURNING id", [document.export_id, JSON.stringify(document), sha256(document), actor]);
+      const inserted = await client.query("INSERT INTO bep_admin_json_documents(document_type,source_export_id,document,content_hash,created_by_ref) VALUES('snapshot',$1,$2::jsonb,$3,$4) ON CONFLICT DO NOTHING RETURNING id", [document.export_id, JSON.stringify(document), sha256(document), actor]);
+      if (!inserted.rowCount) {
+        const duplicate = await client.query("SELECT id FROM bep_admin_json_documents WHERE document_type='snapshot' AND source_export_id=$1", [document.export_id]);
+        await client.query("COMMIT");
+        return res.json({ ok: true, duplicate: true, document_id: duplicate.rows[0]?.id || null });
+      }
       await appendAudit(client, actor, "snapshot_imported", document.export_id, { document_id: inserted.rows[0].id, accounts: document.accounts.length });
       await client.query("COMMIT"); res.status(201).json({ ok: true, document_id: inserted.rows[0].id, accounts: document.accounts.length });
     } catch (error) { await client.query("ROLLBACK").catch(() => {}); console.error("BEP admin import failed", String(error?.message || error).slice(0, 160)); res.status(500).json({ error: "ADMIN_IMPORT_FAILED" }); }
