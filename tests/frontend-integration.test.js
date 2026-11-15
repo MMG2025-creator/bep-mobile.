@@ -121,7 +121,9 @@ test("offline-first state persistence keeps local writes and conflict protection
  assert.match(offline,/window\.BEPOffline\?\.hasKnownUser\(\)/);
  assert.match(offline,/hasKnownUser:\(\)=>!!localStorage\.getItem\(USER_KEY\)/);
  assert.match(offline,/hasTrustedSnapshot/);
- assert.match(offline,/stable\(remote\)!==stable\(pending\.base\)/);
+ assert.match(offline,/__bepOfflineSync:true,base:pending\.base,payload:pending\.payload/);
+ assert.doesNotMatch(offline,/stable\(remote\)!==stable\(pending\.base\)/);
+ assert.match(offline,/mergeOfflinePayload/);
  assert.match(offline,/bep:offline-conflict/);
 });
 
