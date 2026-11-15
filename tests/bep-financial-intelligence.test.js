@@ -91,10 +91,27 @@ test("automatic advice uses structured rules and never calls Gemini",()=>{
  const src=read("server.js"),start=src.indexOf('app.post("/api/ai/advice"'),end=src.indexOf('app.post("/api/ai/chat"');
  assert.ok(start>=0&&end>start);assert.match(src,/function structuredAdvice\(zone,p\)/);assert.doesNotMatch(src.slice(start,end),/invokeAi\(/);
 });
-test("simple financial questions are routed to structured data before any Gemini call",()=>{
- const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat"'),end=src.indexOf('app.get("/api/coach/knowledge"');
- const route=src.slice(start,end);assert.ok(route.indexOf("routeStructuredQuestion")<route.indexOf("userAi("));
+test("user Coach chat is local and documentary-only with no external provider call",()=>{
+ const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat",auth'),end=src.indexOf('app.get("/api/coach/library"',start);
+ assert.ok(start>=0&&end>start);
+ const route=src.slice(start,end);
+ assert.match(route,/buildIntelligence\(/);
+ assert.match(route,/routeStructuredQuestion\(/);
+ assert.match(route,/provider:"bep-local"/);
+ assert.match(route,/model:"bep-local-documentary"/);
+ assert.doesNotMatch(route,/invokeAi\(|userAi\(|consumeBepAiQuota\(/);
+ assert.match(route,/Je n’ai pas trouvé de fiche suffisamment pertinente/);
 });
+test("user Coach UI explicitly promises local documentary answers and no Gemini call",()=>{
+ const html=read("index.html");
+ const start=html.indexOf('<div id="coachChatLog"');
+ const end=html.indexOf('<section id="settings"',start);
+ const coach=html.slice(start,end);
+ assert.match(coach,/exclusivement sur la base documentaire locale/);
+ assert.match(coach,/Aucun appel à Gemini ou à un autre fournisseur externe/);
+ assert.doesNotMatch(coach,/Gemini Flash intervient/);
+});
+
 test("Gemini is disabled until zero-billing is confirmed and protected by user and global caps",()=>{
  const src=read("server.js");assert.match(src,/BEP_AI_ZERO_BILLING_CONFIRMED!=="true"/);assert.match(src,/BEP_AI_FREE_MONTHLY_LIMIT[^\n]*\|\|10/);assert.match(src,/BEP_AI_GLOBAL_MONTHLY_LIMIT[^\n]*\|\|250/);assert.match(src,/bep_ai_global_usage/);
 });

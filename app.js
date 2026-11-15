@@ -831,22 +831,19 @@ function addCoachMessage(role,message){
  if(role!=="user"){const title=document.createElement("strong");title.textContent="Coach BEP";item.appendChild(title)}
  const p=document.createElement("p");p.textContent=message;item.appendChild(p);log.appendChild(item);log.scrollTop=log.scrollHeight;
 }
-let aiConnection={configured:false,provider:"",model:"",mode:"local",personal:false,used:0,limit:60};
+let aiConnection={configured:false,provider:"bep-local",model:"bep-local-documentary",mode:"structured",personal:false,used:0,limit:0};
 const AI_ENABLED_KEY="bep-external-ai-enabled-v1";let aiCoachEnabled=false;try{localStorage.removeItem(AI_ENABLED_KEY)}catch{}
-async function loadAiConnection(){if(!window.bepSignedIn)return;try{
- const sr=await fetch(API+"/api/ai/status",{credentials:"include",cache:"no-store"});
- if(!sr.ok)throw Error("HTTP "+sr.status);
- const status=await sr.json(),active=!!status.available;
- aiConnection={configured:active,mode:active?"bep":"structured",provider:status.provider||"",model:status.model||"",used:Number(status.used)||0,limit:Number(status.limit)||60,personal:false,financialIntelligence:status.financialIntelligence||{enabled:false}};
- const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML=active?'<span class="pin">●</span> Coach IA BEP':'<span class="pin">●</span> Coach BEP structuré';
- const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent=active?"● IA BEP configurée · "+aiConnection.provider+" / "+aiConnection.model:"● Base financière BEP · Gemini sous verrou gratuit";
- const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent=active?"Le fournisseur IA est configuré. La connexion réelle est vérifiée à chaque réponse. Les appels passent par le service BEP.": "Le moteur financier BEP reste disponible. Gemini est verrouillé tant que le fonctionnement sans facturation du projet Google n'est pas confirmé.";
- const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent=active?"Quota BEP : "+aiConnection.used+" / "+aiConnection.limit+" requêtes ce mois-ci.":"Base BEP : conseils structurés sans appel Gemini.";quotaLabel.classList.remove("hidden")}
- const badge=$("aiConnectionBadge");if(badge)badge.textContent=active?"Gemini gratuit":"BEP structuré";
+async function loadAiConnection(){
+ aiConnection={configured:false,mode:"structured",provider:"bep-local",model:"bep-local-documentary",personal:false,used:0,limit:0,financialIntelligence:{enabled:true}};
+ const coachBadge=$("coachBadge");if(coachBadge)coachBadge.innerHTML='<span class="pin">●</span> Coach BEP local';
+ const modeLabel=$("coachModeLabel");if(modeLabel)modeLabel.textContent="● Base documentaire BEP · moteur local";
+ const statusLabel=$("aiConnectionStatus");if(statusLabel)statusLabel.textContent="Les réponses sont construites à partir de la base documentaire BEP et de tes données enregistrées. Aucun appel à Gemini ou à un autre fournisseur externe.";
+ const quotaLabel=$("aiQuotaStatus");if(quotaLabel){quotaLabel.textContent="Aucune clé API, aucun quota fournisseur et aucun coût d'appel externe.";quotaLabel.classList.remove("hidden")}
+ const badge=$("aiConnectionBadge");if(badge)badge.textContent="Coach local documentaire";
  const disconnect=$("disconnectAiBtn");if(disconnect)disconnect.classList.add("hidden");
  const advanced=$("aiAdvancedSettings");if(advanced){advanced.hidden=true;advanced.classList.add("hidden")}
- const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent=active?"● Coach IA BEP configuré · "+aiConnection.provider:"● Coach BEP structuré";
- }catch(e){aiConnection={configured:false,mode:"unavailable",provider:"",model:"",personal:false,used:0,limit:60};const label=$("aiConnectionStatus");if(label)label.textContent="Impossible de vérifier le service IA. Réessaie dans un instant. ("+e.message+")";const badge=$("aiConnectionBadge");if(badge)badge.textContent="Service indisponible";}}
+ const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent="● Coach BEP · Base documentaire locale";
+}
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
  if(window.bepSignedIn&&(!aiConnection.mode||aiConnection.mode==="unavailable"))await loadAiConnection();
@@ -864,8 +861,8 @@ async function submitCoachQuestion(question){
     const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");(c.dataWarnings||[]).forEach(w=>trace.push("Alerte données : "+w));
     const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
    }
-   const tokens=Number(d.usage?.total_tokens||d.usage?.totalTokenCount)||Math.max(1,Math.ceil(String(d.answer||"").length/4));aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
-  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le fournisseur IA n’a pas répondu correctement. Aucune réponse locale n’a été substituée. Détail : "+e.message}
+   
+  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
  }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
   addCoachMessage("coach",coachReply(value));
  }else{
