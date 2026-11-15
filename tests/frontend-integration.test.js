@@ -251,3 +251,17 @@ test("purchase history observer does not rewrite unchanged hidden attributes",()
  assert.match(spend,/if\(row\.hidden!==shouldHide\)row\.hidden=shouldHide/);
  assert.equal(spend,read("dist/spend-clean-ui.js"));
 });
+
+test("savings movements reject dates before today with a persistent explicit message",()=>{
+ const app=read("app.js");
+ assert.ok(app.includes('savingsOperationDate").min=savingsToday'));
+ assert.ok(!app.includes('savingsOperationDate").max=savingsToday'));
+ assert.ok(app.includes("date<savingsToday"));
+ assert.ok(app.includes("La date de cette épargne ne peut pas être antérieure à aujourd’hui"));
+ assert.ok(app.includes('savingsOperationStatus");if(status)status.textContent=message'));
+});
+
+test("receipt import opens the validation dialog immediately, announces progress and blocks duplicate processing",()=>{
+ const app=read("app.js");
+ for(const marker of ["let receiptProcessing=false","if(receiptProcessing)","BEP_OPEN_PURCHASE_DIALOG?.()","Ticket importé. Analyse en cours","setAttribute(\"aria-busy\",\"true\")","submit.disabled=true","receiptProcessing=false"])assert.ok(app.includes(marker),"missing receipt UX marker: "+marker);
+});
