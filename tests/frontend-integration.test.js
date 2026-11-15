@@ -309,6 +309,6 @@ test("published production homepage keeps its dist-specific design while using t
  assert.match(source,/settings\.css\?v=3/);
  assert.match(published,/ui-polish\.css\?v=4/);
  assert.match(published,/settings\.css\?v=4/);
- assert.match(published,/pwa\\.js\?v=12/);
+ assert.match(published,/pwa\.js\?v=12/);
  assert.notEqual(source,published,"dist/index.html intentionally carries production-specific presentation");
 });
