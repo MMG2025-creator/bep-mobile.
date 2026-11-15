@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=102&bep=footer-center-advice-feedback-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=102&bep=footer-center-advice-feedback-20261115"><link rel="stylesheet" href="./monthly-budget-ui.css?v=1&bep=monthly-visual-workspace-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=6">
@@ -153,7 +153,32 @@
     <button class="secondary full" type="submit">Créer le mois</button>
   </form>
   <div id="monthlyBudgetWorkspace" hidden>
-    <div class="field"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="field monthly-budget-month-select"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth"></select></div>
+    <div class="monthly-budget-month-navigation" aria-label="Navigation des mois">
+      <button type="button" id="monthlyBudgetMonthPrev" aria-label="Mois précédent">‹</button>
+      <div id="monthlyBudgetMonthStrip" class="monthly-budget-month-strip" aria-live="polite"></div>
+      <button type="button" id="monthlyBudgetMonthNext" aria-label="Mois suivant">›</button>
+    </div>
+    <div class="monthly-budget-visual-grid">
+      <section class="monthly-budget-visual-card monthly-budget-calendar-card" aria-labelledby="monthlyBudgetCalendarTitle">
+        <div class="monthly-budget-visual-heading"><div><p class="eyebrow">LE RYTHME DU MOIS</p><h3 id="monthlyBudgetCalendarTitle">Calendrier des dépenses</h3></div><span id="monthlyBudgetCalendarSummary" class="monthly-budget-visual-note">Aucune dépense réelle</span></div>
+        <div class="monthly-budget-calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div id="monthlyBudgetCalendar" class="monthly-budget-calendar" aria-label="Calendrier mensuel des dépenses"></div>
+        <div class="monthly-budget-calendar-legend"><span><i></i> Jour avec dépense</span><span><i class="today"></i> Aujourd’hui</span></div>
+      </section>
+      <section class="monthly-budget-visual-card monthly-budget-allocation-card" aria-labelledby="monthlyBudgetAllocationTitle">
+        <div class="monthly-budget-visual-heading"><div><p class="eyebrow">VUE D’ENSEMBLE</p><h3 id="monthlyBudgetAllocationTitle">Répartition du budget</h3></div><span class="monthly-budget-visual-note">Prévisionnel et réel</span></div>
+        <div class="monthly-budget-donut-layout">
+          <div id="monthlyBudgetAllocationDonut" class="monthly-budget-donut" role="img" aria-label="Répartition prévisionnelle du budget"><div><span>Disponible</span><strong id="monthlyBudgetDonutAvailable">0,00 €</strong></div></div>
+          <div id="monthlyBudgetAllocationLegend" class="monthly-budget-donut-legend"></div>
+        </div>
+        <div class="monthly-budget-category-chart">
+          <div class="monthly-budget-category-head"><b>Répartition des charges</b><span id="monthlyBudgetCategoryTotal">0,00 €</span></div>
+          <div id="monthlyBudgetCategoryDonut" class="monthly-budget-category-donut" role="img" aria-label="Répartition des charges par catégorie"></div>
+          <div id="monthlyBudgetCategoryLegend" class="monthly-budget-category-legend"></div>
+        </div>
+      </section>
+    </div>
     <div class="monthly-budget-metrics">
       <div><span>Revenus prévus</span><strong id="monthlyBudgetIncomeTotal">0,00 €</strong></div>
       <div><span>Charges prévues</span><strong id="monthlyBudgetChargesTotal">0,00 €</strong></div>
@@ -569,7 +594,7 @@
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
 <script src="./app.js?v=117&bep=receipt-progress-and-budget-motion-20261114"></script>
 <script src="./auth-recovery.js?v=2"></script>
-<script src="./monthly-budget-ui.js?v=13&bep=monthly-budget-offline-cache-20261113"></script>
+<script src="./monthly-budget-ui.js?v=14&bep=monthly-budget-visual-workspace-20261115"></script>
 <script src="./pwa.js?v=12"></script>
 <script src="./connection-status.js?v=1"></script>
 <script src="./spend-experience.js?v=24&bep=short-month-label-20261114"></script>
