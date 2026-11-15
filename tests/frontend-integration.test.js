@@ -417,6 +417,7 @@ test("Google OAuth runs in a separate popup and returns to BEP without adding Go
   assert.ok(!app.includes("window.location.href=d.url"),"Google account linking must not navigate the main tab");
  }
  const server=read("server.js");
+ assert.match(server,/crossOriginOpenerPolicy:\{policy:"same-origin-allow-popups"\}/);
  assert.ok(server.includes("function oauthPopupRedirect("));
  assert.ok(server.includes("/oauth-popup.html?"));
  assert.ok(server.includes("rawState.slice(-32)"));
