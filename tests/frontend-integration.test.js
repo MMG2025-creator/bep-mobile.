@@ -324,8 +324,6 @@ test("monthly budget visual workspace uses synchronized client assets and publis
   assert.match(html,/monthly-budget-ui\.js\?v=16&bep=calendar-toggle-and-header-motion-20261115/);
  }
  for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
-});
-
 test("monthly calendar collapses when the active month chip is tapped again and the header includes motion pictograms",()=>{
  const js=read("monthly-budget-ui.js"),css=read("monthly-budget-ui.css"),html=read("index.html");
  assert.match(js,/selectedMonth === current\?\.monthKey && monthDetailsExpanded/);
