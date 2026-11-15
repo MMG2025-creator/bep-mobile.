@@ -359,25 +359,25 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   for(const id of ["monthlyBudgetCalendar","monthlyBudgetDayDialog","monthlyBudgetDayTitle","monthlyBudgetDaySummary","monthlyBudgetDayExpenses"])assert.match(html,new RegExp('id="'+id+'"'));
-  assert.match(html,/monthly-budget-ui\\.css\\?v=4&bep=calendar-day-context-dialog-20261115/);
-  assert.match(html,/monthly-budget-ui\\.js\\?v=17&bep=calendar-day-context-dialog-20261115/);
+  assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
  }
  const js=read("monthly-budget-ui.js");
  assert.equal(js,read("dist/monthly-budget-ui.js"));
  assert.match(js,/data-day=/);
  assert.match(js,/openCalendarDayDetails/);
- assert.match(js,/actuals\\.expenses \\|\\| \\[\\]/);
- assert.match(js,/showModal\\(\\)/);
+ assert.ok(js.includes("actuals.expenses || []"));
+ assert.ok(js.includes("showModal()"));
  assert.match(js,/data-close-monthly-day-dialog/);
- assert.match(js,/event\\.target === dayDialog/);
- assert.match(js,/dayDialog\\?\\.addEventListener\\("close"/);
- assert.match(js,/expense\\.label \\|\\| expense\\.merchant \\|\\| "Dépense"/);
- assert.match(js,/expense\\.category \\|\\| "Sans catégorie"/);
+ assert.ok(js.includes("event.target === dayDialog"));
+ assert.ok(js.includes('dayDialog?.addEventListener("close"'));
+ assert.ok(js.includes('expense.label || expense.merchant || "Dépense"'));
+ assert.ok(js.includes('expense.category || "Sans catégorie"'));
  assert.match(js,/monthlyBudgetDayExpenses/);
  for(const file of ["monthly-budget-ui.css","dist/monthly-budget-ui.css"]){
   const css=read(file);
-  assert.match(css,/\\.monthly-budget-day-dialog::backdrop/);
-  assert.match(css,/\\.monthly-budget-calendar-day-button:focus-visible/);
-  assert.match(css,/@media\\(max-width:480px\\).*monthly-budget-day-dialog/s);
+  assert.ok(css.includes(".monthly-budget-day-dialog::backdrop"));
+  assert.ok(css.includes(".monthly-budget-calendar-day-button:focus-visible"));
+  assert.ok(css.includes("@media(max-width:480px){.monthly-budget-day-dialog"));
  }
 });
