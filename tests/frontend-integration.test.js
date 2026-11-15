@@ -353,3 +353,21 @@ test("monthly calendar collapses when the active month chip is tapped again and 
   assert.match(css,/#budgetModuleIncome \.income-card>\.card-head \.hint,[\s\S]*?#budgetModuleCharges \.charges-card>\.card-head \.hint/);
  }
 });
+
+test("budget has no robot shortcut or floating advice dock and monthly header uses full-width copy",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.doesNotMatch(html,/budgetCoachLauncher|budget-coach-entry|bepAdviceDock|bepAdviceRobot|bepAdviceDialog/);
+  assert.match(html,/data-tab="coach"/);
+  assert.match(html,/monthly-budget-heading-art/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.doesNotMatch(css,/budget-coach-launcher|budget-coach-robot-art/);
+ }
+ for(const file of ["monthly-budget-ui.css","dist/monthly-budget-ui.css"]){
+  const css=read(file);
+  assert.match(css,/\.monthly-budget-heading-copy\{max-width:100%!important;width:100%/);
+  assert.match(css,/\.monthly-budget-heading-art\{top:12px!important/);
+ }
+});
