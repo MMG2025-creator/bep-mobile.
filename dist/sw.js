@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v15";
+const CACHE_NAME="bep-shell-v16";
 const RUNTIME_CACHE="bep-runtime-v1";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
@@ -56,7 +56,7 @@ self.addEventListener("fetch",event=>{
         const response=await fetch(request,{cache:"no-store"});
         if(response&&response.ok){const cache=await caches.open(CACHE_NAME);await cache.put(request,response.clone());}
         return response;
-      }catch(_error){return (await caches.match(request))||Response.error();}
+      }catch(_error){return (await caches.match(request,{ignoreSearch:true}))||Response.error();}
     })());
     return;
   }
