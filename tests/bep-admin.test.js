@@ -77,3 +77,53 @@ test("admin page inline script parses and contains no active production mutation
 
 test("independent admin auth normalizes email and compares one-time code hashes safely",()=>{const email=normalizeEmail("  MMSIGNENOIR@gmail.com ");assert.equal(email,"mmsignenoir@gmail.com");const hash=hashCode(email,"123456","a-session-pepper-that-is-long-enough");assert.match(hash,/^[a-f0-9]{64}$/);assert.equal(safeEqualHex(hash,hash),true);assert.equal(safeEqualHex(hash,hashCode(email,"654321","a-session-pepper-that-is-long-enough")),false);assert.equal(safeEqualHex("not-a-hash",hash),false)});
 test("admin API guard rejects regular BEP sessions without independent authentication",()=>{const previous=process.env.BEP_AGENT_ADMIN_USER_IDS;delete process.env.BEP_AGENT_ADMIN_USER_IDS;let status=0,body=null;const res={status(code){status=code;return this},json(value){body=value;return this}};requireIndependentBepAdmin({session:{user:{id:"admin-user"}}},res,()=>{throw Error("regular BEP session must not pass")});assert.equal(status,401);assert.equal(body.error,"INDEPENDENT_ADMIN_AUTH_REQUIRED");if(previous!==undefined)process.env.BEP_AGENT_ADMIN_USER_IDS=previous});
+
+test("independent admin enrollment, login and password recovery use a separate credential", { skip: !process.env.TEST_DATABASE_URL }, async () => {
+  const express = require("express");
+  const { Pool } = require("pg");
+  const bcrypt = require("bcryptjs");
+  const crypto = require("node:crypto");
+  const { ensureBepAdminAuthSchema, createBepAdminAuthRouter } = require("../admin/bep-admin-auth");
+  const pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL });
+  const email = "admin-" + crypto.randomUUID() + "@example.test";
+  const userId = "admin-ci-" + crypto.randomUUID();
+  const previousSecret = process.env.SESSION_SECRET;
+  process.env.SESSION_SECRET = "ci-only-session-pepper-for-admin-auth-tests";
+  let server, sentCode = "";
+  try {
+    await pool.query("CREATE TABLE IF NOT EXISTS bep_users(id TEXT PRIMARY KEY,email TEXT NOT NULL UNIQUE,email_verified BOOLEAN NOT NULL DEFAULT TRUE)");
+    await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT TRUE");
+    await pool.query("CREATE TABLE IF NOT EXISTS user_sessions(sid TEXT PRIMARY KEY,sess JSONB NOT NULL,expire TIMESTAMPTZ NOT NULL)");
+    await pool.query("INSERT INTO bep_users(id,email,email_verified) VALUES($1,$2,TRUE)", [userId, email]);
+    await ensureBepAdminAuthSchema(pool);
+    const app = express();
+    app.use(express.json());
+    app.use((req,res,next)=>{req.session={regenerate:cb=>cb(),save:cb=>cb(null)};next()});
+    app.use("/api/admin/auth", createBepAdminAuthRouter({pool,bcrypt,allowedEmails:[email],sendCode:async(_email,code)=>{sentCode=code}}));
+    server=app.listen(0,"127.0.0.1");
+    await new Promise(resolve=>server.once("listening",resolve));
+    const base="http://127.0.0.1:"+server.address().port+"/api/admin/auth";
+    const post=(path,body)=>fetch(base+path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    let response=await post("/request-enrollment",{email});
+    assert.equal(response.status,200);assert.match(sentCode,/^\d{6}$/);
+    response=await post("/complete-enrollment",{email,code:sentCode,password:"Strong-Admin-Pass-2026"});
+    assert.equal(response.status,200);
+    response=await post("/login",{email,password:"Strong-Admin-Pass-2026"});
+    assert.equal(response.status,200);assert.equal((await response.json()).ok,true);
+    response=await post("/request-reset",{email});
+    assert.equal(response.status,200);assert.match(sentCode,/^\d{6}$/);
+    response=await post("/complete-reset",{email,code:sentCode,password:"Another-Strong-Pass-2026"});
+    assert.equal(response.status,200);
+    response=await post("/login",{email,password:"Strong-Admin-Pass-2026"});
+    assert.equal(response.status,401);
+    response=await post("/login",{email,password:"Another-Strong-Pass-2026"});
+    assert.equal(response.status,200);
+  } finally {
+    if(server)await new Promise(resolve=>server.close(resolve));
+    await pool.query("DELETE FROM bep_admin_auth_challenges WHERE email=$1",[email]).catch(()=>{});
+    await pool.query("DELETE FROM bep_admin_accounts WHERE email=$1",[email]).catch(()=>{});
+    await pool.query("DELETE FROM bep_users WHERE id=$1",[userId]).catch(()=>{});
+    await pool.end();
+    if(previousSecret===undefined)delete process.env.SESSION_SECRET;else process.env.SESSION_SECRET=previousSecret;
+  }
+});
