@@ -283,7 +283,7 @@ app.get("/api/data",auth,async(req,res)=>{const r=await pool.query("SELECT paylo
 app.put("/api/data",auth,async(req,res)=>{
  const offlineSync=req.body?.__bepOfflineSync===true;
  const base=offlineSync?req.body?.base:null;
- const p=offlineSync?req.body?.payload:req.body;
+ let p=offlineSync?req.body?.payload:req.body;
  if(!p||typeof p!=="object"||Array.isArray(p)||JSON.stringify(p).length>500000||
     (offlineSync&&(!base||typeof base!=="object"||Array.isArray(base)||JSON.stringify(base).length>500000)))return res.status(400).json({error:"INVALID_PAYLOAD"});
  const client=await pool.connect();
