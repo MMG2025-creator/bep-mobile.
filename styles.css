@@ -1700,3 +1700,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   line-height:1.25;
   overflow-wrap:anywhere;
 }
+
+/* Overdraft permission removal action */
+#removeOverdraftBtn{border-color:#e4c9c6;color:#9b3d36;background:#fff;}
+#removeOverdraftBtn:active{background:#fff5f4;}
