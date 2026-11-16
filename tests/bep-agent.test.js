@@ -83,6 +83,10 @@ test("knowledge review sends documentary JSON context and DB records to Gemini w
  const result=await runKnowledgeReview({pool,client:{generateJson:async input=>{prompt=input.prompt;return{value:{proposals:[]},usage:{totalTokenCount:12}}}}});
  for(const file of DOCUMENTARY_JSON_FILES)assert.ok(prompt.includes(file));
  assert.ok(prompt.includes("Fiches PostgreSQL actives"));
+ assert.ok(prompt.includes("SP_OVERINDEBTEDNESS"));
+ assert.ok(prompt.includes("ENERGY_PAYMENT_DIFFICULTY"));
+ assert.ok(prompt.includes("https://www.banque-france.fr/fr/a-votre-service/particuliers/faire-face-difficultes-financieres-ou-dettes"));
+ assert.ok(prompt.includes("\\\"read_only\\\":true"));
  assert.equal(result.summary.databaseDocumentsReviewed,1);
  assert.deepEqual(result.summary.documentaryJsonFiles.map(x=>x.path),DOCUMENTARY_JSON_FILES);
  assert.equal(result.candidatesCreated,0);
@@ -113,6 +117,12 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
+ assert.ok(server.includes('const scope=String(req.body?.scope||"documentary_json")'));
+ assert.ok(server.includes('scope==="documentary_json"?["knowledge_review"]'));
+ assert.ok(server.includes('scope==="quality"?["coach_quality_review"]'));
+ assert.ok(server.includes("maxJobs:jobTypes.length"));
+ assert.ok(server.includes('app.get("/api/admin/bep-agent/status"'));
+ assert.ok(server.includes("callsRemaining"));
  assert.match(server,/scheduleAdminAgentRun/);
  assert.match(server,/to_regclass\(/);
  assert.ok(server.includes('BEP_AGENT_SCHEMA_MIGRATE==="true"'));
