@@ -12,7 +12,7 @@ test("admin export contains only pseudonymous aggregate metadata, never customer
   const secret="test-secret-with-enough-entropy";
   const page=buildExportPage({secret,page:1,pageSize:50,hasMore:false,budgetsByUser:new Map([["u1",3]]),rows:[{
     id:"u1",created_at:"2026-01-01T00:00:00Z",account_updated_at:"2026-02-01T00:00:00Z",
-    data_updated_at:"2026-02-02T00:00:00Z",data_available:true,
+    data_updated_at:"2026-02-02T00:00:00Z",
     payload:{income:4800,expenses:[{label:"Pharmacie",amount:90,captureText:"reçu privé"}],profile:{psychology:"donnée sensible"},email:"person@example.com"}
   }]});
   assert.equal(page.schema_version,2);
