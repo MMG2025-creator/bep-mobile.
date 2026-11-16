@@ -11,6 +11,7 @@ const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,researchEnabled,digestWebCandidate,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
+const {adminAgentStatus}=require("./lib/bep-agent/admin-runner");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=process.env.FRONTEND_ORIGIN||"https://bep-mobile.onrender.com",pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
@@ -107,11 +108,6 @@ if(BEP_ADMIN_AUTH_ENABLED)await ensureBepAdminAuthSchema(pool);
 if(BEP_ADMIN_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY)await ensureBepAdminSchema(pool);
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
-function requireBepAgentAdmin(req,res,next){
- const allowed=String(process.env.BEP_AGENT_ADMIN_USER_IDS||"").split(",").map(x=>x.trim()).filter(Boolean);
- if(!req.session?.user?.id||!allowed.includes(String(req.session.user.id)))return res.status(403).json({error:"AGENT_ADMIN_REQUIRED"});
- next();
-}
 function coachTelemetry(req,res,next){
  if(!agentTelemetryReady)return next();
  const started=Date.now();let recorded=false;const send=res.json.bind(res);
@@ -281,8 +277,8 @@ app.get("/api/coach/library",auth,async(req,res)=>{try{
  const result=await readCoachLibrary({pool,userId:req.session.user.id,query,context:req.query.context&&typeof req.query.context==="object"?req.query.context:{},limit:Math.min(8,Math.max(1,Number(req.query.limit)||6))});
  res.setHeader("Cache-Control","no-store");res.json(result);
  }catch(e){console.error("Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_LIBRARY_UNAVAILABLE"})}});
-app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,(req,res)=>{res.setHeader("Cache-Control","no-store");res.json({service:RESEARCH_CONFIG.service,enabled:researchEnabled(),approvalRequired:true,automaticPublication:false,provider:RESEARCH_CONFIG.provider,reason:researchEnabled()?"Recherche autorisée par configuration.":"Recherche désactivée : activation et approbation de facturation explicites requises."})});
-app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res)=>{try{
+app.get("/api/admin/bep-coach/research/status",auth,requireIndependentBepAdmin,(req,res)=>{res.setHeader("Cache-Control","no-store");res.json({service:RESEARCH_CONFIG.service,enabled:researchEnabled(),approvalRequired:true,automaticPublication:false,provider:RESEARCH_CONFIG.provider,reason:researchEnabled()?"Recherche autorisée par configuration.":"Recherche désactivée : activation et approbation de facturation explicites requises."})});
+app.post("/api/admin/bep-coach/research",auth,requireIndependentBepAdmin,async(req,res)=>{try{
  const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
  if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
  const result=await researchWeb({pool,query,category});
@@ -290,14 +286,14 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  }catch(e){console.error("Coach web research failed",String(e?.message||e).slice(0,180));res.status(502).json({error:"COACH_RESEARCH_FAILED",message:"La recherche Internet n'a pas abouti. Aucune connaissance n'a été publiée."})}});
 app.get("/api/coach/knowledge",auth,async(req,res)=>{try{const r=await pool.query("SELECT id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider,review_status,created_at FROM bep_user_coach_knowledge WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows.map(x=>({id:x.id,kind:x.kind,category:x.category,title:x.title,detail:x.detail,priority:x.priority,confidence:x.confidence,evidence:x.evidence,action:x.action,valid_until:x.valid_until,provider:x.source_provider,status:x.review_status,created_at:x.created_at}))})}catch(e){console.error("Coach knowledge read failed",e.message);res.status(500).json({message:"Base de connaissances indisponible."})}});
 app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.items,provider=String(req.body?.source_provider||"other");if(!Array.isArray(items)||items.length<1||items.length>100||!["chatgpt","gemini","claude","mistral","other"].includes(provider))return res.status(400).json({message:"Import BEP invalide."});const client=await pool.connect();let inserted=0;try{await client.query("BEGIN");for(const x of items){const kind=x?.kind==="recommendation"?"recommendation":x?.kind==="knowledge"?"knowledge":null,category=String(x?.category||"other"),title=String(x?.title||"").trim().slice(0,120),detail=String(x?.detail||"").trim().slice(0,1500),priority=["low","medium","high"].includes(x?.priority)?x.priority:"medium",confidence=["low","medium","high"].includes(x?.confidence)?x.confidence:"low",externalId=String(x?.id||"").trim().slice(0,80);const allowed=kind==="recommendation"?["budget","spending","savings","debt","behavior","other"]:["budget","spending","savings","behavior","general"];const dateCandidate=kind==="recommendation"?String(x.valid_until||""):"";const dateValid=!dateCandidate||(/^\d{4}-\d{2}-\d{2}$/.test(dateCandidate)&&!Number.isNaN(Date.parse(dateCandidate+"T00:00:00Z"))&&new Date(dateCandidate+"T00:00:00Z").toISOString().slice(0,10)===dateCandidate);if(!kind||!allowed.includes(category)||!title||!detail||!externalId||!dateValid)continue;const evidence=Array.isArray(x.evidence)?x.evidence.slice(0,8).map(v=>String(v).slice(0,300)):[],action=kind==="recommendation"?String(x.action||"").slice(0,500):"",validUntil=kind==="recommendation"&&/^\d{4}-\d{2}-\d{2}$/.test(x.valid_until||"")?x.valid_until:null;const r=await client.query("INSERT INTO bep_user_coach_knowledge(user_id,external_id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12) ON CONFLICT(user_id,external_id,kind) DO NOTHING RETURNING id",[req.session.user.id,externalId,kind,category,title,detail,priority,confidence,JSON.stringify(evidence),action,validUntil,provider]);if(r.rowCount)inserted++}await client.query("COMMIT");res.status(201).json({ok:true,inserted,received:items.length})}catch(e){await client.query("ROLLBACK");console.error("Coach knowledge import failed",e.message);res.status(500).json({message:"Import non enregistré. Aucune donnée financière n'a été modifiée."})}finally{client.release()}});
-app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
+app.get("/api/admin/bep-agent/candidates",auth,requireIndependentBepAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{
   const r=await pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status=$1 ORDER BY created_at DESC LIMIT 100",[status]);
   res.setHeader("Cache-Control","no-store");res.json({items:r.rows});
  }catch(e){res.status(503).json({error:"AGENT_CANDIDATES_UNAVAILABLE"})}
 });
-app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
+app.post("/api/admin/bep-agent/run",auth,requireIndependentBepAdmin,async(req,res)=>{
  if(!agentEnabled)return res.status(409).json({error:"AGENT_DISABLED"});
  try{
   const [knowledge,quality]=await Promise.all([
@@ -307,7 +303,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
   res.status(202).json({queued:true,knowledgeJobId:knowledge.rows[0]?.id||null,qualityJobId:quality.rows[0]?.id||null});
  }catch(e){res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
 });
-app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
+app.get("/api/admin/bep-agent/overview",auth,requireIndependentBepAdmin,async(req,res)=>{
  try{
   const [runs,metrics,coach]=await Promise.all([
    pool.query("SELECT id,job_type,status,model,input_digest,output_digest,output_summary,usage,error_code,started_at,finished_at FROM bep_agent_runs ORDER BY finished_at DESC LIMIT 30"),
@@ -317,7 +313,7 @@ app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)
   res.setHeader("Cache-Control","no-store");res.json({runs:runs.rows,agentMetrics:metrics.rows,coachMetrics:coach.rows});
  }catch(e){res.status(503).json({error:"AGENT_OVERVIEW_UNAVAILABLE"})}
 });
-app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,async(req,res)=>{
+app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireIndependentBepAdmin,async(req,res)=>{
  const id=Number(req.params.id),decision=String(req.body?.decision||"");
  if(!Number.isSafeInteger(id)||id<1||!["approve","reject"].includes(decision))return res.status(400).json({error:"INVALID_REVIEW"});
  const client=await pool.connect();
