@@ -4,7 +4,6 @@
   "enabled": true,
   "runtime_default_enabled": false,
   "provider": "gemini-google-search-grounding",
-  "model_env": "BEP_COACH_RESEARCH_MODEL",
   "default_model": "gemini-2.5-flash",
   "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
   "required_gates": {
