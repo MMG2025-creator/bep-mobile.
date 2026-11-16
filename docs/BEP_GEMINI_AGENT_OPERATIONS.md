@@ -57,6 +57,8 @@ Les sept tables additives doivent être migrées explicitement avant activation.
 
 Les deux robots administratifs (revue du corpus JSON et recherche Google Search) déposent leurs propositions dans `bep_knowledge_candidates`, avec le statut `pending`, la provenance et l’empreinte de la source. Le contrat de sortie est défini dans `services/coach-proposals.json` et référencé par `services/coach-research.json`.
 
+La recherche Google Search du Coach utilise l’API Gemini Interactions (`POST /v1beta/interactions`), le modèle `gemini-3.8-flash` et l’outil `google_search`. La réponse structurée JSON est extraite des étapes `model_output`; les URL sources sont exclusivement récupérées depuis les annotations `url_citation` HTTPS. Les interactions sont envoyées avec `store=false`. Les propositions restent en attente de validation humaine. Le moteur local du Coach et le robot de revue des fichiers JSON ne sont pas modifiés par ce circuit.
+
 L’administration peut télécharger le document `bep-coach-proposals.json` via `GET /api/admin/bep-coach/proposals.json`. L’endpoint est protégé par la session administrateur indépendante, renvoie `Cache-Control: no-store` et expose par défaut uniquement les propositions en attente. Le JSON est reconstitué depuis le stockage PostgreSQL durable ; aucun fichier temporaire sur le disque Render n’est utilisé.
 
 L’approbation reste réalisée individuellement via `POST /api/admin/bep-agent/candidates/:id/review`. La vérification d’empreinte et de version source précède toute intégration. Le document JSON de propositions n’est jamais lu par le Coach utilisateur et ne déclenche aucune publication automatique.
