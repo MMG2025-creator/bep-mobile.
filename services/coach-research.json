@@ -8,7 +8,6 @@
   "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
   "required_gates": {
     "feature_flag": "BEP_COACH_WEB_RESEARCH_ENABLED=true",
-    "billing_approval": "BEP_COACH_RESEARCH_BILLING_APPROVED=true",
     "dedicated_agent_key": true
   },
   "api": {
@@ -35,10 +34,5 @@
     "human_approval_required": true,
     "destination": "existing_bep_knowledge_candidates",
     "approved_destination": "existing_bep_financial_knowledge"
-  },
-  "billing": {
-    "automatic_activation": false,
-    "search_grounding_may_be_billable": true,
-    "never_enable_without_explicit_approval": true
   }
 }

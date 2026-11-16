@@ -28,15 +28,14 @@ Ce point d'entrée n'appelle ni `userAi()`, ni `invokeAi()`, ni `consumeBepAiQuo
 
 La revue Gemini documentaire utilise une allowlist de fichiers JSON versionnés dans le dépôt : le contrat `services/coach-library.json` et les deux référentiels `financialCoachSources.fr.json` et `financialCoachSources.additional.fr.json`. Le worker les lit en local, valide leur syntaxe JSON, applique une limite de taille et calcule leurs empreintes. Il les compare aux fiches actives de la bibliothèque PostgreSQL.
 
-Cette revue ne déclenche aucune recherche Internet. Gemini peut proposer des corrections ou clarifications uniquement sur des fiches PostgreSQL existantes, en préservant leurs métadonnées de provenance. Les propositions restent dans la file de validation humaine. Aucun JSON du dépôt et aucune fiche active ne sont écrasés automatiquement. Les appels du worker restent désactivés sans clé dédiée, autorisation explicite de facturation et budget mensuel.
+Cette revue ne déclenche aucune recherche Internet. Gemini peut proposer des corrections ou clarifications uniquement sur des fiches PostgreSQL existantes, en préservant leurs métadonnées de provenance. Les propositions restent dans la file de validation humaine. Aucun JSON du dépôt et aucune fiche active ne sont écrasés automatiquement. Les appels du worker restent désactivés tant que son activation explicite et sa clé Gemini dédiée ne sont pas configurées.
 
 ### 2. Espace administrateur — recherche documentaire externe
 
 Le circuit `/api/admin/bep-coach/research` est distinct et protégé par authentification et contrôle administrateur.
 
-La recherche Gemini n'est autorisée que si les trois conditions serveur sont réunies :
+La recherche Gemini utilise l’offre gratuite de Gemini confirmée pour le projet. Elle est autorisée lorsque les deux conditions techniques serveur sont réunies :
 - `BEP_COACH_WEB_RESEARCH_ENABLED=true`
-- `BEP_COACH_RESEARCH_BILLING_APPROVED=true`
 - `BEP_AGENT_GEMINI_API_KEY` est configurée.
 
 Les propositions sont écrites dans `bep_knowledge_candidates`, avec source, URL, empreinte et statut de revue. Une approbation humaine est obligatoire avant toute publication dans `bep_financial_knowledge`. La publication automatique est interdite.
