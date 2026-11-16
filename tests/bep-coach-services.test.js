@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb,getCoachUsage}=require("../lib/bep-coach-services");
+const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb,getCoachUsage,createCoachResearchStatusHandler}=require("../lib/bep-coach-services");
 
 test("Coach knowledge and research services are independent JSON contracts",()=>{
  assert.equal(LIBRARY_CONFIG.service,"bep-coach-library");
@@ -29,6 +29,31 @@ test("monthly provider usage separates grounding searches from Gemini API calls 
  assert.ok(Number.isFinite(usage.averageDailyGroundingQueries));
  assert.ok(Number.isFinite(usage.projectedMonthlyGroundingQueries));
  assert.equal(usage.monthlyEstimateGuaranteed,false);
+});
+
+test("admin research status handler returns protected monthly budget data and pinned model",async()=>{
+ const pool={query:async(sql)=>/SELECT request_type/.test(sql)?{rows:[{request_type:"google_search_grounding",api_calls:3,grounding_queries:8,prompt_tokens:20,output_tokens:10,total_tokens:30,failed_calls:0,last_call_at:null}]}:{rows:[],rowCount:0}};
+ let payload=null,header=null,statusCode=200;
+ const res={setHeader:(name,value)=>{header=[name,value]},json:value=>{payload=value;return res},status:value=>{statusCode=value;return res}};
+ const handler=createCoachResearchStatusHandler({pool,env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},logger:{error:()=>{}}});
+ await handler({},res);
+ assert.equal(statusCode,200);
+ assert.deepEqual(header,["Cache-Control","no-store"]);
+ assert.equal(payload.model,"gemini-2.5-flash");
+ assert.equal(payload.enabled,true);
+ assert.equal(payload.usage.groundingQueries,8);
+ assert.equal(payload.usage.geminiApiCalls,3);
+ assert.equal(payload.usage.estimatedMonthlyCapacity,15000);
+ assert.ok(Number.isFinite(payload.usage.averageDailyGroundingQueries));
+ assert.ok(Number.isFinite(payload.usage.projectedMonthlyGroundingQueries));
+});
+test("admin research status handler returns a controlled error when usage storage is unavailable",async()=>{
+ let statusCode=200,payload=null;
+ const res={setHeader:()=>{},json:value=>{payload=value;return res},status:value=>{statusCode=value;return res}};
+ const handler=createCoachResearchStatusHandler({pool:{query:async()=>{throw new Error("db unavailable")}},logger:{error:()=>{}}});
+ await handler({},res);
+ assert.equal(statusCode,503);
+ assert.equal(payload.error,"COACH_RESEARCH_USAGE_UNAVAILABLE");
 });
 test("web research requires explicit feature activation and dedicated Gemini key",()=>{
  assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}),true);
