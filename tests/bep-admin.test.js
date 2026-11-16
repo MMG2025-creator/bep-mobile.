@@ -78,6 +78,28 @@ test("admin page inline script parses and contains no active production mutation
 test("independent admin auth normalizes email and compares one-time code hashes safely",()=>{const email=normalizeEmail("  MMSIGNENOIR@gmail.com ");assert.equal(email,"mmsignenoir@gmail.com");const hash=hashCode(email,"123456","a-session-pepper-that-is-long-enough");assert.match(hash,/^[a-f0-9]{64}$/);assert.equal(safeEqualHex(hash,hash),true);assert.equal(safeEqualHex(hash,hashCode(email,"654321","a-session-pepper-that-is-long-enough")),false);assert.equal(safeEqualHex("not-a-hash",hash),false)});
 test("admin API guard rejects regular BEP sessions without independent authentication",()=>{const previous=process.env.BEP_AGENT_ADMIN_USER_IDS;delete process.env.BEP_AGENT_ADMIN_USER_IDS;let status=0,body=null;const res={status(code){status=code;return this},json(value){body=value;return this}};requireIndependentBepAdmin({session:{user:{id:"admin-user"}}},res,()=>{throw Error("regular BEP session must not pass")});assert.equal(status,401);assert.equal(body.error,"INDEPENDENT_ADMIN_AUTH_REQUIRED");if(previous!==undefined)process.env.BEP_AGENT_ADMIN_USER_IDS=previous});
 
+test("admin enrollment logs the internal skip reason without exposing the email", async () => {
+  const express = require("express");
+  const { createBepAdminAuthRouter } = require("../admin/bep-admin-auth");
+  const events = [];
+  const app = express(); app.use(express.json());
+  app.use("/auth", createBepAdminAuthRouter({
+    pool: { query: async (sql) => sql.includes("FROM bep_users") ? { rowCount: 1, rows: [{ id: "user-1" }] } : { rowCount: 1, rows: [{ user_id: "user-1" }] } },
+    bcrypt: {}, sendCode: async () => {}, allowedEmails: ["admin@example.test"],
+    logger: { info: (line) => events.push(JSON.parse(line)) }
+  }));
+  const server = app.listen(0, "127.0.0.1");
+  try {
+    await new Promise(resolve => server.once("listening", resolve));
+    const response = await fetch("http://127.0.0.1:" + server.address().port + "/auth/request-enrollment", {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "admin@example.test" })
+    });
+    assert.equal(response.status, 200);
+    assert.equal(events.some(event => event.event === "enrollment_skipped" && event.reason === "admin_account_already_exists"), true);
+    assert.equal(JSON.stringify(events).includes("admin@example.test"), false);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
 test("independent admin enrollment, login and password recovery use a separate credential", { skip: !process.env.TEST_DATABASE_URL }, async () => {
   const express = require("express");
   const { Pool } = require("pg");
