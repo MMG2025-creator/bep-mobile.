@@ -288,7 +288,7 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
  const result=await researchWeb({pool,query,category});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
- }catch(e){console.error("Coach web research failed",String(e?.message||e).slice(0,180));res.status(502).json({error:"COACH_RESEARCH_FAILED",message:"La recherche Internet n'a pas abouti. Aucune connaissance n'a été publiée."})}});
+ }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
 app.get("/api/coach/knowledge",auth,async(req,res)=>{try{const r=await pool.query("SELECT id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider,review_status,created_at FROM bep_user_coach_knowledge WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows.map(x=>({id:x.id,kind:x.kind,category:x.category,title:x.title,detail:x.detail,priority:x.priority,confidence:x.confidence,evidence:x.evidence,action:x.action,valid_until:x.valid_until,provider:x.source_provider,status:x.review_status,created_at:x.created_at}))})}catch(e){console.error("Coach knowledge read failed",e.message);res.status(500).json({message:"Base de connaissances indisponible."})}});
 app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.items,provider=String(req.body?.source_provider||"other");if(!Array.isArray(items)||items.length<1||items.length>100||!["chatgpt","gemini","claude","mistral","other"].includes(provider))return res.status(400).json({message:"Import BEP invalide."});const client=await pool.connect();let inserted=0;try{await client.query("BEGIN");for(const x of items){const kind=x?.kind==="recommendation"?"recommendation":x?.kind==="knowledge"?"knowledge":null,category=String(x?.category||"other"),title=String(x?.title||"").trim().slice(0,120),detail=String(x?.detail||"").trim().slice(0,1500),priority=["low","medium","high"].includes(x?.priority)?x.priority:"medium",confidence=["low","medium","high"].includes(x?.confidence)?x.confidence:"low",externalId=String(x?.id||"").trim().slice(0,80);const allowed=kind==="recommendation"?["budget","spending","savings","debt","behavior","other"]:["budget","spending","savings","behavior","general"];const dateCandidate=kind==="recommendation"?String(x.valid_until||""):"";const dateValid=!dateCandidate||(/^\d{4}-\d{2}-\d{2}$/.test(dateCandidate)&&!Number.isNaN(Date.parse(dateCandidate+"T00:00:00Z"))&&new Date(dateCandidate+"T00:00:00Z").toISOString().slice(0,10)===dateCandidate);if(!kind||!allowed.includes(category)||!title||!detail||!externalId||!dateValid)continue;const evidence=Array.isArray(x.evidence)?x.evidence.slice(0,8).map(v=>String(v).slice(0,300)):[],action=kind==="recommendation"?String(x.action||"").slice(0,500):"",validUntil=kind==="recommendation"&&/^\d{4}-\d{2}-\d{2}$/.test(x.valid_until||"")?x.valid_until:null;const r=await client.query("INSERT INTO bep_user_coach_knowledge(user_id,external_id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12) ON CONFLICT(user_id,external_id,kind) DO NOTHING RETURNING id",[req.session.user.id,externalId,kind,category,title,detail,priority,confidence,JSON.stringify(evidence),action,validUntil,provider]);if(r.rowCount)inserted++}await client.query("COMMIT");res.status(201).json({ok:true,inserted,received:items.length})}catch(e){await client.query("ROLLBACK");console.error("Coach knowledge import failed",e.message);res.status(500).json({message:"Import non enregistré. Aucune donnée financière n'a été modifiée."})}finally{client.release()}});
 app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=>{
@@ -322,15 +322,37 @@ app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,re
 });
 app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
  if(!agentEnabled)return res.status(409).json({error:"AGENT_DISABLED"});
+ const scope=String(req.body?.scope||"documentary_json");
+ const jobTypes=scope==="documentary_json"?["knowledge_review"]:scope==="quality"?["coach_quality_review"]:scope==="all"?["knowledge_review","coach_quality_review"]:null;
+ if(!jobTypes)return res.status(400).json({error:"INVALID_AGENT_SCOPE"});
  try{
-  const [knowledge,quality]=await Promise.all([
-   pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('knowledge_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id"),
-   pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('coach_quality_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id")
-  ]);
-  const execution=scheduleAdminAgentRun({pool,logger:console,maxJobs:2});
+  const queuedJobs={};
+  for(const jobType of jobTypes){
+   const result=await pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES($1,'{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id",[jobType]);
+   queuedJobs[jobType]=result.rows[0]?.id||null;
+  }
+  const execution=scheduleAdminAgentRun({pool,logger:console,maxJobs:jobTypes.length});
   if(!execution.scheduled&&!execution.busy)return res.status(503).json({error:"AGENT_EXECUTION_UNAVAILABLE"});
-  res.status(202).json({queued:true,processingScheduled:execution.scheduled,busy:execution.busy===true,knowledgeJobId:knowledge.rows[0]?.id||null,qualityJobId:quality.rows[0]?.id||null});
+  res.status(202).json({queued:true,scope,jobTypes,queuedJobs,processingScheduled:execution.scheduled,busy:execution.busy===true});
  }catch(e){console.error("BEP admin agent enqueue failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
+});
+app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
+ const config=adminAgentStatus();
+ const status={ready:agentEnabled,configured:config.enabled,mode:config.onDemandMode?"admin_on_demand":"disabled",model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ res.setHeader("Cache-Control","no-store");
+ if(!agentEnabled)return res.json(status);
+ try{
+  const [usage,queue,candidates]=await Promise.all([
+   pool.query("SELECT calls,tokens FROM bep_agent_daily_usage WHERE day_key=CURRENT_DATE"),
+   pool.query("SELECT status,COUNT(*)::int AS count FROM bep_agent_jobs GROUP BY status"),
+   pool.query("SELECT COUNT(*)::int AS count FROM bep_knowledge_candidates WHERE review_status='pending'")
+  ]);
+  const callsUsed=Number(usage.rows[0]?.calls||0);
+  status.dailyUsage={callsUsed,callsLimit:config.maxCallsPerDay,callsRemaining:Math.max(0,config.maxCallsPerDay-callsUsed),tokens:Number(usage.rows[0]?.tokens||0)};
+  status.queue=Object.fromEntries(queue.rows.map(row=>[row.status,Number(row.count)]));
+  status.pendingCandidates=Number(candidates.rows[0]?.count||0);
+  res.json(status);
+ }catch(e){console.error("BEP admin agent status failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"AGENT_STATUS_UNAVAILABLE"})}
 });
 app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
  try{
