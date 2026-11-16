@@ -1,12 +1,28 @@
 "use strict";
 const test=require("node:test"),assert=require("node:assert/strict");
-const {canonicalJson,sha256,signExport,verifyExport,accountRef,sanitizePayload}=require("../admin/bep-admin");
+const {canonicalJson,sha256,signExport,verifyExport,accountRef,sanitizePayload,buildExportPage}=require("../admin/bep-admin");
 const {normalizeEmail,hashCode,safeEqualHex,requireIndependentBepAdmin}=require("../admin/bep-admin-auth");
 test("canonical JSON is stable regardless of key order",()=>{assert.equal(canonicalJson({z:1,a:{y:2,x:3}}),canonicalJson({a:{x:3,y:2},z:1}));assert.equal(sha256({z:1,a:2}),sha256({a:2,z:1}));});
 test("signed exports verify and tampering is rejected",()=>{const secret="test-secret-with-enough-entropy",signed=signExport({schema:"bep-admin-export",schema_version:1,accounts:[]},secret);assert.equal(verifyExport(signed,secret),true);assert.equal(verifyExport({...signed,accounts:[{account_ref:"tampered"}]},secret),false);assert.equal(verifyExport(signed,"wrong-secret"),false);});
 test("account references are pseudonymous and stable",()=>{const first=accountRef("customer-internal-id","test-secret");assert.match(first,/^bep_[a-f0-9]{24}$/);assert.equal(first,accountRef("customer-internal-id","test-secret"));assert.notEqual(first,accountRef("another-id","test-secret"));});
 test("payload sanitizer removes direct identifiers and masks email and phone values",()=>{const safe=sanitizePayload({first_name:"Alice",email:"alice@example.com",monthly:{amount:1200,label:"Loyer",memo:"Contact alice@example.com"},phone:"+33 6 12 34 56 78",token:"secret-token"});assert.equal("first_name" in safe,false);assert.equal("email" in safe,false);assert.equal("phone" in safe,false);assert.equal("token" in safe,false);assert.equal(safe.monthly.amount,1200);assert.equal(safe.monthly.memo.includes("alice@example.com"),false);});
 test("hashes are deterministic SHA-256 values",()=>{assert.match(sha256("bep"),/^[a-f0-9]{64}$/);});
+
+test("admin export contains only pseudonymous aggregate metadata, never customer financial details",()=>{
+  const secret="test-secret-with-enough-entropy";
+  const page=buildExportPage({secret,page:1,pageSize:50,hasMore:false,budgetsByUser:new Map([["u1",3]]),rows:[{
+    id:"u1",created_at:"2026-01-01T00:00:00Z",account_updated_at:"2026-02-01T00:00:00Z",
+    data_updated_at:"2026-02-02T00:00:00Z",
+    payload:{income:4800,expenses:[{label:"Pharmacie",amount:90,captureText:"reçu privé"}],profile:{psychology:"donnée sensible"},email:"person@example.com"}
+  }]});
+  assert.equal(page.schema_version,2);
+  assert.deepEqual(page.aggregate,{account_count:1,accounts_with_data:1,monthly_budget_count:3});
+  assert.equal(page.accounts[0].summary.monthly_budget_count,3);
+  const serialized=JSON.stringify(page);
+  for(const forbidden of ["4800","Pharmacie","captureText","reçu privé","psychology","person@example.com","expenses","income"]) assert.equal(serialized.includes(forbidden),false,forbidden);
+  assert.match(page.accounts[0].account_ref,/^bep_[a-f0-9]{24}$/);
+});
+
 
 
 test("admin JSON storage and import API are idempotent in isolated PostgreSQL", { skip: !process.env.TEST_DATABASE_URL }, async () => {
