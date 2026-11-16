@@ -154,8 +154,8 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
 function requireIndependentBepAdmin(req, res, next) {
   const auth = req.session?.bepAdminAuth;
   if (!req.session?.user?.id || auth?.authenticated !== true || auth.userId !== String(req.session.user.id)) return res.status(401).json({ error: "INDEPENDENT_ADMIN_AUTH_REQUIRED" });
-  const allowed = String(process.env.BEP_AGENT_ADMIN_USER_IDS || "").split(",").map((value) => value.trim()).filter(Boolean);
-  if (!allowed.includes(String(req.session.user.id))) return res.status(403).json({ error: "ADMIN_NOT_ALLOWLISTED" });
+  const allowed = new Set(String(process.env.BEP_ADMIN_EMAILS || "").split(",").map(normalizeEmail).filter(Boolean));
+  if (!auth.email || !allowed.has(normalizeEmail(auth.email))) return res.status(403).json({ error: "ADMIN_NOT_ALLOWLISTED" });
   next();
 }
 module.exports = { ensureBepAdminAuthSchema, createBepAdminAuthRouter, requireIndependentBepAdmin, normalizeEmail, hashCode, safeEqualHex };
