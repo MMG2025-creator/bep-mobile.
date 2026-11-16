@@ -1,0 +1,49 @@
+# Gemini BEP — exécution administrative ponctuelle sur quota gratuit
+
+## Objectif
+Exécuter les revues Gemini uniquement à la demande depuis l'espace d'administration BEP, sans Worker Render permanent et sans exécution périodique en arrière-plan.
+
+## Configuration Render
+Variables nécessaires sur le service API BEP :
+- `BEP_AGENT_ENABLED=true`
+- `BEP_AGENT_RUN_MODE=admin_on_demand`
+- `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true`
+- `BEP_AGENT_GEMINI_API_KEY` : clé dédiée Google AI Studio, stockée comme secret
+- `BEP_AGENT_MAX_CALLS_PER_DAY=8` (plafond applicatif strict : 8)
+- `BEP_AGENT_GEMINI_MODEL=gemini-3.8-flash` (facultatif, valeur par défaut)
+
+Les paramètres de l'ancien Worker (`BEP_AGENT_RUN_AS_WORKER`, `BEP_AGENT_BILLING_APPROVED`, `BEP_AGENT_MONTHLY_BUDGET_USD`) ne sont pas utilisés par ce mode.
+
+## Gratuité : limite de garantie
+Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le démarrage. Le code limite les appels à huit par jour et utilise exclusivement la clé et le modèle configurés. Il ne peut toutefois pas vérifier l'état de facturation du projet Google ni empêcher un administrateur Google de rattacher ultérieurement une facturation. Pour rester sur le quota gratuit, le projet Google AI Studio doit rester sans facturation activée et dans les quotas gratuits publiés par Google. Un dépassement de quota fournisseur doit produire une erreur, sans bascule vers un fournisseur ou un modèle payant.
+
+## Exécution
+- Le démarrage du serveur n'appelle pas Gemini et ne lance aucun ordonnanceur.
+- Une action explicite depuis l'administration ajoute les deux types de tâches à la file PostgreSQL.
+- Après la réponse HTTP 202, le serveur planifie un lot ponctuel de deux tâches maximum avec `setImmediate`.
+- Une seule exécution locale est admise à la fois ; `FOR UPDATE SKIP LOCKED` protège la prise de tâches entre instances.
+- La file PostgreSQL conserve les tâches si le processus s'arrête ; les baux expirés sont récupérables après dix minutes.
+- Aucune tâche périodique n'est planifiée. Il faut une nouvelle action administrative pour lancer une nouvelle revue.
+
+## Sécurité et périmètre
+- Les routes restent protégées par la session authentifiée et `BEP_AGENT_ADMIN_USER_IDS`.
+- Gemini reçoit les documents JSON autorisés, les fiches documentaires BEP et des métriques agrégées ; il ne reçoit pas les données personnelles du Coach.
+- Les propositions restent en attente de validation humaine.
+- Aucune publication automatique n'est autorisée.
+- Le serveur API utilise son pool PostgreSQL existant ; ce mode ne prétend pas fournir l'isolation réseau ou le rôle SQL dédié du Worker autonome. Les requêtes agent restent limitées aux fonctions et tables dédiées, mais l'identité PostgreSQL sous-jacente est celle de l'API.
+
+## Migration PostgreSQL
+Les tables additives doivent exister avant activation. La migration reste explicite et séparée :
+- `BEP_AGENT_SCHEMA_MIGRATE=true`
+- configuration admin-on-demand complète ci-dessus
+- exécution de `node scripts/migrate-bep-agent.js` avec `DATABASE_URL`
+- remettre ensuite `BEP_AGENT_SCHEMA_MIGRATE=false` ou retirer la variable.
+
+La migration est additive et idempotente ; elle ne modifie pas les tables métier BEP. Le serveur vérifie la présence des sept tables avant d'autoriser les exécutions.
+
+## Vérifications obligatoires
+- Tests unitaires de configuration et de routage.
+- Migration additive validée sur une base de test.
+- Vérification des journaux de production après déploiement.
+- Premier appel réel Gemini déclenché manuellement par l'administrateur.
+- Contrôle que le compteur PostgreSQL n'excède jamais huit appels par jour.
