@@ -76,3 +76,17 @@ test("grounded research stores only source-matched pending candidates",async()=>
  assert.equal(candidateInsert.params[6],"web_research_pending");
  assert.equal(statements.some(x=>/bep_agent_daily_usage/.test(x.sql)),false);
 });
+
+test("successful HTTP responses with invalid Gemini output are counted as failed provider usage with tokens",async()=>{
+ const inserts=[];
+ const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))inserts.push({sql,params});return{rowCount:1,rows:[]}}};
+ const fetchImpl=async()=>({ok:true,status:200,json:async()=>({candidates:[{content:{parts:[{text:"not-json"}]},groundingMetadata:{webSearchQueries:["recherche test"]}}],usageMetadata:{promptTokenCount:12,candidatesTokenCount:7,totalTokenCount:19}})});
+ await assert.rejects(()=>researchWeb({pool,query:"test",category:"general",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/JSON valide/);
+ assert.equal(inserts.length,1);
+ assert.equal(inserts[0].params[2],"failed");
+ assert.equal(inserts[0].params[3],1);
+ assert.equal(inserts[0].params[4],12);
+ assert.equal(inserts[0].params[5],7);
+ assert.equal(inserts[0].params[6],19);
+ assert.equal(inserts[0].params[8],"INVALID_MODEL_JSON");
+});
