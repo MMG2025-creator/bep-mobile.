@@ -82,6 +82,8 @@ test("admin enrollment logs the internal skip reason without exposing the email"
   const express = require("express");
   const { createBepAdminAuthRouter } = require("../admin/bep-admin-auth");
   const events = [];
+  const previousSecret = process.env.SESSION_SECRET;
+  process.env.SESSION_SECRET = "ci-only-session-secret-with-at-least-32-characters";
   const app = express(); app.use(express.json());
   app.use("/auth", createBepAdminAuthRouter({
     pool: { query: async (sql) => sql.includes("FROM bep_users") ? { rowCount: 1, rows: [{ id: "user-1" }] } : { rowCount: 1, rows: [{ user_id: "user-1" }] } },
@@ -97,7 +99,10 @@ test("admin enrollment logs the internal skip reason without exposing the email"
     assert.equal(response.status, 200);
     assert.equal(events.some(event => event.event === "enrollment_skipped" && event.reason === "admin_account_already_exists"), true);
     assert.equal(JSON.stringify(events).includes("admin@example.test"), false);
-  } finally { await new Promise(resolve => server.close(resolve)); }
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+    if (previousSecret === undefined) delete process.env.SESSION_SECRET; else process.env.SESSION_SECRET = previousSecret;
+  }
 });
 
 test("independent admin enrollment, login and password recovery use a separate credential", { skip: !process.env.TEST_DATABASE_URL }, async () => {
