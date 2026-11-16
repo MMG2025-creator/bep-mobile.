@@ -19,7 +19,7 @@ Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le d�
 
 ## Exécution
 - Le démarrage du serveur n'appelle pas Gemini et ne lance aucun ordonnanceur.
-- Une action explicite depuis l'administration ajoute les deux types de tâches à la file PostgreSQL.
+- Une action explicite depuis l'administration ajoute à la file PostgreSQL le type de tâche demandé : `documentary_json` lance uniquement la revue des fichiers JSON ; `quality` lance uniquement la revue qualité synthétique ; `all` lance les deux. Le bouton d'audit documentaire utilise `documentary_json` et consomme donc un seul appel Gemini.
 - Après la réponse HTTP 202, le serveur planifie un lot ponctuel de deux tâches maximum avec `setImmediate`.
 - Une seule exécution locale est admise à la fois ; `FOR UPDATE SKIP LOCKED` protège la prise de tâches entre instances.
 - La file PostgreSQL conserve les tâches si le processus s'arrête ; les baux expirés sont récupérables après dix minutes.
