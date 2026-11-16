@@ -222,3 +222,10 @@ test("manual Gemini ingestion remains disabled without explicit free-tier admin 
  assert.equal(ingestion.ingestionEnabled({BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"key"}),true);
  assert.equal(ingestion.ingestionEnabled({BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false",BEP_AGENT_GEMINI_API_KEY:"key"}),false);
 });
+
+test("manual ingestion checks Gemini free-tier gates before making any external request",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const result=await ingestion.ingestManualSource({pool:{query:async()=>{throw new Error("database should not be called")}},url:"https://example.org",env:{}});
+ assert.equal(result.enabled,false);
+ assert.equal(result.candidatesCreated,0);
+});
