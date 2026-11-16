@@ -5,7 +5,7 @@ This folder contains the deployable source for the transactional email bridge us
 ## Supported messages
 
 - `email_verification`: sends the existing six-digit registration code.
-- `password_reset`: sends a branded HTML email with a clickable **Choisir un nouveau mot de passe** button and a plain-text fallback link.
+- `password_reset`: sends a branded HTML email with a clickable **Choisir un nouveau mot de passe** button and a plain-text fallback link.\n- `admin_auth_code`: sends the six-digit independent administrator enrollment/reset code (10-minute validity), separate from the normal BEP email verification and password-reset link.
 
 The API sends the following JSON fields: `secret`, `email`, `code`, `type`, `resetUrl`, and `subject`. For password resets, the API currently sends the same reset URL in `code` and `resetUrl` for compatibility. The Apps Script ignores a client-provided subject and chooses a fixed subject from the message type.
 
@@ -36,7 +36,7 @@ The API sends the following JSON fields: `secret`, `email`, `code`, `type`, `res
 ## Verification checklist
 
 - [ ] Deploy the Apps Script Web App and configure the Render URL/secret.
-- [ ] Send a registration verification code to a controlled test inbox.
+- [ ] Send a registration verification code to a controlled test inbox.\n- [ ] Send an `admin_auth_code` to a controlled administrator test inbox and verify the six-digit code, dedicated subject, and 10-minute validity.
 - [ ] Request a password reset for a controlled BEP test account.
 - [ ] Confirm the email subject is **Réinitialisation du mot de passe BEP**.
 - [ ] Confirm the button and fallback URL both open the BEP reset form.
