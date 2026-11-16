@@ -115,6 +115,20 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
 });
+test("Gemini administration requires independent admin authentication on every privileged route",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(server,/adminAgentStatus}=require\("\.\/lib\/bep-agent\/admin-runner"\)/);
+ assert.doesNotMatch(server,/function requireBepAgentAdmin/);
+ for(const route of [
+  'app.get("/api/admin/bep-coach/research/status",auth,requireIndependentBepAdmin',
+  'app.post("/api/admin/bep-coach/research",auth,requireIndependentBepAdmin',
+  'app.get("/api/admin/bep-agent/candidates",auth,requireIndependentBepAdmin',
+  'app.post("/api/admin/bep-agent/run",auth,requireIndependentBepAdmin',
+  'app.get("/api/admin/bep-agent/overview",auth,requireIndependentBepAdmin',
+  'app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireIndependentBepAdmin'
+ ]) assert.ok(server.includes(route), "Missing independent admin guard: "+route);
+});
+
 test("documentary JSON review uses a closed allowlist and never walks arbitrary repository files",()=>{
  const worker=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","worker.js"),"utf8");
  assert.match(worker,/DOCUMENTARY_JSON_FILES=Object\.freeze/);
