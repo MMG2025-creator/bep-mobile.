@@ -12,12 +12,14 @@ test("admin export contains only pseudonymous aggregate metadata, never customer
   const secret="test-secret-with-enough-entropy";
   const page=buildExportPage({secret,page:1,pageSize:50,hasMore:false,budgetsByUser:new Map([["u1",3]]),rows:[{
     id:"u1",created_at:"2026-01-01T00:00:00Z",account_updated_at:"2026-02-01T00:00:00Z",
-    data_updated_at:"2026-02-02T00:00:00Z",
+    data_updated_at:"2026-02-02T00:00:00Z",data_available:true,
     payload:{income:4800,expenses:[{label:"Pharmacie",amount:90,captureText:"reçu privé"}],profile:{psychology:"donnée sensible"},email:"person@example.com"}
   }]});
   assert.equal(page.schema_version,2);
   assert.deepEqual(page.aggregate,{account_count:1,accounts_with_data:1,monthly_budget_count:3});
   assert.equal(page.accounts[0].summary.monthly_budget_count,3);
+  assert.equal(page.accounts[0].data.data_available,true);
+  assert.match(page.accounts[0].expected_hash,/^[a-f0-9]{64}$/);
   const serialized=JSON.stringify(page);
   for(const forbidden of ["4800","Pharmacie","captureText","reçu privé","psychology","person@example.com","expenses","income"]) assert.equal(serialized.includes(forbidden),false,forbidden);
   assert.match(page.accounts[0].account_ref,/^bep_[a-f0-9]{24}$/);
