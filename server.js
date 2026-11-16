@@ -75,7 +75,9 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
 app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
 app.use("/api/admin/auth",rateLimit({windowMs:15*60*1000,max:10,scope:"admin-auth"}));
-app.use("/api",rateLimit({windowMs:60*1000,max:120,scope:"api"}));
+const adminApiRateLimit=rateLimit({windowMs:60*1000,max:300,scope:"admin-api"});
+const userApiRateLimit=rateLimit({windowMs:60*1000,max:120,scope:"api"});
+app.use("/api",(req,res,next)=>req.path==="/admin"||req.path.startsWith("/admin/")?adminApiRateLimit(req,res,next):userApiRateLimit(req,res,next));
 if(pool&&process.env.SESSION_SECRET)app.use(session({store:new PgSession({pool,tableName:"user_sessions",createTableIfMissing:true}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:true,sameSite:"none",maxAge:604800000}}));
 if(BEP_ADMIN_AUTH_ENABLED){
  app.use("/api/admin/auth",createBepAdminAuthRouter({pool,bcrypt,allowedEmails:BEP_ADMIN_EMAILS,sendCode:(email,code)=>sendVerificationEmail(email,code,"admin_auth_code")}));
