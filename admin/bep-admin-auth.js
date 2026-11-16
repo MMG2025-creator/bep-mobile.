@@ -14,26 +14,52 @@ async function ensureBepAdminAuthSchema(pool) {
   await pool.query("CREATE TABLE IF NOT EXISTS bep_admin_auth_challenges (email TEXT PRIMARY KEY, code_hash CHAR(64) NOT NULL, purpose TEXT NOT NULL CHECK(purpose IN ('enroll','reset')), expires_at TIMESTAMPTZ NOT NULL, attempts INTEGER NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 5), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
   await pool.query("CREATE INDEX IF NOT EXISTS bep_admin_auth_challenges_expiry ON bep_admin_auth_challenges(expires_at)");
 }
-function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails }) {
+function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logger = console }) {
   const router = express.Router();
   const allowed = new Set((allowedEmails || []).map(normalizeEmail).filter(Boolean));
   const pepper = () => String(process.env.SESSION_SECRET || "");
   function validPassword(password) { return typeof password === "string" && password.length >= 12 && password.length <= 128; }
+  function logEvent(event, details = {}) {
+    const safeDetails = Object.fromEntries(Object.entries(details).filter(([key, value]) => /^[a-z_]+$/.test(key) && typeof value === "string" && value.length <= 64));
+    const entry = { component: "bep_admin_auth", event, ...safeDetails };
+    if (typeof logger.info === "function") logger.info(JSON.stringify(entry));
+  }
   async function issueCode(email, purpose) {
     const code = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
     await pool.query("INSERT INTO bep_admin_auth_challenges(email,code_hash,purpose,expires_at,attempts) VALUES($1,$2,$3,NOW()+INTERVAL '10 minutes',0) ON CONFLICT(email) DO UPDATE SET code_hash=EXCLUDED.code_hash,purpose=EXCLUDED.purpose,expires_at=EXCLUDED.expires_at,attempts=0,created_at=NOW()", [email, hashCode(email, code, pepper()), purpose]);
-    await sendCode(email, code, purpose);
+    logEvent("challenge_created", { purpose });
+    try {
+      await sendCode(email, code, purpose);
+      logEvent("mail_sent", { purpose });
+    } catch (error) {
+      await pool.query("DELETE FROM bep_admin_auth_challenges WHERE email=$1 AND purpose=$2", [email, purpose]).catch(() => {});
+      logEvent("mail_send_failed", { purpose, reason: error?.message === "EMAIL_SERVICE_NOT_CONFIGURED" ? "service_not_configured" : "provider_rejected_or_unavailable" });
+      throw error;
+    }
   }
   router.post("/request-enrollment", async (req, res) => {
     res.setHeader("Cache-Control", "no-store");
     const email = normalizeEmail(req.body?.email);
+    if (!allowed.has(email)) logEvent("enrollment_skipped", { reason: "email_not_allowlisted" });
+    else if (pepper().length < 32) logEvent("enrollment_skipped", { reason: "session_secret_too_short" });
     if (!allowed.has(email) || pepper().length < 32) return res.status(200).json({ ok: true, message: "Si l'adresse est autorisée et associée à un compte BEP vérifié, un code sera envoyé." });
     try {
       const user = await pool.query("SELECT id FROM bep_users WHERE LOWER(email)=LOWER($1) AND email_verified=TRUE", [email]);
+      if (user.rowCount !== 1) {
+        logEvent("enrollment_skipped", { reason: "base_account_missing_or_unverified" });
+        return res.json({ ok: true, message: "Si l'adresse est autorisée et associée à un compte BEP vérifié, un code sera envoyé." });
+      }
       const existing = await pool.query("SELECT user_id FROM bep_admin_accounts WHERE email=$1", [email]);
-      if (user.rowCount === 1 && existing.rowCount === 0) await issueCode(email, "enroll");
+      if (existing.rowCount !== 0) {
+        logEvent("enrollment_skipped", { reason: "admin_account_already_exists" });
+        return res.json({ ok: true, message: "Si l'adresse est autorisée et associée à un compte BEP vérifié, un code sera envoyé." });
+      }
+      await issueCode(email, "enroll");
       return res.json({ ok: true, message: "Si l'adresse est autorisée et associée à un compte BEP vérifié, un code sera envoyé." });
-    } catch (error) { console.error("BEP admin enrollment request failed", String(error?.message || error).slice(0, 120)); return res.status(200).json({ ok: true }); }
+    } catch (error) {
+      logEvent("enrollment_request_failed", { reason: error?.message === "EMAIL_SERVICE_NOT_CONFIGURED" ? "mail_service_not_configured" : "database_or_mail_failure" });
+      return res.status(200).json({ ok: true, message: "Si l'adresse est autorisée et associée à un compte BEP vérifié, un code sera envoyé." });
+    }
   });
   router.post("/complete-enrollment", async (req, res) => {
     res.setHeader("Cache-Control", "no-store");
