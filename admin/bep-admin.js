@@ -54,10 +54,10 @@ async function appendAudit(client, actorRef, action, targetRef, details) {
 function buildExportPage({ rows, budgetsByUser, secret, page, pageSize, hasMore }) {
   const accounts = rows.map((row) => {
     const budgetCount = Number(budgetsByUser.get(String(row.id)) || 0);
-    const revisionMaterial = { account_updated_at: row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null, data_updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : null, payload: row.payload || {}, monthly_budget_count: budgetCount };
+    const revisionMaterial = { account_updated_at: row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null, data_updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : null, monthly_budget_count: budgetCount };
     return { account_ref: accountRef(row.id, secret), created_at: row.created_at ? new Date(row.created_at).toISOString() : null,
       updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : (row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null),
-      expected_hash: sha256(revisionMaterial), data: { data_available: !!row.payload && Object.keys(row.payload).length > 0 }, monthly_budgets: [] ,
+      expected_hash: crypto.createHmac("sha256", secret).update(canonicalJson(revisionMaterial)).digest("hex"), data: { data_available: row.data_available === true }, monthly_budgets: [],
       summary: { monthly_budget_count: budgetCount } };
   });
   const totals = accounts.reduce((out, account) => {
@@ -81,7 +81,7 @@ function createBepAdminRouter({ pool, requireAdmin }) {
     const page = Math.max(1, Math.min(100000, Number.parseInt(req.query.page, 10) || 1));
     const pageSize = Math.max(1, Math.min(100, Number.parseInt(req.query.page_size, 10) || 50));
     try {
-      const result = await pool.query("SELECT u.id, u.created_at, u.updated_at AS account_updated_at, d.payload, d.updated_at AS data_updated_at FROM bep_users u LEFT JOIN bep_user_data d ON d.user_id=u.id ORDER BY u.id LIMIT $1 OFFSET $2", [pageSize + 1, (page - 1) * pageSize]);
+      const result = await pool.query("SELECT u.id, u.created_at, u.updated_at AS account_updated_at, (d.user_id IS NOT NULL) AS data_available, d.updated_at AS data_updated_at FROM bep_users u LEFT JOIN bep_user_data d ON d.user_id=u.id ORDER BY u.id LIMIT $1 OFFSET $2", [pageSize + 1, (page - 1) * pageSize]);
       const hasMore = result.rows.length > pageSize, rows = result.rows.slice(0, pageSize), ids = rows.map((row) => String(row.id)), budgetsByUser = new Map();
       if (ids.length) {
         const budgetResult = await pool.query("SELECT user_id, COUNT(*)::int AS budget_count FROM bep_monthly_budgets WHERE user_id=ANY($1::text[]) GROUP BY user_id", [ids]);
