@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=105&bep=uniform-home-metric-rows-20261115"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=106&bep=coach-dynamic-visual-20261116"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=6">
@@ -362,10 +362,36 @@
 </section>
 <section id="coach" class="panel">
 <article class="card coach-card coach-workspace">
-  <div class="coach-workspace-head">
-    <div class="coach-icon">✦</div>
-    <div><h2>Coach BEP</h2><p class="muted">Un accompagnement financier fondé sur tes données BEP.</p></div>
-  </div>
+  <section class="coach-hero" aria-labelledby="coachHeroTitle">
+    <div class="coach-hero-copy">
+      <div class="coach-hero-topline"><span class="coach-live-dot" aria-hidden="true"></span><span>TON COACH PERSONNEL</span><span class="coach-hero-version">BEP · LOCAL</span></div>
+      <h2 id="coachHeroTitle">Tes finances.<br><span>Ton prochain pas.</span></h2>
+      <p>Un accompagnement clair, concret et adapté à ta situation pour avancer à ton rythme.</p>
+      <div class="coach-hero-assurance"><span aria-hidden="true">✦</span> Des réponses fondées sur tes données et la documentation BEP</div>
+    </div>
+    <div class="coach-hero-visual" aria-hidden="true">
+      <span class="coach-orbit coach-orbit-one"></span><span class="coach-orbit coach-orbit-two"></span>
+      <span class="coach-spark coach-spark-one">✦</span><span class="coach-spark coach-spark-two">·</span>
+      <svg class="coach-hero-bot" viewBox="0 0 180 190" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="90" cy="174" rx="48" ry="8" fill="#0b3029" opacity=".16"/>
+        <path d="M49 111 29 99q-10-6-15 4-4 8 5 14l27 18M131 111l20-12q10-6 15 4 4 8-5 14l-27 18" fill="none" stroke="#83d9ac" stroke-width="12" stroke-linecap="round"/>
+        <path d="M66 143v18m48-18v18" stroke="#8ce0b3" stroke-width="13" stroke-linecap="round"/>
+        <rect x="45" y="112" width="90" height="54" rx="23" fill="#f5fff8" stroke="#a8e5c2" stroke-width="3"/>
+        <rect x="68" y="128" width="44" height="25" rx="8" fill="#dff8e9"/>
+        <path d="M76 146v-7m12 7v-12m12 12v-17" stroke="#218653" stroke-width="4" stroke-linecap="round"/>
+        <path d="M90 13c-27 0-47 19-47 46v20c0 25 20 42 47 42s47-17 47-42V59c0-27-20-46-47-46Z" fill="#f8fff9" stroke="#a8e5c2" stroke-width="3"/>
+        <path d="M43 58h-9v27h11m90-27h9v27h-11" fill="#c8f1d8" stroke="#64c38e" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="55" y="43" width="70" height="49" rx="19" fill="#103d34"/>
+        <path d="M72 63v5m36-5v5" stroke="#a8f0c2" stroke-width="5" stroke-linecap="round"/>
+        <path d="M77 79q13 11 26 0" fill="none" stroke="#75dfa0" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M90 12V5m-7 0h14" stroke="#f2d37b" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="145" cy="33" r="5" fill="#f2d37b"/><path d="m28 38 5-7m-10 2 5-2" stroke="#f2d37b" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="coach-visual-caption"><i></i> À ton écoute</span>
+    </div>
+    <div class="coach-hero-bottom"><span><b>01</b> Comprendre</span><span><b>02</b> Décider</span><span><b>03</b> Progresser</span></div>
+  </section>
+  <div class="coach-privacy"><span aria-hidden="true">●</span> Espace privé · Analyse locale · Aucune transmission à une IA externe</div>
 
   
   <details class="coach-profile-panel" id="coachProfilePanel">
