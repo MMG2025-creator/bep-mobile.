@@ -10,12 +10,12 @@ Variables nécessaires sur le service API BEP :
 - `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true`
 - `BEP_AGENT_GEMINI_API_KEY` : clé dédiée Google AI Studio, stockée comme secret
 - `BEP_AGENT_MAX_CALLS_PER_DAY=8` (plafond applicatif strict : 8)
-- `BEP_AGENT_GEMINI_MODEL=gemini-3.8-flash` (facultatif, valeur par défaut)
+- Modèle fixé dans le code : `gemini-3.8-flash` (pas de surcharge par variable d’environnement)
 
 Les paramètres de l'ancien Worker (`BEP_AGENT_RUN_AS_WORKER`, `BEP_AGENT_BILLING_APPROVED`, `BEP_AGENT_MONTHLY_BUDGET_USD`) ne sont pas utilisés par ce mode.
 
 ## Gratuité : limite de garantie
-Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le démarrage. Le code limite les appels à huit par jour et utilise exclusivement la clé et le modèle configurés. Il ne peut toutefois pas vérifier l'état de facturation du projet Google ni empêcher un administrateur Google de rattacher ultérieurement une facturation. Pour rester sur le quota gratuit, le projet Google AI Studio doit rester sans facturation activée et dans les quotas gratuits publiés par Google. Un dépassement de quota fournisseur doit produire une erreur, sans bascule vers un fournisseur ou un modèle payant.
+Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le démarrage. Le code limite les appels à huit par jour et utilise exclusivement la clé dédiée et le modèle `gemini-3.8-flash` imposé par le code. Il ne peut toutefois pas vérifier l'état de facturation du projet Google ni empêcher un administrateur Google de rattacher ultérieurement une facturation. Pour rester sur le quota gratuit, le projet Google AI Studio doit rester sans facturation activée et dans les quotas gratuits publiés par Google. Un dépassement de quota fournisseur doit produire une erreur, sans bascule vers un fournisseur ou un modèle payant.
 
 ## Exécution
 - Le démarrage du serveur n'appelle pas Gemini et ne lance aucun ordonnanceur.
