@@ -42,7 +42,7 @@ test("agent requires a dedicated worker, key, explicit billing approval and mont
 test("free-tier admin mode is on-demand, bounded to eight calls and independent of worker billing config",()=>{
  const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
  const c=readAdminConfig(base);
- assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
+ assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
  assert.equal(readAdminConfig({...base,BEP_AGENT_RUN_MODE:"worker"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_API_KEY:""}).enabled,false);
