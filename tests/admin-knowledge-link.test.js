@@ -4,18 +4,7 @@ const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
 const root=path.resolve(__dirname,"..");
-test("Coach knowledge link is only rendered in the admin settings area",()=>{
- for(const file of ["index.html","dist/index.html"]){
-  const html=fs.readFileSync(path.join(root,file),"utf8");
-  assert.ok(!html.includes('style="margin:12px 0 0"><a href="./coach-research.html">'),file+" public Coach link removed");
-  assert.ok(html.includes('id="adminKnowledgeAccess" hidden'),file+" admin-only card hidden by default");
- }
-});
-test("Coach knowledge link is revealed only after server-side admin authorization",()=>{
- for(const file of ["app.js","dist/app.js"]){
-  const js=fs.readFileSync(path.join(root,file),"utf8");
-  assert.ok(js.includes('fetch(API+"/api/admin/bep-agent/overview"'),file);
-  assert.ok(js.includes('card.hidden=!response.ok'),file);
-  assert.ok(js.includes('if(!card||!window.bepSignedIn||window.bepOfflineMode)return'),file);
- }
-});
+test("Coach research entry is removed from the client application",()=>{for(const file of ["index.html","dist/index.html"]){const html=fs.readFileSync(path.join(root,file),"utf8");assert.ok(!html.includes("adminKnowledgeAccess"),file);assert.ok(!html.includes("./coach-research.html"),file)}});
+test("Client application no longer probes admin endpoints to reveal Coach research",()=>{for(const file of ["app.js","dist/app.js"]){const js=fs.readFileSync(path.join(root,file),"utf8");assert.ok(!js.includes("revealAdminKnowledgeAccess"),file);assert.ok(!js.includes("adminKnowledgeAccess"),file)}});
+test("Existing independent admin console contains Coach research behind its authenticated console",()=>{const html=fs.readFileSync(path.join(root,"dist","admin.html"),"utf8");assert.ok(html.includes('id="console" hidden'));assert.ok(html.includes('id="openCoachResearch"'));assert.ok(html.includes('id="coachResearchPanel" class="panel" hidden'));assert.ok(html.includes('async function initCoachResearchPanel()'));assert.ok(html.includes('credentials:"include"'));assert.ok(html.includes("/api/admin/bep-coach/research/status"));assert.ok(html.includes("/api/admin/bep-agent/candidates"));assert.ok(html.includes("/api/admin/bep-agent/candidates/"));assert.ok(html.includes("/api/admin/bep-agent/run"))});
+test("Old Coach research URL redirects to the existing admin console",()=>{for(const file of ["coach-research.html","dist/coach-research.html"]){const html=fs.readFileSync(path.join(root,file),"utf8");assert.ok(html.includes("/admin.html#coach-research"),file);assert.ok(!html.includes("/api/admin/bep-coach/research/status"),file)}});
