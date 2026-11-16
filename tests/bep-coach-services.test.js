@@ -10,6 +10,7 @@ test("Coach knowledge and research services are independent JSON contracts",()=>
  assert.equal(RESEARCH_CONFIG.service,"bep-coach-web-research");
  assert.equal(RESEARCH_CONFIG.api.path,"/api/admin/bep-coach/research");
  assert.equal(RESEARCH_CONFIG.default_model,"gemini-2.5-flash");
+ assert.equal(Object.hasOwn(RESEARCH_CONFIG,"model_env"),false);
  assert.equal(Object.hasOwn(RESEARCH_CONFIG.limits,"max_calls_per_day"),false);
  assert.equal(RESEARCH_CONFIG.provider_reference.free_tier_grounding_rpd_reference,500);
  assert.equal(RESEARCH_CONFIG.research_policy.automatic_publication,false);
