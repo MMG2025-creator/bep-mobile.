@@ -29,7 +29,7 @@ $("requestEnroll").addEventListener("click",async()=>{try{const r=await authApi(
 $("completeEnroll").addEventListener("click",async()=>{try{const r=await authApi("/complete-enrollment",{email:$("adminEmail").value,code:$("enrollCode").value,password:$("enrollPassword").value});$("authMessage").textContent=r.message}catch(e){$("authMessage").textContent=e.message}});
 $("requestReset").addEventListener("click",async()=>{try{const r=await authApi("/request-reset",{email:$("adminEmail").value});$("authMessage").textContent=r.message}catch(e){$("authMessage").textContent=e.message}});
 $("completeReset").addEventListener("click",async()=>{try{const r=await authApi("/complete-reset",{email:$("adminEmail").value,code:$("resetCode").value,password:$("resetPassword").value});$("authMessage").textContent=r.message}catch(e){$("authMessage").textContent=e.message}});
-$("adminLogout").addEventListener("click",async()=>{try{await authApi("/logout");location.reload()}catch(e){showError(e)}});
+const logoutButton=$("adminLogout");if(logoutButton)logoutButton.addEventListener("click",async()=>{try{await authApi("/logout");location.reload()}catch(e){showError(e)}});
 checkAdmin();
 })();
 </script></body></html>
