@@ -100,12 +100,16 @@ test("grounded research uses Gemini Interactions API and stores only citation-ma
    {type:"google_search_call",arguments:{queries:["aide budget"]}},
    {type:"google_search_result",result:[{search_suggestions:"Google Search suggestions"}]},
    {type:"model_output",content:[{type:"text",text:JSON.stringify({proposals:[{title:"Aide au budget",content:"Repère pratique sourcé.",source_url:"https://www.service-public.fr/particuliers/vosdroits",source_name:"model name",confidence:"high",rationale:"Source officielle",keywords:["budget"]}]}),annotations:[{type:"url_citation",url:"https://www.service-public.fr/particuliers/vosdroits",title:"Service Public"}]}]}
-  ],usage:{total_tokens:50}})};
+  ],status:"completed",usage:{total_input_tokens:31,total_output_tokens:19,total_tokens:50}})};
  };
  const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key",BEP_COACH_RESEARCH_MODEL:"legacy-override"},fetchImpl});
  assert.equal(result.candidatesCreated,1);
  assert.equal(result.candidates[0].id,42);
  assert.equal(result.candidates[0].source.name,"Service Public");
+ const usageInsert=statements.find(x=>/INSERT INTO bep_coach_provider_usage/.test(x.sql));
+ assert.equal(usageInsert.params[4],31);
+ assert.equal(usageInsert.params[5],19);
+ assert.equal(usageInsert.params[6],50);
  assert.deepEqual(result.groundingQueries,["aide budget"]);
  assert.equal(result.searchEntryPoint,"Google Search suggestions");
  assert.ok(statements.some(x=>/bep_coach_provider_usage/.test(x.sql)));
@@ -118,7 +122,7 @@ test("grounded research uses Gemini Interactions API and stores only citation-ma
 test("successful Interactions responses with invalid Gemini output are counted as failed provider usage",async()=>{
  const inserts=[];
  const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))inserts.push({sql,params});return{rowCount:1,rows:[]}}};
- const fetchImpl=async()=>({ok:true,status:200,json:async()=>({steps:[{type:"model_output",content:[{type:"text",text:"not-json"}]}],usage:{prompt_tokens:12,output_tokens:7,total_tokens:19}})});
+ const fetchImpl=async()=>({ok:true,status:200,json:async()=>({status:"completed",steps:[{type:"model_output",content:[{type:"text",text:"not-json"}]}],usage:{total_input_tokens:12,total_output_tokens:7,total_tokens:19}})});
  await assert.rejects(()=>researchWeb({pool,query:"test",category:"general",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/JSON valide/);
  assert.equal(inserts.length,1);
  assert.equal(inserts[0].params[2],"failed");
@@ -126,6 +130,18 @@ test("successful Interactions responses with invalid Gemini output are counted a
  assert.equal(inserts[0].params[5],7);
  assert.equal(inserts[0].params[6],19);
  assert.equal(inserts[0].params[8],"INVALID_MODEL_JSON");
+});
+test("non-completed Interactions responses are rejected and never create knowledge candidates",async()=>{
+ const inserts=[];
+ const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))inserts.push({sql,params});if(/INSERT INTO bep_knowledge_candidates/.test(sql))throw new Error("candidate must not be inserted");return{rowCount:1,rows:[]}}};
+ const fetchImpl=async()=>({ok:true,status:200,json:async()=>({status:"incomplete",steps:[{type:"model_output",content:[{type:"text",text:JSON.stringify({proposals:[{title:"x",content:"y",source_url:"https://example.org"}]})}]}],usage:{total_input_tokens:5,total_output_tokens:4,total_tokens:9}})});
+ await assert.rejects(()=>researchWeb({pool,query:"test",category:"general",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/INTERACTION_INCOMPLETE/);
+ assert.equal(inserts.length,1);
+ assert.equal(inserts[0].params[2],"failed");
+ assert.equal(inserts[0].params[4],5);
+ assert.equal(inserts[0].params[5],4);
+ assert.equal(inserts[0].params[6],9);
+ assert.equal(inserts[0].params[8],"INTERACTION_INCOMPLETE");
 });
 test("pending and reviewed proposals are exposed as a durable JSON document without user data",async()=>{
  const statements=[];
