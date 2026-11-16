@@ -53,14 +53,21 @@ async function appendAudit(client, actorRef, action, targetRef, details) {
 }
 function buildExportPage({ rows, budgetsByUser, secret, page, pageSize, hasMore }) {
   const accounts = rows.map((row) => {
-    const payload = row.payload || {}, budgets = budgetsByUser.get(String(row.id)) || [];
-    const revisionMaterial = { account_updated_at: row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null, data_updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : null, payload, monthly_budgets: budgets };
+    const budgetCount = Number(budgetsByUser.get(String(row.id)) || 0);
+    const revisionMaterial = { account_updated_at: row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null, data_updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : null, payload: row.payload || {}, monthly_budget_count: budgetCount };
     return { account_ref: accountRef(row.id, secret), created_at: row.created_at ? new Date(row.created_at).toISOString() : null,
       updated_at: row.data_updated_at ? new Date(row.data_updated_at).toISOString() : (row.account_updated_at ? new Date(row.account_updated_at).toISOString() : null),
-      expected_hash: sha256(revisionMaterial), data: sanitizePayload(payload), monthly_budgets: sanitizePayload(budgets) };
+      expected_hash: sha256(revisionMaterial), data: { data_available: !!row.payload && Object.keys(row.payload).length > 0 }, monthly_budgets: [] ,
+      summary: { monthly_budget_count: budgetCount } };
   });
-  return signExport({ schema: "bep-admin-export", schema_version: 1, export_id: crypto.randomUUID(), generated_at: new Date().toISOString(),
-    source_environment: process.env.BEP_ENVIRONMENT || "unconfigured", page, page_size: pageSize, has_more: hasMore, accounts }, secret);
+  const totals = accounts.reduce((out, account) => {
+    out.accounts_with_data += account.data.data_available ? 1 : 0;
+    out.monthly_budget_count += account.summary.monthly_budget_count;
+    return out;
+  }, { accounts_with_data: 0, monthly_budget_count: 0 });
+  return signExport({ schema: "bep-admin-export", schema_version: 2, export_id: crypto.randomUUID(), generated_at: new Date().toISOString(),
+    source_environment: process.env.BEP_ENVIRONMENT || "unconfigured", page, page_size: pageSize, has_more: hasMore,
+    aggregate: { account_count: accounts.length, ...totals }, accounts }, secret);
 }
 function createBepAdminRouter({ pool, requireAdmin }) {
   const router = express.Router(), guard = [requireAdmin], getSecret = () => exchangeSecret();
@@ -77,8 +84,8 @@ function createBepAdminRouter({ pool, requireAdmin }) {
       const result = await pool.query("SELECT u.id, u.created_at, u.updated_at AS account_updated_at, d.payload, d.updated_at AS data_updated_at FROM bep_users u LEFT JOIN bep_user_data d ON d.user_id=u.id ORDER BY u.id LIMIT $1 OFFSET $2", [pageSize + 1, (page - 1) * pageSize]);
       const hasMore = result.rows.length > pageSize, rows = result.rows.slice(0, pageSize), ids = rows.map((row) => String(row.id)), budgetsByUser = new Map();
       if (ids.length) {
-        const budgetResult = await pool.query("SELECT b.user_id, json_agg(json_build_object('budget_ref',b.id,'month',b.month_key,'status',b.status,'currency',b.currency,'planned_income_total',b.planned_income_total,'planned_charges_total',b.planned_charges_total,'planned_savings_total',b.planned_savings_total,'version',b.version,'updated_at',b.updated_at,'items',COALESCE(i.items,'[]'::json)) ORDER BY b.month_key DESC) AS budgets FROM bep_monthly_budgets b LEFT JOIN LATERAL (SELECT json_agg(json_build_object('item_type',bi.item_type,'label',bi.label,'category',bi.category,'nature',bi.nature,'planned_amount',bi.planned_amount,'metadata',bi.metadata) ORDER BY bi.created_at) AS items FROM bep_monthly_budget_items bi WHERE bi.budget_id=b.id) i ON TRUE WHERE b.user_id=ANY($1::text[]) GROUP BY b.user_id", [ids]);
-        for (const row of budgetResult.rows) budgetsByUser.set(String(row.user_id), row.budgets || []);
+        const budgetResult = await pool.query("SELECT user_id, COUNT(*)::int AS budget_count FROM bep_monthly_budgets WHERE user_id=ANY($1::text[]) GROUP BY user_id", [ids]);
+        for (const row of budgetResult.rows) budgetsByUser.set(String(row.user_id), Number(row.budget_count) || 0);
       }
       res.setHeader("Cache-Control", "no-store"); res.json(buildExportPage({ rows, budgetsByUser, secret, page, pageSize, hasMore }));
     } catch (error) { console.error("BEP admin export failed", String(error?.message || error).slice(0, 160)); res.status(503).json({ error: "ADMIN_EXPORT_UNAVAILABLE" }); }
@@ -87,7 +94,7 @@ function createBepAdminRouter({ pool, requireAdmin }) {
     const secret = getSecret(); if (!secret) return res.status(503).json({ error: "ADMIN_EXCHANGE_SECRET_NOT_CONFIGURED" });
     const document = req.body?.document && typeof req.body.document === "object" ? req.body.document : req.body;
     if (!document || typeof document !== "object" || Array.isArray(document) || JSON.stringify(document).length > 4500000 ||
-        document.schema !== "bep-admin-export" || document.schema_version !== 1 || typeof document.export_id !== "string" ||
+        document.schema !== "bep-admin-export" || document.schema_version !== 2 || typeof document.export_id !== "string" ||
         !/^[0-9a-f-]{36}$/i.test(document.export_id) || !Array.isArray(document.accounts) || document.accounts.length > 100 ||
         !Number.isInteger(document.page) || document.page < 1 || !Number.isInteger(document.page_size) || document.page_size < 1 || document.page_size > 100 ||
         document.accounts.length > document.page_size || typeof document.has_more !== "boolean" ||
