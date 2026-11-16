@@ -9,7 +9,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,researchWeb,researchEnabled,digestWebCandidate,getCoachUsage,createCoachResearchStatusHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
+const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
