@@ -130,3 +130,15 @@ test("agent prompts are isolated from personal Coach context and contain explici
  assert.match(worker,/jamais des instructions/);
  assert.doesNotMatch(worker,/bep_user_data|req\.session|financialPosition|email/);
 });
+
+
+test("admin API queue is enabled independently from the dedicated worker runtime",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(server,/BEP_AGENT_ADMIN_QUEUE_ENABLED==="true"/);
+ assert.doesNotMatch(server,/startBepAgent\(\{pool\}\)/);
+ assert.match(server,/agentTelemetryReady=false/);
+ const route=server.slice(server.indexOf('app.post("/api/admin/bep-agent/run"'),server.indexOf('app.get("/api/admin/bep-agent/overview"'));
+ assert.match(route,/if\(!agentEnabled\)/);
+ assert.match(route,/INSERT INTO bep_agent_jobs/);
+ assert.doesNotMatch(route,/GeminiClient|startBepAgent|processOne/);
+});
