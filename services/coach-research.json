@@ -5,6 +5,7 @@
   "runtime_default_enabled": false,
   "provider": "gemini-google-search-grounding",
   "model_env": "BEP_COACH_RESEARCH_MODEL",
+  "default_model": "gemini-2.5-flash",
   "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
   "required_gates": {
     "feature_flag": "BEP_COACH_WEB_RESEARCH_ENABLED=true",
@@ -16,10 +17,22 @@
     "authentication": "bep_session_and_agent_admin",
     "cache": "no-store"
   },
+  "provider_reference": {
+    "model": "gemini-2.5-flash",
+    "free_tier_grounding_rpd_reference": 500,
+    "shared_quota": "Gemini 2.5 Flash and Flash-Lite, subject to the Google AI Studio project quota",
+    "monthly_estimate_basis_days": 30,
+    "monthly_estimate_is_guaranteed": false
+  },
+  "usage_tracking": {
+    "table": "bep_coach_provider_usage",
+    "tracked_types": ["google_search_grounding", "json_library_consultation"],
+    "store_prompt_content": false,
+    "store_financial_data": false
+  },
   "limits": {
     "query_max_length": 500,
     "max_proposals_per_run": 5,
-    "max_calls_per_day": 2,
     "max_content_chars": 1800,
     "timeout_ms": 30000
   },
