@@ -44,6 +44,7 @@ test("admin research status handler returns protected monthly budget data and pi
  assert.deepEqual(header,["Cache-Control","no-store"]);
  assert.equal(payload.model,"gemini-3.8-flash");
  assert.equal(payload.enabled,true);
+ assert.equal(payload.manualIngestionEnabled,false);
  assert.equal(payload.usage.groundingQueries,8);
  assert.equal(payload.usage.geminiApiCalls,3);
  assert.equal(payload.usage.estimatedMonthlyCapacity,15000);
