@@ -34,5 +34,5 @@
     "human_approval_required": true,
     "destination": "existing_bep_knowledge_candidates",
     "approved_destination": "existing_bep_financial_knowledge"
-  },
+  }
 }
