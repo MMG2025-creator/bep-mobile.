@@ -63,3 +63,11 @@ test("successful settlement stores a summary only, never source page content",as
  assert.equal(update.params[1].includes("private content"),false);
  assert.match(update.sql,/lease_token=\$3/);
 });
+
+test("queued execution remains inert while Gemini gates are disabled",async()=>{
+ const pool={query:async()=>{throw new Error("database must not be touched while disabled")}};
+ const result=await queue.runQueuedIngestionJob({pool,jobId:"job-1",env:{}});
+ assert.equal(result.claimed,false);
+ assert.equal(result.enabled,false);
+ assert.match(result.reason,/aucun appel externe/);
+});
