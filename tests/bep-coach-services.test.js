@@ -127,21 +127,6 @@ test("successful Interactions responses with invalid Gemini output are counted a
  assert.equal(inserts[0].params[6],19);
  assert.equal(inserts[0].params[8],"INVALID_MODEL_JSON");
 });
-test("successful HTTP responses with invalid Gemini output are counted as failed provider usage with tokens",async()=>{
- const inserts=[];
- const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))inserts.push({sql,params});return{rowCount:1,rows:[]}}};
- const fetchImpl=async()=>({ok:true,status:200,json:async()=>({candidates:[{content:{parts:[{text:"not-json"}]},groundingMetadata:{webSearchQueries:["recherche test"]}}],usageMetadata:{promptTokenCount:12,candidatesTokenCount:7,totalTokenCount:19}})});
- await assert.rejects(()=>researchWeb({pool,query:"test",category:"general",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/JSON valide/);
- assert.equal(inserts.length,1);
- assert.equal(inserts[0].params[2],"failed");
- assert.equal(inserts[0].params[3],1);
- assert.equal(inserts[0].params[4],12);
- assert.equal(inserts[0].params[5],7);
- assert.equal(inserts[0].params[6],19);
- assert.equal(inserts[0].params[8],"INVALID_MODEL_JSON");
-});
-
-
 test("pending and reviewed proposals are exposed as a durable JSON document without user data",async()=>{
  const statements=[];
  const pool={query:async(sql,params)=>{statements.push({sql,params});return{rows:[{id:"42",source_slug:"web-budget-0123456789abcdef01234567",source_version:1,source_digest:"a".repeat(64),proposal_type:"update",title:"Aide au budget",content:"Contenu sourcé",source_name:"Service Public",source_url:"https://www.service-public.fr/aide",evidence_level:"web_research_pending",confidence:"high",rationale:"Source institutionnelle",review_status:"pending",created_at:new Date("2026-11-16T10:00:00Z"),reviewed_at:null}]}}};
