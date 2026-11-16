@@ -214,5 +214,271 @@
       "volatility": "low",
       "checkedAt": "2026-11-16"
     }
+  ],
+  "documents": [
+    {
+      "slug": "social-rights-simulator",
+      "category": "income",
+      "title": "Identifier les aides sociales auxquelles une personne peut prétendre",
+      "content": "Le portail officiel Mes droits sociaux permet de simuler en une seule démarche 58 aides sociales nationales et locales. Les aides couvrent notamment la famille, le logement, la santé, le handicap et la solidarité. Le simulateur aide à repérer les dispositifs pertinents et les démarches à engager ; il ne vaut pas décision d'attribution.",
+      "keywords": [
+        "aides sociales",
+        "prestations",
+        "RSA",
+        "APL",
+        "prime activité",
+        "droits sociaux",
+        "simulation",
+        "famille",
+        "logement"
+      ],
+      "conditions": [
+        "Utiliser le portail officiel et renseigner des informations exactes sur la situation du foyer, les ressources et la composition familiale.",
+        "Certaines simulations ou démarches peuvent nécessiter une connexion ou des justificatifs."
+      ],
+      "limits": [
+        "Le résultat est une estimation et ne garantit pas l'ouverture du droit ni le montant versé.",
+        "Les règles, plafonds et critères peuvent évoluer ; confirmer les conditions auprès de l'organisme payeur avant toute décision.",
+        "Ne pas demander à l'utilisateur de communiquer ses identifiants ou mots de passe au Coach."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Portail public officiel ; page consultée directement. Les résultats restent indicatifs."
+      },
+      "freshness": "À revérifier au moins tous les 6 mois et avant de restituer un plafond ou une règle chiffrée.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-counselling-points",
+      "category": "budget",
+      "title": "Orienter vers un Point conseil budget en cas de difficultés financières",
+      "content": "Les Points conseil budget (PCB) sont des structures d'accueil inconditionnel destinées à accompagner les personnes qui rencontrent des difficultés budgétaires. Leurs missions comprennent l'accueil, l'écoute, l'information, l'accompagnement budgétaire et l'accompagnement dans une procédure de surendettement. Ils contribuent à prévenir le surendettement et à favoriser l'éducation budgétaire.",
+      "keywords": [
+        "budget",
+        "difficultés financières",
+        "accompagnement budgétaire",
+        "surendettement",
+        "point conseil budget",
+        "PCB",
+        "créanciers"
+      ],
+      "conditions": [
+        "Le dispositif s'adresse aux personnes ayant besoin d'un accompagnement budgétaire ; l'accueil est présenté comme inconditionnel.",
+        "Orienter vers un PCB labellisé et utiliser la carte ou l'annuaire officiel pour identifier le point de contact adapté au territoire."
+      ],
+      "limits": [
+        "La page consultée ne détaille pas les modalités locales de rendez-vous ni les délais ; vérifier directement auprès du PCB concerné.",
+        "Ne pas promettre une annulation de dette, une aide financière ou une issue particulière à une procédure.",
+        "Ne pas reprendre comme données actuelles les anciens chiffres de déploiement figurant sur la page."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        },
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Se faire aider",
+          "url": "https://www.mesquestionsdargent.fr/budget/se-faire-aider",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Portail d'éducation financière de la Banque de France ; missions du dispositif décrites directement."
+      },
+      "freshness": "Recontrôler l'annuaire et les coordonnées avant orientation locale.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "emergency-savings-goal-and-horizon",
+      "category": "savings",
+      "title": "Distinguer épargne de précaution et épargne de projet",
+      "content": "Avant de choisir un placement, identifier l'objectif de l'argent, sa date d'utilisation, le besoin de disponibilité et le risque de perte acceptable. L'épargne de précaution sert à faire face aux imprévus et doit rester immédiatement disponible avec un risque faible. L'épargne destinée à un projet à moyen ou long terme peut être organisée selon son horizon et la capacité de l'épargnant à supporter les fluctuations. L'AMF cite 2 à 3 mois de revenus comme repère indicatif pour l'épargne de précaution, et non comme une obligation universelle.",
+      "keywords": [
+        "épargne de précaution",
+        "épargne projet",
+        "horizon placement",
+        "liquidité",
+        "risque",
+        "rendement",
+        "réserve"
+      ],
+      "conditions": [
+        "Évaluer d'abord les dépenses essentielles, la stabilité des revenus, les dettes et les imprévus plausibles.",
+        "Adapter la réserve à la situation réelle ; un montant forfaitaire ne convient pas à tous les foyers.",
+        "Vérifier les conditions de retrait, la garantie éventuelle et les frais de chaque produit."
+      ],
+      "limits": [
+        "La référence AMF consultée date du 19 octobre 2018 ; le repère de 2 à 3 mois doit être présenté comme indicatif, jamais comme une règle réglementaire.",
+        "Un placement présenté comme disponible ou garanti doit être vérifié dans sa documentation contractuelle.",
+        "Ne pas recommander un produit ou une allocation personnalisée sans connaître les besoins, l'horizon et la tolérance au risque."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Définir son objectif d'épargne pour bien choisir son placement",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/savoir-bien-investir/cadrer-son-projet/definir-son-objectif",
+          "published_at": "2018-10-19",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Source primaire du régulateur financier ; ancienneté de la publication explicitement signalée."
+      },
+      "freshness": "Révision annuelle ; revalider les repères chiffrés et les règles produits avant usage.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "bank-mediator-consumer-dispute",
+      "category": "planning",
+      "title": "Saisir le médiateur bancaire après une réclamation non résolue",
+      "content": "Un particulier agissant pour un besoin personnel peut saisir gratuitement le médiateur de sa banque pour un litige portant sur l'exécution d'un contrat ou un service bancaire, après avoir adressé une réclamation écrite à la banque. En principe, la saisine est possible si la réponse ne satisfait pas le client ou en l'absence de réponse dans les deux mois ; le délai est de 15 jours pour un différend relatif à un service de paiement. Le médiateur propose normalement une solution dans les 90 jours suivant la notification de sa saisine.",
+      "keywords": [
+        "médiateur bancaire",
+        "litige bancaire",
+        "réclamation",
+        "frais bancaires",
+        "service de paiement",
+        "crédit",
+        "assurance",
+        "compte"
+      ],
+      "conditions": [
+        "Le demandeur est une personne physique agissant pour un besoin personnel.",
+        "Une réclamation écrite préalable auprès de la banque doit pouvoir être prouvée.",
+        "La saisine doit intervenir dans l'année suivant la réclamation écrite.",
+        "Identifier le médiateur compétent dans la réponse de la banque, la convention de compte ou le site de l'établissement."
+      ],
+      "limits": [
+        "Le médiateur bancaire ne traite pas un refus de prêt.",
+        "Un litige déjà examiné par un autre médiateur ou un tribunal, une demande abusive ou une saisine tardive peut être exclu.",
+        "La proposition du médiateur n'est pas un jugement et les parties restent libres de l'accepter ou non.",
+        "Pour un dossier complexe, le délai de 90 jours peut être prolongé avec information du demandeur."
+      ],
+      "sources": [
+        {
+          "publisher": "Service-Public.fr – Direction de l'information légale et administrative",
+          "title": "Médiateur bancaire : comment y recourir ?",
+          "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F20523",
+          "verified_on_page": "2026-07-28",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche officielle Service-Public vérifiée le 28 juillet 2026."
+      },
+      "freshness": "Recontrôler la fiche officielle avant de citer les délais ou les seuils procéduraux.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "childcare-tax-credit-assistant-maternal",
+      "category": "planning",
+      "title": "Crédit d'impôt pour frais de garde d'un enfant de moins de 6 ans hors du domicile",
+      "content": "Les frais effectivement supportés pour la garde hors du domicile d'un enfant à charge de moins de 6 ans au 1er janvier de l'année d'imposition peuvent ouvrir droit à un crédit d'impôt de 50 %, notamment pour l'emploi d'un assistant maternel agréé. Pour un assistant maternel, les dépenses éligibles comprennent les salaires nets et cotisations, ainsi que certains frais d'entretien selon les règles fiscales ; les frais de repas sont exclus. Les aides reçues, dont le CMG et les aides de l'employeur, doivent être déduites. La page Service-Public consultée indique un plafond de dépenses de 3 500 € par enfant, réduit à 1 750 € en garde alternée, soit un crédit maximal respectif de 1 750 € et 875 €.",
+      "keywords": [
+        "crédit impôt",
+        "garde enfant",
+        "assistant maternel agréé",
+        "garde alternée",
+        "CMG",
+        "Pajemploi",
+        "frais de garde",
+        "déclaration revenus"
+      ],
+      "conditions": [
+        "L'enfant doit avoir moins de 6 ans au 1er janvier de l'année d'imposition et être à la charge du contribuable.",
+        "La garde doit être assurée par un assistant maternel agréé ou un établissement d'accueil éligible, hors du domicile.",
+        "Déclarer les dépenses réellement supportées après déduction du CMG et des autres aides ; conserver l'attestation fiscale Pajemploi et les justificatifs.",
+        "En garde alternée, appliquer le plafond réduit indiqué par la documentation fiscale."
+      ],
+      "limits": [
+        "Ne pas confondre garde hors domicile et garde au domicile : les régimes fiscaux diffèrent.",
+        "Les frais de repas ne sont pas éligibles au titre de cette fiche ; certaines indemnités d'entretien sont plafonnées selon les règles applicables.",
+        "Les plafonds, critères d'enfant à charge et règles de partage doivent être vérifiés pour l'année fiscale concernée.",
+        "Ne pas calculer le droit individuel sans connaître la résidence fiscale, le rattachement de l'enfant, les aides perçues et les dépenses réellement supportées."
+      ],
+      "sources": [
+        {
+          "publisher": "Service-Public.fr – Direction de l'information légale et administrative",
+          "title": "Impôt sur le revenu – Frais de garde d'enfant hors du domicile (crédit d'impôt)",
+          "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F8",
+          "verified_on_page": "2026-04-15",
+          "checked_at": "2026-11-16"
+        },
+        {
+          "publisher": "Urssaf – Pajemploi",
+          "title": "Bénéficier d’un avantage fiscal (crédit d’impôt)",
+          "url": "https://www.urssaf.fr/accueil/particulier/particulier-employeur/avantage-fiscal-credit-impot.html",
+          "updated_on_page": "2026-07-07",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Deux sources institutionnelles primaires concordantes : Service-Public et Urssaf/Pajemploi."
+      },
+      "freshness": "Contrôle obligatoire à chaque campagne de déclaration de revenus ; plafonds et conditions sont annuels.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "investment-diversification-risk",
+      "category": "savings",
+      "title": "Diversifier l'épargne en fonction des objectifs et du risque",
+      "content": "La diversification consiste à répartir l'épargne entre plusieurs placements afin de ne pas concentrer l'ensemble du risque sur un seul support. La répartition doit être cohérente avec les objectifs, les horizons de placement, la situation financière et la tolérance au risque. Une vue globale de tous les avoirs est nécessaire pour apprécier le risque réellement pris. La diversification peut limiter certains risques de concentration mais ne garantit ni le capital ni un rendement.",
+      "keywords": [
+        "diversification",
+        "risque investissement",
+        "épargne",
+        "portefeuille",
+        "horizon",
+        "actions",
+        "obligations",
+        "perte en capital"
+      ],
+      "conditions": [
+        "Recenser les placements détenus, leur disponibilité, leur garantie éventuelle, leur horizon recommandé et leur niveau de risque.",
+        "Distinguer l'épargne immédiatement disponible des capitaux affectés à des projets de moyen ou long terme.",
+        "Réexaminer périodiquement la répartition et lorsque les objectifs ou la situation financière changent."
+      ],
+      "limits": [
+        "La diversification ne supprime pas le risque de marché ni la possibilité de perte en capital.",
+        "Aucune allocation-type ne convient à tous les épargnants ; ne pas reproduire les exemples chiffrés de l'AMF comme recommandations.",
+        "La page AMF consultée date du 19 octobre 2023 ; vérifier les caractéristiques et documents des produits avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Placements : qu'est-ce qu'une diversification adéquate ?",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/actualites-mises-en-garde/placements-quest-ce-quune-diversification-adequate",
+          "published_at": "2023-10-19",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Source primaire du régulateur financier ; contenu de principe vérifié directement."
+      },
+      "freshness": "Révision annuelle et lors de toute évolution réglementaire ou de risque produit.",
+      "review_status": "pending_admin_approval"
+    }
   ]
 }
