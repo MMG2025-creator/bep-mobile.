@@ -4,7 +4,7 @@
   "enabled": true,
   "runtime_default_enabled": false,
   "provider": "gemini-google-search-grounding",
-  "default_model": "gemini-2.5-flash",
+  "default_model": "gemini-3.8-flash",
   "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
   "required_gates": {
     "feature_flag": "BEP_COACH_WEB_RESEARCH_ENABLED=true",
@@ -17,9 +17,9 @@
     "cache": "no-store"
   },
   "provider_reference": {
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.8-flash",
     "free_tier_grounding_rpd_reference": 500,
-    "shared_quota": "Gemini 2.5 Flash and Flash-Lite, subject to the Google AI Studio project quota",
+    "shared_quota": "Gemini 3.8 Flash via Interactions API, subject to the Google AI Studio project quota",
     "monthly_estimate_basis_days": 30,
     "monthly_estimate_is_guaranteed": false
   },
