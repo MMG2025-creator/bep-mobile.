@@ -9,7 +9,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
+const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -312,6 +312,7 @@ app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=
   res.json({items:all.slice(0,100).map(item=>({slug:item.slug,category:item.category,title:item.title,content:item.content,keywords:item.keywords||[],source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.version)||1,updated_at:item.updated_at||null})),total:all.length,limit:100,truncated:all.length>100,readOnly:true});
  }catch(e){console.error("BEP admin Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_ADMIN_LIBRARY_UNAVAILABLE"})}
 });
+app.get("/api/admin/bep-coach/proposals.json",auth,requireBepAgentAdmin,createCoachProposalsDocumentHandler({pool,logger:console}));
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{

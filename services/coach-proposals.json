@@ -1,0 +1,33 @@
+{
+  "service": "bep-coach-proposals",
+  "schema": "bep-coach-proposals",
+  "schema_version": 1,
+  "format": "application/json",
+  "storage": {
+    "provider": "postgresql",
+    "table": "bep_knowledge_candidates",
+    "durable": true,
+    "runtime_file_system": false
+  },
+  "api": {
+    "method": "GET",
+    "path": "/api/admin/bep-coach/proposals.json",
+    "authentication": "bep_independent_admin",
+    "cache": "no-store",
+    "download_filename": "bep-coach-proposals.json"
+  },
+  "states": [
+    "pending",
+    "accepted",
+    "rejected"
+  ],
+  "publication": {
+    "human_approval_required": true,
+    "automatic_publication": false,
+    "active_destination": [
+      "bep_financial_knowledge",
+      "bep_agent_approved_knowledge"
+    ],
+    "pending_visible_to_coach": false
+  }
+}

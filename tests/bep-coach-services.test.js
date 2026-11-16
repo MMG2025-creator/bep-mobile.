@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb,getCoachUsage,createCoachResearchStatusHandler}=require("../lib/bep-coach-services");
+const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,PROPOSALS_CONFIG,researchWeb,getCoachUsage,createCoachResearchStatusHandler,readCoachProposalsDocument,createCoachProposalsDocumentHandler}=require("../lib/bep-coach-services");
 
 test("Coach knowledge and research services are independent JSON contracts",()=>{
  assert.equal(LIBRARY_CONFIG.service,"bep-coach-library");
@@ -115,4 +115,40 @@ test("successful HTTP responses with invalid Gemini output are counted as failed
  assert.equal(inserts[0].params[5],7);
  assert.equal(inserts[0].params[6],19);
  assert.equal(inserts[0].params[8],"INVALID_MODEL_JSON");
+});
+
+
+test("pending and reviewed proposals are exposed as a durable JSON document without user data",async()=>{
+ const statements=[];
+ const pool={query:async(sql,params)=>{statements.push({sql,params});return{rows:[{id:"42",source_slug:"web-budget-0123456789abcdef01234567",source_version:1,source_digest:"a".repeat(64),proposal_type:"update",title:"Aide au budget",content:"Contenu sourcé",source_name:"Service Public",source_url:"https://www.service-public.fr/aide",evidence_level:"web_research_pending",confidence:"high",rationale:"Source institutionnelle",review_status:"pending",created_at:new Date("2026-11-16T10:00:00Z"),reviewed_at:null}]}}};
+ const document=await readCoachProposalsDocument({pool,status:"pending",limit:25});
+ assert.equal(PROPOSALS_CONFIG.schema,"bep-coach-proposals");
+ assert.equal(document.schema,"bep-coach-proposals");
+ assert.equal(document.status,"pending");
+ assert.equal(document.count,1);
+ assert.equal(document.storage.provider,"postgresql");
+ assert.equal(document.storage.table,"bep_knowledge_candidates");
+ assert.equal(document.publication.human_approval_required,true);
+ assert.equal(document.publication.automatic_publication,false);
+ assert.equal(document.proposals[0].id,"42");
+ assert.equal(document.proposals[0].source.url,"https://www.service-public.fr/aide");
+ assert.equal(document.proposals[0].review_status,"pending");
+ assert.equal(Object.hasOwn(document.proposals[0],"user_id"),false);
+ assert.match(statements[0].sql,/FROM bep_knowledge_candidates/);
+ assert.deepEqual(statements[0].params,["pending",25]);
+});
+
+test("proposal JSON export handler is no-store, downloadable and rejects invalid status",async()=>{
+ let headers={},statusCode=200,payload=null;
+ const res={setHeader:(name,value)=>{headers[name]=value},json:value=>{payload=value;return res},status:value=>{statusCode=value;return res}};
+ const handler=createCoachProposalsDocumentHandler({pool:{query:async()=>({rows:[]})},logger:{error:()=>{}}});
+ await handler({query:{status:"pending"}},res);
+ assert.equal(statusCode,200);
+ assert.equal(headers["Cache-Control"],"no-store");
+ assert.ok(headers["Content-Disposition"].includes("bep-coach-proposals.json"));
+ assert.equal(payload.schema,"bep-coach-proposals");
+ statusCode=200;payload=null;
+ await handler({query:{status:"unknown"}},res);
+ assert.equal(statusCode,400);
+ assert.equal(payload.error,"INVALID_PROPOSAL_STATUS");
 });

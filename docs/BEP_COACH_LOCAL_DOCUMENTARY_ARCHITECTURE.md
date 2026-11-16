@@ -125,3 +125,12 @@ Le modèle par défaut est `gemini-2.5-flash`. La documentation tarifaire Google
 La table additive `bep_coach_provider_usage` comptabilise uniquement les appels Gemini de deux types : `google_search_grounding` et `json_library_consultation`. Pour la recherche Google, BEP sépare le nombre d'appels API du nombre de requêtes Google Search indiqué par `groundingMetadata.webSearchQueries`, car un appel Gemini peut déclencher plusieurs recherches. Les tokens, erreurs et dates sont agrégés sans enregistrer les questions, réponses ou données financières.
 
 La lecture de la bibliothèque par `readCoachLibrary()` demeure locale et n'est pas un appel Gemini : elle n'est donc pas comptabilisée. Le type `json_library_consultation` est prévu pour un futur véritable appel Gemini analysant les JSON ; il restera à zéro tant qu'aucun tel appel n'est effectué.
+
+
+## Second JSON — registre durable des propositions documentaires
+
+Le circuit administratif expose un second document JSON distinct du corpus documentaire actif : `bep-coach-proposals.json`. Il rassemble les propositions produites par la revue documentaire Gemini et par la recherche Google Search, avec leur identifiant, leur source, leur empreinte, leur provenance, leur niveau de confiance et leur statut de revue.
+
+Pour éviter toute perte lors d’un redémarrage ou d’un redéploiement Render, les propositions sont conservées durablement dans `bep_knowledge_candidates` (PostgreSQL). L’endpoint administratif protégé `GET /api/admin/bep-coach/proposals.json` les sérialise sous forme du document JSON téléchargeable. Le fichier n’est jamais écrit sur le système de fichiers éphémère du service.
+
+Le document JSON est un registre de travail, pas une source de vérité métier. Les éléments `pending` restent invisibles au Coach utilisateur. Seule l’action d’approbation humaine existante peut intégrer une proposition dans `bep_financial_knowledge` ou `bep_agent_approved_knowledge`, après vérification de la version et de l’empreinte source dans la transaction. Un rejet ne publie aucune connaissance. Aucune publication automatique ni modification du corpus actif par Gemini n’est autorisée.
