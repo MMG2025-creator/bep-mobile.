@@ -10,7 +10,8 @@ const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_RE
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,researchEnabled,digestWebCandidate,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
-const {startBepAgent}=require("./lib/bep-agent");
+const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
+const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
@@ -305,8 +306,10 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
    pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('knowledge_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id"),
    pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('coach_quality_review','{}'::jsonb) ON CONFLICT DO NOTHING RETURNING id")
   ]);
-  res.status(202).json({queued:true,knowledgeJobId:knowledge.rows[0]?.id||null,qualityJobId:quality.rows[0]?.id||null});
- }catch(e){res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
+  const execution=scheduleAdminAgentRun({pool,logger:console,maxJobs:2});
+  if(!execution.scheduled&&!execution.busy)return res.status(503).json({error:"AGENT_EXECUTION_UNAVAILABLE"});
+  res.status(202).json({queued:true,processingScheduled:execution.scheduled,busy:execution.busy===true,knowledgeJobId:knowledge.rows[0]?.id||null,qualityJobId:quality.rows[0]?.id||null});
+ }catch(e){console.error("BEP admin agent enqueue failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
 });
 app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
  try{
@@ -440,4 +443,16 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{const agentState=await startBepAgent({pool});agentEnabled=agentState.enabled===true;agentTelemetryReady=agentEnabled}catch(agentError){agentEnabled=false;agentTelemetryReady=false;console.error("BEP Gemini agent startup failed",String(agentError?.message||agentError).slice(0,180))}return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{
+ const agentConfig=adminAgentStatus();
+ if(agentConfig.enabled){
+  if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
+   await ensureBepAgentSchema(pool);
+   console.info("BEP Gemini additive schema migration completed by explicit startup flag");
+  }
+  const schema=await pool.query("SELECT to_regclass('public.bep_agent_jobs') AS jobs,to_regclass('public.bep_agent_runs') AS runs,to_regclass('public.bep_knowledge_candidates') AS candidates,to_regclass('public.bep_agent_daily_usage') AS usage,to_regclass('public.bep_agent_metrics') AS metrics,to_regclass('public.bep_agent_approved_knowledge') AS approved,to_regclass('public.bep_agent_coach_metrics') AS coach_metrics");
+  agentEnabled=Object.values(schema.rows[0]||{}).every(Boolean);
+  if(!agentEnabled)console.warn("BEP Gemini admin mode disabled: additive agent schema is not migrated");
+ }else console.info("BEP Gemini admin mode disabled:",agentConfig.disabledReason);
+ agentTelemetryReady=agentEnabled;
+}catch(agentError){agentEnabled=false;agentTelemetryReady=false;console.error("BEP Gemini admin configuration failed",String(agentError?.message||agentError).slice(0,180))}return}catch(e){dbReady=false;dbInitError=e.message;console.error("DB init attempt failed",JSON.stringify({attempt,message:e.message}));if(attempt<5)await new Promise(resolve=>setTimeout(resolve,Math.min(1000*2**(attempt-1),10000)))}}console.error("BEP database initialization did not complete; HTTP server remains available for diagnostics")})()});

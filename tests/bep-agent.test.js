@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {readConfig}=require("../lib/bep-agent/config");
+const {readConfig,readAdminConfig}=require("../lib/bep-agent/config");
 const {GeminiClient}=require("../lib/bep-agent/gemini-client");
 const {startBepAgent}=require("../lib/bep-agent");
 const {validateKnowledgeProposal,sourceDigest,runQualityReview,runKnowledgeReview,loadDocumentaryJson,DOCUMENTARY_JSON_FILES}=require("../lib/bep-agent/worker");
@@ -15,7 +15,7 @@ test("schema migration is opt-in and never runs as part of the normal server sta
  const repository=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","repository.js"),"utf8");
  assert.equal(pkg.scripts.start,"node server.js");
  assert.match(migration,/BEP_AGENT_SCHEMA_MIGRATE!==\"true\"/);
- assert.match(migration,/readConfig\(\)\.enabled/);
+ assert.match(migration,/readAdminConfig\(\)\.enabled/);
  assert.match(repository,/20261114_bep_gemini_agent\.sql/);
  assert.doesNotMatch(repository,/CREATE TABLE IF NOT EXISTS/);
 });
@@ -38,6 +38,15 @@ test("agent requires a dedicated worker, key, explicit billing approval and mont
  assert.equal(readConfig({...base,BEP_AGENT_RUN_AS_WORKER:"false"}).enabled,false);
  assert.equal(readConfig({...base,BEP_AGENT_GEMINI_API_KEY:"",BEP_AI_API_KEY:"shared-key"}).enabled,false);
  assert.equal(readConfig({...base,BEP_AGENT_MONTHLY_BUDGET_USD:"0"}).enabled,false);
+});
+test("free-tier admin mode is on-demand, bounded to eight calls and independent of worker billing config",()=>{
+ const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
+ const c=readAdminConfig(base);
+ assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
+ assert.equal(readAdminConfig({...base,BEP_AGENT_RUN_MODE:"worker"}).enabled,false);
+ assert.equal(readAdminConfig({...base,BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false"}).enabled,false);
+ assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_API_KEY:""}).enabled,false);
+ assert.equal(readAdminConfig({...base,BEP_AGENT_MAX_CALLS_PER_DAY:"50"}).maxCallsPerDay,8);
 });
 test("legacy shared Gemini key and legacy zero-billing flag never activate the supervisor",()=>{
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true",BEP_AI_API_KEY:"shared-key"}).enabled,false);
@@ -103,6 +112,11 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
+ assert.match(server,/scheduleAdminAgentRun/);
+ assert.match(server,/to_regclass\(/);
+ assert.match(server,/BEP_AGENT_SCHEMA_MIGRATE==="true"/);
+ assert.match(server,/ensureBepAgentSchema\(pool\)/);
+ assert.doesNotMatch(server,/startBepAgent/);
  assert.match(server,/bep_agent_approved_knowledge/);
  assert.match(server,/INSERT INTO bep_agent_coach_metrics/);
  assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
