@@ -75,7 +75,9 @@ function rateLimit({windowMs,max,scope}){return async(req,res,next)=>{
 app.use("/api/auth",rateLimit({windowMs:15*60*1000,max:20,scope:"auth"}));
 app.use("/api/ai",rateLimit({windowMs:60*1000,max:20,scope:"ai"}));
 app.use("/api/admin/auth",rateLimit({windowMs:15*60*1000,max:10,scope:"admin-auth"}));
-app.use("/api",rateLimit({windowMs:60*1000,max:120,scope:"api"}));
+const adminApiRateLimit=rateLimit({windowMs:60*1000,max:300,scope:"admin-api"});
+const userApiRateLimit=rateLimit({windowMs:60*1000,max:120,scope:"api"});
+app.use("/api",(req,res,next)=>req.path==="/admin"||req.path.startsWith("/admin/")?adminApiRateLimit(req,res,next):userApiRateLimit(req,res,next));
 if(pool&&process.env.SESSION_SECRET)app.use(session({store:new PgSession({pool,tableName:"user_sessions",createTableIfMissing:true}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:true,sameSite:"none",maxAge:604800000}}));
 if(BEP_ADMIN_AUTH_ENABLED){
  app.use("/api/admin/auth",createBepAdminAuthRouter({pool,bcrypt,allowedEmails:BEP_ADMIN_EMAILS,sendCode:(email,code)=>sendVerificationEmail(email,code,"admin_auth_code")}));
@@ -289,6 +291,27 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  }catch(e){console.error("Coach web research failed",String(e?.message||e).slice(0,180));res.status(502).json({error:"COACH_RESEARCH_FAILED",message:"La recherche Internet n'a pas abouti. Aucune connaissance n'a été publiée."})}});
 app.get("/api/coach/knowledge",auth,async(req,res)=>{try{const r=await pool.query("SELECT id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider,review_status,created_at FROM bep_user_coach_knowledge WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[req.session.user.id]);res.setHeader("Cache-Control","no-store");res.json({items:r.rows.map(x=>({id:x.id,kind:x.kind,category:x.category,title:x.title,detail:x.detail,priority:x.priority,confidence:x.confidence,evidence:x.evidence,action:x.action,valid_until:x.valid_until,provider:x.source_provider,status:x.review_status,created_at:x.created_at}))})}catch(e){console.error("Coach knowledge read failed",e.message);res.status(500).json({message:"Base de connaissances indisponible."})}});
 app.post("/api/coach/knowledge",auth,async(req,res)=>{const items=req.body?.items,provider=String(req.body?.source_provider||"other");if(!Array.isArray(items)||items.length<1||items.length>100||!["chatgpt","gemini","claude","mistral","other"].includes(provider))return res.status(400).json({message:"Import BEP invalide."});const client=await pool.connect();let inserted=0;try{await client.query("BEGIN");for(const x of items){const kind=x?.kind==="recommendation"?"recommendation":x?.kind==="knowledge"?"knowledge":null,category=String(x?.category||"other"),title=String(x?.title||"").trim().slice(0,120),detail=String(x?.detail||"").trim().slice(0,1500),priority=["low","medium","high"].includes(x?.priority)?x.priority:"medium",confidence=["low","medium","high"].includes(x?.confidence)?x.confidence:"low",externalId=String(x?.id||"").trim().slice(0,80);const allowed=kind==="recommendation"?["budget","spending","savings","debt","behavior","other"]:["budget","spending","savings","behavior","general"];const dateCandidate=kind==="recommendation"?String(x.valid_until||""):"";const dateValid=!dateCandidate||(/^\d{4}-\d{2}-\d{2}$/.test(dateCandidate)&&!Number.isNaN(Date.parse(dateCandidate+"T00:00:00Z"))&&new Date(dateCandidate+"T00:00:00Z").toISOString().slice(0,10)===dateCandidate);if(!kind||!allowed.includes(category)||!title||!detail||!externalId||!dateValid)continue;const evidence=Array.isArray(x.evidence)?x.evidence.slice(0,8).map(v=>String(v).slice(0,300)):[],action=kind==="recommendation"?String(x.action||"").slice(0,500):"",validUntil=kind==="recommendation"&&/^\d{4}-\d{2}-\d{2}$/.test(x.valid_until||"")?x.valid_until:null;const r=await client.query("INSERT INTO bep_user_coach_knowledge(user_id,external_id,kind,category,title,detail,priority,confidence,evidence,action,valid_until,source_provider) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12) ON CONFLICT(user_id,external_id,kind) DO NOTHING RETURNING id",[req.session.user.id,externalId,kind,category,title,detail,priority,confidence,JSON.stringify(evidence),action,validUntil,provider]);if(r.rowCount)inserted++}await client.query("COMMIT");res.status(201).json({ok:true,inserted,received:items.length})}catch(e){await client.query("ROLLBACK");console.error("Coach knowledge import failed",e.message);res.status(500).json({message:"Import non enregistré. Aucune donnée financière n'a été modifiée."})}finally{client.release()}});
+app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=>{
+ try{
+  const query=String(req.query.q||"").trim().toLocaleLowerCase("fr").slice(0,160);
+  const category=String(req.query.category||"all");
+  const allowedCategories=new Set(["all","budget","spending","savings","debt","behavior","income","planning","general"]);
+  if(!allowedCategories.has(category))return res.status(400).json({error:"INVALID_LIBRARY_CATEGORY"});
+  const [base,overlays]=await Promise.all([
+   pool.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active,updated_at FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 1000"),
+   pool.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,active,source_version,source_digest,version,updated_at FROM bep_agent_approved_knowledge ORDER BY category,slug").catch(()=>({rows:[]}))
+  ]);
+  const merged=new Map(base.rows.map(item=>[item.slug,item]));
+  for(const item of overlays.rows){
+   const source=merged.get(item.slug);
+   if(!source||Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;
+   if(item.active)merged.set(item.slug,item);else merged.delete(item.slug);
+  }
+  const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
+  res.setHeader("Cache-Control","no-store");
+  res.json({items:all.slice(0,100).map(item=>({slug:item.slug,category:item.category,title:item.title,content:item.content,keywords:item.keywords||[],source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.version)||1,updated_at:item.updated_at||null})),total:all.length,limit:100,truncated:all.length>100,readOnly:true});
+ }catch(e){console.error("BEP admin Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_ADMIN_LIBRARY_UNAVAILABLE"})}
+});
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{

@@ -174,3 +174,13 @@ test("independent admin enrollment, login and password recovery use a separate c
     if(previousSecret===undefined)delete process.env.SESSION_SECRET;else process.env.SESSION_SECRET=previousSecret;
   }
 });
+
+test("admin API and user API use independent rate-limit buckets",()=>{
+  const fs=require("node:fs");
+  const server=fs.readFileSync(require("node:path").join(__dirname,"../server.js"),"utf8");
+  assert.match(server,/scope:"admin-api"/);
+  assert.match(server,/scope:"api"/);
+  assert.match(server,/req\.path==="\/admin"\|\|req\.path\.startsWith\("\/admin\/"\)/);
+  assert.match(server,/adminApiRateLimit\(req,res,next\):userApiRateLimit\(req,res,next\)/);
+  assert.doesNotMatch(server,/app\.use\("\/api",rateLimit\(\{windowMs:60\*1000,max:120,scope:"api"\}\)\)/);
+});
