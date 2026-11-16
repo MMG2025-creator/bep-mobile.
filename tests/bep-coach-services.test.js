@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb}=require("../lib/bep-coach-services");
+const {researchEnabled,safeHttpUrl,digestWebCandidate,RESEARCH_CONFIG,LIBRARY_CONFIG,researchWeb,getCoachUsage}=require("../lib/bep-coach-services");
 
 test("Coach knowledge and research services are independent JSON contracts",()=>{
  assert.equal(LIBRARY_CONFIG.service,"bep-coach-library");
@@ -16,6 +16,19 @@ test("Coach knowledge and research services are independent JSON contracts",()=>
  assert.equal(RESEARCH_CONFIG.research_policy.human_approval_required,true);
 });
 
+
+test("monthly provider usage separates grounding searches from Gemini API calls and projects the current pace",async()=>{
+ const pool={query:async(sql)=>/SELECT request_type/.test(sql)?{rows:[{request_type:"google_search_grounding",api_calls:4,grounding_queries:9,prompt_tokens:100,output_tokens:40,total_tokens:140,failed_calls:1,last_call_at:null},{request_type:"json_library_consultation",api_calls:0,grounding_queries:0,prompt_tokens:0,output_tokens:0,total_tokens:0,failed_calls:0,last_call_at:null}]}:{rows:[],rowCount:0}};
+ const usage=await getCoachUsage(pool);
+ assert.equal(usage.groundingQueries,9);
+ assert.equal(usage.geminiApiCalls,4);
+ assert.equal(usage.byType.google_search_grounding.failedCalls,1);
+ assert.equal(usage.byType.json_library_consultation.apiCalls,0);
+ assert.equal(usage.estimatedMonthlyCapacity,15000);
+ assert.ok(Number.isFinite(usage.averageDailyGroundingQueries));
+ assert.ok(Number.isFinite(usage.projectedMonthlyGroundingQueries));
+ assert.equal(usage.monthlyEstimateGuaranteed,false);
+});
 test("web research requires explicit feature activation and dedicated Gemini key",()=>{
  assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}),true);
  assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"false",BEP_AGENT_GEMINI_API_KEY:"secret"}),false);
@@ -48,10 +61,11 @@ test("grounded research stores only source-matched pending candidates",async()=>
  const pool={query:async(sql,params)=>{statements.push({sql,params});return /bep_knowledge_candidates/.test(sql)?{rowCount:1,rows:[{id:42}]}:{rowCount:1,rows:[]}}};
  const fetchImpl=async(url,options)=>{
   assert.match(url,/generativelanguage\.googleapis\.com/);
+  assert.ok(url.includes("/models/gemini-2.5-flash:generateContent"),"must pin the configured free-tier model even when the legacy env override is present");
   const body=JSON.parse(options.body);assert.deepEqual(body.tools,[{google_search:{}}]);
   return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({proposals:[{title:"Aide au budget",content:"Repère pratique sourcé.",source_url:"https://www.service-public.fr/particuliers/vosdroits",source_name:"model name",confidence:"high",rationale:"Source officielle",keywords:["budget"]}]})}]},groundingMetadata:{webSearchQueries:["aide budget"],groundingChunks:[{web:{uri:"https://www.service-public.fr/particuliers/vosdroits",title:"Service Public"}}],searchEntryPoint:{renderedContent:"Google Search suggestions"}}}],usageMetadata:{totalTokenCount:50}})};
  };
- const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
+ const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key",BEP_COACH_RESEARCH_MODEL:"gemini-3.8-flash"},fetchImpl});
  assert.equal(result.candidatesCreated,1);
  assert.equal(result.candidates[0].id,42);
  assert.equal(result.candidates[0].source.name,"Service Public");
