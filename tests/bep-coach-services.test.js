@@ -191,6 +191,20 @@ test("manual source ingestion rejects unsafe URLs and private network addresses"
  assert.equal(ingestion.publicAddress("169.254.169.254"),false);
  assert.equal(ingestion.publicAddress("127.0.0.1"),false);
 });
+test("manual source pinned DNS lookup supports Node all-address callback mode",()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const resolved={address:"203.0.113.10",family:4};
+ const lookup=ingestion.createPinnedLookup(resolved);
+ let allResult=null,standardResult=null;
+ lookup("example.org",{all:true},(error,addresses)=>{allResult={error,addresses}});
+ lookup("example.org",{all:false},(error,address,family)=>{standardResult={error,address,family}});
+ assert.equal(allResult.error,null);
+ assert.deepEqual(allResult.addresses,[resolved]);
+ assert.equal(standardResult.error,null);
+ assert.equal(standardResult.address,resolved.address);
+ assert.equal(standardResult.family,resolved.family);
+});
+
 test("manual source extraction removes active markup and only follows same-host HTTPS links",()=>{
  const ingestion=require("../lib/bep-coach-ingestion");
  const html="<title>Guide budget</title><script>steal()</script><nav>Menu</nav><main><p>Contenu pédagogique fiable &amp; utile.</p><a href='/aide'>Aide</a><a href='https://evil.example/'>Externe</a></main>";
