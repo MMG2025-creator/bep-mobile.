@@ -51,3 +51,12 @@ Le mode `admin_on_demand` est conçu pour éviter un Worker Render permanent. Il
 Configuration : `BEP_AGENT_ENABLED=true`, `BEP_AGENT_RUN_MODE=admin_on_demand`, `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true`, `BEP_AGENT_GEMINI_API_KEY` et `BEP_AGENT_MAX_CALLS_PER_DAY=8`. Le modèle est fixé à `gemini-3.8-flash`. Ce mode n'utilise pas le verrou de budget mensuel de l'ancien Worker. Le quota applicatif est plafonné à huit appels par jour. Ce plafond ne peut pas vérifier ni garantir le statut gratuit du projet Google : le projet AI Studio doit rester sans facturation activée et respecter les quotas Google. Aucun fallback payant n'est prévu.
 
 Les sept tables additives doivent être migrées explicitement avant activation. Le serveur vérifie leur présence et refuse les exécutions si elles manquent. Voir `docs/GEMINI_ADMIN_ON_DEMAND_FREE_TIER.md` pour la procédure.
+
+
+## Document JSON des propositions
+
+Les deux robots administratifs (revue du corpus JSON et recherche Google Search) déposent leurs propositions dans `bep_knowledge_candidates`, avec le statut `pending`, la provenance et l’empreinte de la source. Le contrat de sortie est défini dans `services/coach-proposals.json` et référencé par `services/coach-research.json`.
+
+L’administration peut télécharger le document `bep-coach-proposals.json` via `GET /api/admin/bep-coach/proposals.json`. L’endpoint est protégé par la session administrateur indépendante, renvoie `Cache-Control: no-store` et expose par défaut uniquement les propositions en attente. Le JSON est reconstitué depuis le stockage PostgreSQL durable ; aucun fichier temporaire sur le disque Render n’est utilisé.
+
+L’approbation reste réalisée individuellement via `POST /api/admin/bep-agent/candidates/:id/review`. La vérification d’empreinte et de version source précède toute intégration. Le document JSON de propositions n’est jamais lu par le Coach utilisateur et ne déclenche aucune publication automatique.

@@ -25,7 +25,10 @@
   },
   "usage_tracking": {
     "table": "bep_coach_provider_usage",
-    "tracked_types": ["google_search_grounding", "json_library_consultation"],
+    "tracked_types": [
+      "google_search_grounding",
+      "json_library_consultation"
+    ],
     "store_prompt_content": false,
     "store_financial_data": false
   },
@@ -37,7 +40,16 @@
   },
   "research_policy": {
     "language": "fr",
-    "categories": ["budget", "spending", "savings", "debt", "behavior", "income", "planning", "general"],
+    "categories": [
+      "budget",
+      "spending",
+      "savings",
+      "debt",
+      "behavior",
+      "income",
+      "planning",
+      "general"
+    ],
     "require_grounding_sources": true,
     "require_https_source": true,
     "reject_model_only_sources": true,
@@ -46,5 +58,12 @@
     "human_approval_required": true,
     "destination": "existing_bep_knowledge_candidates",
     "approved_destination": "existing_bep_financial_knowledge"
+  },
+  "proposal_document": {
+    "contract": "services/coach-proposals.json",
+    "format": "bep-coach-proposals",
+    "endpoint": "/api/admin/bep-coach/proposals.json",
+    "storage_table": "bep_knowledge_candidates",
+    "pending_only_by_default": true
   }
 }

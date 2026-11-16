@@ -15,6 +15,9 @@ test("Coach knowledge and research services are independent JSON contracts",()=>
  assert.equal(RESEARCH_CONFIG.provider_reference.free_tier_grounding_rpd_reference,500);
  assert.equal(RESEARCH_CONFIG.research_policy.automatic_publication,false);
  assert.equal(RESEARCH_CONFIG.research_policy.human_approval_required,true);
+ assert.equal(RESEARCH_CONFIG.proposal_document.contract,"services/coach-proposals.json");
+ assert.equal(RESEARCH_CONFIG.proposal_document.endpoint,"/api/admin/bep-coach/proposals.json");
+ assert.equal(RESEARCH_CONFIG.proposal_document.storage_table,"bep_knowledge_candidates");
 });
 
 
