@@ -59,7 +59,7 @@ test("password_reset remains a validated reset-link email", () => {
   const result = post(doPost, { secret: "test-shared-secret", email: "user@example.test", code: url, resetUrl: url, type: "password_reset" });
   assert.deepEqual(result, { ok: true });
   assert.equal(sent[0][1], "Réinitialisation du mot de passe BEP");
-  assert.match(sent[0][2], new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.ok(sent[0][2].includes(url));
 });
 
 test("mail bridge rejects a wrong shared secret", () => {
@@ -67,4 +67,9 @@ test("mail bridge rejects a wrong shared secret", () => {
   const result = post(doPost, { secret: "wrong", email: "admin@example.test", code: "123456", type: "admin_auth_code" });
   assert.equal(result.error, "UNAUTHORIZED");
   assert.equal(sent.length, 0);
+});
+
+test("server routes independent administrator enrollment and reset through admin_auth_code", () => {
+  const server = fs.readFileSync(path.join(__dirname, "../server.js"), "utf8");
+  assert.match(server, /sendCode:\(email,code\)=>sendVerificationEmail\(email,code,"admin_auth_code"\)/);
 });
