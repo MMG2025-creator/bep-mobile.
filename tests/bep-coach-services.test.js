@@ -9,6 +9,9 @@ test("Coach knowledge and research services are independent JSON contracts",()=>
  assert.equal(LIBRARY_CONFIG.api.path,"/api/coach/library");
  assert.equal(RESEARCH_CONFIG.service,"bep-coach-web-research");
  assert.equal(RESEARCH_CONFIG.api.path,"/api/admin/bep-coach/research");
+ assert.equal(RESEARCH_CONFIG.default_model,"gemini-2.5-flash");
+ assert.equal(Object.hasOwn(RESEARCH_CONFIG.limits,"max_calls_per_day"),false);
+ assert.equal(RESEARCH_CONFIG.provider_reference.free_tier_grounding_rpd_reference,500);
  assert.equal(RESEARCH_CONFIG.research_policy.automatic_publication,false);
  assert.equal(RESEARCH_CONFIG.research_policy.human_approval_required,true);
 });
@@ -42,7 +45,7 @@ test("web candidate digest is stable and category-bound",()=>{
 
 test("grounded research stores only source-matched pending candidates",async()=>{
  const statements=[];
- const pool={query:async(sql,params)=>{statements.push({sql,params});return statements.length===1?{rowCount:1,rows:[{calls:1}]}:{rowCount:1,rows:[{id:42}]}}};
+ const pool={query:async(sql,params)=>{statements.push({sql,params});return /bep_knowledge_candidates/.test(sql)?{rowCount:1,rows:[{id:42}]}:{rowCount:1,rows:[]}}};
  const fetchImpl=async(url,options)=>{
   assert.match(url,/generativelanguage\.googleapis\.com/);
   const body=JSON.parse(options.body);assert.deepEqual(body.tools,[{google_search:{}}]);
@@ -53,7 +56,9 @@ test("grounded research stores only source-matched pending candidates",async()=>
  assert.equal(result.candidates[0].id,42);
  assert.equal(result.candidates[0].source.name,"Service Public");
  assert.equal(result.searchEntryPoint,"Google Search suggestions");
- assert.equal(statements.length,2);
- assert.match(statements[1].sql,/bep_knowledge_candidates/);
- assert.equal(statements[1].params[6],"web_research_pending");
+ assert.ok(statements.some(x=>/bep_coach_provider_usage/.test(x.sql)));
+ const candidateInsert=statements.find(x=>/bep_knowledge_candidates/.test(x.sql));
+ assert.ok(candidateInsert);
+ assert.equal(candidateInsert.params[6],"web_research_pending");
+ assert.equal(statements.some(x=>/bep_agent_daily_usage/.test(x.sql)),false);
 });
