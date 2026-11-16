@@ -86,7 +86,7 @@ test("knowledge review sends documentary JSON context and DB records to Gemini w
  assert.ok(prompt.includes("SP_OVERINDEBTEDNESS"));
  assert.ok(prompt.includes("ENERGY_PAYMENT_DIFFICULTY"));
  assert.ok(prompt.includes("https://www.banque-france.fr/fr/a-votre-service/particuliers/faire-face-difficultes-financieres-ou-dettes"));
- assert.ok(prompt.includes("\\\"read_only\\\":true"));
+ assert.ok(prompt.includes('"read_only":true'));
  assert.equal(result.summary.databaseDocumentsReviewed,1);
  assert.deepEqual(result.summary.documentaryJsonFiles.map(x=>x.path),DOCUMENTARY_JSON_FILES);
  assert.equal(result.candidatesCreated,0);
