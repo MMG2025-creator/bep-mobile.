@@ -114,7 +114,7 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
  assert.match(server,/scheduleAdminAgentRun/);
  assert.match(server,/to_regclass\(/);
- assert.match(server,/BEP_AGENT_SCHEMA_MIGRATE==="true"/);
+ assert.ok(server.includes('BEP_AGENT_SCHEMA_MIGRATE==="true"'));
  assert.match(server,/ensureBepAgentSchema\(pool\)/);
  assert.doesNotMatch(server,/startBepAgent/);
  assert.match(server,/bep_agent_approved_knowledge/);
