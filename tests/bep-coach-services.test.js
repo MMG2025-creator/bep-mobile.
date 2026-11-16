@@ -13,10 +13,10 @@ test("Coach knowledge and research services are independent JSON contracts",()=>
  assert.equal(RESEARCH_CONFIG.research_policy.human_approval_required,true);
 });
 
-test("web research requires separate feature and billing approvals",()=>{
- assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_COACH_RESEARCH_BILLING_APPROVED:"false",BEP_AGENT_GEMINI_API_KEY:"secret"}),false);
- assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"false",BEP_COACH_RESEARCH_BILLING_APPROVED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}),false);
- assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_COACH_RESEARCH_BILLING_APPROVED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}),true);
+test("web research requires explicit feature activation and dedicated Gemini key",()=>{
+ assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"secret"}),true);
+ assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"false",BEP_AGENT_GEMINI_API_KEY:"secret"}),false);
+ assert.equal(researchEnabled({BEP_COACH_WEB_RESEARCH_ENABLED:"true"}),false);
 });
 
 test("research URL validation rejects insecure and credential-bearing URLs",()=>{
@@ -48,7 +48,7 @@ test("grounded research stores only source-matched pending candidates",async()=>
   const body=JSON.parse(options.body);assert.deepEqual(body.tools,[{google_search:{}}]);
   return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({proposals:[{title:"Aide au budget",content:"Repère pratique sourcé.",source_url:"https://www.service-public.fr/particuliers/vosdroits",source_name:"model name",confidence:"high",rationale:"Source officielle",keywords:["budget"]}]})}]},groundingMetadata:{webSearchQueries:["aide budget"],groundingChunks:[{web:{uri:"https://www.service-public.fr/particuliers/vosdroits",title:"Service Public"}}],searchEntryPoint:{renderedContent:"Google Search suggestions"}}}],usageMetadata:{totalTokenCount:50}})};
  };
- const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_COACH_RESEARCH_BILLING_APPROVED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
+ const result=await researchWeb({pool,query:"aides budget",category:"budget",env:{BEP_COACH_WEB_RESEARCH_ENABLED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
  assert.equal(result.candidatesCreated,1);
  assert.equal(result.candidates[0].id,42);
  assert.equal(result.candidates[0].source.name,"Service Public");
