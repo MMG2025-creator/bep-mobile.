@@ -110,11 +110,7 @@ if(BEP_ADMIN_AUTH_ENABLED)await ensureBepAdminAuthSchema(pool);
 if(BEP_ADMIN_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY)await ensureBepAdminSchema(pool);
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
-function requireBepAgentAdmin(req,res,next){
- const allowed=String(process.env.BEP_AGENT_ADMIN_USER_IDS||"").split(",").map(x=>x.trim()).filter(Boolean);
- if(!req.session?.user?.id||!allowed.includes(String(req.session.user.id)))return res.status(403).json({error:"AGENT_ADMIN_REQUIRED"});
- next();
-}
+const requireBepAgentAdmin=requireIndependentBepAdmin;
 function coachTelemetry(req,res,next){
  if(!agentTelemetryReady)return next();
  const started=Date.now();let recorded=false;const send=res.json.bind(res);

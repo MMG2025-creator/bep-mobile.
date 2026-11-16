@@ -108,7 +108,8 @@ test("agent schema is additive and does not alter existing BEP financial tables"
 });
 test("server exposes only allowlisted admin review and aggregate telemetry",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
- assert.match(server,/BEP_AGENT_ADMIN_USER_IDS/);
+ assert.match(server,/const requireBepAgentAdmin=requireIndependentBepAdmin/);
+ assert.doesNotMatch(server,/BEP_AGENT_ADMIN_USER_IDS/);
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
  assert.match(server,/\/api\/admin\/bep-agent\/run/);
