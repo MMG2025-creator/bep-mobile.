@@ -243,3 +243,40 @@ test("manual ingestion checks Gemini free-tier gates before making any external 
  assert.equal(result.enabled,false);
  assert.equal(result.candidatesCreated,0);
 });
+
+
+test("manual Gemini ingestion retries one transient 503 then succeeds without Google Search",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ let calls=0,requestBody=null;
+ const statements=[];
+ const pool={query:async(sql,params)=>{statements.push({sql,params});if(/INSERT INTO bep_knowledge_candidates/.test(sql))return{rowCount:1,rows:[{id:91}]};return{rowCount:1,rows:[]}}};
+ const proposal={title:"Comprendre le budget",content:"Une fiche pédagogique qui explique comment distinguer les dépenses fixes, variables et occasionnelles, puis construire un suivi mensuel adapté.",source_url:"https://example.org/guide",source_name:"Guide budget",confidence:"high",rationale:"Le contenu expose une méthode structurée.",keywords:["budget"]};
+ const fetchImpl=async(_url,options)=>{
+  calls++;requestBody=JSON.parse(options.body);
+  if(calls===1)return{ok:false,status:503,json:async()=>({error:{status:"UNAVAILABLE",message:"Service temporarily unavailable"}})};
+  return{ok:true,status:200,json:async()=>({status:"completed",steps:[{type:"model_output",content:[{type:"text",text:JSON.stringify({proposals:[proposal]})}]}],usage:{total_input_tokens:12,total_output_tokens:8,total_tokens:20}})};
+ };
+ const result=await ingestion.analyseCollectedSources({pool,collection:{pages:[{url:"https://example.org/guide",title:"Guide budget",text:"Contenu documentaire suffisamment long."}],pagesDiscovered:1,pagesAnalysed:1,warnings:[]},category:"budget",env:{BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
+ assert.equal(calls,2);
+ assert.equal(result.providerAttempts,2);
+ assert.equal(result.candidatesCreated,1);
+ assert.equal(requestBody.store,false);
+ assert.equal(Object.hasOwn(requestBody,"tools"),false);
+ assert.ok(statements.some(x=>/INSERT INTO bep_knowledge_candidates/.test(x.sql)));
+});
+
+test("manual Gemini ingestion records safe provider diagnostics after a repeated 503 and creates no candidate",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const usage=[];
+ const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))usage.push(params);if(/INSERT INTO bep_knowledge_candidates/.test(sql))throw new Error("candidate must not be inserted");return{rowCount:1,rows:[]}}};
+ let calls=0;
+ const fetchImpl=async()=>{calls++;return{ok:false,status:503,json:async()=>({error:{status:"UNAVAILABLE",message:"Unavailable for key test-key; retry later"}})}};
+ await assert.rejects(()=>ingestion.analyseCollectedSources({pool,collection:{pages:[{url:"https://example.org/guide",title:"Guide",text:"Contenu documentaire suffisamment long."}],pagesDiscovered:1,pagesAnalysed:1,warnings:[]},category:"budget",env:{BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/GEMINI_HTTP_503_UNAVAILABLE/);
+ assert.equal(calls,2);
+ assert.equal(usage.length,1);
+ assert.equal(usage[0][2],"failed");
+ assert.equal(usage[0][7],503);
+ assert.match(usage[0][8],/HTTP_503_UNAVAILABLE/);
+ assert.ok(usage[0][8].includes("[REDACTED]"));
+ assert.doesNotMatch(usage[0][8],/test-key/);
+});
