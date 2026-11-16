@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102e29"><title>BEP — Administration Gemini</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#182b25;background:#f4f6f3;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}header{background:#102e29;color:#fff;padding:22px max(22px,calc((100% - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{font-size:19px;letter-spacing:.04em}header span{color:#c9d8ce;font-size:13px}
+main{max-width:1120px;margin:30px auto;padding:0 20px}.panel{background:#fff;border:1px solid #e0e7e1;border-radius:16px;padding:22px;margin:0 0 18px;box-shadow:0 5px 20px #173d2b0a}
+h1{font-size:26px;margin:0 0 8px}h2{font-size:17px;margin:0 0 16px}.muted{color:#65766c;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.stat{padding:16px;border-radius:12px;background:#f4f7f4}.stat b{display:block;font-size:23px;margin-top:7px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.actions{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:11px 16px;background:#176b50;color:#fff;font-weight:650;cursor:pointer}button.secondary{background:#e9efea;color:#244536}button.danger{background:#8c342d}button:disabled{opacity:.45;cursor:not-allowed}input{width:100%;padding:12px;border:1px solid #cbd7ce;border-radius:9px;font:inherit;margin:6px 0 14px}label{font-size:13px;font-weight:650}form{max-width:420px}.hidden{display:none!important}.status{display:inline-flex;align-items:center;padding:6px 10px;border-radius:30px;background:#edf1ee;color:#516258;font-size:12px;font-weight:700}.status.good{background:#e3f3e9;color:#17633f}.status.bad{background:#fbe9e7;color:#9c352c}.notice{padding:12px 14px;border-radius:10px;background:#f4f7f4;color:#52645a;font-size:13px;margin-top:12px}.notice.error{background:#fff0ee;color:#9c352c}.item{border-top:1px solid #edf0ed;padding:14px 0}.item:first-child{border-top:0}.item p{margin:7px 0;color:#596b60;font-size:13px;line-height:1.5}.item small{color:#718077}.tag{font-size:11px;border-radius:20px;padding:4px 8px;background:#eef3ef}.empty{padding:24px;text-align:center;color:#718077;font-size:13px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}main{margin:18px auto}.panel{padding:17px}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header><strong>BEP <span>ADMINISTRATION</span></strong><span>Console Gemini · accès réservé</span></header>
+<main>
+<section id="login" class="panel">
+<h1>Administration Gemini</h1><p class="muted">Connecte-toi avec ton compte administrateur BEP indépendant.</p>
+<form id="loginForm"><label for="email">Adresse administrateur</label><input id="email" type="email" autocomplete="username" required><label for="password">Mot de passe</label><input id="password" type="password" autocomplete="current-password" required minlength="12"><button type="submit">Se connecter</button></form>
+<div id="loginMessage" class="notice hidden" role="status"></div>
+</section>
+<div id="dashboard" class="hidden">
+<section class="panel"><div class="row"><div><h1>Agent Gemini</h1><p class="muted">Pilotage des traitements documentaires et contrôle qualité du Coach.</p></div><div class="actions"><span id="agentStatus" class="status">État à vérifier</span><button id="logout" class="secondary">Déconnexion</button></div></div>
+<div class="grid" style="margin-top:18px"><div class="stat"><span class="muted">Traitements terminés</span><b id="completed">—</b></div><div class="stat"><span class="muted">Échecs</span><b id="failed">—</b></div><div class="stat"><span class="muted">Propositions créées</span><b id="proposals">—</b></div></div>
+<div class="notice">Le lancement ajoute deux tâches à PostgreSQL. Leur exécution est assurée par le Worker dédié. Limite du mode gratuit : 8 appels Gemini par jour. Aucune proposition n'est publiée automatiquement.</div>
+<div class="actions" style="margin-top:16px"><button id="run">Lancer les deux contrôles</button><button id="refresh" class="secondary">Actualiser</button></div><div id="runMessage" class="notice hidden" role="status"></div>
+</section>
+<section class="panel"><div class="row"><h2>Propositions documentaires</h2><span id="candidateCount" class="status">0 en attente</span></div><div id="candidates" class="empty">Chargement…</div></section>
+<section class="panel"><h2>Historique des traitements</h2><div id="runs" class="empty">Chargement…</div></section>
+</div>
+</main>
+<script src="./runtime-config.js"></script>
+<script>
+(()=>{
+"use strict";
+const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/$/,"");
+const $=id=>document.getElementById(id);
+const show=(id,on)=>$(id).classList.toggle("hidden",!on);
+const message=(id,text,error=false)=>{const el=$(id);el.textContent=text;el.classList.toggle("error",error);show(id,true)};
+async function api(path,options={}){const response=await fetch(API+path,{...options,credentials:"include",cache:"no-store",headers:{"Content-Type":"application/json",...(options.headers||{})}});let data={};try{data=await response.json()}catch{}if(!response.ok)throw new Error(({401:"Session administrateur expirée ou absente.",403:"Accès administrateur refusé.",409:"Agent désactivé ou configuration incomplète.",503:"Service indisponible. Vérifier le Worker et la configuration."})[response.status]||data.error||"Erreur API");return data}
+async function checkSession(){try{const s=await api("/api/admin/auth/status");if(s.authenticated){show("login",false);show("dashboard",true);await refresh()}else{show("login",true);show("dashboard",false)}}catch(e){show("login",true);show("dashboard",false);message("loginMessage",e.message,true)}}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();try{await api("/api/admin/auth/login",{method:"POST",body:JSON.stringify({email:$("email").value,password:$("password").value})});show("loginMessage",false);await checkSession()}catch(err){message("loginMessage",err.message,true)}});
+$("logout").addEventListener("click",async()=>{try{await api("/api/admin/auth/logout",{method:"POST",body:"{}"})}finally{show("dashboard",false);show("login",true)}});
+$("refresh").addEventListener("click",refresh);
+$("run").addEventListener("click",async()=>{const b=$("run");b.disabled=true;try{const r=await api("/api/admin/bep-agent/run",{method:"POST",body:"{}"});message("runMessage",r.queued?"Deux tâches enregistrées dans PostgreSQL. Le Worker les traitera dès qu'il sera disponible.":"Demande reçue.");await refresh()}catch(e){message("runMessage",e.message,true)}finally{b.disabled=false}});
+async function refresh(){try{const [overview,candidates]=await Promise.all([api("/api/admin/bep-agent/overview"),api("/api/admin/bep-agent/candidates?status=pending")]);const runs=overview.runs||[],metrics=overview.agentMetrics||[];const total=metrics.reduce((n,x)=>n+Number(x.jobs_completed||0),0),errors=metrics.reduce((n,x)=>n+Number(x.jobs_failed||0),0),created=metrics.reduce((n,x)=>n+Number(x.candidates_created||0),0);$("completed").textContent=total;$("failed").textContent=errors;$("proposals").textContent=created;$("agentStatus").textContent="API administrateur accessible";$("agentStatus").className="status good";$("candidateCount").textContent=(candidates.items||[]).length+" en attente";renderCandidates(candidates.items||[]);renderRuns(runs)}catch(e){$("agentStatus").textContent=e.message;$("agentStatus").className="status bad";$("candidates").textContent="Données indisponibles : "+e.message;$("runs").textContent="Historique indisponible."}}
+function renderCandidates(items){const root=$("candidates");root.replaceChildren();if(!items.length){root.className="empty";root.textContent="Aucune proposition en attente de validation.";return}root.className="";for(const x of items){const el=document.createElement("article");el.className="item";const title=document.createElement("strong");title.textContent=x.title||"Proposition sans titre";const meta=document.createElement("small");meta.textContent=(x.source_name||"Source non précisée")+" · "+(x.proposal_type||"");const body=document.createElement("p");body.textContent=x.content||"";const reason=document.createElement("p");reason.textContent=x.rationale||"";const link=document.createElement("a");link.href=x.source_url||"#";link.target="_blank";link.rel="noopener noreferrer";link.textContent=x.source_url||"Source non fournie";const actions=document.createElement("div");actions.className="actions";for(const [decision,label,cls] of [["approve","Valider",""],["reject","Rejeter","danger"]]){const b=document.createElement("button");b.textContent=label;if(cls)b.className=cls;b.addEventListener("click",()=>review(x.id,decision,b));actions.append(b)}el.append(title,document.createElement("br"),meta,body,reason,link,document.createElement("br"),actions);root.append(el)}}
+async function review(id,decision,button){button.disabled=true;try{await api("/api/admin/bep-agent/candidates/"+encodeURIComponent(id)+"/review",{method:"POST",body:JSON.stringify({decision})});await refresh()}catch(e){message("runMessage",e.message,true)}finally{button.disabled=false}}
+function renderRuns(items){const root=$("runs");root.replaceChildren();if(!items.length){root.className="empty";root.textContent="Aucun traitement enregistré.";return}root.className="";for(const x of items){const el=document.createElement("article");el.className="item";const title=document.createElement("strong");title.textContent=(x.job_type||"Traitement")+" · "+(x.status||"inconnu");const date=document.createElement("small");date.textContent=x.finished_at?new Date(x.finished_at).toLocaleString("fr-FR"):"En cours";const summary=document.createElement("p");summary.textContent=x.output_summary?JSON.stringify(x.output_summary):x.error_code||"Aucun résumé disponible.";el.append(title,document.createElement("br"),date,summary);root.append(el)}}
+checkSession();
+})();
+</script>
+</body></html>
