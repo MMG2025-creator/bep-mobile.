@@ -11,6 +11,7 @@ const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,researchEnabled,digestWebCandidate,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
+const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
@@ -445,6 +446,10 @@ app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
 app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{
  const agentConfig=adminAgentStatus();
  if(agentConfig.enabled){
+  if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
+   await ensureBepAgentSchema(pool);
+   console.info("BEP Gemini additive schema migration completed by explicit startup flag");
+  }
   const schema=await pool.query("SELECT to_regclass('public.bep_agent_jobs') AS jobs,to_regclass('public.bep_agent_runs') AS runs,to_regclass('public.bep_knowledge_candidates') AS candidates,to_regclass('public.bep_agent_daily_usage') AS usage,to_regclass('public.bep_agent_metrics') AS metrics,to_regclass('public.bep_agent_approved_knowledge') AS approved,to_regclass('public.bep_agent_coach_metrics') AS coach_metrics");
   agentEnabled=Object.values(schema.rows[0]||{}).every(Boolean);
   if(!agentEnabled)console.warn("BEP Gemini admin mode disabled: additive agent schema is not migrated");
