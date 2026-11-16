@@ -180,7 +180,7 @@ test("proposal JSON export handler is no-store, downloadable and rejects invalid
 
 test("manual source ingestion rejects unsafe URLs and private network addresses",()=>{
  const ingestion=require("../lib/bep-coach-ingestion");
- assert.equal(ingestion.normaliseUrl("https://www.service-public.fr/particuliers"),new URL("https://www.service-public.fr/particuliers").href);
+ assert.equal(ingestion.normaliseUrl("https://www.service-public.fr/particuliers").href,new URL("https://www.service-public.fr/particuliers").href);
  assert.equal(ingestion.normaliseUrl("http://example.org"),null);
  assert.equal(ingestion.normaliseUrl("https://user:pass@example.org"),null);
  assert.equal(ingestion.normaliseUrl("https://127.0.0.1/admin"),null);
