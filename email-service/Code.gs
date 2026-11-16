@@ -64,6 +64,31 @@ function doPost(e) {
         '<p style="font-size:12px;word-break:break-all"><a href="' + safeUrl + '">' + safeUrl + "</a></p>" +
         "<p>Si tu n'es pas à l'origine de cette demande, ignore cet e-mail.</p>"
       );
+    } else if (type === "admin_auth_code") {
+      var adminCode = String(payload.code || "").trim();
+      if (!/^\d{6}$/.test(adminCode)) {
+        return json_({ ok: false, error: "INVALID_CODE" });
+      }
+
+      subject = "Code de sécurité administrateur BEP";
+      textBody = [
+        "Bonjour,",
+        "",
+        "Voici ton code de sécurité administrateur BEP : " + adminCode,
+        "",
+        "Ce code est valable 10 minutes et ne peut être utilisé qu'une seule fois.",
+        "Si tu n'es pas à l'origine de cette demande, ignore cet e-mail.",
+        "",
+        "L'équipe BEP"
+      ].join("\n");
+      htmlBody = emailShell_(
+        "Code de sécurité administrateur",
+        "<p>Voici ton code de sécurité pour accéder à l'authentification administrateur BEP :</p>" +
+        '<p style="text-align:center;font-size:30px;font-weight:700;letter-spacing:8px;color:#176b50;margin:26px 0">' +
+        escapeHtml_(adminCode) + "</p>" +
+        "<p style=\"font-size:13px;color:#52645b\">Ce code est valable 10 minutes et ne peut être utilisé qu'une seule fois.</p>" +
+        "<p>Si tu n'es pas à l'origine de cette demande, ignore cet e-mail.</p>"
+      );
     } else if (type === "email_verification") {
       var code = String(payload.code || "").trim();
       if (!/^\d{6}$/.test(code)) {
