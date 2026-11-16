@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=105&bep=uniform-home-metric-rows-20261115/);
+  assert.match(html,/styles\.css\?v=106&bep=coach-dynamic-visual-20261116/);
   assert.match(html,/connection-status\.css\?v=3&bep=compact-mobile-footer-20261115/);
  }
 });
