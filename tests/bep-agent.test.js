@@ -142,3 +142,27 @@ test("admin API queue is enabled independently from the dedicated worker runtime
  assert.match(route,/INSERT INTO bep_agent_jobs/);
  assert.doesNotMatch(route,/GeminiClient|startBepAgent|processOne/);
 });
+
+
+test("free-tier Gemini jobs can run in the dedicated worker without paid billing flags",()=>{
+ const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
+ const c=readConfig(base);
+ assert.equal(c.enabled,true);assert.equal(c.freeAdminMode,true);assert.equal(c.maxCallsPerDay,8);
+ assert.equal(readConfig({...base,BEP_AGENT_RUN_AS_WORKER:"false"}).enabled,false);
+ assert.equal(readConfig({...base,BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false"}).enabled,false);
+});
+
+test("admin queue runner never imports or executes Gemini in the API process",()=>{
+ const runner=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","admin-runner.js"),"utf8");
+ assert.match(runner,/workerRequired:true/);
+ assert.doesNotMatch(runner,/GeminiClient|processOne|setImmediate/);
+ const worker=fs.readFileSync(path.join(__dirname,"..","agent-worker.js"),"utf8");
+ assert.match(worker,/startBepAgent/);
+});
+
+test("Gemini admin page exposes independent login, queue launch, candidate review and history",()=>{
+ const page=fs.readFileSync(path.join(__dirname,"..","admin.html"),"utf8");
+ for(const path of ["/api/admin/auth/login","/api/admin/auth/status","/api/admin/bep-agent/run","/api/admin/bep-agent/overview","/api/admin/bep-agent/candidates"])assert.ok(page.includes(path));
+ assert.match(page,/credentials:"include"/);
+ assert.match(page,/Aucune proposition n'est publiée automatiquement/);
+});
