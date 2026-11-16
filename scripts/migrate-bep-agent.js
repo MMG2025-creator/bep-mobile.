@@ -1,10 +1,10 @@
 "use strict";
 const {Pool}=require("pg");
 const {ensureSchema}=require("../lib/bep-agent/repository");
-const {readConfig}=require("../lib/bep-agent/config");
+const {readAdminConfig}=require("../lib/bep-agent/config");
 async function main(){
- if(process.env.BEP_AGENT_SCHEMA_MIGRATE!=="true"||!readConfig().enabled){
-  console.log("BEP agent schema migration skipped: explicit migration and agent activation are both required");
+ if(process.env.BEP_AGENT_SCHEMA_MIGRATE!=="true"||!readAdminConfig().enabled){
+  console.log("BEP agent schema migration skipped: explicit migration and admin on-demand activation are both required");
   return;
  }
  if(!process.env.DATABASE_URL)throw new Error("DATABASE_URL is required for BEP agent schema migration");
