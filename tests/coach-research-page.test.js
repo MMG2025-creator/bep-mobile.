@@ -15,3 +15,5 @@ test("monthly Gemini budget is exposed only through the authenticated admin stat
 
 test("monthly usage panel inline JavaScript parses successfully",()=>{const html=fs.readFileSync(path.join(root,"dist","admin.html"),"utf8");const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(x=>x[1]).filter(x=>x.trim());assert.ok(scripts.length>0);scripts.forEach((source,index)=>new vm.Script(source,{filename:"admin-inline-"+index+".js"}));});
 test("local Coach library reads do not record provider usage",()=>{const service=require("../lib/bep-coach-services");const source=service.readCoachLibrary.toString();assert.ok(source.includes("buildIntelligence"));assert.ok(!source.includes("recordCoachUsage"));assert.ok(!source.includes("researchWeb"));});
+
+test("failed research attempts refresh monthly provider usage immediately",()=>{const html=fs.readFileSync(path.join(root,"dist","admin.html"),"utf8");assert.ok(html.includes('catch(err){note("crResearchNotice",err.message,"error");await status()}'));});
