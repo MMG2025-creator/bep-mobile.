@@ -3,7 +3,7 @@
   "version": 1,
   "enabled": true,
   "runtime_default_enabled": false,
-  "provider": "gemini-google-search-grounding",
+  "provider": "gemini-google-search-interactions",
   "default_model": "gemini-3.8-flash",
   "api_key_env": "BEP_AGENT_GEMINI_API_KEY",
   "required_gates": {
