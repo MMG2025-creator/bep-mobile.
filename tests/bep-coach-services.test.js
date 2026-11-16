@@ -177,3 +177,47 @@ test("proposal JSON export handler is no-store, downloadable and rejects invalid
  assert.equal(statusCode,400);
  assert.equal(payload.error,"INVALID_PROPOSAL_STATUS");
 });
+
+test("manual source ingestion rejects unsafe URLs and private network addresses",()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ assert.equal(ingestion.normaliseUrl("https://www.service-public.fr/particuliers").href,new URL("https://www.service-public.fr/particuliers").href);
+ assert.equal(ingestion.normaliseUrl("http://example.org"),null);
+ assert.equal(ingestion.normaliseUrl("https://user:pass@example.org"),null);
+ assert.equal(ingestion.normaliseUrl("https://127.0.0.1/admin"),null);
+ assert.equal(ingestion.normaliseUrl("https://metadata.google.internal/"),null);
+ assert.equal(ingestion.publicAddress("8.8.8.8"),true);
+ assert.equal(ingestion.publicAddress("10.0.0.1"),false);
+ assert.equal(ingestion.publicAddress("169.254.169.254"),false);
+ assert.equal(ingestion.publicAddress("127.0.0.1"),false);
+});
+test("manual source extraction removes active markup and only follows same-host HTTPS links",()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const html="<title>Guide budget</title><script>steal()</script><nav>Menu</nav><main><p>Contenu pédagogique fiable &amp; utile.</p><a href='/aide'>Aide</a><a href='https://evil.example/'>Externe</a></main>";
+ assert.match(ingestion.htmlToText(html),/Contenu pédagogique fiable & utile/);
+ assert.doesNotMatch(ingestion.htmlToText(html),/steal|Menu/);
+ const links=ingestion.extractLinks(html,new URL("https://example.org/guide"));
+ assert.deepEqual(links,["https://example.org/aide"]);
+});
+test("manual Gemini ingestion sends collected text without Google Search and stores only pending candidates",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const statements=[];let requestBody=null;
+ const pool={query:async(sql,params)=>{statements.push({sql,params});if(/INSERT INTO bep_knowledge_candidates/.test(sql))return{rowCount:1,rows:[{id:73}]};return{rowCount:1,rows:[]}}};
+ const proposal={title:"Comprendre le budget",content:"Une fiche pédagogique qui explique comment distinguer les dépenses fixes, variables et occasionnelles, puis construire un suivi mensuel adapté.",source_url:"https://example.org/guide",source_name:"Guide budget",confidence:"high",rationale:"Le contenu expose une méthode structurée.",keywords:["budget"]};
+ const fetchImpl=async(_url,options)=>{requestBody=JSON.parse(options.body);return{ok:true,status:200,json:async()=>({status:"completed",steps:[{type:"model_output",content:[{type:"text",text:JSON.stringify({proposals:[proposal]})}]}],usage:{total_input_tokens:12,total_output_tokens:8,total_tokens:20}})}};
+ const result=await ingestion.analyseCollectedSources({pool,collection:{pages:[{url:"https://example.org/guide",title:"Guide budget",text:"Contenu documentaire suffisamment long."}],pagesDiscovered:1,pagesAnalysed:1,warnings:[]},category:"budget",env:{BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl});
+ assert.equal(result.candidatesCreated,1);
+ assert.equal(result.provider,"gemini-interactions-no-search");
+ assert.equal(requestBody.store,false);
+ assert.equal(Object.hasOwn(requestBody,"tools"),false);
+ assert.match(requestBody.input,/Contenu documentaire suffisamment long/);
+ const insert=statements.find(x=>/INSERT INTO bep_knowledge_candidates/.test(x.sql));
+ assert.ok(insert);
+ assert.equal(insert.params[6],"web_research_pending");
+ assert.equal(insert.params[5],"https://example.org/guide");
+ assert.ok(statements.some(x=>/INSERT INTO bep_coach_provider_usage/.test(x.sql)));
+});
+test("manual Gemini ingestion remains disabled without explicit free-tier admin gates",()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ assert.equal(ingestion.ingestionEnabled({BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"key"}),true);
+ assert.equal(ingestion.ingestionEnabled({BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false",BEP_AGENT_GEMINI_API_KEY:"key"}),false);
+});
