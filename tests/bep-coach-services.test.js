@@ -277,6 +277,6 @@ test("manual Gemini ingestion records safe provider diagnostics after a repeated
  assert.equal(usage[0][2],"failed");
  assert.equal(usage[0][7],503);
  assert.match(usage[0][8],/HTTP_503_UNAVAILABLE/);
- assert.match(usage[0][8],/\\[REDACTED\\]/);
+ assert.ok(usage[0][8].includes("[REDACTED]"));
  assert.doesNotMatch(usage[0][8],/test-key/);
 });
