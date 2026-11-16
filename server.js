@@ -292,8 +292,8 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
 app.post("/api/admin/bep-coach/ingest",auth,requireBepAgentAdmin,async(req,res)=>{try{
- const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general");
- if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_INGESTION_INPUT"});
+ const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general"),consent=req.body?.consent===true;
+ if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category)||!consent)return res.status(400).json({error:"INVALID_INGESTION_INPUT_OR_CONSENT_REQUIRED"});
  const result=await ingestManualSource({pool,url,mode,category});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur de collecte inconnue").replace(/[\\r\\n\\t]+/g," ").slice(0,220);console.error("Coach manual source ingestion failed",diagnostic);const status=diagnostic.includes("URL_")||diagnostic.includes("SOURCE_")?400:502;res.status(status).json({error:"COACH_INGESTION_FAILED",message:diagnostic+" · Aucune connaissance publiée."})}});
