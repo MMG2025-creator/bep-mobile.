@@ -33,11 +33,12 @@ Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le d�
 - Le serveur API utilise son pool PostgreSQL existant ; ce mode ne prétend pas fournir l'isolation réseau ou le rôle SQL dédié du Worker autonome. Les requêtes agent restent limitées aux fonctions et tables dédiées, mais l'identité PostgreSQL sous-jacente est celle de l'API.
 
 ## Migration PostgreSQL
-Les tables additives doivent exister avant activation. La migration reste explicite et séparée :
-- `BEP_AGENT_SCHEMA_MIGRATE=true`
-- configuration admin-on-demand complète ci-dessus
-- exécution de `node scripts/migrate-bep-agent.js` avec `DATABASE_URL`
-- remettre ensuite `BEP_AGENT_SCHEMA_MIGRATE=false` ou retirer la variable.
+Les tables additives doivent exister avant activation. La migration reste explicitement opt-in :
+- ajouter `BEP_AGENT_SCHEMA_MIGRATE=true` au service API, avec la configuration admin-on-demand complète ci-dessus ;
+- au démarrage suivant, le serveur exécute uniquement la migration SQL additive et idempotente, puis vérifie la présence des sept tables ;
+- remettre ensuite `BEP_AGENT_SCHEMA_MIGRATE=false` ou retirer la variable pour les redémarrages suivants.
+
+Le script `node scripts/migrate-bep-agent.js` reste disponible pour une exécution manuelle avec `DATABASE_URL` et les mêmes variables d’activation.
 
 La migration est additive et idempotente ; elle ne modifie pas les tables métier BEP. Le serveur vérifie la présence des sept tables avant d'autoriser les exécutions.
 
