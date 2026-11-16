@@ -29,7 +29,7 @@ test("enqueue stores only URL and options, and uses a stable idempotency digest"
  assert.equal(insert.params[1],"https://example.org/page");
  assert.equal(insert.params[2],"deep");
  assert.equal(insert.params[3],"budget");
- assert.equal(insert.params.includes(true),true);
+ assert.match(insert.sql,/VALUES\\(\\$1,\\$2,\\$3,\\$4,TRUE\\)/);
  assert.equal(insert.sql.includes("content"),false);
  assert.equal(insert.sql.includes("api_key"),false);
 });
