@@ -114,3 +114,14 @@ Aucune option de connexion à un fournisseur externe ne doit être présentée c
 
 Cette fiche formalise la séparation demandée : le Coach de l'espace utilisateur est local et documentaire ; Gemini ne sert qu'aux opérations administratives distinctes de recherche et de supervision. Les chiffres du corpus seed (14) proviennent du fichier versionné ; les chiffres de la base PostgreSQL de production restent à mesurer avec un accès autorisé.
 
+
+
+## Quotas et comptabilisation Gemini — mise à jour
+
+Le circuit de recherche documentaire externe ne comporte plus de plafond applicatif quotidien fixe. Le nombre de jours travaillés ne doit donc pas réduire artificiellement le quota d'un autre jour. La protection repose sur les limites réellement appliquées par Google au projet AI Studio et sur ses réponses de quota ; BEP ne prétend pas pouvoir lever ces limites fournisseur.
+
+Le modèle par défaut est `gemini-2.5-flash`. La documentation tarifaire Google indique pour Gemini 2.5 Flash Search Grounding gratuit jusqu'à 500 requêtes par jour (RPD), quota partagé avec Gemini 2.5 Flash-Lite. Cette valeur est une référence publique, pas une garantie du quota réellement attribué au projet ; elle doit être confirmée dans AI Studio. À titre indicatif seulement, 500 RPD sur 30 jours représentent 15 000 recherches mensuelles potentielles. Le compteur BEP mesure la consommation réelle du mois en cours et affiche séparément cette capacité théorique.
+
+La table additive `bep_coach_provider_usage` comptabilise uniquement les appels Gemini de deux types : `google_search_grounding` et `json_library_consultation`. Pour la recherche Google, BEP sépare le nombre d'appels API du nombre de requêtes Google Search indiqué par `groundingMetadata.webSearchQueries`, car un appel Gemini peut déclencher plusieurs recherches. Les tokens, erreurs et dates sont agrégés sans enregistrer les questions, réponses ou données financières.
+
+La lecture de la bibliothèque par `readCoachLibrary()` demeure locale et n'est pas un appel Gemini : elle n'est donc pas comptabilisée. Le type `json_library_consultation` est prévu pour un futur véritable appel Gemini analysant les JSON ; il restera à zéro tant qu'aucun tel appel n'est effectué.

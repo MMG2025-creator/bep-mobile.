@@ -9,7 +9,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,researchWeb,researchEnabled,digestWebCandidate,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
+const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -282,7 +282,7 @@ app.get("/api/coach/library",auth,async(req,res)=>{try{
  const result=await readCoachLibrary({pool,userId:req.session.user.id,query,context:req.query.context&&typeof req.query.context==="object"?req.query.context:{},limit:Math.min(8,Math.max(1,Number(req.query.limit)||6))});
  res.setHeader("Cache-Control","no-store");res.json(result);
  }catch(e){console.error("Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_LIBRARY_UNAVAILABLE"})}});
-app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,(req,res)=>{res.setHeader("Cache-Control","no-store");res.json({service:RESEARCH_CONFIG.service,enabled:researchEnabled(),approvalRequired:true,automaticPublication:false,provider:RESEARCH_CONFIG.provider,reason:researchEnabled()?"Recherche autorisée par configuration.":"Recherche désactivée : activation explicite et clé Gemini dédiée requises."})});
+app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,createCoachResearchStatusHandler({pool,env:process.env,logger:console}));
 app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
  if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
