@@ -17,15 +17,15 @@ const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const normalizeFrontendOrigin=(value,fallback)=>{try{const parsed=new URL(String(value||fallback));if(!["http:","https:"].includes(parsed.protocol)||parsed.username||parsed.password)return fallback;return parsed.origin}catch{return fallback}};
-const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=normalizeFrontendOrigin(process.env.FRONTEND_ORIGIN,"https://bep-mobile.onrender.com"),pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
+const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=normalizeFrontendOrigin(process.env.FRONTEND_ORIGIN,"https://bep-mobile.onrender.com"),FRONTEND_ORIGINS=new Set([FRONTEND_ORIGIN,...String(process.env.FRONTEND_ORIGINS||"").split(",").map(value=>normalizeFrontendOrigin(value,null)).filter(Boolean)]),pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
 let dbReady=false,dbInitError=null,agentEnabled=false,agentTelemetryReady=false;
 const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.GOOGLE_REDIRECT_URI&&process.env.SESSION_SECRET);
 app.set("trust proxy",1);
 app.use((req,res,next)=>{
- const origin=req.headers.origin;
- if(origin===FRONTEND_ORIGIN){res.setHeader("Access-Control-Allow-Origin",FRONTEND_ORIGIN);res.setHeader("Access-Control-Allow-Credentials","true");res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,DELETE,OPTIONS");res.setHeader("Access-Control-Allow-Headers","Content-Type");}
- if(req.method==="OPTIONS")return origin===FRONTEND_ORIGIN?res.sendStatus(204):res.sendStatus(403);
- if(["POST","PUT","PATCH","DELETE"].includes(req.method)&&origin!==FRONTEND_ORIGIN)return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
+ const origin=req.headers.origin,allowedOrigin=Boolean(origin&&FRONTEND_ORIGINS.has(origin));
+ if(allowedOrigin){res.setHeader("Access-Control-Allow-Origin",origin);res.setHeader("Access-Control-Allow-Credentials","true");res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,DELETE,OPTIONS");res.setHeader("Access-Control-Allow-Headers","Content-Type");}
+ if(req.method==="OPTIONS")return allowedOrigin?res.sendStatus(204):res.sendStatus(403);
+ if(["POST","PUT","PATCH","DELETE"].includes(req.method)&&!allowedOrigin)return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
  next();
 });
 app.use(helmet({contentSecurityPolicy:{directives:{
