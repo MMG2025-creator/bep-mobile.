@@ -14,7 +14,9 @@ test("manual Coach knowledge candidates are strictly validated and deterministic
  const input={title:"Constituer une épargne de précaution",category:"savings",content:"Une réserve disponible permet de faire face aux dépenses imprévues. Son montant doit tenir compte des dépenses essentielles, de la stabilité des revenus et des risques propres à chaque situation.",source_name:"Banque de France",source_url:"https://www.banque-france.fr/",evidence_level:"institutional_guidance",confidence:"high",rationale:"Synthèse manuelle d'une source institutionnelle pour le Coach BEP."};
  const first=validateManualKnowledge(input),second=validateManualKnowledge({...input,title:"  Constituer une épargne de précaution  "});
  assert.ok(first.value);assert.equal(first.value.sourceSlug,second.value.sourceSlug);assert.equal(first.value.inputDigest,second.value.inputDigest);
+ const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
  assert.match(first.value.sourceSlug,/^manual-savings-[a-f0-9]{24}$/);assert.match(first.value.sourceDigest,/^[a-f0-9]{64}$/);
+ assert.equal(first.value.sourceDigest,sourceFingerprint({slug:first.value.sourceSlug,category:first.value.category,title:first.value.title,content:first.value.content,source_name:first.value.sourceName,source_url:first.value.sourceUrl,evidence_level:first.value.evidenceLevel,version:1}));
  assert.equal(validateManualKnowledge({...input,source_url:"http://example.org"}).error,"INVALID_SOURCE_URL");
  assert.equal(validateManualKnowledge({...input,category:"unknown"}).error,"INVALID_TITLE_OR_CATEGORY");
  assert.equal(validateManualKnowledge({...input,extra:"not allowed"}).error,"UNEXPECTED_FIELDS");
@@ -154,7 +156,7 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
 test("manual Coach import is admin-only and creates pending candidates without Gemini",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
  assert.match(server,/app\.post\("\/api\/admin\/bep-coach\/candidates\/manual",auth,requireBepAgentAdmin/);
- assert.match(server,/proposal_type, title, content/); 
+ assert.match(server,/source_slug,source_version,source_digest,proposal_type,title,content/); 
  assert.match(server,/VALUES\(\$1,\$2,\$3,'create'/);
  assert.match(server,/MANUAL_CANDIDATE_INVALID/);
  assert.match(server,/sourceFingerprint\(sourceDoc\)!==candidate\.source_digest/);
