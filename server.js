@@ -415,9 +415,8 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   if(decision==="approve"){
    if(String(candidate.source_slug).startsWith("manual-")){
     const match=/^manual-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
-    const category=match?.[1],sourceDoc={slug:candidate.source_slug,category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1};
-    const validUrl=(()=>{try{const u=new URL(String(candidate.source_url||""));return u.protocol==="https:"&&!u.username&&!u.password}catch{return false}})();
-    if(!match||candidate.proposal_type!=="create"||Number(candidate.source_version)!==1||!validUrl||!["institutional_guidance","official_legal_information","behavioral_practice","bep_accounting_rule","bep_data_integrity_rule"].includes(candidate.evidence_level)||sourceFingerprint(sourceDoc)!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_CANDIDATE_INVALID"})}
+    const category=match?.[1],validated=match?validateManualKnowledge({title:candidate.title,category,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,confidence:candidate.confidence,rationale:candidate.rationale}):{value:null};
+    if(!match||candidate.proposal_type!=="create"||Number(candidate.source_version)!==1||!validated.value||validated.value.sourceSlug!==candidate.source_slug||validated.value.sourceDigest!==candidate.source_digest||validated.value.inputDigest!==candidate.input_digest){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_CANDIDATE_INVALID"})}
     const exists=await client.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1 LIMIT 1",[candidate.source_slug]);
     if(exists.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_KNOWLEDGE_ALREADY_EXISTS"})}
     const keywords=[...new Set((String(candidate.title)+" "+String(candidate.content)).toLocaleLowerCase("fr").match(/[a-z0-9]{4,}/g)||[])].slice(0,20);
