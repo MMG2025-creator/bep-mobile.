@@ -11,6 +11,7 @@ const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ingestManualSource,ingestManualSources}=require("./lib/bep-coach-ingestion");
+const {registerCoachSources}=require("./lib/bep-coach-source-registry");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -306,6 +307,16 @@ app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req
  const result=await ingestManualSources({pool,sources});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur de collecte par lots").replace(/[\\r\\n\\t]+/g," ").slice(0,220);console.error("Coach batch source ingestion failed",diagnostic);const status=diagnostic.includes("URL_")||diagnostic.includes("SOURCE_")||diagnostic.includes("INVALID_")||diagnostic.includes("DUPLICATE_")?400:502;res.status(status).json({error:"COACH_BATCH_INGESTION_FAILED",message:diagnostic+" · Aucune connaissance publiée."})}});
+app.post("/api/admin/bep-coach/source-registry",auth,requireBepAgentAdmin,async(req,res)=>{try{
+ const sources=req.body?.sources;
+ const result=await registerCoachSources({pool,sources});
+ res.setHeader("Cache-Control","no-store");
+ res.status(201).json(result);
+ }catch(e){
+  const code=String(e?.message||"SOURCE_REGISTRY_FAILED");
+  const clientError=["INVALID_BATCH_SIZE","INVALID_SOURCE","DUPLICATE_SOURCE_ID","DUPLICATE_SOURCE_URL","SOURCE_ID_CONFLICT","SOURCE_URL_CONFLICT"].includes(code);
+  res.status(clientError?400:503).json({error:clientError?code:"SOURCE_REGISTRY_UNAVAILABLE"});
+ }});
 app.post("/api/admin/bep-coach/ingest",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general");
  if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_INGESTION_INPUT"});
