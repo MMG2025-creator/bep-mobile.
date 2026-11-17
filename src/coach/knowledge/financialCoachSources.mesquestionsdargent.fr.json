@@ -1,0 +1,418 @@
+{
+  "schema": "bep-coach-source-batch",
+  "version": 1,
+  "language": "fr",
+  "provider": "Banque de France — Mes questions d'argent",
+  "status": "candidate",
+  "publication": "manual_approval_required",
+  "sourceCount": 50,
+  "categories": [
+    "budget",
+    "banking",
+    "insurance",
+    "savings",
+    "credit"
+  ],
+  "sources": [
+    {
+      "id": "mqa-01",
+      "title": "Comment faire des économies",
+      "url": "https://www.mesquestionsdargent.fr/budget/faire-des-economies",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-02",
+      "title": "Comment faire ses comptes",
+      "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-03",
+      "title": "Comment réduire ses dettes",
+      "url": "https://www.mesquestionsdargent.fr/budget/comment-reduire-ses-dettes",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-04",
+      "title": "Comprendre mes impôts",
+      "url": "https://www.mesquestionsdargent.fr/budget/comprendre-mes-impots",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-05",
+      "title": "Couple, argent et autonomie financière",
+      "url": "https://www.mesquestionsdargent.fr/budget/couple-argent-et-autonomie-financiere",
+      "category": "behavior",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-06",
+      "title": "Être locataire",
+      "url": "https://www.mesquestionsdargent.fr/budget/etre-locataire",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-07",
+      "title": "Recourir aux aides financières et sociales",
+      "url": "https://www.mesquestionsdargent.fr/budget/aides-financieres-et-sociales",
+      "category": "income",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-08",
+      "title": "Être propriétaire",
+      "url": "https://www.mesquestionsdargent.fr/budget/etre-proprietaire",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-09",
+      "title": "La séparation",
+      "url": "https://www.mesquestionsdargent.fr/faire-face-aux-difficultes/se-separer",
+      "category": "behavior",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-10",
+      "title": "L'argent dans le couple",
+      "url": "https://www.mesquestionsdargent.fr/budget/couple",
+      "category": "behavior",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-11",
+      "title": "Budget enfant",
+      "url": "https://www.mesquestionsdargent.fr/budget/budget-enfant",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-12",
+      "title": "Budget vacances",
+      "url": "https://www.mesquestionsdargent.fr/budget/preparer-vacances",
+      "category": "budget",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-13",
+      "title": "Se faire aider",
+      "url": "https://www.mesquestionsdargent.fr/budget/se-faire-aider",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-14",
+      "title": "Choisir une banque",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/choisir-une-banque",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-15",
+      "title": "Choisir un type de compte",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/choisir-un-type-de-compte",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-16",
+      "title": "Ouvrir un compte",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/ouvrir-un-compte",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-17",
+      "title": "Comprendre ses relevés bancaires",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/releves-bancaires",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-18",
+      "title": "Comprendre les frais bancaires",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/frais-bancaires",
+      "category": "spending",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-19",
+      "title": "Changer de banque",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/changer-de-banque",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-20",
+      "title": "Acheter en ligne",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/acheter-en-ligne",
+      "category": "spending",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-21",
+      "title": "Les autres moyens de paiement",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/autres-moyens-de-paiement",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-22",
+      "title": "Gérer un litige avec sa banque",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/gerer-litige-banque",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-23",
+      "title": "Être fiché",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/etre-fiche",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-24",
+      "title": "Fermer un compte",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/fermer-un-compte",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-25",
+      "title": "La sécurité de son compte",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/securite-compte",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-26",
+      "title": "Utiliser sa carte bancaire",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/carte-bancaire",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-27",
+      "title": "Payer et transférer à l'étranger",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/payer-et-transferer-etranger",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-28",
+      "title": "Utiliser son chéquier",
+      "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/chequier",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-29",
+      "title": "Comprendre les assurances",
+      "url": "https://www.mesquestionsdargent.fr/assurance/comprendre-les-assurances",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-30",
+      "title": "Assurance santé",
+      "url": "https://www.mesquestionsdargent.fr/assurance/assurance-sante",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-31",
+      "title": "Assurance habitation",
+      "url": "https://www.mesquestionsdargent.fr/assurance/assurance-habitation",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-32",
+      "title": "Assurance automobile",
+      "url": "https://www.mesquestionsdargent.fr/assurance/assurance-automobile",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-33",
+      "title": "Assurance emprunteur",
+      "url": "https://www.mesquestionsdargent.fr/assurance/assurance-emprunteur",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-34",
+      "title": "Assurance-vie",
+      "url": "https://www.mesquestionsdargent.fr/assurance/assurance-vie",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-35",
+      "title": "Gérer un litige avec son assureur",
+      "url": "https://www.mesquestionsdargent.fr/assurance/litige-assurance",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-36",
+      "title": "Résiliation d'assurance",
+      "url": "https://www.mesquestionsdargent.fr/assurance/resilier-assurance",
+      "category": "spending",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-37",
+      "title": "Pourquoi épargner ?",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/pourquoi-epargner",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-38",
+      "title": "Les notions d'épargne avant d'investir",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/notions-epargne-avant-investir",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-39",
+      "title": "S'informer avant d'investir",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/investir-produit-epargne",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-40",
+      "title": "Comment organiser son épargne ?",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/organiser-son-epargne",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-41",
+      "title": "Les différents types de placements",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/placements-epargne",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-42",
+      "title": "Épargner dans les produits financiers",
+      "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/produits-financiers",
+      "category": "savings",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-43",
+      "title": "Le crédit à la consommation",
+      "url": "https://www.mesquestionsdargent.fr/financer-un-projet/bien-de-consommation",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-44",
+      "title": "Financer une voiture",
+      "url": "https://www.mesquestionsdargent.fr/financer-un-projet/besoin-voiture",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-45",
+      "title": "Devenir propriétaire",
+      "url": "https://www.mesquestionsdargent.fr/financer-un-projet/devenir-proprietaire",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-46",
+      "title": "Le microcrédit",
+      "url": "https://www.mesquestionsdargent.fr/financer-un-projet/microcredit",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-47",
+      "title": "Être en situation de surendettement",
+      "url": "https://www.mesquestionsdargent.fr/faire-face-aux-difficultes/surendettement",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-48",
+      "title": "Être victime d'une arnaque",
+      "url": "https://www.mesquestionsdargent.fr/faire-face-aux-difficultes/arnaque",
+      "category": "general",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-49",
+      "title": "Gérer un incident de paiement",
+      "url": "https://www.mesquestionsdargent.fr/faire-face-aux-difficultes/incident-paiement",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    },
+    {
+      "id": "mqa-50",
+      "title": "Maîtrise de l'endettement et surendettement",
+      "url": "https://www.mesquestionsdargent.fr/intervenants-sociaux-et-pcb/maitrise-endettement-surendettement",
+      "category": "debt",
+      "source_domain": "mesquestionsdargent.fr",
+      "status": "pending_validation"
+    }
+  ]
+}
