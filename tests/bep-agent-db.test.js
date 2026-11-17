@@ -46,7 +46,7 @@ test("manual create candidates are idempotent and invisible until approved",asyn
   assert.equal(results.reduce((n,r)=>n+r.rowCount,0),1);
   const candidate=await pool.query("SELECT id,review_status,proposal_type FROM bep_knowledge_candidates WHERE source_slug=$1",[slug]);
   assert.equal(candidate.rowCount,1);assert.equal(candidate.rows[0].review_status,"pending");assert.equal(candidate.rows[0].proposal_type,"create");
-  const visible=await pool.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1",[slug]);
+  const visible=await pool.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1",[slug]);
   assert.equal(visible.rowCount,0);
   await pool.query("DELETE FROM bep_knowledge_candidates WHERE source_slug=$1",[slug]);
  }finally{await pool.end()}
