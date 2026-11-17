@@ -280,3 +280,36 @@ test("manual Gemini ingestion records safe provider diagnostics after a repeated
  assert.ok(usage[0][8].includes("[REDACTED]"));
  assert.doesNotMatch(usage[0][8],/test-key/);
 });
+
+
+test("manual batch ingestion enforces size, HTTPS validation and duplicate protection",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const pool={query:async()=>({rowCount:0,rows:[]})};
+ const env={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"};
+ await assert.rejects(()=>ingestion.ingestManualSources({pool,sources:[],env}),/INVALID_BATCH_SIZE/);
+ await assert.rejects(()=>ingestion.ingestManualSources({pool,sources:[{url:"http://example.org",category:"budget"}],env}),/INVALID_BATCH_SOURCE/);
+ await assert.rejects(()=>ingestion.ingestManualSources({pool,sources:[{url:"https://example.org/a",category:"budget"},{url:"https://example.org/a",category:"budget"}],env}),/DUPLICATE_BATCH_SOURCE/);
+ await assert.rejects(()=>ingestion.ingestManualSources({pool,sources:Array.from({length:11},(_,i)=>({url:`https://example.org/${i}`,category:"budget"})),env}),/INVALID_BATCH_SIZE/);
+});
+
+test("manual batch ingestion collects sources and creates only pending Gemini candidates",async()=>{
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const statements=[];let requestBody=null;
+ const pool={query:async(sql,params)=>{statements.push({sql,params});if(/INSERT INTO bep_knowledge_candidates/.test(sql))return{rowCount:1,rows:[{id:101}]};return{rowCount:1,rows:[]}}};
+ const env={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"};
+ const sources=[{url:"https://example.org/budget",category:"budget"},{url:"https://example.org/savings",category:"budget"}];
+ const fetchPage=async(url)=>({url,title:url.endsWith("budget")?"Budget":"Épargne",text:"Contenu documentaire suffisamment long pour être analysé par le modèle et produire une fiche pédagogique fiable.",links:[],contentType:"text/html"});
+ const proposal={title:"Comprendre le budget",content:"Une fiche pédagogique qui explique comment distinguer les dépenses fixes, variables et occasionnelles, puis construire un suivi mensuel adapté.",source_url:"https://example.org/budget",source_name:"Budget",confidence:"high",rationale:"Le contenu expose une méthode structurée.",keywords:["budget"]};
+ const fetchImpl=async(_url,options)=>{requestBody=JSON.parse(options.body);return{ok:true,status:200,json:async()=>({status:"completed",steps:[{type:"model_output",content:[{type:"text",text:JSON.stringify({proposals:[proposal]})}]}],usage:{total_input_tokens:12,total_output_tokens:8,total_tokens:20}})}};
+ const result=await ingestion.ingestManualSources({pool,sources,env,fetchPage,fetchImpl});
+ assert.equal(result.batchSize,2);
+ assert.equal(result.processed,2);
+ assert.equal(result.candidatesCreated,1);
+ assert.equal(result.results.every(item=>item.status==="analysed"),true);
+ assert.equal(requestBody.store,false);
+ assert.equal(Object.hasOwn(requestBody,"tools"),false);
+ const insert=statements.find(item=>/INSERT INTO bep_knowledge_candidates/.test(item.sql));
+ assert.ok(insert);
+ assert.equal(insert.params[5],"https://example.org/budget");
+ assert.equal(insert.params[6],"web_research_pending");
+});
