@@ -14,6 +14,7 @@ const {ingestManualSource}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
+const {validateManualKnowledge}=require("./lib/bep-manual-knowledge");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const normalizeFrontendOrigin=(value,fallback)=>{try{const parsed=new URL(String(value||fallback));if(!["http:","https:"].includes(parsed.protocol)||parsed.username||parsed.password)return fallback;return parsed.origin}catch{return fallback}};
@@ -290,6 +291,34 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  const result=await researchWeb({pool,query,category});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
+app.post("/api/admin/bep-coach/candidates/manual",auth,requireBepAgentAdmin,async(req,res)=>{
+ const parsed=validateManualKnowledge(req.body);
+ if(parsed.error)return res.status(400).json({error:parsed.error});
+ const item=parsed.value,client=await pool.connect();
+ try{
+  await client.query("BEGIN");
+  const active=await client.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1 LIMIT 1",[item.sourceSlug]);
+  if(active.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_KNOWLEDGE_ALREADY_EXISTS"})}
+  const pending=await client.query("SELECT id,input_digest,review_status FROM bep_knowledge_candidates WHERE source_slug=$1 AND proposal_type='create' AND review_status='pending' FOR UPDATE",[item.sourceSlug]);
+  if(pending.rowCount){
+   if(pending.rows[0].input_digest===item.inputDigest){await client.query("COMMIT");res.setHeader("Cache-Control","no-store");return res.status(200).json({ok:true,id:Number(pending.rows[0].id),status:"pending",duplicate:true})}
+   await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_CANDIDATE_ALREADY_PENDING"});
+  }
+  const inserted=await client.query("INSERT INTO bep_knowledge_candidates(source_slug,source_version,source_digest,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,input_digest) VALUES($1,$2,$3,'create',$4,$5,$6,$7,$8,$9,$10,'pending',$11) ON CONFLICT(source_slug,proposal_type,input_digest) DO NOTHING RETURNING id",[item.sourceSlug,item.sourceVersion,item.sourceDigest,item.title,item.content,item.sourceName,item.sourceUrl,item.evidenceLevel,item.confidence,item.rationale,item.inputDigest]);
+  if(!inserted.rowCount){
+   const existing=await client.query("SELECT id,review_status FROM bep_knowledge_candidates WHERE source_slug=$1 AND proposal_type='create' AND input_digest=$2",[item.sourceSlug,item.inputDigest]);
+   await client.query("COMMIT");
+   if(existing.rowCount&&existing.rows[0].review_status==="pending"){res.setHeader("Cache-Control","no-store");return res.status(200).json({ok:true,id:Number(existing.rows[0].id),status:"pending",duplicate:true})}
+   return res.status(409).json({error:"MANUAL_CANDIDATE_ALREADY_SUBMITTED"});
+  }
+  await client.query("COMMIT");
+  res.setHeader("Cache-Control","no-store");return res.status(201).json({ok:true,id:Number(inserted.rows[0].id),status:"pending",duplicate:false});
+ }catch(e){
+  await client.query("ROLLBACK").catch(()=>{});
+  console.error("BEP manual knowledge import failed",String(e?.message||e).slice(0,140));
+  return res.status(503).json({error:"MANUAL_IMPORT_UNAVAILABLE"});
+ }finally{client.release()}
+});
 app.post("/api/admin/bep-coach/ingest",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general");
  if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_INGESTION_INPUT"});
@@ -383,7 +412,17 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   const candidate=found.rows[0];
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
-   if(String(candidate.source_slug).startsWith("web-")){
+   if(String(candidate.source_slug).startsWith("manual-")){
+    const match=/^manual-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
+    const category=match?.[1],sourceDoc={slug:candidate.source_slug,category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1};
+    const validUrl=(()=>{try{const u=new URL(String(candidate.source_url||""));return u.protocol==="https:"&&!u.username&&!u.password}catch{return false}})();
+    if(!match||candidate.proposal_type!=="create"||Number(candidate.source_version)!==1||!validUrl||!["institutional_guidance","official_legal_information","behavioral_practice","bep_accounting_rule","bep_data_integrity_rule"].includes(candidate.evidence_level)||sourceFingerprint(sourceDoc)!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_CANDIDATE_INVALID"})}
+    const exists=await client.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1 LIMIT 1",[candidate.source_slug]);
+    if(exists.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_KNOWLEDGE_ALREADY_EXISTS"})}
+    const keywords=[...new Set((String(candidate.title)+" "+String(candidate.content)).toLocaleLowerCase("fr").match(/[a-z0-9]{4,}/g)||[])].slice(0,20);
+    const inserted=await client.query("INSERT INTO bep_financial_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,TRUE) ON CONFLICT(slug) DO NOTHING RETURNING slug",[candidate.source_slug,category,candidate.title,candidate.content,JSON.stringify(keywords),candidate.source_name,candidate.source_url,candidate.evidence_level]);
+    if(!inserted.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_KNOWLEDGE_ALREADY_EXISTS"})}
+   }else if(String(candidate.source_slug).startsWith("web-")){
     const match=/^web-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
     if(!match||candidate.proposal_type!=="update"||candidate.evidence_level!=="web_research_pending"||!/^https:\/\//.test(String(candidate.source_url||""))){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_INVALID"})}
     const category=match[1],sourceDoc={slug:candidate.source_slug,category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1};
