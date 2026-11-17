@@ -291,12 +291,13 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  const result=await researchWeb({pool,query,category});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
-app.post("/api/admin/bep-coach/candidates/manual",auth,requireBepAgentAdmin,async(req,res)=>{
+app.post("/api/admin/bep-coach/candidates/manual",auth,requireBepAgentAdmin,rateLimit({windowMs:60*1000,max:20,scope:"admin-manual-import"}),async(req,res)=>{
  const parsed=validateManualKnowledge(req.body);
  if(parsed.error)return res.status(400).json({error:parsed.error});
  const item=parsed.value,client=await pool.connect();
  try{
   await client.query("BEGIN");
+  await client.query("SELECT pg_advisory_xact_lock(hashtext($1))",[item.sourceSlug]);
   const active=await client.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1 LIMIT 1",[item.sourceSlug]);
   if(active.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"MANUAL_KNOWLEDGE_ALREADY_EXISTS"})}
   const pending=await client.query("SELECT id,input_digest,review_status FROM bep_knowledge_candidates WHERE source_slug=$1 AND proposal_type='create' AND review_status='pending' FOR UPDATE",[item.sourceSlug]);
