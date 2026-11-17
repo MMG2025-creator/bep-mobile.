@@ -313,3 +313,20 @@ test("manual batch ingestion collects sources and creates only pending Gemini ca
  assert.equal(insert.params[5],"https://example.org/budget");
  assert.equal(insert.params[6],"web_research_pending");
 });
+
+
+test("admin Coach ingestion reuses the existing Gemini BEP key only with explicit zero-billing confirmation",()=>{
+ const {resolveAdminGeminiKey,readAdminConfig}=require("../lib/bep-agent/config");
+ const ingestion=require("../lib/bep-coach-ingestion");
+ const env={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AI_PROVIDER:"gemini",BEP_AI_API_KEY:"existing-gemini-key",BEP_AI_ZERO_BILLING_CONFIRMED:"true"};
+ assert.deepEqual(resolveAdminGeminiKey(env),{apiKey:"existing-gemini-key",keySource:"existing_bep_ai"});
+ assert.equal(readAdminConfig(env).enabled,true);
+ assert.equal(readAdminConfig(env).keySource,"existing_bep_ai");
+ assert.equal(ingestion.ingestionEnabled(env),true);
+ const unconfirmed={...env,BEP_AI_ZERO_BILLING_CONFIRMED:"false"};
+ assert.equal(resolveAdminGeminiKey(unconfirmed).apiKey,"");
+ assert.equal(ingestion.ingestionEnabled(unconfirmed),false);
+ const otherProvider={...env,BEP_AI_PROVIDER:"openai"};
+ assert.equal(resolveAdminGeminiKey(otherProvider).apiKey,"");
+ assert.equal(ingestion.ingestionEnabled(otherProvider),false);
+});
