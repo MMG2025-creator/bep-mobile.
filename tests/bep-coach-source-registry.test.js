@@ -13,10 +13,11 @@ function mockPool({existing=[]}={}){
  },release:()=>{}};
  return{pool:{connect:async()=>client},calls,state};
 }
-test("validates HTTPS URLs on the Banque de France Mes questions d'argent host",()=>{
+test("validates HTTPS URLs on the Banque de France Mes questions d'argent hosts",()=>{
  assert.equal(validateSources([source()]).length,1);
  assert.equal(validateSources([source("mqa-02","https://www.mesquestionsdargent.fr/a","debt")])[0].category,"debt");
- for(const url of ["http://www.mesquestionsdargent.fr/a","https://evil.example/a","https://user:pass@www.mesquestionsdargent.fr/a","https://www.mesquestionsdargent.fr:444/a","https://www.mesquestionsdargent.fr/a?x=1"])assert.throws(()=>validateSources([source("mqa-51",url)]),/INVALID_SOURCE/);
+ assert.equal(validateSources([source("mqa-03","https://mesquestionsdargent.fr/budget/faire-des-economies")])[0].url,"https://mesquestionsdargent.fr/budget/faire-des-economies");
+ for(const url of ["http://mesquestionsdargent.fr/a","https://evil.example/a","https://user:pass@mesquestionsdargent.fr/a","https://mesquestionsdargent.fr:444/a","https://mesquestionsdargent.fr/a?x=1","https://mesquestionsdargent.fr/"])assert.throws(()=>validateSources([source("mqa-51",url)]),/INVALID_SOURCE/);
 });
 test("enforces a maximum of ten and rejects duplicate IDs and URLs",()=>{
  assert.throws(()=>validateSources([]),/INVALID_BATCH_SIZE/);
