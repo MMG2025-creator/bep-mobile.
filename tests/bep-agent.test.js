@@ -9,6 +9,19 @@ const cases=require("../lib/bep-agent/quality-cases");
 const fs=require("node:fs");
 const path=require("node:path");
 
+test("manual Coach knowledge candidates are strictly validated and deterministically fingerprinted",()=>{
+ const {validateManualKnowledge}=require("../lib/bep-manual-knowledge");
+ const input={title:"Constituer une épargne de précaution",category:"savings",content:"Une réserve disponible permet de faire face aux dépenses imprévues. Son montant doit tenir compte des dépenses essentielles, de la stabilité des revenus et des risques propres à chaque situation.",source_name:"Banque de France",source_url:"https://www.banque-france.fr/",evidence_level:"institutional_guidance",confidence:"high",rationale:"Synthèse manuelle d'une source institutionnelle pour le Coach BEP."};
+ const first=validateManualKnowledge(input),second=validateManualKnowledge({...input,title:"  Constituer une épargne de précaution  "});
+ assert.ok(first.value);assert.equal(first.value.sourceSlug,second.value.sourceSlug);assert.equal(first.value.inputDigest,second.value.inputDigest);
+ const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
+ assert.match(first.value.sourceSlug,/^manual-savings-[a-f0-9]{24}$/);assert.match(first.value.sourceDigest,/^[a-f0-9]{64}$/);
+ assert.equal(first.value.sourceDigest,sourceFingerprint({slug:first.value.sourceSlug,category:first.value.category,title:first.value.title,content:first.value.content,source_name:first.value.sourceName,source_url:first.value.sourceUrl,evidence_level:first.value.evidenceLevel,version:1}));
+ assert.equal(validateManualKnowledge({...input,source_url:"http://example.org"}).error,"INVALID_SOURCE_URL");
+ assert.equal(validateManualKnowledge({...input,category:"unknown"}).error,"INVALID_TITLE_OR_CATEGORY");
+ assert.equal(validateManualKnowledge({...input,extra:"not allowed"}).error,"UNEXPECTED_FIELDS");
+ assert.equal(validateManualKnowledge({...input,content:"trop court"}).error,"INVALID_CONTENT");
+});
 test("schema migration is opt-in and never runs as part of the normal server start",()=>{
  const pkg=JSON.parse(fs.readFileSync(path.join(__dirname,"..","package.json"),"utf8"));
  const migration=fs.readFileSync(path.join(__dirname,"..","scripts","migrate-bep-agent.js"),"utf8");
@@ -17,6 +30,7 @@ test("schema migration is opt-in and never runs as part of the normal server sta
  assert.match(migration,/BEP_AGENT_SCHEMA_MIGRATE!==\"true\"/);
  assert.match(migration,/readAdminConfig\(\)\.enabled/);
  assert.match(repository,/20261114_bep_gemini_agent\.sql/);
+ assert.match(repository,/20261117_bep_manual_knowledge_candidates\.sql/);
  assert.doesNotMatch(repository,/CREATE TABLE IF NOT EXISTS/);
 });
 test("agent remains disabled by default and fails closed without separate billing confirmation",()=>{
@@ -139,6 +153,18 @@ test("server exposes only allowlisted admin review and aggregate telemetry",()=>
  assert.ok(server.includes("if(!agentTelemetryReady)return next();"));
  const telemetry=server.slice(server.indexOf("function coachTelemetry"),server.indexOf("async function keepSingleSession"));
  assert.doesNotMatch(telemetry,/req\.body|req\.session|question|answer|user_id/);
+});
+test("manual Coach import is admin-only and creates pending candidates without Gemini",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(server,/app\.post\("\/api\/admin\/bep-coach\/candidates\/manual",auth,requireBepAgentAdmin/);
+ assert.match(server,/source_slug,source_version,source_digest,proposal_type,title,content/); 
+ assert.match(server,/VALUES\(\$1,\$2,\$3,'create'/);
+ assert.match(server,/MANUAL_CANDIDATE_INVALID/);
+ assert.match(server,/validated\.value\.sourceDigest!==candidate\.source_digest/);
+ assert.match(server,/INSERT INTO bep_financial_knowledge/);
+ assert.match(server,/manual-\(budget\|spending\|savings\|debt\|behavior\|income\|planning\|general\)/);
+ const migration=fs.readFileSync(path.join(__dirname,"..","database","migrations","20261117_bep_manual_knowledge_candidates.sql"),"utf8");
+ assert.match(migration,/CHECK\(proposal_type IN \('clarify','update','deactivate','create'\)\)/);
 });
 test("documentary JSON review uses a closed allowlist and never walks arbitrary repository files",()=>{
  const worker=fs.readFileSync(path.join(__dirname,"..","lib","bep-agent","worker.js"),"utf8");
