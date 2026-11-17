@@ -2,6 +2,9 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {Pool}=require("pg");
+const fs=require("node:fs");
+const path=require("node:path");
+const crypto=require("node:crypto");
 const repo=require("../lib/bep-agent/repository");
 test("agent schema is additive, idempotent and supports persistent queue operations",async t=>{
  if(!process.env.DATABASE_URL){t.skip("DATABASE_URL not configured");return}
@@ -30,5 +33,23 @@ test("agent schema is additive, idempotent and supports persistent queue operati
   assert.equal(run.rowCount,1);assert.deepEqual(run.rows[0].output_summary,{findings:[]});
   const usage=await pool.query("SELECT calls,tokens FROM bep_agent_daily_usage WHERE day_key=CURRENT_DATE");
   assert.equal(Number(usage.rows[0].calls),1);assert.equal(Number(usage.rows[0].tokens),12);
+ }finally{await pool.end()}
+});
+
+test("manual create candidates are idempotent and invisible until approved",async t=>{
+ if(!process.env.DATABASE_URL){t.skip("DATABASE_URL not configured");return}
+ const pool=new Pool({connectionString:process.env.DATABASE_URL});
+ const suffix=crypto.randomBytes(12).toString("hex"),slug="manual-budget-"+suffix,digest=crypto.createHash("sha256").update(suffix).digest("hex");
+ try{
+  const migration=fs.readFileSync(path.join(__dirname,"..","database","migrations","20261117_bep_manual_knowledge_candidates.sql"),"utf8");
+  await pool.query(migration);
+  const insert=()=>pool.query("INSERT INTO bep_knowledge_candidates(source_slug,source_version,source_digest,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,input_digest) VALUES($1,1,$2,'create','Test manual','Contenu documentaire de test suffisamment long pour valider la candidate.','Test source','https://example.org/','institutional_guidance','high','Test manuel de validation documentaire.',$3) ON CONFLICT(source_slug,proposal_type,input_digest) DO NOTHING RETURNING id",[slug,digest,digest]);
+  const results=await Promise.all([insert(),insert()]);
+  assert.equal(results.reduce((n,r)=>n+r.rowCount,0),1);
+  const candidate=await pool.query("SELECT id,review_status,proposal_type FROM bep_knowledge_candidates WHERE source_slug=$1",[slug]);
+  assert.equal(candidate.rowCount,1);assert.equal(candidate.rows[0].review_status,"pending");assert.equal(candidate.rows[0].proposal_type,"create");
+  const visible=await pool.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1",[slug]);
+  assert.equal(visible.rowCount,0);
+  await pool.query("DELETE FROM bep_knowledge_candidates WHERE source_slug=$1",[slug]);
  }finally{await pool.end()}
 });
