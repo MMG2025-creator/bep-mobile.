@@ -40,6 +40,7 @@ test("manual create candidates are idempotent and invisible until approved",asyn
  const suffix=crypto.randomBytes(12).toString("hex"),slug="manual-budget-"+suffix,digest=crypto.createHash("sha256").update(suffix).digest("hex");
  try{
   await repo.ensureSchema(pool);await repo.ensureSchema(pool);
+  await pool.query("CREATE TABLE IF NOT EXISTS bep_financial_knowledge(slug TEXT PRIMARY KEY,category TEXT NOT NULL,title TEXT NOT NULL,content TEXT NOT NULL,keywords JSONB NOT NULL DEFAULT '[]'::jsonb,source_name TEXT NOT NULL,source_url TEXT NOT NULL DEFAULT '',evidence_level TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,active BOOLEAN NOT NULL DEFAULT TRUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
   const insert=()=>pool.query("INSERT INTO bep_knowledge_candidates(source_slug,source_version,source_digest,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,input_digest) VALUES($1,1,$2,'create','Test manual','Contenu documentaire de test suffisamment long pour valider la candidate.','Test source','https://example.org/','institutional_guidance','high','Test manuel de validation documentaire.',$3) ON CONFLICT(source_slug,proposal_type,input_digest) DO NOTHING RETURNING id",[slug,digest,digest]);
   const results=await Promise.all([insert(),insert()]);
   assert.equal(results.reduce((n,r)=>n+r.rowCount,0),1);
