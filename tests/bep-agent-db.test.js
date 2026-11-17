@@ -2,8 +2,6 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const {Pool}=require("pg");
-const fs=require("node:fs");
-const path=require("node:path");
 const crypto=require("node:crypto");
 const repo=require("../lib/bep-agent/repository");
 test("agent schema is additive, idempotent and supports persistent queue operations",async t=>{
@@ -41,8 +39,7 @@ test("manual create candidates are idempotent and invisible until approved",asyn
  const pool=new Pool({connectionString:process.env.DATABASE_URL});
  const suffix=crypto.randomBytes(12).toString("hex"),slug="manual-budget-"+suffix,digest=crypto.createHash("sha256").update(suffix).digest("hex");
  try{
-  const migration=fs.readFileSync(path.join(__dirname,"..","database","migrations","20261117_bep_manual_knowledge_candidates.sql"),"utf8");
-  await pool.query(migration);
+  await repo.ensureSchema(pool);await repo.ensureSchema(pool);
   const insert=()=>pool.query("INSERT INTO bep_knowledge_candidates(source_slug,source_version,source_digest,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,input_digest) VALUES($1,1,$2,'create','Test manual','Contenu documentaire de test suffisamment long pour valider la candidate.','Test source','https://example.org/','institutional_guidance','high','Test manuel de validation documentaire.',$3) ON CONFLICT(source_slug,proposal_type,input_digest) DO NOTHING RETURNING id",[slug,digest,digest]);
   const results=await Promise.all([insert(),insert()]);
   assert.equal(results.reduce((n,r)=>n+r.rowCount,0),1);
