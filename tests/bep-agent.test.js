@@ -30,6 +30,7 @@ test("schema migration is opt-in and never runs as part of the normal server sta
  assert.match(migration,/BEP_AGENT_SCHEMA_MIGRATE!==\"true\"/);
  assert.match(migration,/readAdminConfig\(\)\.enabled/);
  assert.match(repository,/20261114_bep_gemini_agent\.sql/);
+ assert.match(repository,/20261117_bep_manual_knowledge_candidates\.sql/);
  assert.doesNotMatch(repository,/CREATE TABLE IF NOT EXISTS/);
 });
 test("agent remains disabled by default and fails closed without separate billing confirmation",()=>{
@@ -159,7 +160,7 @@ test("manual Coach import is admin-only and creates pending candidates without G
  assert.match(server,/source_slug,source_version,source_digest,proposal_type,title,content/); 
  assert.match(server,/VALUES\(\$1,\$2,\$3,'create'/);
  assert.match(server,/MANUAL_CANDIDATE_INVALID/);
- assert.match(server,/sourceFingerprint\(sourceDoc\)!==candidate\.source_digest/);
+ assert.match(server,/validated\.value\.sourceDigest!==candidate\.source_digest/);
  assert.match(server,/INSERT INTO bep_financial_knowledge/);
  assert.match(server,/manual-\(budget\|spending\|savings\|debt\|behavior\|income\|planning\|general\)/);
  const migration=fs.readFileSync(path.join(__dirname,"..","database","migrations","20261117_bep_manual_knowledge_candidates.sql"),"utf8");
