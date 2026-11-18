@@ -8,7 +8,8 @@ const BEP_ADMIN_EMAILS=String(process.env.BEP_ADMIN_EMAILS||"mmsignenoir@gmail.c
 const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
-const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
+const {buildIntelligence,loadUserFinancialContext,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
+const {isAccountOverviewQuestion,buildAccountOverview}=require("./lib/bep-coach-account-overview");
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources}=require("./lib/bep-coach-source-registry");
@@ -249,36 +250,29 @@ app.post("/api/ai/chat",auth,async(req,res)=>{try{
  const q=String(req.body?.question||"").trim();
  if(!q||q.length>4000)return res.status(400).json({message:"Question invalide."});
  const p=req.body?.financialContext||{};
+ if(isAccountOverviewQuestion(q)){
+  const context=await loadUserFinancialContext(pool,req.session.user.id,p);
+  const answer=buildAccountOverview(context);
+  res.setHeader("Cache-Control","no-store");
+  return res.json({answer,provider:"bep-local",model:"bep-financial-account-overview",mode:"account-overview",usage:null,quota:null});
+ }
  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:true});
- const structured=routeStructuredQuestion(q,p);
+ const structured=routeStructuredQuestion(q,intelligence.context);
  const docs=Array.isArray(intelligence.knowledge)?intelligence.knowledge:[];
  let answer="";
  if(structured){
   answer=structured;
  }else if(docs.length){
-  answer="J’ai retrouvé ces repères dans la base documentaire BEP.\n\n"+
-   docs.slice(0,3).map((doc,index)=>(index+1)+". "+doc.title+"\n"+String(doc.content||"").trim()).join("\n\n")+
-   "\n\nCes éléments constituent les références disponibles pour ta question. Si tu veux une recommandation plus précise, indique le montant, la période ou l’objectif concerné dans BEP.";
+  answer="Voici le repère BEP le plus utile pour ta question :\n\n"+
+   String(docs[0].content||"").trim()+
+   (docs.length>1?"\n\nUn autre point à garder en tête : "+String(docs[1].content||"").trim():"")+
+   "\n\nJe peux appliquer ce principe à tes chiffres si les données nécessaires sont enregistrées dans BEP.";
  }else{
-  answer="Je n’ai pas trouvé de fiche suffisamment pertinente dans la base documentaire BEP pour répondre de façon fiable à cette question. Je préfère te le signaler plutôt que d’inventer une réponse. Tu peux reformuler avec un thème précis ou demander à l’administration d’enrichir la base documentaire.";
+  answer="Je n’ai pas trouvé de repère suffisamment pertinent pour répondre de façon fiable. Je préfère te le signaler plutôt que d’inventer une réponse. Tu peux préciser le sujet ou demander à l’administration d’enrichir la base documentaire.";
  }
  res.setHeader("Cache-Control","no-store");
- res.json({
-  answer,provider:"bep-local",model:"bep-local-documentary",mode:structured?"structured":"structured-fallback",usage:null,quota:null,
-  intelligence:{
-   enabled:true,
-   knowledge:docs.slice(0,6).map(x=>({title:x.title,source:x.source_name||"BEP",url:x.source_url||"",category:x.category,score:x.score||0})),
-   context:{
-    monthlyHistoryMonths:intelligence.context.monthlyHistory?.length||0,
-    budgets:intelligence.context.budgets?.length||0,
-    goals:intelligence.context.goals?.length||0,
-    expenses:intelligence.context.expenses?.length||0,
-    savingsOperations:intelligence.context.savingsOperations?.length||0,
-    dataWarnings:intelligence.context.dataWarnings||[]
-   }
-  }
- });
- }catch(e){console.error("Local Coach answer failed",String(e?.message||e).slice(0,160));res.status(503).json({message:"Le Coach documentaire BEP est momentanément indisponible. Aucun fournisseur externe n’a été sollicité."})}});
+ return res.json({answer,provider:"bep-local",model:"bep-local-documentary",mode:structured?"structured":"documentary",usage:null,quota:null});
+ }catch(e){console.error("Local Coach answer failed",String(e?.message||e).slice(0,160));res.status(503).json({message:"Le Coach BEP n’a pas pu analyser les données locales. Aucun fournisseur externe n’a été sollicité."})}});
 app.get("/api/coach/library",auth,async(req,res)=>{try{
  const query=String(req.query.q||"").trim().slice(0,4000);
  const result=await readCoachLibrary({pool,userId:req.session.user.id,query,context:req.query.context&&typeof req.query.context==="object"?req.query.context:{},limit:Math.min(8,Math.max(1,Number(req.query.limit)||6))});
