@@ -95,6 +95,19 @@ test("quality review reports clearly that it has not executed real Coach respons
  const result=await runQualityReview({pool:{query:async()=>({rows:[]})},client:{generateJson:async()=>({value:{findings:[]},usage:null})}});
  assert.equal(result.summary.coachResponsesExecuted,false);
 });
+test("quality review uses only aggregated Coach telemetry and synthetic cases, never conversation content",async()=>{
+ let sql="",prompt="";
+ const pool={query:async(statement)=>{sql=statement;return{rows:[{day_key:"2026-11-18",mode:"local",status_code:200,calls:3,total_latency_ms:900,total_tokens:120,question:"PRIVATE_QUESTION_SENTINEL",user_id:"PRIVATE_USER_SENTINEL"}]}}};
+ const client={generateJson:async input=>{prompt=input.prompt;return{value:{findings:[]},usage:null}}};
+ const result=await runQualityReview({pool,client});
+ assert.match(sql,/day_key,mode,status_code,calls,total_latency_ms,total_tokens/);
+ assert.doesNotMatch(sql,/question|answer|user_id|email/i);
+ assert.match(prompt,/Cas synthétiques/);
+ assert.match(prompt,/Métriques agrégées des 30 derniers jours/);
+ assert.doesNotMatch(prompt,/PRIVATE_QUESTION_SENTINEL|PRIVATE_USER_SENTINEL/);
+ assert.equal(result.summary.coachResponsesExecuted,false);
+ assert.equal(result.summary.observedMetricDays,1);
+});
 test("quality review corpus is synthetic and contains no user or account identifiers",()=>{
  assert.ok(cases.length>=5);
  for(const item of cases){assert.ok(item.id&&item.question&&Array.isArray(item.must)&&Array.isArray(item.mustNot));assert.doesNotMatch(JSON.stringify(item),/email|user_id|account_id|iban/i)}
