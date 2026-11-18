@@ -80,6 +80,12 @@ test("stale deactivation cannot hide a changed seed source",async()=>{
  const docs=await retrieveKnowledge({pool,userId:"user-1",query:"assurance annuelle",context:{}});
  assert.ok(docs.some(x=>x.slug===source.slug));
 });
+test("personal knowledge matches a relevant category intent without admitting unrelated categories",()=>{
+ const personal={slug:"user-7",category:"savings",title:"Priorité personnelle",content:"Ne pas forcer les versements"};
+ const unrelated={...personal,category:"debt"};
+ assert.ok(scoreDocument(personal,"épargne",{})>0);
+ assert.equal(scoreDocument(unrelated,"épargne",{}),0);
+});
 test("personal knowledge retrieval is scoped to the authenticated user and accepted records",async()=>{
  const calls=[];
  const pool={query:async(sql,params)=>{
