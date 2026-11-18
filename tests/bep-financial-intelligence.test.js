@@ -182,15 +182,17 @@ test("page context never overrides a specific unrelated question",()=>{
 });
 test("app remembers the last business page while the Coach panel is active",()=>{
  const app=read("app.js");
- assert.match(app,/COACH_SOURCE_TAB_KEY="bep-coach-source-tab-v1"/);
- assert.match(app,/coachSourcePage=id;try\\{localStorage\\.setItem\\(COACH_SOURCE_TAB_KEY,id\\)\\}/);
- assert.match(app,/panel\\?\\.id==="coach"\\?\\(coachSourcePage\\|\\|"home"\\)/);
+ assert.ok(app.includes('COACH_SOURCE_TAB_KEY="bep-coach-source-tab-v1"'));
+ assert.ok(app.includes("coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}"));
+ assert.ok(app.includes('panel?.id==="coach"?(coachSourcePage||"home")'));
+});
 });
 test("chat uses server-loaded financial context and returns intent and page diagnostics",()=>{
  const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat",auth'),end=src.indexOf('app.get("/api/coach/library"',start);
  assert.ok(start>=0&&end>start);const route=src.slice(start,end);
- assert.match(route,/routeStructuredQuestion\\(q,context\\)/);
- assert.match(route,/classifyCoachIntent\\(q,context\\.pageContext\\)/);
- assert.match(route,/pageContext:context\\.pageContext/);
- assert.match(route,/introductions\\[intent\\]/);
+ assert.ok(route.includes("routeStructuredQuestion(q,context)"));
+ assert.ok(route.includes("classifyCoachIntent(q,context.pageContext)"));
+ assert.ok(route.includes("pageContext:context.pageContext"));
+ assert.ok(route.includes("introductions[intent]"));
+});
 });
