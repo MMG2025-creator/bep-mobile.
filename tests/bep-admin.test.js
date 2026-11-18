@@ -90,6 +90,8 @@ test("admin page inline script parses and contains no active production mutation
   assert.match(html, /Synchronisation production : INACTIVE/);
   assert.match(html, /Corrections financières : DÉSACTIVÉES/);
   assert.match(html, /Suppression de compte : DÉSACTIVÉE/);
+  assert.match(html, /Session administrateur à renouveler/);
+  assert.match(html, /Reconnecte-toi avec ton mot de passe administrateur indépendant/);
 });
 
 
