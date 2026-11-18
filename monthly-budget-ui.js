@@ -176,6 +176,9 @@
     const d = new Date();
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
   };
+  function preferredMonthKey() {
+    return (months.find(month => month.monthKey === monthNow()) || months[0])?.monthKey || null;
+  }
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const status = (message, error = false) => {
     $("monthlyBudgetStatus").textContent = message;
@@ -518,7 +521,7 @@
         await cacheMonthList(months);
         renderMonths();
         if (months.length) {
-          await loadMonth(months[0].monthKey);
+          await loadMonth(preferredMonthKey());
           const missing = months.filter(month => month.monthKey !== months[0].monthKey);
           for (let offset = 0; offset < missing.length; offset += 3) {
             await Promise.all(missing.slice(offset, offset + 3).map(async month => {
@@ -536,8 +539,9 @@
         const cached = await readHistoryCache();
         if (!cached || !Array.isArray(cached.months)) throw new Error("Aucun historique mensuel n’a encore été téléchargé sur cet appareil. Connecte-toi une fois pour le rendre disponible hors ligne.");
         months = cached.months;
+        if (!months.some(month => month.monthKey === monthNow())) clearHomeSnapshot();
         renderMonths();
-        if (months.length) await loadMonth(months[0].monthKey);
+        if (months.length) await loadMonth(preferredMonthKey());
         else {
           current = null; items = []; renderMonths();
           status("Aucun mois enregistré dans la copie locale.");
@@ -547,8 +551,9 @@
       const cached = await readHistoryCache();
       if (cached && Array.isArray(cached.months) && cached.months.length) {
         months = cached.months;
+        if (!months.some(month => month.monthKey === monthNow())) clearHomeSnapshot();
         renderMonths();
-        await loadMonth(months[0].monthKey);
+        await loadMonth(preferredMonthKey());
         status("Serveur indisponible : dernière photographie du budget mensuel affichée en lecture seule.", true);
       } else {
         status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
