@@ -100,14 +100,17 @@ test("user Coach chat is local and documentary-only with no external provider ca
  assert.match(route,/provider:"bep-local"/);
  assert.match(route,/model:"bep-local-documentary"/);
  assert.doesNotMatch(route,/invokeAi\(|userAi\(|consumeBepAiQuota\(/);
- assert.match(route,/Je n’ai pas trouvé de fiche suffisamment pertinente/);
+ assert.match(route,/isAccountOverviewQuestion\(q\)/);
+ assert.match(route,/loadUserFinancialContext\(/);
+ assert.doesNotMatch(route,/intelligence:\s*\{/);
+ assert.match(route,/Je n’ai pas trouvé de repère suffisamment pertinent/);
 });
 test("user Coach UI explicitly promises local documentary answers and no Gemini call",()=>{
  const html=read("index.html");
  const start=html.indexOf('<div id="coachChatLog"');
  const end=html.indexOf('<section id="settings"',start);
  const coach=html.slice(start,end);
- assert.match(coach,/exclusivement sur la base documentaire locale/);
+ assert.match(coach,/commence par analyser les données financières enregistrées dans ton compte/);
  assert.match(coach,/Aucun appel à Gemini ou à un autre fournisseur externe/);
  assert.doesNotMatch(coach,/Gemini Flash intervient/);
 });
