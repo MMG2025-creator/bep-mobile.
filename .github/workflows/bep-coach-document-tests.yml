@@ -6,10 +6,17 @@ on:
       - feature/bep-document-ingestion-no-ai
     paths:
       - "lib/bep-coach-json-import.js"
+      - "lib/bep-financial-intelligence.js"
+      - "server.js"
+      - "admin/bep-admin.js"
+      - "dist/admin.html"
+      - "database/migrations/20261118_bep_knowledge_create_candidates.sql"
       - "lib/bep-document-ingestion.js"
       - "tests/bep-coach-json-import.test.js"
       - "tests/bep-document-ingestion.test.js"
       - "tests/bep-coach-services.test.js"
+      - "tests/bep-financial-intelligence.test.js"
+      - "tests/bep-agent.test.js"
       - ".github/workflows/bep-coach-document-tests.yml"
 
 permissions:
@@ -26,4 +33,4 @@ jobs:
         with:
           node-version: "22"
       - name: Run BEP coach document tests
-        run: node --test tests/bep-coach-json-import.test.js tests/bep-document-ingestion.test.js tests/bep-coach-services.test.js
+        run: node --test tests/bep-coach-json-import.test.js tests/bep-document-ingestion.test.js tests/bep-coach-services.test.js tests/bep-financial-intelligence.test.js tests/bep-agent.test.js
