@@ -211,3 +211,21 @@ test("impulsive-purchase questions do not retrieve unrelated financial categorie
  assert.ok(scoreDocument(behavior,question,{pageContext:{page:"spending"}})>0);
  assert.equal(scoreDocument(unrelated,question,{pageContext:{page:"spending"}}),0);
 });
+
+test("impulsive-purchase questions exclude documents without behavioral evidence",()=>{
+ const impulse={slug:"impulse-purchase-pause",category:"behavior",title:"Créer une pause avant un achat non essentiel",content:"Une pause volontaire peut réduire la décision impulsive.",keywords:["achat","impulsion","pression","émotion","comportement","dépense"],evidence_level:"institutional_guidance"};
+ const tax={slug:"childcare-tax-credit",category:"behavior",title:"Crédit d'impôt pour frais de garde",content:"Informations sur le crédit d'impôt et les frais de garde d'enfant.",keywords:["frais","garde","crédit","impôt"],evidence_level:"institutional_guidance"};
+ const annual={slug:"annual-expenses-provision",category:"budget",title:"Provisionner les dépenses annuelles",content:"Mensualiser les assurances et taxes annuelles.",keywords:["annuel","provision","assurance","taxe"],evidence_level:"institutional_guidance"};
+ const query="Pourquoi mes achats impulsifs reviennent-ils ?";
+ assert.ok(scoreDocument(impulse,query,{pageContext:{page:"spending"}})>0);
+ assert.equal(scoreDocument(tax,query,{pageContext:{page:"spending"}}),0);
+ assert.equal(scoreDocument(annual,query,{pageContext:{page:"spending"}}),0);
+});
+test("an explanation of the difference between two concepts is classified as explain",()=>{
+ assert.equal(classifyCoachIntent("Explique-moi la différence entre budget prévisionnel et dépenses réelles",{page:"budget"}),"explain");
+ assert.equal(classifyCoachIntent("Quelle est la différence entre revenus fixes et variables ?",{page:"budget"}),"explain");
+});
+test("explicit comparison remains classified as compare",()=>{
+ assert.equal(classifyCoachIntent("Compare ces deux solutions",{page:"budget"}),"compare");
+ assert.equal(classifyCoachIntent("Quel est le meilleur choix entre ces deux options ?",{page:"budget"}),"compare");
+});
