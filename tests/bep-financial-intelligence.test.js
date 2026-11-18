@@ -100,7 +100,10 @@ test("user Coach chat is local and documentary-only with no external provider ca
  assert.match(route,/provider:"bep-local"/);
  assert.match(route,/model:"bep-local-documentary"/);
  assert.doesNotMatch(route,/invokeAi\(|userAi\(|consumeBepAiQuota\(/);
- assert.match(route,/Je n’ai pas trouvé de fiche suffisamment pertinente/);
+ assert.match(route,/isAccountOverviewQuestion\(q\)/);
+ assert.match(route,/loadUserFinancialContext\(/);
+ assert.doesNotMatch(route,/intelligence:\s*\{/);
+ assert.match(route,/Je n’ai pas trouvé de repère suffisamment pertinent/);
 });
 test("user Coach UI explicitly promises local documentary answers and no Gemini call",()=>{
  const html=read("index.html");
