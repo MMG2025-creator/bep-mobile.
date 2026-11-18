@@ -340,8 +340,13 @@ app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=
   const merged=new Map(base.rows.map(item=>[item.slug,item]));
   for(const item of overlays.rows){
    const source=merged.get(item.slug);
-   if(!source||Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;
-   if(item.active)merged.set(item.slug,item);else merged.delete(item.slug);
+   if(source){
+    if(Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;
+   }else{
+    const createdSource={slug:item.slug,category:item.category,title:item.title,content:item.content,source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.source_version)};
+    if(sourceFingerprint(createdSource)!==item.source_digest)continue;
+   }
+   if(item.active)merged.set(item.slug,{...item,version:Number(item.version)||1});else merged.delete(item.slug);
   }
   const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
   res.setHeader("Cache-Control","no-store");
