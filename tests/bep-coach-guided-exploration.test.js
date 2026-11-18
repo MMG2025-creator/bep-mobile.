@@ -18,7 +18,9 @@ test("Coach exposes three accessible journeys and preserves the open question fo
  assert.match(html,/data-coach-tab="profile">Accompagnement/);
  assert.match(html,/data-coach-tab="explore">Explorer/);
  assert.match(html,/data-coach-tab="open">Question libre/);
- assert.match(html,/<p>Pose-moi une question pour améliorer tes finances\\.<\\/p>/);\n assert.match(html,/id="coachChatLog" class="coach-chat-log" aria-live="polite"><\\/div>/);\n assert.doesNotMatch(html,/class="coach-message coach-message-bot"><strong>Coach BEP<\\/strong>/);
+ assert.match(html,/<p>Pose-moi une question pour améliorer tes finances\.<\/p>/);
+ assert.match(html,/id="coachChatLog" class="coach-chat-log" aria-live="polite"><\/div>/);
+ assert.doesNotMatch(html,/class="coach-message coach-message-bot"><strong>Coach BEP<\/strong>/);
  assert.ok(html.indexOf('id="coachPanelOpen"')<html.indexOf('class="coach-conversation"'));
  assert.ok(html.indexOf('id="coachPanelOpen"')>html.indexOf('id="coachPanelExplore"'));
 });
