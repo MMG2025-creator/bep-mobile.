@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=122&bep=guided-coach-exploration-20261118/);
+  assert.match(html,/app\.js\?v=123&bep=monthly-home-snapshot-bridge-20261119/);
   assert.match(html,/offline-storage\.js\?v=6&bep=robust-local-clear-20261114/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=122&bep=guided-coach-exploration-20261118/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=123&bep=monthly-home-snapshot-bridge-20261119/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
@@ -335,7 +335,7 @@ test("monthly budget visual workspace uses synchronized client assets and publis
   const html=read(file);
   for(const id of ["monthlyBudgetMonthStrip","monthlyBudgetMonthPrev","monthlyBudgetMonthNext","monthlyBudgetCalendar","monthlyBudgetAllocationDonut","monthlyBudgetCategoryDonut"])assert.ok(html.includes('id="'+id+'"'),file+" missing #"+id);
   assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
-  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=18&bep=monthly-home-snapshot-bridge-20261119"));
  }
  for(const marker of ["function renderMonthlyVisuals()","let monthDetailsExpanded = false;","calendarCard.hidden = !monthDetailsExpanded;","monthDetailsExpanded = true;","monthDetailsExpanded = false;","data-month-key","monthlyBudgetCalendarSummary","monthlyBudgetAllocationLegend","monthlyBudgetCategoryLegend"])assert.ok(js.includes(marker),"missing monthly visual marker "+marker);
 });
@@ -374,7 +374,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
   const html=read(file);
   for(const id of ["monthlyBudgetCalendar","monthlyBudgetDayDialog","monthlyBudgetDayTitle","monthlyBudgetDaySummary","monthlyBudgetDayExpenses"])assert.match(html,new RegExp('id="'+id+'"'));
   assert.ok(html.includes("monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"));
-  assert.ok(html.includes("monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"));
+  assert.ok(html.includes("monthly-budget-ui.js?v=18&bep=monthly-home-snapshot-bridge-20261119"));
  }
  const js=read("monthly-budget-ui.js");
  assert.equal(js,read("dist/monthly-budget-ui.js"));
@@ -398,7 +398,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v24"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v25"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -424,12 +424,35 @@ test("all six homepage financial tiles use the same aligned label, amount and ac
 test("Google OAuth uses direct navigation and does not create a separate popup",()=>{
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.replace(API+"/api/auth/google")'));assert.ok(app.includes("window.location.replace(d.url)"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
  const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/if\(req\.session\?\.user\)return res\.redirect\(303/);assert.match(server,/Cache-Control","no-store, no-cache, must-revalidate, private/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
- for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v24/);assert.doesNotMatch(sw,/oauth-popup/);}
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=122&bep=guided-coach-exploration-20261118/);
+ for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v25/);assert.doesNotMatch(sw,/oauth-popup/);}
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=123&bep=monthly-home-snapshot-bridge-20261119/);
 });
 
 
 test("overdraft permission can be deleted and has no validity date",()=>{
  for(const file of ["index.html","dist/index.html"]){const html=read(file);assert.match(html,/id="removeOverdraftBtn"/);assert.doesNotMatch(html,/overdraftValidUntil|Valable jusqu/);}
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.match(app,/removeOverdraftBtn\.onclick/);assert.match(app,/state\.treasury=\{overdraftLimit:0\}/);assert.doesNotMatch(app,/overdraftValidUntil|overdraftExpired|validUntil/);}
+});
+
+
+test("homepage financial snapshot is fed by the persisted current-month budget without mutating legacy data",()=>{
+ const app=read("app.js"),monthly=read("monthly-budget-ui.js");
+ assert.match(app,/bep:monthly-home-snapshot/);
+ assert.match(app,/monthlyHomeSnapshot&&monthlyHomeSnapshot\.monthKey===currentLocalMonthKey\(\)/);
+ assert.match(app,/monthlySnapshot\?monthlySnapshot\.income:totalIncome\(\)/);
+ assert.match(app,/monthlySnapshot\?Math\.max\(0,Number\(monthlySnapshot\.charges\)\|\|0\):charges\(\)/);
+ assert.match(app,/monthlyIsSource\?"monthly":action/);
+ assert.match(monthly,/function publishHomeSnapshot\(\)/);
+ assert.match(monthly,/function preferredMonthKey\(\)/);
+ assert.match(monthly,/loadMonth\(preferredMonthKey\(\)\)/);
+ assert.match(monthly,/current\.monthKey!==monthNow\(\)/);
+ assert.match(monthly,/actualExpenseTotal: actualsError \? null : position\.actualExpenseTotal/);
+ assert.match(monthly,/publishHomeSnapshot\(\);\s*renderMonths\(\)/);
+ assert.match(monthly,/publishHomeSnapshot\(\);\s*renderItems\(\)/);
+ assert.match(monthly,/function clearHomeSnapshot\(\)/);
+ assert.match(monthly,/clearHomeSnapshot\(\);\s*authEpoch\+\+/);
+ assert.equal(app,read("dist/app.js"));
+ assert.equal(monthly,read("dist/monthly-budget-ui.js"));
+ assert.equal(read("index.html"),read("dist/index.html"));
+ assert.equal(read("sw.js"),read("dist/sw.js"));
 });

@@ -161,10 +161,24 @@
       expenses: actuals.expenses || [], monthKey: current?.monthKey, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
   }
+  function publishHomeSnapshot() {
+    if (!current || current.monthKey !== monthNow()) return;
+    const position = financialPosition();
+    window.dispatchEvent(new CustomEvent("bep:monthly-home-snapshot", { detail: {
+      monthKey: current.monthKey, income: position.income, charges: position.plannedCharges,
+      available: position.available, actualExpenseTotal: actualsError ? null : position.actualExpenseTotal
+    }}));
+  }
+  function clearHomeSnapshot() {
+    window.dispatchEvent(new CustomEvent("bep:monthly-home-snapshot", { detail: null }));
+  }
   const monthNow = () => {
     const d = new Date();
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
   };
+  function preferredMonthKey() {
+    return (months.find(month => month.monthKey === monthNow()) || months[0])?.monthKey || null;
+  }
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const status = (message, error = false) => {
     $("monthlyBudgetStatus").textContent = message;
@@ -483,6 +497,7 @@
         clientId: crypto.randomUUID(), itemType: x.itemType, sourceItemId: x.sourceItemId || x.id || null, label: x.label,
         category: x.category, nature: x.nature, plannedAmount: Number(x.plannedAmount), metadata: x.metadata || {}
       }));
+      publishHomeSnapshot();
       renderMonths();
       renderItems();
       status(fromCache
@@ -502,10 +517,11 @@
         const data = await api("/api/budgets/months");
         if (epoch !== authEpoch) return;
         months = data.months || [];
+        if (!months.some(month => month.monthKey === monthNow())) clearHomeSnapshot();
         await cacheMonthList(months);
         renderMonths();
         if (months.length) {
-          await loadMonth(months[0].monthKey);
+          await loadMonth(preferredMonthKey());
           const missing = months.filter(month => month.monthKey !== months[0].monthKey);
           for (let offset = 0; offset < missing.length; offset += 3) {
             await Promise.all(missing.slice(offset, offset + 3).map(async month => {
@@ -523,8 +539,9 @@
         const cached = await readHistoryCache();
         if (!cached || !Array.isArray(cached.months)) throw new Error("Aucun historique mensuel n’a encore été téléchargé sur cet appareil. Connecte-toi une fois pour le rendre disponible hors ligne.");
         months = cached.months;
+        if (!months.some(month => month.monthKey === monthNow())) clearHomeSnapshot();
         renderMonths();
-        if (months.length) await loadMonth(months[0].monthKey);
+        if (months.length) await loadMonth(preferredMonthKey());
         else {
           current = null; items = []; renderMonths();
           status("Aucun mois enregistré dans la copie locale.");
@@ -534,8 +551,9 @@
       const cached = await readHistoryCache();
       if (cached && Array.isArray(cached.months) && cached.months.length) {
         months = cached.months;
+        if (!months.some(month => month.monthKey === monthNow())) clearHomeSnapshot();
         renderMonths();
-        await loadMonth(months[0].monthKey);
+        await loadMonth(preferredMonthKey());
         status("Serveur indisponible : dernière photographie du budget mensuel affichée en lecture seule.", true);
       } else {
         status(error.message === "MONTHLY_BUDGET_UNAVAILABLE"
@@ -657,6 +675,7 @@
       current = data.budget;
       await cacheMonthBudget(current);
       items = current.items.map(x => ({ ...x, clientId: crypto.randomUUID(), plannedAmount: Number(x.plannedAmount) }));
+      publishHomeSnapshot();
       renderItems();
       status("Budget enregistré · version " + current.version);
       try { await refreshMonthListOnly(); }
@@ -709,6 +728,7 @@
 
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
+    clearHomeSnapshot();
     authEpoch++;
     if (window.bepSignedIn || !navigator.onLine) refresh();
     else { months = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
