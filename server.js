@@ -354,6 +354,39 @@ app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=
  }catch(e){console.error("BEP admin Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_ADMIN_LIBRARY_UNAVAILABLE"})}
 });
 app.get("/api/admin/bep-coach/proposals.json",auth,requireBepAgentAdmin,createCoachProposalsDocumentHandler({pool,logger:console}));
+app.delete("/api/admin/bep-agent/candidates/:id",auth,requireBepAgentAdmin,async(req,res)=>{
+ const id=Number(req.params.id);
+ if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({error:"INVALID_CANDIDATE_ID"});
+ try{
+  const result=await pool.query("DELETE FROM bep_knowledge_candidates WHERE id=$1 AND review_status IN ('pending','rejected') RETURNING id",[id]);
+  if(!result.rowCount){
+   const found=await pool.query("SELECT review_status FROM bep_knowledge_candidates WHERE id=$1",[id]);
+   return found.rowCount?res.status(409).json({error:"CANDIDATE_ALREADY_ACCEPTED"}):res.status(404).json({error:"CANDIDATE_NOT_FOUND"});
+  }
+  res.json({ok:true,id:result.rows[0].id,deleted:true});
+ }catch(e){console.error("BEP candidate deletion failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"CANDIDATE_DELETE_UNAVAILABLE"})}
+});
+app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(req,res)=>{
+ const slug=String(req.params.slug||"").trim();
+ if(!/^[a-z0-9][a-z0-9_-]{0,119}$/.test(slug))return res.status(400).json({error:"INVALID_KNOWLEDGE_SLUG"});
+ const client=await pool.connect();
+ try{
+  await client.query("BEGIN");
+  const base=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
+  const overlay=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active FROM bep_agent_approved_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
+  if(!base.rowCount&&!overlay.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"KNOWLEDGE_NOT_FOUND"})}
+  const source=base.rowCount?base.rows[0]:{...overlay.rows[0],version:Number(overlay.rows[0].source_version)};
+  const digest=sourceFingerprint(source);
+  if(overlay.rowCount&&(Number(overlay.rows[0].source_version)!==Number(source.version)||overlay.rows[0].source_digest!==digest)){
+   await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SOURCE_CHANGED"});
+  }
+  const current=overlay.rowCount?overlay.rows[0]:source;
+  await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10,$11,FALSE,$12) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=FALSE,approved_by=EXCLUDED.approved_by,updated_at=NOW()",
+   [slug,current.category,current.title,current.content,JSON.stringify(current.keywords||[]),current.source_name,current.source_url,current.evidence_level,Number(source.version),digest,Number(current.version||1),String(req.session.user.id)]);
+  await client.query("COMMIT");
+  res.json({ok:true,slug,active:false,archived:true});
+ }catch(e){await client.query("ROLLBACK").catch(()=>{});console.error("BEP knowledge removal failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"KNOWLEDGE_REMOVE_UNAVAILABLE"})}finally{client.release()}
+});
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{
