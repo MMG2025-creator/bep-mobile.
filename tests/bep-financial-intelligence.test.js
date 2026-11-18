@@ -26,6 +26,15 @@ test("retrieves actual savings accounting when movements exist",()=>{
 test("retrieves variable income guidance for irregular income",()=>{
  assert.ok(scoreDocument(corpus[2],"revenu variable indépendant",{incomes:[{type:"variable"}]})>0);
 });
+test("does not retrieve unrelated documents merely because financial context exists",()=>{
+ const context={monthlyHistory:[{monthKey:"2026-11"}],budgets:[{label:"assurance annuelle"}],goals:[{name:"reserve"}],savingsOperations:[{amount:20}],incomes:[{amount:2000}],debts:[{balance:500}]};
+ assert.equal(scoreDocument(corpus[0],"quelle est la météo demain",context),0);
+});
+test("ranks title and keywords above incidental content matches",()=>{
+ const titleMatch={title:"Priorité de remboursement des dettes",content:"Informations générales sur les finances",category:"debt",keywords:["dette","remboursement"]};
+ const incidentalMatch={title:"Conseils financiers",content:"Le remboursement des dettes peut être complexe",category:"general",keywords:[]};
+ assert.ok(scoreDocument(titleMatch,"remboursement dette",{})>scoreDocument(incidentalMatch,"remboursement dette",{}));
+});
 test("does not treat missing values as positive facts",()=>{
  const c=normalizeContext({income:0,savingsOperations:[{id:"x",type:"deposit",amount:25,date:"2026-01-01",privateLabel:"ignored"}]});
  assert.equal(c.income,0);
