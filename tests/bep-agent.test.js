@@ -191,3 +191,11 @@ test("admin review route requires a digest-bound server confirmation and writes 
  assert.match(audit,/async function appendAudit\(client, actorRef, action, targetRef, details\)/);
  assert.match(audit,/pg_advisory_xact_lock\(72419031\)/);
 });
+
+test("proposal review UI sends the explicit server confirmation and candidate digest",()=>{
+ const html=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(html,/confirmation:decision==="approve"\?"APPROVE_DOCUMENT":"REJECT_DOCUMENT"/);
+ assert.match(html,/candidate_digest:item\.source_digest/);
+ assert.match(server,/source_version,source_digest,review_status/);
+});

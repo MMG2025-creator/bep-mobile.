@@ -358,7 +358,7 @@ app.get("/api/admin/bep-coach/proposals.json",auth,requireBepAgentAdmin,createCo
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{
-  const r=await pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status=$1 ORDER BY created_at DESC LIMIT 100",[status]);
+  const r=await pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,source_version,source_digest,review_status,created_at FROM bep_knowledge_candidates WHERE review_status=$1 ORDER BY created_at DESC LIMIT 100",[status]);
   res.setHeader("Cache-Control","no-store");res.json({items:r.rows});
  }catch(e){res.status(503).json({error:"AGENT_CANDIDATES_UNAVAILABLE"})}
 });
