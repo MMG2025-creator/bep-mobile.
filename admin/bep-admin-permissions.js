@@ -45,7 +45,10 @@ function requirePermission(req,res,next,permission){
  if(typeof permission!=="string"||!permission)return res.status(403).json({error:"ADMIN_PERMISSION_UNMAPPED"});
  const auth=req.session?.bepAdminAuth;
  if(!req.session?.user?.id||auth?.authenticated!==true||auth.userId!==String(req.session.user.id))return res.status(401).json({error:"INDEPENDENT_ADMIN_AUTH_REQUIRED"});
- const allowed=configuredGrants()[normalizeEmail(auth.email)];
+ const email=normalizeEmail(auth.email);
+ const allowlist=new Set(String(process.env.BEP_ADMIN_EMAILS||"").split(",").map(normalizeEmail).filter(Boolean));
+ if(!email||!allowlist.has(email))return res.status(403).json({error:"ADMIN_NOT_ALLOWLISTED"});
+ const allowed=configuredGrants()[email];
  if(!allowed||!allowed.has(permission))return res.status(403).json({error:"ADMIN_PERMISSION_DENIED",permission});
  req.bepAdminPermission=permission;return next();
 }
