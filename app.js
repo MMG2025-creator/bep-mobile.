@@ -799,14 +799,14 @@ async function showPurchaseAdvice(p){
  target.innerHTML=(budgetWarning?"<strong>"+esc(budgetWarning)+"</strong><br><br>":"")+"<strong>"+esc(local[0])+"</strong>"+esc(local[1])+"<br><br><b>Question BEP :</b> "+esc(local[2]);
 }
 function coachQuestionIntent(question){
- const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ");
+ const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[’']/g," ");
  if(/(cette page|cet ecran|sur cette page|sur cet ecran|elements utiles)/.test(q)&&/(presente|resume|explique|utile|aide|montre|fonction)/.test(q))return "overview";
- if(/\b(combien|montant|total|solde|reste|cout|prix|somme|chiffre)\b/.test(q))return "amount";
- if(/\b(compare|comparer|difference|versus|meilleur)\b/.test(q))return "compare";
- if(/\b(comment|etape|etapes|methode|mettre en place|par ou commencer|que faire)\b/.test(q))return "steps";
- if(/\b(pourquoi|raison|cause|signifie|signification|comprendre|explique)\b/.test(q))return "explain";
- if(/\b(liste|quels|quelles)\b/.test(q))return "list";
- if(/\b(conseil|conseille|recommande|devrais|priorite|prioriser|strategie)\b/.test(q))return "recommendation";
+ if(/\\b(combien|montant|total|solde|reste|cout|prix|somme|chiffre)\\b/.test(q))return "amount";
+ if(/\\b(explique|expliquer|pourquoi|raison|cause|signifie|signification|comprendre|definition|difference entre|qu est ce que|c est quoi)\\b/.test(q))return "explain";
+ if(/\\b(compare|comparer|comparatif|versus|entre les deux options|quelle option|lequel choisir|laquelle choisir)\\b/.test(q))return "compare";
+ if(/\\b(comment|etape|etapes|methode|demarche|mettre en place|par ou commencer|que faire|de quelle maniere)\\b/.test(q))return "steps";
+ if(/\\b(liste|quels|quelles)\\b/.test(q))return "list";
+ if(/\\b(conseil|conseille|recommande|devrais|priorite|prioriser|strategie)\\b/.test(q))return "recommendation";
  return "general";
 }
 function coachReply(question){
