@@ -202,11 +202,11 @@ test("proposal review UI sends the explicit server confirmation and candidate di
 
 test("admin permission middleware rejects ungranted actions and allows only an explicit grant",()=>{
  const {requirePermission}=require("../admin/bep-admin-permissions");
- const previous=process.env.BEP_ADMIN_PERMISSION_GRANTS;
+ const previous=process.env.BEP_ADMIN_PERMISSION_GRANTS,previousEmails=process.env.BEP_ADMIN_EMAILS;
  const req={session:{user:{id:"admin-1"},bepAdminAuth:{authenticated:true,userId:"admin-1",email:"admin@example.test"}}};
  let status=0,body=null,passed=false;
  const res={status(code){status=code;return this},json(value){body=value;return this}};
- delete process.env.BEP_ADMIN_PERMISSION_GRANTS;
+ delete process.env.BEP_ADMIN_PERMISSION_GRANTS;process.env.BEP_ADMIN_EMAILS="admin@example.test";
  requirePermission(req,res,()=>{passed=true},"documents.proposals.approve");
  assert.equal(status,403);assert.equal(body.error,"ADMIN_PERMISSION_DENIED");assert.equal(passed,false);
  process.env.BEP_ADMIN_PERMISSION_GRANTS=JSON.stringify({"admin@example.test":["documents.proposals.read"]});
@@ -217,4 +217,5 @@ test("admin permission middleware rejects ungranted actions and allows only an e
  requirePermission(req,res,()=>{passed=true},"documents.proposals.approve");
  assert.equal(passed,true);
  if(previous===undefined)delete process.env.BEP_ADMIN_PERMISSION_GRANTS;else process.env.BEP_ADMIN_PERMISSION_GRANTS=previous;
+ if(previousEmails===undefined)delete process.env.BEP_ADMIN_EMAILS;else process.env.BEP_ADMIN_EMAILS=previousEmails;
 });
