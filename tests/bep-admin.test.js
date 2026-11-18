@@ -94,8 +94,8 @@ test("admin page inline script parses and contains no active production mutation
   assert.match(html, /Reconnecte-toi avec ton mot de passe administrateur indépendant/);
   assert.match(html, /id="adminLogout"/);
   assert.match(html, /id="adminClearCache"/);
-  assert.match(html, /caches\\.keys\\(\\)/);
-  assert.match(html, /await authApi\\("\\/logout"\\)/);
+  assert.ok(html.includes("caches.keys()"));
+  assert.ok(html.includes('await authApi("/logout")'));
 });
 
 
