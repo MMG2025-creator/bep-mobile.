@@ -844,13 +844,25 @@ async function loadAiConnection(){
  const advanced=$("aiAdvancedSettings");if(advanced){advanced.hidden=true;advanced.classList.add("hidden")}
  const coachMode=$("coachAiMode");if(coachMode)coachMode.textContent="● Coach BEP · Base documentaire locale";
 }
+function currentCoachPageContext(){
+ const panel=document.querySelector(".panel.active");
+ const raw=String(panel?.id||"home").toLowerCase();
+ const activePage=({
+  home:"home",budget:"budget",savings:"savings",purchases:"spending",
+  expenses:"spending",monthly:"budget",income:"income",debts:"debt",
+  goals:"goals",training:"learning",profile:"profile",settings:"general"
+ })[raw]||"general";
+ const module=activePage==="budget"?String(activeBudgetModule||"budget").toLowerCase():"";
+ const labels={home:"Accueil",budget:"Budget",savings:"Épargne",spending:"Dépenses et achats",income:"Revenus",debt:"Dettes et crédits",goals:"Objectifs",learning:"Formation",profile:"Profil financier",general:"Espace général"};
+ return {page:activePage,label:labels[activePage],subPage:module||null};
+}
 async function submitCoachQuestion(question){
  const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
  if(window.bepSignedIn&&(!aiConnection.mode||aiConnection.mode==="unavailable"))await loadAiConnection();
  if(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode)){
   addCoachMessage("coach",aiConnection.mode==="bep"?"Le Coach BEP analyse ta demande…":"Le moteur financier BEP analyse ta demande…");const log=$("coachChatLog"),last=log?.lastElementChild;
   try{
-   const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext(),coachProfile:state.coachProfile||[]})}),d=await r.json();
+   const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:{...currentFinancialContext(),pageContext:currentCoachPageContext()},coachProfile:state.coachProfile||[]})}),d=await r.json();
    if(!r.ok)throw Error(d.message||"IA indisponible.");
    const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
    if(d.intelligence){
