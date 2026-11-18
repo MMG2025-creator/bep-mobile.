@@ -10,7 +10,7 @@ const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_RE
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
-const {ingestManualSource,ingestManualSources}=require("./lib/bep-coach-ingestion");
+const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources}=require("./lib/bep-coach-source-registry");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
@@ -292,6 +292,7 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
 
+app.get("/api/admin/bep-coach/identified-sites",auth,requireBepAgentAdmin,async(req,res)=>{try{const result=await listIdentifiedSites(pool);res.setHeader("Cache-Control","no-store");res.json(result)}catch(e){console.error("Identified ingestion sites read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"IDENTIFIED_SITES_UNAVAILABLE"})}});
 app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const input=req.body?.sources;
  if(!Array.isArray(input)||input.length<1||input.length>10)return res.status(400).json({error:"INVALID_BATCH_SIZE",maxSources:10});
@@ -304,8 +305,8 @@ app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req
   if(!url||url.length>2048||!categoryMap[sourceCategory]&&!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_BATCH_SOURCE"});
   sources.push({url,category});
  }
- const result=await ingestManualSources({pool,sources});
- res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
+ const result=await ingestDocumentBatch({pool,sources});
+ res.setHeader("Cache-Control","no-store");res.status(201).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur de collecte par lots").replace(/[\\r\\n\\t]+/g," ").slice(0,220);console.error("Coach batch source ingestion failed",diagnostic);const status=diagnostic.includes("URL_")||diagnostic.includes("SOURCE_")||diagnostic.includes("INVALID_")||diagnostic.includes("DUPLICATE_")?400:502;res.status(status).json({error:"COACH_BATCH_INGESTION_FAILED",message:diagnostic+" · Aucune connaissance publiée."})}});
 app.post("/api/admin/bep-coach/source-registry",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const sources=req.body?.sources;
@@ -320,7 +321,7 @@ app.post("/api/admin/bep-coach/source-registry",auth,requireBepAgentAdmin,async(
 app.post("/api/admin/bep-coach/ingest",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general");
  if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_INGESTION_INPUT"});
- const result=await ingestManualSource({pool,url,mode,category});
+ const result=await ingestDocumentUrl({pool,url,mode,category});
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur de collecte inconnue").replace(/[\\r\\n\\t]+/g," ").slice(0,220);console.error("Coach manual source ingestion failed",diagnostic);const status=diagnostic.includes("URL_")||diagnostic.includes("SOURCE_")?400:502;res.status(status).json({error:"COACH_INGESTION_FAILED",message:diagnostic+" · Aucune connaissance publiée."})}});
 

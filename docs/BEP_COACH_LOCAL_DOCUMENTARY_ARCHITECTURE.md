@@ -134,3 +134,14 @@ Le circuit administratif expose un second document JSON distinct du corpus docum
 Pour éviter toute perte lors d’un redémarrage ou d’un redéploiement Render, les propositions sont conservées durablement dans `bep_knowledge_candidates` (PostgreSQL). L’endpoint administratif protégé `GET /api/admin/bep-coach/proposals.json` les sérialise sous forme du document JSON téléchargeable. Le fichier n’est jamais écrit sur le système de fichiers éphémère du service.
 
 Le document JSON est un registre de travail, pas une source de vérité métier. Les éléments `pending` restent invisibles au Coach utilisateur. Seule l’action d’approbation humaine existante peut intégrer une proposition dans `bep_financial_knowledge` ou `bep_agent_approved_knowledge`, après vérification de la version et de l’empreinte source dans la transaction. Un rejet ne publie aucune connaissance. Aucune publication automatique ni modification du corpus actif par Gemini n’est autorisée.
+
+
+## Ingestion documentaire sans IA — V1
+
+Le point d'entrée administratif `POST /api/admin/bep-coach/ingest` et son endpoint batch utilisent le service `lib/bep-document-ingestion.js`. La récupération repose sur l'extracteur HTTP natif et le nettoyeur HTML existant. Aucun appel Gemini, Claude, OpenAI ou autre modèle n'est effectué pour récupérer et enregistrer une URL.
+
+Le document extrait est enregistré directement dans `bep_knowledge_candidates` avec un slug `web-{category}-{hash}`, une empreinte SHA-256 compatible avec le contrôle d'approbation web existant, une provenance HTTPS et le niveau `web_research_pending`. La proposition reste en attente ; l'approbation humaine existante est le seul chemin de publication vers `bep_financial_knowledge`.
+
+Les garde-fous de collecte réutilisent la validation HTTPS, la résolution DNS publique épinglée, les limites de taille, la limite de pages et le refus des redirections non revalidées. Les pages qui exigent JavaScript ou PDF ne sont pas encore prises en charge par l'extracteur natif ; elles sont signalées comme échec de collecte, sans fallback IA.
+
+Le statut d'ingestion manuelle est désormais indépendant de la clé Gemini et de l'activation de la recherche Internet. La recherche exploratoire Gemini reste un service distinct et facultatif.

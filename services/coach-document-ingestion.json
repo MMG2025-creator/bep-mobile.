@@ -1,0 +1,34 @@
+{
+  "service": "bep-document-ingestion",
+  "version": 1,
+  "enabled": true,
+  "provider": "bep-native-http-extractor",
+  "ai_required": false,
+  "fallbacks": [],
+  "source_policy": {
+    "https_only": true,
+    "reject_private_networks": true,
+    "reject_credentials_in_url": true,
+    "redirects": "reject_until_each_hop_is_revalidated",
+    "max_page_bytes": 1048576,
+    "max_pages_deep_mode": 5,
+    "max_content_chars_per_page": 12000
+  },
+  "storage": {
+    "provider": "postgresql",
+    "table": "bep_knowledge_candidates",
+    "evidence_level": "web_research_pending",
+    "review_status": "pending"
+  },
+  "publication": {
+    "human_approval_required": true,
+    "automatic_publication": false,
+    "active_destination": "bep_financial_knowledge"
+  },
+  "api": {
+    "method": "POST",
+    "path": "/api/admin/bep-coach/ingest",
+    "authentication": "bep_session_and_agent_admin",
+    "cache": "no-store"
+  }
+}
