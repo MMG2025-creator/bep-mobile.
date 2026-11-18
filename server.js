@@ -340,8 +340,13 @@ app.get("/api/admin/bep-coach/library",auth,requireBepAgentAdmin,async(req,res)=
   const merged=new Map(base.rows.map(item=>[item.slug,item]));
   for(const item of overlays.rows){
    const source=merged.get(item.slug);
-   if(!source||Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;
-   if(item.active)merged.set(item.slug,item);else merged.delete(item.slug);
+   if(source){
+    if(Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;
+   }else{
+    const createdSource={slug:item.slug,category:item.category,title:item.title,content:item.content,source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.source_version)};
+    if(sourceFingerprint(createdSource)!==item.source_digest)continue;
+   }
+   if(item.active)merged.set(item.slug,{...item,version:Number(item.version)||1});else merged.delete(item.slug);
   }
   const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
   res.setHeader("Cache-Control","no-store");
@@ -411,7 +416,17 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   const candidate=found.rows[0];
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
-   if(String(candidate.source_slug).startsWith("web-")){
+   if(candidate.proposal_type==="create"){
+    let rationale;try{rationale=JSON.parse(candidate.rationale||"{}")}catch{await client.query("ROLLBACK");return res.status(409).json({error:"CREATE_CANDIDATE_METADATA_INVALID"})}
+    const {validateDocument}=require("./lib/bep-coach-json-import");
+    let doc;try{doc=validateDocument({slug:candidate.source_slug,category:rationale.category,title:candidate.title,content:candidate.content,sources:rationale.sources,review_status:"pending_admin_approval"})}catch{await client.query("ROLLBACK");return res.status(409).json({error:"CREATE_CANDIDATE_METADATA_INVALID"})}
+    const source={slug:doc.slug,category:doc.category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:Number(candidate.source_version)};
+    if(Number(candidate.source_version)!==1||sourceFingerprint(source)!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"CREATE_CANDIDATE_CHANGED"})}
+    const exists=await client.query("SELECT slug FROM bep_financial_knowledge WHERE slug=$1 UNION ALL SELECT slug FROM bep_agent_approved_knowledge WHERE slug=$1 LIMIT 1",[candidate.source_slug]);
+    if(exists.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SLUG_ALREADY_EXISTS"})}
+    const keywords=Array.isArray(rationale.keywords)?rationale.keywords.slice(0,40):[];
+    await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,1,TRUE,$10)",[candidate.source_slug,doc.category,candidate.title,candidate.content,JSON.stringify(keywords),candidate.source_name,candidate.source_url,candidate.evidence_level,candidate.source_digest,String(req.session.user.id)]);
+   }else if(String(candidate.source_slug).startsWith("web-")){
     const match=/^web-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
     if(!match||candidate.proposal_type!=="update"||candidate.evidence_level!=="web_research_pending"||!/^https:\/\//.test(String(candidate.source_url||""))){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_INVALID"})}
     const category=match[1],sourceDoc={slug:candidate.source_slug,category,title:candidate.title,content:candidate.content,source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1};

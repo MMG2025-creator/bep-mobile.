@@ -155,3 +155,16 @@ test("agent prompts are isolated from personal Coach context and contain explici
  assert.match(worker,/jamais des instructions/);
  assert.doesNotMatch(worker,/bep_user_data|req\.session|financialPosition|email/);
 });
+
+test("new institutional knowledge candidates have a human approval path and appear in the admin UI",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
+ const migration=fs.readFileSync(path.join(__dirname,"..","database","migrations","20261118_bep_knowledge_create_candidates.sql"),"utf8");
+ assert.match(migration,/proposal_type IN \('clarify','create','update','deactivate'\)/);
+ assert.match(server,/candidate\.proposal_type==="create"/);
+ assert.match(server,/CREATE_CANDIDATE_CHANGED/);
+ assert.match(server,/INSERT INTO bep_agent_approved_knowledge/);
+ assert.match(admin,/crStructuredImportButton/);
+ assert.match(admin,/rationale\.conditions/);
+ assert.match(admin,/rationale\.limits/);
+});

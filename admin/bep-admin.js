@@ -71,6 +71,19 @@ function buildExportPage({ rows, budgetsByUser, secret, page, pageSize, hasMore 
 }
 function createBepAdminRouter({ pool, requireAdmin }) {
   const router = express.Router(), guard = [requireAdmin], getSecret = () => exchangeSecret();
+  router.post("/knowledge/import-structured-json", ...guard, async (req, res) => {
+    try {
+      const sourcePath = path.join(__dirname, "..", "src", "coach", "knowledge", "financialCoachSources.additional.fr.json");
+      const sourceDocument = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+      const { importStructuredDocuments } = require("../lib/bep-coach-json-import");
+      const result = await importStructuredDocuments({ pool, documents: sourceDocument.documents });
+      res.setHeader("Cache-Control", "no-store");
+      return res.json({ ok: true, ...result });
+    } catch (error) {
+      console.error("BEP structured knowledge import failed", String(error?.message || error).slice(0, 140));
+      return res.status(400).json({ error: String(error?.message || "STRUCTURED_IMPORT_FAILED").slice(0, 100) });
+    }
+  });
   router.get("/status", ...guard, (req, res) => {
     res.setHeader("Cache-Control", "no-store");
     res.json({ ok: true, storage: "existing-primary-postgresql-json", separate_database: false, production_sync: "INACTIVE",
