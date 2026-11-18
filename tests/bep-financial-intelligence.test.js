@@ -194,3 +194,12 @@ test("chat uses server-loaded financial context and returns intent and page diag
  assert.ok(route.includes("pageContext:context.pageContext"));
  assert.ok(route.includes("introductions[intent]"));
 });
+
+test("Coach reports the interpreted page and handles budget subpages distinctly",()=>{
+ const app=read("app.js"),server=read("server.js");
+ assert.ok(app.includes("Intention comprise : "));
+ assert.ok(app.includes("Page analysée : "));
+ assert.ok(server.includes('page==="budget"&&subPage==="income"'));
+ assert.ok(server.includes('page==="budget"&&subPage==="charges"'));
+ assert.ok(server.includes('page==="budget"&&subPage==="monthly"'));
+});
