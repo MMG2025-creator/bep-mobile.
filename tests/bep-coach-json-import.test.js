@@ -14,7 +14,7 @@ test("all 42 repository documents pass the structured import contract",()=>{
  const sourceSet=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");
  assert.equal(sourceSet.documents.length,62);
  const docs=sourceSet.documents.map(validateDocument);
- assert.equal(new Set(docs.map(x=>x.slug)).size,42);
+ assert.equal(new Set(docs.map(x=>x.slug)).size,62);
  assert.ok(docs.every(x=>["income","budget","savings","planning","spending","debt","behavior"].includes(x.category)));
  assert.ok(docs.every(x=>x.sources.length>0&&x.sources.every(s=>new URL(s.url).protocol==="https:")));
 });
