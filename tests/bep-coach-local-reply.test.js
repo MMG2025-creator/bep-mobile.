@@ -86,7 +86,7 @@ test("local Coach respects the selected Budget sub-module", () => {
 });
 
 test("offline Coach distinguishes an explanation from an explicit comparison",()=>{
- const classify=vm.runInNewContext(replySource+"\\ncoachQuestionIntent",{});
+ const classify=vm.runInNewContext(replySource+"\ncoachQuestionIntent",{});
  assert.equal(classify("Explique-moi la différence entre budget prévisionnel et dépenses réelles"),"explain");
  assert.equal(classify("Compare ces deux solutions"),"compare");
 });
