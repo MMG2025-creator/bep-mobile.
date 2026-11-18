@@ -140,9 +140,9 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
   });
   router.get("/status", (req, res) => {
     res.setHeader("Cache-Control", "no-store");
-    const auth = req.session?.bepAdminAuth;
-    if (auth?.authenticated === true && auth.userId === String(req.session?.user?.id || "")) return res.json({ authenticated: true, email: auth.email });
-    return res.json({ authenticated: false });
+    const failure = independentAdminFailure(req);
+    if (!failure) return res.json({ authenticated: true, email: req.session.bepAdminAuth.email });
+    return res.json({ authenticated: false, reason: failure.error });
   });
   router.post("/logout", (req, res) => {
     if (req.session) delete req.session.bepAdminAuth;
@@ -151,11 +151,25 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
   });
   return router;
 }
-function requireIndependentBepAdmin(req, res, next) {
+function independentAdminFailure(req) {
   const auth = req.session?.bepAdminAuth;
-  if (!req.session?.user?.id || auth?.authenticated !== true || auth.userId !== String(req.session.user.id)) return res.status(401).json({ error: "INDEPENDENT_ADMIN_AUTH_REQUIRED" });
+  if (!req.session?.user?.id || auth?.authenticated !== true || auth.userId !== String(req.session.user.id)) return { status: 401, error: "INDEPENDENT_ADMIN_AUTH_REQUIRED" };
   const allowed = new Set(String(process.env.BEP_ADMIN_EMAILS || "").split(",").map(normalizeEmail).filter(Boolean));
-  if (!auth.email || !allowed.has(normalizeEmail(auth.email))) return res.status(403).json({ error: "ADMIN_NOT_ALLOWLISTED" });
-  next();
+  if (!auth.email || !allowed.has(normalizeEmail(auth.email))) return { status: 403, error: "ADMIN_NOT_ALLOWLISTED" };
+  return null;
 }
-module.exports = { ensureBepAdminAuthSchema, createBepAdminAuthRouter, requireIndependentBepAdmin, normalizeEmail, hashCode, safeEqualHex };
+function requireIndependentBepAdmin(req, res, next) {
+  // Reload the persisted session before authorizing sensitive admin actions. This
+  // avoids relying on a stale in-memory session after login/session regeneration.
+  const authorize = () => {
+    const failure = independentAdminFailure(req);
+    if (failure) return res.status(failure.status).json({ error: failure.error });
+    return next();
+  };
+  if (typeof req.session?.reload !== "function") return authorize();
+  return req.session.reload((error) => {
+    if (error) return res.status(401).json({ error: "ADMIN_SESSION_UNAVAILABLE" });
+    return authorize();
+  });
+}
+module.exports = { ensureBepAdminAuthSchema, createBepAdminAuthRouter, requireIndependentBepAdmin, independentAdminFailure, normalizeEmail, hashCode, safeEqualHex };
