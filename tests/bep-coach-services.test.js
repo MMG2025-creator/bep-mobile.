@@ -271,8 +271,8 @@ test("manual Gemini ingestion records safe provider diagnostics after a repeated
  const pool={query:async(sql,params)=>{if(/INSERT INTO bep_coach_provider_usage/.test(sql))usage.push(params);if(/INSERT INTO bep_knowledge_candidates/.test(sql))throw new Error("candidate must not be inserted");return{rowCount:1,rows:[]}}};
  let calls=0;
  const fetchImpl=async()=>{calls++;return{ok:false,status:503,json:async()=>({error:{status:"UNAVAILABLE",message:"Unavailable for key test-key; retry later"}})}};
- await assert.rejects(()=>ingestion.analyseCollectedSources({pool,collection:{pages:[{url:"https://example.org/guide",title:"Guide",text:"Contenu documentaire suffisamment long."}],pagesDiscovered:1,pagesAnalysed:1,warnings:[]},category:"budget",env:{BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl}),/GEMINI_HTTP_503_UNAVAILABLE/);
- assert.equal(calls,2);
+ await assert.rejects(()=>ingestion.analyseCollectedSources({pool,collection:{pages:[{url:"https://example.org/guide",title:"Guide",text:"Contenu documentaire suffisamment long."}],pagesDiscovered:1,pagesAnalysed:1,warnings:[]},category:"budget",env:{BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"test-key"},fetchImpl,sleepImpl:async()=>{}}),/GEMINI_HTTP_503_UNAVAILABLE/);
+ assert.equal(calls,4);
  assert.equal(usage.length,1);
  assert.equal(usage[0][2],"failed");
  assert.equal(usage[0][7],503);
