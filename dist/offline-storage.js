@@ -90,11 +90,12 @@ async function forceSync(){
  const auth=await authResponse.json();if(!auth.user)throw Error("La session BEP n'est plus valide. Reconnecte-toi.");
  const identity=String(auth.user.id||auth.user.email||"authenticated"),known=String(localStorage.getItem(USER_KEY)||"");
  if(known&&known!==identity)throw Error("Ce navigateur est associé à un autre compte. Aucune donnée locale n'a été remplacée.");
- window.bepSignedIn=true;if(known!==identity){localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}
+ if(!known){const guestPending=await read(QUEUE_KEY+":guest");if(guestPending)throw Error("Des modifications locales du mode invité sont en attente. Elles sont conservées : termine leur synchronisation avant de changer de compte.");const guestData=localStorage.getItem(DATA_KEY);if(guestData&&guestData!=="null"&&guestData!=="{}")throw Error("Des données locales n’ont pas de référence distante fiable. Elles sont conservées pour éviter tout écrasement.");localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}
+ window.bepSignedIn=true;
  await enqueueChain;let pending=await read(queueKey());
  if(pending){const synced=await flush();if(!synced)throw Error("Des modifications locales sont en attente ou en conflit. Elles ont été conservées.");pending=await read(queueKey());if(pending)throw Error("La file locale n'est pas vide. Aucune donnée n'a été remplacée.")}
- await loadBaseline();const local=(()=>{try{return JSON.parse(localStorage.getItem(DATA_KEY)||"null")}catch{return null}})();
- if(baseline&&local&&stable(local)!==stable(baseline))throw Error("Des données locales diffèrent encore de la dernière référence synchronisée. Elles sont préservées pour éviter tout écrasement.");
+ await loadBaseline();const localRaw=localStorage.getItem(DATA_KEY);let local=null;try{local=JSON.parse(localRaw||"null")}catch{throw Error("Les données locales sont illisibles. Elles sont conservées et ne seront pas remplacées.")}
+ if(localRaw&&localRaw!=="null"&&localRaw!=="{}"&&(!local||!baseline||stable(local)!==stable(baseline)))throw Error("Des données locales ne disposent pas d’une référence distante fiable ou diffèrent encore de la dernière référence synchronisée. Elles sont préservées pour éviter tout écrasement.");
  const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});if(!response.ok)throw Error("Impossible de récupérer les données du compte (HTTP "+response.status+").");
  const result=await response.json();if(!result.payload||typeof result.payload!=="object"||Array.isArray(result.payload))throw Error("Le serveur a renvoyé un jeu de données invalide. Les données locales sont préservées.");
  await setBaseline(result.payload);localStorage.setItem(DATA_KEY,JSON.stringify(result.payload));const verifiedAt=new Date().toISOString();try{localStorage.setItem("bep-last-sync-at",verifiedAt)}catch{}
