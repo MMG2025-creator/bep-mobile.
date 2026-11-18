@@ -1,0 +1,32 @@
+name: BEP coach document tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - feature/bep-document-ingestion-no-ai
+    paths:
+      - "lib/bep-coach-json-import.js"
+      - "lib/bep-document-ingestion.js"
+      - "lib/bep-coach-services.js"
+      - "admin/bep-admin.js"
+      - "tests/bep-coach-json-import.test.js"
+      - "tests/bep-document-ingestion.test.js"
+      - "tests/bep-coach-services.test.js"
+      - "src/coach/knowledge/financialCoachSources.additional.fr.json"
+      - ".github/workflows/bep-coach-document-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  targeted-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run BEP coach document tests
+        run: node --test tests/bep-coach-json-import.test.js tests/bep-document-ingestion.test.js tests/bep-coach-services.test.js
