@@ -203,3 +203,11 @@ test("Coach reports the interpreted page and handles budget subpages distinctly"
  assert.ok(server.includes('page==="budget"&&subPage==="charges"'));
  assert.ok(server.includes('page==="budget"&&subPage==="monthly"'));
 });
+
+test("impulsive-purchase questions do not retrieve unrelated financial categories",()=>{
+ const behavior={slug:"pause-before-purchase",category:"behavior",title:"Créer une pause avant un achat non essentiel",content:"Une pause volontaire peut réduire une décision impulsive déclenchée par une émotion.",keywords:["achat","impulsifs","émotion"]};
+ const unrelated={slug:"tax-credit-childcare",category:"budget",title:"Crédit d'impôt pour frais de garde",content:"Réduction d'impôt et remboursement de frais annuels.",keywords:["frais","impôt","garde"]};
+ const question="Pourquoi mes achats impulsifs reviennent-ils ?";
+ assert.ok(scoreDocument(behavior,question,{pageContext:{page:"spending"}})>0);
+ assert.equal(scoreDocument(unrelated,question,{pageContext:{page:"spending"}}),0);
+});
