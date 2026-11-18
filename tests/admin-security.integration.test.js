@@ -54,9 +54,10 @@ test("integration: every mapped admin route requires its exact permission grant"
       for (const [routeKey, permission] of Object.entries(PERMISSIONS)) {
         const split = routeKey.indexOf(" ");
         const method = routeKey.slice(0, split);
-        let path = routeKey.slice(split + 1).replace(":id", "42");
+        let path = routeKey.slice(split + 1).replace(/:(approve|reject)$/, "");
         if (path.endsWith("/documents/:id")) path = path.replace(":id", "123e4567-e89b-12d3-a456-426614174000");
-        const body = path.endsWith("/review") ? { decision: routeKey.includes(":reject") ? "reject" : "approve" } : {};
+        else path = path.replace(":id", "42");
+        const body = path.endsWith("/review") ? { decision: routeKey.endsWith(":reject") ? "reject" : "approve" } : {};
         process.env.BEP_ADMIN_PERMISSION_GRANTS = "{}";
         const denied = await fetch(base + path, {
           method,
