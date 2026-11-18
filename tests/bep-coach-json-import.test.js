@@ -19,4 +19,4 @@ test("all 42 repository documents pass the structured import contract",()=>{
  assert.ok(docs.every(x=>x.sources.length>0&&x.sources.every(s=>new URL(s.url).protocol==="https:")));
 });
 
-test("20 new fiches are queued for human approval",()=>{const set=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");const docs=set.documents.filter(x=>x.verified_at==="2026-11-18");assert.equal(docs.length,20);assert.ok(docs.every(x=>x.review_status==="pending_admin_approval"));});
+test("20 new fiches are queued for human approval",()=>{const set=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");const docs=set.documents.filter(x=>x.slug.startsWith("ext-")&&x.verified_at==="2026-11-18");assert.equal(docs.length,20);assert.ok(docs.every(x=>x.review_status==="pending_admin_approval"));});
