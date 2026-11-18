@@ -82,8 +82,26 @@ if(!removed){
 return true
 }catch(error){window.dispatchEvent(new CustomEvent("bep:offline-sync-error",{detail:{message:error.message}}));return false}
 finally{flushing=false;if(retry&&navigator.onLine&&window.bepSignedIn)Promise.resolve().then(()=>flush())}}
+async function forceSync(){
+ if(!navigator.onLine)throw Error("Aucune connexion Internet détectée.");
+ const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
+ const authResponse=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});
+ if(!authResponse.ok)throw Error("Le serveur BEP ne confirme pas la session (HTTP "+authResponse.status+").");
+ const auth=await authResponse.json();if(!auth.user)throw Error("La session BEP n'est plus valide. Reconnecte-toi.");
+ const identity=String(auth.user.id||auth.user.email||"authenticated"),known=String(localStorage.getItem(USER_KEY)||"");
+ if(known&&known!==identity)throw Error("Ce navigateur est associé à un autre compte. Aucune donnée locale n'a été remplacée.");
+ window.bepSignedIn=true;if(known!==identity){localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}
+ await enqueueChain;let pending=await read(queueKey());
+ if(pending){const synced=await flush();if(!synced)throw Error("Des modifications locales sont en attente ou en conflit. Elles ont été conservées.");pending=await read(queueKey());if(pending)throw Error("La file locale n'est pas vide. Aucune donnée n'a été remplacée.")}
+ await loadBaseline();const local=(()=>{try{return JSON.parse(localStorage.getItem(DATA_KEY)||"null")}catch{return null}})();
+ if(baseline&&local&&stable(local)!==stable(baseline))throw Error("Des données locales diffèrent encore de la dernière référence synchronisée. Elles sont préservées pour éviter tout écrasement.");
+ const response=await fetch(api+"/api/data",{credentials:"include",cache:"no-store"});if(!response.ok)throw Error("Impossible de récupérer les données du compte (HTTP "+response.status+").");
+ const result=await response.json();if(!result.payload||typeof result.payload!=="object"||Array.isArray(result.payload))throw Error("Le serveur a renvoyé un jeu de données invalide. Les données locales sont préservées.");
+ await setBaseline(result.payload);localStorage.setItem(DATA_KEY,JSON.stringify(result.payload));const verifiedAt=new Date().toISOString();try{localStorage.setItem("bep-last-sync-at",verifiedAt)}catch{}
+ window.dispatchEvent(new CustomEvent("bep:remote-data-refreshed",{detail:{payload:result.payload,verifiedAt}}));window.dispatchEvent(new CustomEvent("bep:offline-synced",{detail:{payload:result.payload,verifiedAt}}));return {verifiedAt,user:auth.user};
+}
 async function refreshAuthAndSync(){if(!navigator.onLine)return;try{const api=(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");const r=await fetch(api+"/api/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)return;const auth=await r.json();if(!auth.user)return;const identity=String(auth.user.id||auth.user.email||"authenticated");if(localStorage.getItem(USER_KEY)!==identity){localStorage.setItem(USER_KEY,identity);baseline=null;baselineLoaded=false}window.bepSignedIn=true;await flush()}catch{}}
-window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),stage,discardPending,clearLocalData,refreshAuthAndSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),hasTrustedSnapshot,markKnownUser:id=>{try{const next=String(id||"authenticated");if(localStorage.getItem(USER_KEY)!==next){localStorage.setItem(USER_KEY,next);localStorage.removeItem(SNAPSHOT_KEY);baseline=null;baselineLoaded=false}}catch{}}};
+window.BEPOffline={setBaseline,enqueue,flush,readPending:()=>read(queueKey()),stage,discardPending,clearLocalData,refreshAuthAndSync,forceSync,hasKnownUser:()=>!!localStorage.getItem(USER_KEY),hasTrustedSnapshot,markKnownUser:id=>{try{const next=String(id||"authenticated");if(localStorage.getItem(USER_KEY)!==next){localStorage.setItem(USER_KEY,next);localStorage.removeItem(SNAPSHOT_KEY);baseline=null;baselineLoaded=false}}catch{}}};
 window.addEventListener("online",()=>{refreshAuthAndSync()});
 window.addEventListener("bep:offline-conflict",()=>{window.dispatchEvent(new CustomEvent("bep:toast",{detail:{message:"Synchronisation suspendue : les données du compte ont changé sur un autre appareil. Tes données locales sont préservées."}}))});
 })();
