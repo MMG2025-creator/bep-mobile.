@@ -192,15 +192,14 @@ function updateCoachCrossState(){
  if(status)status.textContent=count<2?"Sélectionne au moins deux thématiques ("+count+" actuellement).":count+" thématiques sélectionnées. Une question transversale est prête.";
 }
 function ensureCoachWelcome(){
- const log=$("coachChatLog");if(!log||log.children.length)return;
- addCoachMessage("coach","Bonjour ! Je suis ton Coach BEP. Je peux t'aider à comprendre tes finances, explorer tes priorités et transformer tes questions en prochaines actions concrètes. Tu peux personnaliser ton accompagnement, explorer les questions ou m'écrire librement.");
+ // L'accueil est déjà porté par l'en-tête du Coach : ne pas afficher un second message.
 }
 document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
 document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
 document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;renderCoachExplorer()}));
 $("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
 document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
-$("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;submitCoachQuestion(button.dataset.coachQuestion)});
+$("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;setCoachTab("open");submitCoachQuestion(button.dataset.coachQuestion);requestAnimationFrame(()=>$("coachChatLog")?.scrollIntoView({behavior:"smooth",block:"start"}))});
 $("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
 renderCoachExplorer();updateCoachCrossState();setCoachTab("profile");
 
