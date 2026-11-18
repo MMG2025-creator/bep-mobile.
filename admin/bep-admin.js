@@ -168,4 +168,4 @@ function createBepAdminRouter({ pool, requireAdmin }) {
   return router;
 }
 const bepAdminPage = fs.readFileSync(path.join(__dirname, "..", "dist", "admin.html"), "utf8");
-module.exports = { ensureBepAdminSchema, createBepAdminRouter, bepAdminPage, canonicalJson, sha256, signExport, verifyExport, accountRef, sanitizePayload, buildExportPage };
+module.exports = { ensureBepAdminSchema, createBepAdminRouter, bepAdminPage, canonicalJson, sha256, signExport, verifyExport, accountRef, sanitizePayload, buildExportPage, appendAudit };

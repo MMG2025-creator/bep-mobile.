@@ -112,7 +112,7 @@ test("agent schema is additive and does not alter existing BEP financial tables"
 });
 test("server exposes only allowlisted admin review and aggregate telemetry",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
- assert.match(server,/const requireBepAgentAdmin=requireIndependentBepAdmin/);
+ assert.match(server,/const requireBepAgentAdmin=\(req,res,next\)=>requireBepAdminPermission/);
  assert.doesNotMatch(server,/BEP_AGENT_ADMIN_USER_IDS/);
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
@@ -167,4 +167,57 @@ test("new institutional knowledge candidates have a human approval path and appe
  assert.match(admin,/crStructuredImportButton/);
  assert.match(admin,/rationale\.conditions/);
  assert.match(admin,/rationale\.limits/);
+});
+
+test("admin permission grants are explicit, granular, and fail closed",()=>{
+ const {configuredGrants,resolvePermission}=require("../admin/bep-admin-permissions");
+ const grants=configuredGrants({BEP_ADMIN_PERMISSION_GRANTS:JSON.stringify({"ADMIN@example.test":["documents.proposals.read","documents.proposals.approve"]})});
+ assert.equal(grants["admin@example.test"].has("documents.proposals.read"),true);
+ assert.equal(grants["admin@example.test"].has("documents.proposals.reject"),false);
+ assert.equal(configuredGrants({BEP_ADMIN_PERMISSION_GRANTS:"invalid"})["admin@example.test"],undefined);
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"approve"}}),"documents.proposals.approve");
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"reject"}}),"documents.proposals.reject");
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"other"}}),null);
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/unknown"}),null);
+});
+test("admin review route requires a digest-bound server confirmation and writes a chained audit event",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ const audit=fs.readFileSync(path.join(__dirname,"..","admin","bep-admin.js"),"utf8");
+ assert.match(server,/validateReviewConfirmation\(candidate,req\.body\)/);
+ const permissions=fs.readFileSync(path.join(__dirname,"..","admin","bep-admin-permissions.js"),"utf8");
+ assert.match(permissions,/function validateReviewConfirmation\(candidate,body\)/);
+ assert.match(permissions,/body\?\.candidate_digest===candidate\.source_digest/);
+ assert.match(server,/await appendAudit\(client,accountRef\(req\.session\.user\.id,auditSecret\)/);
+ assert.match(server,/document_proposal_approved/);
+ assert.match(server,/document_proposal_rejected/);
+ assert.match(audit,/async function appendAudit\(client, actorRef, action, targetRef, details\)/);
+ assert.match(audit,/pg_advisory_xact_lock\(72419031\)/);
+});
+
+test("proposal review UI sends the explicit server confirmation and candidate digest",()=>{
+ const html=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ assert.match(html,/confirmation:decision==="approve"\?"APPROVE_DOCUMENT":"REJECT_DOCUMENT"/);
+ assert.match(html,/candidate_digest:item\.source_digest/);
+ assert.match(server,/source_version,source_digest,review_status/);
+});
+
+test("admin permission middleware rejects ungranted actions and allows only an explicit grant",()=>{
+ const {requirePermission}=require("../admin/bep-admin-permissions");
+ const previous=process.env.BEP_ADMIN_PERMISSION_GRANTS,previousEmails=process.env.BEP_ADMIN_EMAILS;
+ const req={session:{user:{id:"admin-1"},bepAdminAuth:{authenticated:true,userId:"admin-1",email:"admin@example.test"}}};
+ let status=0,body=null,passed=false;
+ const res={status(code){status=code;return this},json(value){body=value;return this}};
+ delete process.env.BEP_ADMIN_PERMISSION_GRANTS;process.env.BEP_ADMIN_EMAILS="admin@example.test";
+ requirePermission(req,res,()=>{passed=true},"documents.proposals.approve");
+ assert.equal(status,403);assert.equal(body.error,"ADMIN_PERMISSION_DENIED");assert.equal(passed,false);
+ process.env.BEP_ADMIN_PERMISSION_GRANTS=JSON.stringify({"admin@example.test":["documents.proposals.read"]});
+ status=0;body=null;
+ requirePermission(req,res,()=>{passed=true},"documents.proposals.approve");
+ assert.equal(status,403);assert.equal(body.permission,"documents.proposals.approve");
+ process.env.BEP_ADMIN_PERMISSION_GRANTS=JSON.stringify({"admin@example.test":["documents.proposals.approve"]});
+ requirePermission(req,res,()=>{passed=true},"documents.proposals.approve");
+ assert.equal(passed,true);
+ if(previous===undefined)delete process.env.BEP_ADMIN_PERMISSION_GRANTS;else process.env.BEP_ADMIN_PERMISSION_GRANTS=previous;
+ if(previousEmails===undefined)delete process.env.BEP_ADMIN_EMAILS;else process.env.BEP_ADMIN_EMAILS=previousEmails;
 });
