@@ -384,7 +384,8 @@ $("deleteBtn").onclick=async()=>{
     if(!response.ok)logoutWarning=" Les données locales sont effacées, mais la déconnexion serveur n’a pas été confirmée (HTTP "+response.status+"). Ferme cet onglet et réessaie de te connecter.";
    }catch{logoutWarning=" Les données locales sont effacées, mais le serveur n’a pas confirmé la déconnexion. Ferme cet onglet et réessaie de te connecter."}
   }
-  window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));
+  window.addEventListener("bep:remote-data-refreshed",event=>{const payload=event.detail?.payload;if(!payload||typeof payload!=="object"||Array.isArray(payload))return;state={...defaults,...payload};if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];if(!Array.isArray(state.coachProfile))state.coachProfile=[];if(!state.treasury||typeof state.treasury!=="object")state.treasury={overdraftLimit:0};if(!Array.isArray(state.incomes))state.incomes=[];migrateIncomeState();render()});
+window.bepSignedIn=false;window.dispatchEvent(new Event("bep:auth-ready"));
   state={...defaults};syncIncomeTotal();gate.hidden=false;authMode("login");$("loginEmail").value="";$("loginPassword").value="";
   authMessage.textContent="Les données locales de cet appareil ont été effacées. Les données de ton compte restent conservées sur BEP."+logoutWarning;
   notify("Données locales effacées");
