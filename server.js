@@ -1,8 +1,9 @@
 "use strict";
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),bcrypt=require("bcryptjs");
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
-const {ensureBepAdminSchema,createBepAdminRouter}=require("./admin/bep-admin");
-const {ensureBepAdminAuthSchema,createBepAdminAuthRouter,requireIndependentBepAdmin}=require("./admin/bep-admin-auth");
+const {ensureBepAdminSchema,createBepAdminRouter,appendAudit,accountRef}=require("./admin/bep-admin");
+const {ensureBepAdminAuthSchema,createBepAdminAuthRouter}=require("./admin/bep-admin-auth");
+const {requirePermission:requireBepAdminPermission,resolvePermission:resolveBepAdminPermission}=require("./admin/bep-admin-permissions");
 const BEP_ADMIN_AUTH_ENABLED=process.env.BEP_ADMIN_AUTH_ENABLED==="true";
 const BEP_ADMIN_EMAILS=String(process.env.BEP_ADMIN_EMAILS||"mmsignenoir@gmail.com").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
 const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
@@ -85,7 +86,7 @@ if(BEP_ADMIN_AUTH_ENABLED){
  app.use("/api/admin/auth",createBepAdminAuthRouter({pool,bcrypt,allowedEmails:BEP_ADMIN_EMAILS,sendCode:(email,code)=>sendVerificationEmail(email,code,"admin_auth_code")}));
 }
 if(BEP_ADMIN_ENABLED&&BEP_ADMIN_AUTH_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY){
- app.use("/api/admin/console",createBepAdminRouter({pool,requireAdmin:requireIndependentBepAdmin}));
+ app.use("/api/admin/console",createBepAdminRouter({pool,requireAdmin:(req,res,next)=>requireBepAdminPermission({...req,fullPath:req.baseUrl+req.path},res,next,resolveBepAdminPermission({...req,fullPath:req.baseUrl+req.path}))}));
 }else if(BEP_ADMIN_ENABLED){console.warn("BEP admin console remains disabled: independent admin authentication is not ready");}
 async function init(){if(!pool)return;await pool.query("CREATE TABLE IF NOT EXISTS bep_users(id TEXT PRIMARY KEY,email TEXT NOT NULL UNIQUE,display_name TEXT,avatar_url TEXT,password_hash TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"); await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS password_hash TEXT");await pool.query("ALTER TABLE bep_users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT TRUE");await pool.query("CREATE TABLE IF NOT EXISTS bep_email_verifications(email TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,code_hash TEXT NOT NULL,expires_at TIMESTAMPTZ NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_password_reset_tokens(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES bep_users(id) ON DELETE CASCADE,expires_at TIMESTAMPTZ NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE INDEX IF NOT EXISTS bep_password_reset_tokens_expiry ON bep_password_reset_tokens(expires_at)");await pool.query("CREATE UNIQUE INDEX IF NOT EXISTS bep_password_reset_tokens_user_unique ON bep_password_reset_tokens(user_id)");await pool.query("CREATE TABLE IF NOT EXISTS bep_user_data(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,payload JSONB NOT NULL DEFAULT '{\"income\":0,\"budgets\":[],\"expenses\":[],\"goals\":[]}'::jsonb,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_states(state TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");await pool.query("CREATE TABLE IF NOT EXISTS bep_oauth_state_tokens(token_hash TEXT PRIMARY KEY,expires_at TIMESTAMPTZ NOT NULL)");
 await pool.query("CREATE TABLE IF NOT EXISTS bep_user_ai(user_id TEXT PRIMARY KEY REFERENCES bep_users(id) ON DELETE CASCADE,provider TEXT NOT NULL,model TEXT NOT NULL,endpoint TEXT,encrypted_key TEXT NOT NULL,key_iv TEXT NOT NULL,key_tag TEXT NOT NULL,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
@@ -114,7 +115,7 @@ if(BEP_ADMIN_AUTH_ENABLED)await ensureBepAdminAuthSchema(pool);
 if(BEP_ADMIN_ENABLED&&BEP_ADMIN_INDEPENDENT_AUTH_READY)await ensureBepAdminSchema(pool);
 }
 function auth(req,res,next){if(!req.session||!req.session.user)return res.status(401).json({error:"AUTH_REQUIRED"});next()}
-const requireBepAgentAdmin=requireIndependentBepAdmin;
+const requireBepAgentAdmin=(req,res,next)=>requireBepAdminPermission(req,res,next,resolveBepAdminPermission(req));
 function coachTelemetry(req,res,next){
  if(!agentTelemetryReady)return next();
  const started=Date.now();let recorded=false;const send=res.json.bind(res);
@@ -414,6 +415,8 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   const found=await client.query("SELECT * FROM bep_knowledge_candidates WHERE id=$1 FOR UPDATE",[id]);
   if(!found.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"CANDIDATE_NOT_FOUND"})}
   const candidate=found.rows[0];
+  const expectedConfirmation=decision==="approve"?"APPROVE_DOCUMENT":"REJECT_DOCUMENT";
+  if(req.body?.confirmation!==expectedConfirmation||req.body?.candidate_digest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(400).json({error:"DOCUMENT_REVIEW_CONFIRMATION_REQUIRED"})}
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
    if(candidate.proposal_type==="create"){
@@ -445,7 +448,10 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
    }
   }
   await client.query("UPDATE bep_knowledge_candidates SET review_status=$2,reviewed_at=NOW() WHERE id=$1",[id,decision==="approve"?"accepted":"rejected"]);
-  await client.query("COMMIT");res.json({ok:true,id,decision});
+  const auditSecret=String(process.env.BEP_ADMIN_EXCHANGE_SECRET||process.env.SESSION_SECRET||"");
+  if(auditSecret.length<32)throw new Error("ADMIN_AUDIT_SECRET_NOT_CONFIGURED");
+  await appendAudit(client,accountRef(req.session.user.id,auditSecret),decision==="approve"?"document_proposal_approved":"document_proposal_rejected",String(candidate.id),{source_slug:candidate.source_slug,proposal_type:candidate.proposal_type,source_version:Number(candidate.source_version)||null,source_digest:candidate.source_digest});
+  await client.query("COMMIT");res.json({ok:true,id,decision,audited:true});
  }catch(e){
   await client.query("ROLLBACK").catch(()=>{});
   console.error("BEP agent candidate review failed",String(e?.message||e).slice(0,160));

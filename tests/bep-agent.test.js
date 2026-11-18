@@ -112,7 +112,7 @@ test("agent schema is additive and does not alter existing BEP financial tables"
 });
 test("server exposes only allowlisted admin review and aggregate telemetry",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
- assert.match(server,/const requireBepAgentAdmin=requireIndependentBepAdmin/);
+ assert.match(server,/const requireBepAgentAdmin=\(req,res,next\)=>requireBepAdminPermission/);
  assert.doesNotMatch(server,/BEP_AGENT_ADMIN_USER_IDS/);
  assert.match(server,/\/api\/admin\/bep-agent\/candidates/);
  assert.match(server,/\/api\/admin\/bep-agent\/overview/);
@@ -167,4 +167,27 @@ test("new institutional knowledge candidates have a human approval path and appe
  assert.match(admin,/crStructuredImportButton/);
  assert.match(admin,/rationale\.conditions/);
  assert.match(admin,/rationale\.limits/);
+});
+
+test("admin permission grants are explicit, granular, and fail closed",()=>{
+ const {configuredGrants,resolvePermission}=require("../admin/bep-admin-permissions");
+ const grants=configuredGrants({BEP_ADMIN_PERMISSION_GRANTS:JSON.stringify({"ADMIN@example.test":["documents.proposals.read","documents.proposals.approve"]})});
+ assert.equal(grants["admin@example.test"].has("documents.proposals.read"),true);
+ assert.equal(grants["admin@example.test"].has("documents.proposals.reject"),false);
+ assert.equal(configuredGrants({BEP_ADMIN_PERMISSION_GRANTS:"invalid"})["admin@example.test"],undefined);
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"approve"}}),"documents.proposals.approve");
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"reject"}}),"documents.proposals.reject");
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/candidates/42/review",body:{decision:"other"}}),null);
+ assert.equal(resolvePermission({method:"POST",path:"/api/admin/bep-agent/unknown"}),null);
+});
+test("admin review route requires a digest-bound server confirmation and writes a chained audit event",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ const audit=fs.readFileSync(path.join(__dirname,"..","admin","bep-admin.js"),"utf8");
+ assert.match(server,/DOCUMENT_REVIEW_CONFIRMATION_REQUIRED/);
+ assert.match(server,/req\.body\?\.candidate_digest!==candidate\.source_digest/);
+ assert.match(server,/await appendAudit\(client,accountRef\(req\.session\.user\.id,auditSecret\)/);
+ assert.match(server,/document_proposal_approved/);
+ assert.match(server,/document_proposal_rejected/);
+ assert.match(audit,/async function appendAudit\(client, actorRef, action, targetRef, details\)/);
+ assert.match(audit,/pg_advisory_xact_lock\(72419031\)/);
 });
