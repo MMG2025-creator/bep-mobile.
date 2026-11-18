@@ -90,3 +90,13 @@ test("offline Coach distinguishes an explanation from an explicit comparison",()
  assert.equal(classify("Explique-moi la différence entre budget prévisionnel et dépenses réelles"),"explain");
  assert.equal(classify("Compare ces deux solutions"),"compare");
 });
+
+test("local Coach explains forecast versus actual spending without requiring income data",()=>{
+ const reply=makeCoachReply({page:"budget",label:"Budget",subPage:"monthly"})(
+  "Explique-moi la différence entre budget prévisionnel et dépenses réelles"
+ );
+ assert.match(reply,/budget prévisionnel/);
+ assert.match(reply,/dépenses réelles/);
+ assert.match(reply,/écart entre le montant réel et le montant prévu/);
+ assert.doesNotMatch(reply,/il me manque ton revenu mensuel/);
+});
