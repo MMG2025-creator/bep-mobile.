@@ -146,7 +146,7 @@ test("documentary JSON review uses a closed allowlist and never walks arbitrary 
  assert.match(worker,/services\/coach-library\.json/);
  assert.match(worker,/financialCoachSources\.fr\.json/);
  assert.match(worker,/financialCoachSources\.additional\.fr\.json/);
- assert.match(worker,/maxTotalChars=40000/);
+ assert.match(worker,/maxTotalChars=120000/);
  assert.doesNotMatch(worker,/readdirSync|glob\(|walkDirectory/);
 });
 test("agent prompts are isolated from personal Coach context and contain explicit untrusted-data policy",()=>{
