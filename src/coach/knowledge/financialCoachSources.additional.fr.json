@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-11",
+  "checkedAt": "2026-11-18",
   "records": [
     {
       "id": "ENERGY_PAYMENT_DIFFICULTY",
@@ -367,6 +367,1237 @@
         "basis": "Source primaire du régulateur financier ; contenu de principe vérifié directement."
       },
       "freshness": "Révision annuelle et lors de toute évolution réglementaire ou de risque produit.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-monthly-cashflow",
+      "category": "budget",
+      "title": "Construire un budget mensuel à partir des revenus et des dépenses",
+      "content": "Mettre en regard les ressources réellement perçues et les dépenses d'une même période. Recenser salaires, prestations, pensions et autres entrées, puis distinguer charges fixes, dépenses variables et dépenses occasionnelles. Ramener au mois les dépenses annuelles ou semestrielles évite de surestimer l'argent disponible. Le budget sert à calculer un reste à vivre et à repérer les périodes de tension.",
+      "keywords": [
+        "revenus",
+        "dépenses",
+        "reste à vivre"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-fixed-variable-costs",
+      "category": "budget",
+      "title": "Distinguer charges fixes, dépenses variables et dépenses exceptionnelles",
+      "content": "Classer les dépenses selon leur régularité et leur caractère indispensable : logement et assurances sont généralement prévisibles, alimentation et transport varient, tandis qu'une réparation constitue une dépense ponctuelle. Regrouper par grandes familles simplifie le suivi et aide à identifier les marges de manœuvre sans négliger les besoins essentiels.",
+      "keywords": [
+        "charges fixes",
+        "dépenses variables",
+        "dépenses exceptionnelles"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-monthly-annual-expenses",
+      "category": "budget",
+      "title": "Provisionner les dépenses annuelles et saisonnières",
+      "content": "Les dépenses non prélevées chaque mois doivent être intégrées au budget courant. Diviser une facture annuelle estimée par douze donne une provision mensuelle de référence. Cette méthode peut couvrir rentrée scolaire, entretien du véhicule ou échéances annuelles et évite de confondre un mois sans facture avec une amélioration durable de la situation.",
+      "keywords": [
+        "provision",
+        "dépenses annuelles",
+        "budget"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-envelope-method",
+      "category": "budget",
+      "title": "Organiser les dépenses avec la méthode des enveloppes",
+      "content": "Affecter à l'avance une somme à chaque grande catégorie rend les limites de dépenses visibles. La méthode peut être utilisée sur papier, dans un tableur ou avec des sous-comptes. Définir des catégories simples, financer d'abord les charges essentielles et suivre le montant restant aide à éviter les dépassements sans multiplier les outils.",
+      "keywords": [
+        "méthode des enveloppes",
+        "catégories",
+        "dépenses"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-irregular-income",
+      "category": "budget",
+      "title": "Piloter un budget lorsque les revenus sont irréguliers",
+      "content": "Lorsque les revenus varient, bâtir le budget sur le meilleur mois expose aux tensions pendant les périodes creuses. Observer plusieurs mois, retenir un scénario prudent et séparer rentrées exceptionnelles et revenus habituels. Un suivi sur douze mois aide à anticiper saisonnalité, congés sans solde ou périodes de baisse d'activité.",
+      "keywords": [
+        "revenus irréguliers",
+        "saisonnalité",
+        "trésorerie"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-expense-tracking",
+      "category": "budget",
+      "title": "Mettre en place un suivi régulier des dépenses",
+      "content": "Rapprocher les opérations bancaires et paiements en espèces des catégories prévues au budget. Un point hebdomadaire permet de détecter dépense oubliée, abonnement renouvelé ou dépassement. Conserver les justificatifs utiles et noter les paiements différés améliore la fiabilité. La régularité est plus utile qu'un tableau complexe abandonné rapidement.",
+      "keywords": [
+        "suivi dépenses",
+        "relevé bancaire",
+        "justificatifs"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-living-remainder",
+      "category": "budget",
+      "title": "Calculer le reste à vivre sans confondre solde bancaire et budget disponible",
+      "content": "Le reste à vivre s'évalue après prise en compte des ressources et charges retenues sur une période définie. Préciser les dépenses déduites : logement, énergie, assurances, crédits et autres engagements. Un solde bancaire positif ne signifie pas que toute la somme peut être dépensée, car des prélèvements et dépenses périodiques peuvent rester à venir.",
+      "keywords": [
+        "reste à vivre",
+        "charges",
+        "trésorerie"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-emergency-expenses",
+      "category": "budget",
+      "title": "Préparer les dépenses imprévues dans le budget",
+      "content": "Certaines dépenses sont irrégulières mais prévisibles par leur nature : réparation automobile, remplacement d'un appareil ou frais restant à charge. Identifier ces risques aide à créer une provision ou une réserve. Une dépense urgente ne doit pas être financée automatiquement par un crédit coûteux sans examen des alternatives et de la capacité de remboursement.",
+      "keywords": [
+        "imprévus",
+        "provision",
+        "épargne de précaution"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-subscriptions-audit",
+      "category": "budget",
+      "title": "Auditer les abonnements et prélèvements récurrents",
+      "content": "Une revue périodique des relevés permet d'identifier fournisseur, montant, fréquence, renouvellement et utilité de chaque abonnement ou service. Avant résiliation, vérifier conditions contractuelles, préavis et conséquences sur une couverture ou un service essentiel. Conserver contrat et preuve de résiliation facilite le suivi.",
+      "keywords": [
+        "abonnements",
+        "prélèvements",
+        "charges récurrentes"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "budget-bank-fees-review",
+      "category": "budget",
+      "title": "Repérer les frais bancaires et demander une explication",
+      "content": "Identifier les frais à partir des relevés et de la brochure tarifaire. En cas d'incompréhension, demander par écrit l'origine, la date de l'opération et la clause tarifaire appliquée. Comparer les services utilisés avec l'offre détenue peut aider à évaluer une formule différente. En cas de désaccord, suivre la procédure de réclamation de la banque.",
+      "keywords": [
+        "frais bancaires",
+        "tarification",
+        "réclamation"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes ?",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-social-benefits-simulation",
+      "category": "income",
+      "title": "Utiliser un simulateur pour repérer les aides sociales possibles",
+      "content": "Un simulateur public aide à repérer des prestations susceptibles de correspondre à une situation familiale, professionnelle ou financière. La qualité de l'estimation dépend des informations saisies : composition du foyer, logement, ressources et périodes de référence. Le résultat constitue une orientation et doit être confirmé auprès de l'organisme compétent.",
+      "keywords": [
+        "aides sociales",
+        "simulateur",
+        "éligibilité"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-benefit-change-reporting",
+      "category": "income",
+      "title": "Signaler un changement de situation pouvant modifier les prestations",
+      "content": "Un changement d'emploi, de revenus, de logement, de composition familiale ou de résidence peut modifier des droits sociaux. Vérifier auprès de chaque organisme quelle déclaration effectuer, à quelle date et avec quelles pièces. Conserver la preuve de déclaration permet de retrouver les informations transmises en cas de régularisation.",
+      "keywords": [
+        "changement situation",
+        "déclaration",
+        "prestations"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-benefit-estimate-vs-award",
+      "category": "income",
+      "title": "Comprendre la différence entre estimation de droits et attribution",
+      "content": "Une estimation en ligne oriente vers des aides possibles ; l'attribution intervient après examen par l'organisme compétent selon les règles et justificatifs applicables. Un montant simulé ne doit pas être intégré comme revenu certain tant que la décision n'est pas reçue. En cas d'écart, comparer périodes de ressources et informations déclarées.",
+      "keywords": [
+        "estimation",
+        "notification",
+        "droit social"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-family-resource-inventory",
+      "category": "income",
+      "title": "Recenser toutes les ressources du foyer avant une démarche sociale",
+      "content": "Avant un dossier, lister les ressources perçues par les membres du foyer et les périodes correspondantes. Revenus professionnels, allocations, pensions et indemnités peuvent être traités différemment selon le dispositif. Relever les montants demandés sans présumer qu'un revenu est toujours inclus ou exclu facilite les vérifications.",
+      "keywords": [
+        "ressources foyer",
+        "revenus",
+        "dossier social"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-household-composition",
+      "category": "income",
+      "title": "Vérifier la composition du foyer déclarée pour les aides",
+      "content": "La composition du foyer peut influencer l'étude des droits : personnes à charge, couple, séparation, résidence des enfants et changements récents. Vérifier les questions posées par l'organisme plutôt que reprendre automatiquement la composition d'un autre document. En cas de garde alternée ou séparation récente, demander comment déclarer la situation.",
+      "keywords": [
+        "composition familiale",
+        "personnes à charge",
+        "séparation"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-benefit-payment-calendar",
+      "category": "income",
+      "title": "Intégrer les dates de versement des prestations au budget",
+      "content": "Les prestations et revenus de remplacement ne sont pas toujours versés le même jour que le salaire. Inscrire dates prévisionnelles et prélèvements dans un calendrier mensuel aide à anticiper les tensions. Distinguer la date théorique de paiement de la date réelle de crédit sur le compte et prévoir une marge en cas de délai bancaire.",
+      "keywords": [
+        "dates versement",
+        "calendrier budgétaire",
+        "trésorerie"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-support-documents-checklist",
+      "category": "income",
+      "title": "Préparer les justificatifs avant une demande d'aide",
+      "content": "La préparation des justificatifs réduit les échanges complémentaires. Selon le dispositif, l'organisme peut demander identité, logement, situation familiale, ressources ou coordonnées bancaires. Vérifier la liste exacte sur le site officiel et transmettre des documents lisibles uniquement par le canal sécurisé prévu.",
+      "keywords": [
+        "justificatifs",
+        "demande aide",
+        "dossier administratif"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-benefit-overpayment",
+      "category": "income",
+      "title": "Réagir à une notification de trop-perçu d'une prestation",
+      "content": "Identifier prestation, période, montant et motif du trop-perçu. Comparer ces éléments aux déclarations et justificatifs conservés pour repérer une erreur éventuelle. La notification précise les voies et délais de contestation ou modalités de remboursement. En cas de difficulté, demander les possibilités de délai prévues par l'organisme.",
+      "keywords": [
+        "trop-perçu",
+        "indu",
+        "contestation",
+        "remboursement"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "income-unstable-income-buffer",
+      "category": "income",
+      "title": "Anticiper les mois de baisse de revenus",
+      "content": "Distinguer ressources certaines, revenus variables et rentrées exceptionnelles. Construire le budget de référence sur un scénario prudent puis l'ajuster lorsque les sommes sont encaissées. Les mois de forte activité peuvent contribuer à une réserve pour les périodes faibles. Cette approche évite de transformer une rentrée ponctuelle en engagement fixe.",
+      "keywords": [
+        "revenus variables",
+        "baisse revenus",
+        "réserve"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Mes droits sociaux – portail public",
+          "title": "Simuler vos aides",
+          "url": "https://www.mesdroitssociaux.gouv.fr/simulateurs",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-lep-eligibility",
+      "category": "savings",
+      "title": "Vérifier son éligibilité au Livret d'épargne populaire",
+      "content": "Le LEP est un produit réglementé soumis à des conditions de domicile fiscal et de revenus. L'éligibilité dépend notamment du revenu fiscal de référence et de la composition du foyer fiscal ; les plafonds doivent être consultés dans la fiche officielle à jour. La banque vérifie les conditions à l'ouverture et pendant la détention.",
+      "keywords": [
+        "LEP",
+        "revenu fiscal de référence",
+        "épargne réglementée"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-lep-rules",
+      "category": "savings",
+      "title": "Comprendre le fonctionnement et les limites du LEP",
+      "content": "Le LEP est un livret réglementé dont les conditions de détention, plafond de versements, modalités d'alimentation et rémunération sont fixés par les règles en vigueur. Consulter la fiche officielle actualisée avant toute démarche. Distinguer plafond de versements et solde du livret, qui peut évoluer avec la capitalisation des intérêts.",
+      "keywords": [
+        "LEP",
+        "plafond",
+        "taux",
+        "intérêts"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-emergency-reserve-sizing",
+      "category": "savings",
+      "title": "Dimensionner une épargne de précaution selon sa situation",
+      "content": "L'épargne de précaution vise à absorber un imprévu sans recourir immédiatement au crédit. Son montant dépend de la stabilité des revenus, des charges essentielles, de la situation familiale et des risques propres au foyer. Définir une première cible atteignable puis l'ajuster progressivement. Disponibilité et sécurité sont prioritaires pour cette réserve.",
+      "keywords": [
+        "épargne précaution",
+        "réserve",
+        "liquidité"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-goal-and-time-horizon",
+      "category": "savings",
+      "title": "Relier chaque objectif d'épargne à un horizon de placement",
+      "content": "Un objectif d'épargne précise montant recherché, date d'utilisation et possibilité de différer le projet. Un besoin proche appelle une attention particulière à la disponibilité et au risque de perte. Un horizon plus long peut permettre d'étudier d'autres supports, sans supprimer le risque. Examiner frais, conditions de sortie et situation globale.",
+      "keywords": [
+        "objectif épargne",
+        "horizon",
+        "liquidité",
+        "risque"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-diversification-basics",
+      "category": "savings",
+      "title": "Comprendre la diversification sans croire à une garantie",
+      "content": "Diversifier consiste à ne pas concentrer tous ses investissements sur un seul émetteur, secteur ou type de support. Cela peut réduire certains risques spécifiques, mais ne supprime ni le risque général de marché ni la possibilité de perte en capital. Examiner les expositions réelles des produits, pas seulement le nombre de lignes détenues.",
+      "keywords": [
+        "diversification",
+        "concentration",
+        "risque marché"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-scam-red-flags",
+      "category": "savings",
+      "title": "Repérer les signaux d'alerte d'une arnaque à l'investissement",
+      "content": "Une proposition promettant un rendement élevé sans risque, imposant une décision immédiate ou demandant un transfert inhabituel doit déclencher des vérifications. Vérifier l'identité exacte de l'interlocuteur et son autorisation par un canal indépendant. Les listes de mises en garde de l'AMF sont utiles, mais l'absence d'un nom ne prouve pas qu'il est autorisé.",
+      "keywords": [
+        "arnaque investissement",
+        "rendement garanti",
+        "vérification"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-risk-capacity",
+      "category": "savings",
+      "title": "Distinguer tolérance au risque et capacité financière à subir une perte",
+      "content": "La tolérance au risque décrit la réaction psychologique aux fluctuations. La capacité financière à subir une perte dépend des revenus, charges, dettes, horizon et besoins de liquidité. Une personne peut accepter psychologiquement une variation sans pouvoir immobiliser ou perdre la somme investie. Examiner ces deux dimensions séparément avant une décision.",
+      "keywords": [
+        "tolérance risque",
+        "capacité perte",
+        "profil investisseur"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "savings-investment-pressure",
+      "category": "savings",
+      "title": "Résister à la pression commerciale avant un placement",
+      "content": "Une décision d'investissement ne doit pas être prise sous la pression d'un appel, message privé ou offre limitée dans le temps. Lire les documents, vérifier l'intermédiaire indépendamment et comprendre frais, risques et conditions de sortie protège contre les décisions précipitées. Une promesse de rendement élevé ou garanti exige des vérifications supplémentaires.",
+      "keywords": [
+        "pression commerciale",
+        "arnaque",
+        "documents investissement"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité des marchés financiers (AMF)",
+          "title": "Eviter les arnaques",
+          "url": "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/eviter-les-arnaques",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-financial-priority-order",
+      "category": "planning",
+      "title": "Hiérarchiser les décisions financières en période de tension",
+      "content": "En période de tension, protéger les besoins essentiels et identifier les échéances aux conséquences rapides. Établir ensuite une vision complète des dettes et engagements ; réexaminer temporairement dépenses non essentielles et nouveaux engagements. Lorsque la situation devient difficile à piloter seul, un Point conseil budget peut aider à organiser les démarches.",
+      "keywords": [
+        "priorités financières",
+        "difficultés budget",
+        "PCB"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-bank-complaint-record",
+      "category": "planning",
+      "title": "Constituer un dossier de réclamation auprès de sa banque",
+      "content": "Rassembler relevés, contrats, échanges, dates, montants et réponses reçues pour présenter une réclamation précise. Décrire les faits chronologiquement, indiquer ce qui est contesté et la solution demandée, puis conserver la preuve d'envoi. Si le désaccord persiste, vérifier la procédure de médiation applicable à l'établissement.",
+      "keywords": [
+        "réclamation bancaire",
+        "preuve",
+        "litige"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-debt-overview",
+      "category": "planning",
+      "title": "Établir un inventaire complet des dettes et échéances",
+      "content": "Pour chaque créancier, noter le montant restant dû connu, mensualité, taux, date de prélèvement, retards éventuels et garanties. Les dettes fiscales, locatives, familiales et de crédit ne suivent pas toutes les mêmes règles. Une vue consolidée aide à prioriser les échéances et préparer un échange avec les créanciers ou un accompagnant budgétaire.",
+      "keywords": [
+        "dettes",
+        "échéances",
+        "créanciers",
+        "mensualités"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-credit-affordability",
+      "category": "planning",
+      "title": "Évaluer une mensualité avant de souscrire un crédit",
+      "content": "Examiner la mensualité dans le budget réel, en ajoutant charges existantes, dépenses variables, assurances éventuelles et périodes de baisse de revenus. Comprendre coût total, taux, durée, frais et conditions de remboursement. Une mensualité supportable aujourd'hui peut devenir difficile si la situation change ; ne pas emprunter pour masquer durablement un déficit.",
+      "keywords": [
+        "crédit",
+        "mensualité",
+        "capacité remboursement",
+        "coût total"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-overdraft-warning",
+      "category": "planning",
+      "title": "Réagir rapidement à un risque de découvert bancaire",
+      "content": "Quand un découvert devient probable, lister prélèvements et dépenses à venir pour identifier les échéances urgentes. Contacter la banque avant l'incident afin de comprendre frais possibles et solutions contractuelles. Vérifier opérations en attente et dates de valeur. Un découvert répété signale souvent un déséquilibre qui nécessite une analyse des ressources et charges.",
+      "keywords": [
+        "découvert",
+        "trésorerie",
+        "incident bancaire"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-debt-support",
+      "category": "planning",
+      "title": "Se faire accompagner lorsque les dettes deviennent difficiles à gérer",
+      "content": "Un accompagnement budgétaire aide à reprendre une vision globale des ressources, charges et dettes. Les Points conseil budget accueillent les personnes en difficulté et peuvent informer et accompagner dans les démarches, y compris en lien avec le surendettement. Cet accompagnement clarifie la situation mais ne garantit ni annulation de dette ni décision favorable.",
+      "keywords": [
+        "accompagnement",
+        "surendettement",
+        "Point conseil budget"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-financial-document-retention",
+      "category": "planning",
+      "title": "Organiser et conserver les documents financiers utiles",
+      "content": "Conserver contrats, échéanciers, factures, relevés et notifications facilite le suivi budgétaire et la résolution des litiges. Un classement par thème et année permet de retrouver les pièces. Protéger les accès et limiter les copies inutiles. Les durées légales de conservation diffèrent selon les documents : vérifier la règle applicable plutôt que retenir une durée unique.",
+      "keywords": [
+        "documents financiers",
+        "archivage",
+        "justificatifs"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-financial-scam-response",
+      "category": "planning",
+      "title": "Réagir après un contact suspect ou une tentative d'escroquerie financière",
+      "content": "Après un contact suspect, interrompre l'échange et ne transmettre aucun code, document ou paiement supplémentaire. Vérifier l'identité de l'organisme par ses coordonnées officielles obtenues indépendamment. Si des accès ou coordonnées bancaires ont été communiqués, contacter immédiatement la banque par son canal officiel et conserver les preuves.",
+      "keywords": [
+        "fraude",
+        "hameçonnage",
+        "usurpation",
+        "sécurité"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "planning-consumer-choice-cost",
+      "category": "planning",
+      "title": "Comparer le coût total d'une offre financière avant de s'engager",
+      "content": "Comparer deux offres nécessite de regarder au-delà du prix ou de la mensualité : frais initiaux, frais périodiques, assurances, pénalités, conditions de sortie et services inclus. Examiner les documents contractuels et tarifs. Une offre moins chère à court terme peut coûter davantage si elle comporte des frais annexes ou une durée d'engagement différente.",
+      "keywords": [
+        "comparaison",
+        "coût total",
+        "frais",
+        "contrat"
+      ],
+      "conditions": [
+        "Définir la période et la situation concernées avant d'utiliser cette fiche.",
+        "S'appuyer sur les justificatifs disponibles et vérifier les informations directement auprès de l'organisme compétent."
+      ],
+      "limits": [
+        "Cette fiche constitue une information générale et ne vaut pas décision administrative, conseil juridique ou recommandation financière personnalisée.",
+        "Les règles, plafonds, délais et caractéristiques peuvent évoluer ; vérifier la source officielle avant toute décision."
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Point conseil budget (PCB)",
+          "url": "https://www.mesquestionsdargent.fr/points-conseil-budget",
+          "checked_at": "2026-11-16"
+        }
+      ],
+      "verified_at": "2026-11-16",
+      "reliability": {
+        "level": "high",
+        "basis": "Fiche de cadrage rédigée à partir de la source institutionnelle référencée ; les règles individuelles et données variables doivent être revérifiées."
+      },
+      "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
       "review_status": "pending_admin_approval"
     }
   ]
