@@ -853,14 +853,7 @@ async function submitCoachQuestion(question){
    const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:currentFinancialContext(),coachProfile:state.coachProfile||[]})}),d=await r.json();
    if(!r.ok)throw Error(d.message||"IA indisponible.");
    const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
-   if(d.intelligence){
-    const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
-    const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
-    trace.push(sources.length+" source(s) récupérée(s)");
-    if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));
-    const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");(c.dataWarnings||[]).forEach(w=>trace.push("Alerte données : "+w));
-    const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
-   }
+
    
   }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
  }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
