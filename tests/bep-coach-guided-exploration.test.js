@@ -25,6 +25,8 @@ test("Question library covers all eight themes with actionable prompts",()=>{
  for(const key of ["budget","spending","savings","goals","income","debt","planning","learning"])assert.match(app,new RegExp('key:"'+key+'"'));
  assert.match(app,/data-coach-question/);
  assert.match(app,/function renderCoachExplorer\(\)/);
+ assert.ok(app.includes("syncCoachExplorerFromProfile"));
+ assert.ok(html.includes('id="coachShowAllThemes"'));
 });
 test("Cross-theme questions require at least two themes and separate facts from hypotheses",()=>{
  assert.match(app,/if\(selected\.length<2\)return ""/);
