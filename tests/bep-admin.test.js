@@ -184,3 +184,20 @@ test("admin API and user API use independent rate-limit buckets",()=>{
   assert.match(server,/adminApiRateLimit\(req,res,next\):userApiRateLimit\(req,res,next\)/);
   assert.doesNotMatch(server,/app\.use\("\/api",rateLimit\(\{windowMs:60\*1000,max:120,scope:"api"\}\)\)/);
 });
+
+test("admin API guard reloads the persisted session before authorizing a protected action",()=>{
+ const previous=process.env.BEP_ADMIN_EMAILS;process.env.BEP_ADMIN_EMAILS="mmsignenoir@gmail.com";
+ let reloaded=false,passed=false,status=0;
+ const req={session:{user:{id:"admin-user"},bepAdminAuth:{authenticated:true,userId:"admin-user",email:"mmsignenoir@gmail.com"},reload(callback){reloaded=true;callback(null)}}};
+ const res={status(code){status=code;return this},json(){return this}};
+ requireIndependentBepAdmin(req,res,()=>{passed=true});
+ assert.equal(reloaded,true);assert.equal(passed,true);assert.equal(status,0);
+ if(previous===undefined)delete process.env.BEP_ADMIN_EMAILS;else process.env.BEP_ADMIN_EMAILS=previous;
+});
+test("admin API guard fails closed when the persisted session cannot be reloaded",()=>{
+ let status=0,body=null,passed=false;
+ const req={session:{user:{id:"admin-user"},bepAdminAuth:{authenticated:true,userId:"admin-user",email:"mmsignenoir@gmail.com"},reload(callback){callback(new Error("session store unavailable"))}}};
+ const res={status(code){status=code;return this},json(value){body=value;return this}};
+ requireIndependentBepAdmin(req,res,()=>{passed=true});
+ assert.equal(passed,false);assert.equal(status,401);assert.equal(body.error,"ADMIN_SESSION_UNAVAILABLE");
+});
