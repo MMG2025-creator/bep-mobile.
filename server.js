@@ -289,7 +289,7 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
  if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
  const result=await researchWeb({pool,query,category});
- res.setHeader("Cache-Control","no-store");res.status(201).json(result);
+ res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
 
 app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req,res)=>{try{
