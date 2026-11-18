@@ -97,7 +97,8 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
       return req.session.regenerate((error) => {
         if (error) return res.status(500).json({ error: "ADMIN_SESSION_FAILED" });
         req.session.user = { id: String(admin.user_id) };
-        req.session.bepAdminAuth = { authenticated: true, userId: String(admin.user_id), email: admin.email, authenticatedAt: new Date().toISOString() };
+        const superAdmins = new Set(String(process.env.BEP_SUPER_ADMIN_EMAILS || "mmsignenoir@gmail.com").split(",").map(normalizeEmail).filter(Boolean));
+        req.session.bepAdminAuth = { authenticated: true, userId: String(admin.user_id), email: admin.email, role: superAdmins.has(normalizeEmail(admin.email)) ? "SUPER_ADMIN" : "CONTENT_ADMIN", authenticatedAt: new Date().toISOString() };
         req.session.save((saveError) => saveError ? res.status(500).json({ error: "ADMIN_SESSION_FAILED" }) : res.json({ ok: true, email: admin.email }));
       });
     } catch (error) { console.error("BEP admin login failed", String(error?.message || error).slice(0, 120)); return res.status(503).json({ error: "ADMIN_LOGIN_UNAVAILABLE" }); }
@@ -141,7 +142,7 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
   router.get("/status", (req, res) => {
     res.setHeader("Cache-Control", "no-store");
     const failure = independentAdminFailure(req);
-    if (!failure) return res.json({ authenticated: true, email: req.session.bepAdminAuth.email });
+    if (!failure) return res.json({ authenticated: true, email: req.session.bepAdminAuth.email, role: req.session.bepAdminAuth.role || "CONTENT_ADMIN" });
     return res.json({ authenticated: false, reason: failure.error });
   });
   router.post("/logout", (req, res) => {
@@ -154,9 +155,15 @@ function createBepAdminAuthRouter({ pool, bcrypt, sendCode, allowedEmails, logge
 function independentAdminFailure(req) {
   const auth = req.session?.bepAdminAuth;
   if (!req.session?.user?.id || auth?.authenticated !== true || auth.userId !== String(req.session.user.id)) return { status: 401, error: "INDEPENDENT_ADMIN_AUTH_REQUIRED" };
-  const allowed = new Set(String(process.env.BEP_ADMIN_EMAILS || "").split(",").map(normalizeEmail).filter(Boolean));
+  const allowed = new Set(String(process.env.BEP_ADMIN_EMAILS || "mmsignenoir@gmail.com").split(",").map(normalizeEmail).filter(Boolean));
   if (!auth.email || !allowed.has(normalizeEmail(auth.email))) return { status: 403, error: "ADMIN_NOT_ALLOWLISTED" };
   return null;
+}
+function requireIndependentBepSuperAdmin(req, res, next) {
+  return requireIndependentBepAdmin(req, res, () => {
+    if (req.session?.bepAdminAuth?.role !== "SUPER_ADMIN") return res.status(403).json({ error: "SUPER_ADMIN_REQUIRED" });
+    return next();
+  });
 }
 function requireIndependentBepAdmin(req, res, next) {
   // Reload the persisted session before authorizing sensitive admin actions. This
@@ -172,4 +179,4 @@ function requireIndependentBepAdmin(req, res, next) {
     return authorize();
   });
 }
-module.exports = { ensureBepAdminAuthSchema, createBepAdminAuthRouter, requireIndependentBepAdmin, independentAdminFailure, normalizeEmail, hashCode, safeEqualHex };
+module.exports = { ensureBepAdminAuthSchema, createBepAdminAuthRouter, requireIndependentBepAdmin, requireIndependentBepSuperAdmin, independentAdminFailure, normalizeEmail, hashCode, safeEqualHex };
