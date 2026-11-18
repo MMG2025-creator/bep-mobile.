@@ -864,6 +864,8 @@ async function submitCoachQuestion(question){
    const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
    if(d.intelligence){
     const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
+    if(d.intelligence.intent)trace.push("Intention comprise : "+d.intelligence.intent);
+    if(d.intelligence.pageContext?.label)trace.push("Page analysée : "+d.intelligence.pageContext.label+(d.intelligence.pageContext.subPage?" · "+d.intelligence.pageContext.subPage:""));
     const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
     trace.push(sources.length+" source(s) récupérée(s)");
     if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));
