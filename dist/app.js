@@ -134,6 +134,7 @@ async function persistCoachProfile(){
  state.coachProfile=(state.coachProfile||[]).filter(x=>Object.prototype.hasOwnProperty.call(COACH_THEMES,x));
  try{localStorage.setItem(DB,JSON.stringify(state))}catch{}
  renderCoachProfile();
+ syncCoachExplorerFromProfile();renderCoachExplorer();
  const status=$("coachProfileSaved");if(status)status.textContent="Enregistrement…";
  if(window.BEPOffline){try{await window.BEPOffline.enqueue(state);if(status)status.textContent="Profil enregistré sur cet appareil. Synchronisation sécurisée en attente ou effectuée."}catch{if(status)status.textContent="Profil enregistré localement. File de synchronisation indisponible."}}
  else if(status)status.textContent="Profil enregistré sur cet appareil. Il sera synchronisé à la connexion.";
