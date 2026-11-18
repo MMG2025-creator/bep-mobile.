@@ -92,6 +92,10 @@ test("admin page inline script parses and contains no active production mutation
   assert.match(html, /Suppression de compte : DÉSACTIVÉE/);
   assert.match(html, /Session administrateur à renouveler/);
   assert.match(html, /Reconnecte-toi avec ton mot de passe administrateur indépendant/);
+  assert.match(html, /id="adminLogout"/);
+  assert.match(html, /id="adminClearCache"/);
+  assert.ok(html.includes("caches.keys()"));
+  assert.ok(html.includes('await authApi("/logout")'));
 });
 
 
