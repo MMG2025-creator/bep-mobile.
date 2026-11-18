@@ -43,3 +43,12 @@ test("Coach rejects a grouped purchase amount above the available balance", () =
   const answer = routeStructuredQuestion("Puis-je acheter un ordinateur à 2 500 € ?", context(2000));
   assert.match(answer, /dépasse le disponible/);
 });
+
+test("end-of-month balance is not reported as zero when no income is recorded", () => {
+  const answer = routeStructuredQuestion(
+    "Peux-tu me dire combien il me reste à la fin du mois ?",
+    { income: 0, charges: 0, available: 0, incomes: [], budgets: [] }
+  );
+  assert.match(answer, /aucun revenu mensuel n'est enregistré/i);
+  assert.doesNotMatch(answer, /0,00/);
+});
