@@ -8,7 +8,7 @@
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=6">
-<link rel="stylesheet" href="./connection-status.css?v=3&bep=compact-mobile-footer-20261115">
+<link rel="stylesheet" href="./connection-status.css?v=4&bep=force-sync-action-20261119">
 <style id="bep-basic-loader-style">
 #bepStartupLoader{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#f7f8f5}
 #bepStartupLoader[hidden]{display:none}
@@ -524,7 +524,7 @@
     <div class="settings-section-heading"><span class="settings-section-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span><div><h2>Confidentialité et sécurité</h2><p class="hint">Garde le contrôle de tes données et de ton compte.</p></div></div>
     <details class="settings-disclosure settings-sync-disclosure">
       <summary class="settings-action-button"><span class="settings-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg></span><span class="settings-action-copy"><strong>Stockage et synchronisation</strong><small>Comprendre où sont conservées tes informations</small></span><span class="settings-action-chevron">›</span></summary>
-      <div class="settings-disclosure-content"><p class="hint">Certaines informations sont conservées sur cet appareil. Les données associées à ton compte peuvent également être synchronisées avec BEP. Effacer les données locales ne supprime pas ton compte ni les données déjà synchronisées.</p><div class="connection-diagnostics" id="connectionDiagnostics"><p><strong>Connexion réseau :</strong> <span id="settingsNetworkState">Vérification…</span></p><p><strong>Session BEP :</strong> <span id="settingsSessionState">Vérification…</span></p><p><strong>Synchronisation :</strong> <span id="settingsSyncState">Vérification…</span></p><p><strong>Modifications en attente :</strong> <span id="settingsPendingCount">Vérification…</span></p><p><strong>Dernière synchronisation :</strong> <span id="settingsLastSync">Aucune synchronisation confirmée sur cet appareil</span></p></div></div>
+      <div class="settings-disclosure-content"><p class="hint">Certaines informations sont conservées sur cet appareil. Les données associées à ton compte peuvent également être synchronisées avec BEP. Effacer les données locales ne supprime pas ton compte ni les données déjà synchronisées.</p><div class="connection-diagnostics" id="connectionDiagnostics"><p><strong>Connexion réseau :</strong> <span id="settingsNetworkState">Vérification…</span></p><p><strong>Session BEP :</strong> <span id="settingsSessionState">Vérification…</span></p><p><strong>Synchronisation :</strong> <span id="settingsSyncState">Vérification…</span></p><p><strong>Modifications en attente :</strong> <span id="settingsPendingCount">Vérification…</span></p><p><strong>Dernière synchronisation :</strong> <span id="settingsLastSync">Aucune synchronisation confirmée sur cet appareil</span></p><button type="button" id="forceSyncBtn" class="force-sync-button">Forcer la synchronisation</button><p id="forceSyncFeedback" class="force-sync-feedback" role="status" aria-live="polite">La vérification de synchronisation peut être lancée à tout moment.</p></div></div>
     </details>
     <div class="settings-danger-actions">
       <div class="settings-danger-block">
@@ -567,14 +567,14 @@
 </script>
 <script src="./runtime-config.js?v=1"></script>
 <script src="./financial-engine.js?v=1"></script>
-<script src="./offline-storage.js?v=6&bep=robust-local-clear-20261114"></script>
+<script src="./offline-storage.js?v=7&bep=force-remote-refresh-20261119"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=122&bep=guided-coach-exploration-20261118"></script>
+<script src="./app.js?v=123&bep=force-remote-refresh-20261119"></script>
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"></script>
 <script src="./pwa.js?v=12"></script>
-<script src="./connection-status.js?v=1"></script>
+<script src="./connection-status.js?v=2&bep=force-sync-action-20261119"></script>
 <script src="./spend-experience.js?v=24&bep=short-month-label-20261114"></script>
 <script src="./spend-clean-ui.js?v=8&bep=floating-notes-history-order-20261114"></script>
 
