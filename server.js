@@ -3,7 +3,7 @@ const express=require("express"),session=require("express-session"),PgSession=re
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const {ensureBepAdminSchema,createBepAdminRouter,appendAudit,accountRef}=require("./admin/bep-admin");
 const {ensureBepAdminAuthSchema,createBepAdminAuthRouter}=require("./admin/bep-admin-auth");
-const {requirePermission:requireBepAdminPermission,resolvePermission:resolveBepAdminPermission}=require("./admin/bep-admin-permissions");
+const {requirePermission:requireBepAdminPermission,resolvePermission:resolveBepAdminPermission,validateReviewConfirmation}=require("./admin/bep-admin-permissions");
 const BEP_ADMIN_AUTH_ENABLED=process.env.BEP_ADMIN_AUTH_ENABLED==="true";
 const BEP_ADMIN_EMAILS=String(process.env.BEP_ADMIN_EMAILS||"mmsignenoir@gmail.com").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
 const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
@@ -415,8 +415,7 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   const found=await client.query("SELECT * FROM bep_knowledge_candidates WHERE id=$1 FOR UPDATE",[id]);
   if(!found.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"CANDIDATE_NOT_FOUND"})}
   const candidate=found.rows[0];
-  const expectedConfirmation=decision==="approve"?"APPROVE_DOCUMENT":"REJECT_DOCUMENT";
-  if(typeof candidate.source_digest!=="string"||!/^[a-f0-9]{64}$/.test(candidate.source_digest)||req.body?.confirmation!==expectedConfirmation||req.body?.candidate_digest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(400).json({error:"DOCUMENT_REVIEW_CONFIRMATION_REQUIRED"})}
+  if(!validateReviewConfirmation(candidate,req.body)){await client.query("ROLLBACK");return res.status(400).json({error:"DOCUMENT_REVIEW_CONFIRMATION_REQUIRED"})}
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
    if(candidate.proposal_type==="create"){
