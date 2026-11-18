@@ -120,3 +120,12 @@ test("the explicit Gemini test endpoint consumes the same guarded quota",()=>{
  const src=read("server.js"),i=src.indexOf('app.post("/api/ai/test"'),j=src.indexOf('app.get("/api/ai/status"',i);
  assert.ok(i>=0&&j>i);const route=src.slice(i,j);assert.match(route,/consumeBepAiQuota/);assert.match(route,/releaseBepAiQuota/);
 });
+
+test("approved newly created institutional knowledge is retrieved without a seed row",async()=>{
+ const source={slug:"investment-diversification-risk",category:"savings",title:"Diversifier sans confondre diversification et garantie",content:"La diversification répartit les investissements entre plusieurs supports et ne supprime pas le risque de perte.",keywords:["diversification","risque","placements"],evidence_level:"institutional_guidance",source_name:"AMF",source_url:"https://www.amf-france.org/",version:1};
+ const overlay={...source,active:true,source_version:1,source_digest:sourceFingerprint(source)};
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:[]}:sql.includes("bep_agent_approved_knowledge")?{rows:[overlay]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const docs=await retrieveKnowledge({pool,userId:"user-1",query:"diversification risque placements",context:{}});
+ assert.equal(docs.filter(x=>x.slug===source.slug).length,1);
+ assert.equal(docs[0].title,source.title);
+});
