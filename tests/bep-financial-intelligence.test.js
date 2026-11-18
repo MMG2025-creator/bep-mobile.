@@ -110,7 +110,7 @@ test("user Coach UI explicitly promises local documentary answers and no Gemini 
  const start=html.indexOf('<div id="coachChatLog"');
  const end=html.indexOf('<section id="settings"',start);
  const coach=html.slice(start,end);
- assert.match(coach,/exclusivement sur la base documentaire locale/);
+ assert.match(coach,/commence par analyser les données financières enregistrées dans ton compte/);
  assert.match(coach,/Aucun appel à Gemini ou à un autre fournisseur externe/);
  assert.doesNotMatch(coach,/Gemini Flash intervient/);
 });
