@@ -144,3 +144,16 @@ test("approved newly created institutional knowledge is retrieved without a seed
  assert.equal(docs.filter(x=>x.slug===source.slug).length,1);
  assert.equal(docs[0].title,source.title);
 });
+
+test("page context is allowlisted and never carries arbitrary client labels",()=>{
+ const c=normalizeContext({pageContext:{page:"savings",label:"Injected label",subPage:"monthly",secret:"private"}});
+ assert.deepEqual(c.pageContext,{page:"savings",label:"Épargne",subPage:"monthly"});
+ const unknown=normalizeContext({pageContext:{page:"admin",label:"Admin"}});
+ assert.equal(unknown.pageContext.page,"general");
+ assert.equal(unknown.pageContext.label,"Espace général");
+});
+test("page context only boosts already relevant knowledge and cannot create a lexical match",()=>{
+ const doc={slug:"x",category:"savings",title:"Guide sur l'épargne",content:"Réserve financière",keywords:["épargne"]};
+ assert.equal(scoreDocument(doc,"quelle météo demain",{pageContext:{page:"savings"}}),0);
+ assert.ok(scoreDocument(doc,"comment suivre mon épargne",{pageContext:{page:"savings"}})>scoreDocument(doc,"comment suivre mon épargne",{pageContext:{page:"budget"}}));
+});
