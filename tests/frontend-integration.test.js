@@ -441,6 +441,7 @@ test("homepage financial snapshot is fed by the persisted current-month budget w
  assert.match(app,/monthlyHomeSnapshot&&monthlyHomeSnapshot\.monthKey===currentLocalMonthKey\(\)/);
  assert.match(app,/monthlySnapshot\?monthlySnapshot\.income:totalIncome\(\)/);
  assert.match(app,/monthlySnapshot\?Math\.max\(0,Number\(monthlySnapshot\.charges\)\|\|0\):charges\(\)/);
+ assert.match(app,/monthlyIsSource\?"monthly":action/);
  assert.match(monthly,/function publishHomeSnapshot\(\)/);
  assert.match(monthly,/function preferredMonthKey\(\)/);
  assert.match(monthly,/loadMonth\(preferredMonthKey\(\)\)/);

@@ -288,7 +288,8 @@ document.addEventListener("click",event=>{
  if(!action)return;
  event.preventDefault();
  if(action==="income"||action==="charges"){
-  setBudgetModule(action);
+  const monthlyIsSource=monthlyHomeSnapshot&&monthlyHomeSnapshot.monthKey===currentLocalMonthKey();
+  setBudgetModule(monthlyIsSource?"monthly":action);
   tab("budget");
  }else if(action==="overdraft"){
   setBudgetModule("income");
