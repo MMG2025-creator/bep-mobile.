@@ -1,0 +1,29 @@
+name: BEP coach document tests
+
+on:
+  pull_request:
+    branches:
+      - feature/bep-document-ingestion-no-ai
+    paths:
+      - "lib/bep-coach-json-import.js"
+      - "lib/bep-document-ingestion.js"
+      - "tests/bep-coach-json-import.test.js"
+      - "tests/bep-document-ingestion.test.js"
+      - "tests/bep-coach-services.test.js"
+      - ".github/workflows/bep-coach-document-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  targeted-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run BEP coach document tests
+        run: node --test tests/bep-coach-json-import.test.js tests/bep-document-ingestion.test.js tests/bep-coach-services.test.js
