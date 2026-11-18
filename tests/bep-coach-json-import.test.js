@@ -12,9 +12,11 @@ test("rejects duplicate slugs in the same batch before writing",async()=>{let co
 
 test("all 42 repository documents pass the structured import contract",()=>{
  const sourceSet=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");
- assert.equal(sourceSet.documents.length,42);
+ assert.equal(sourceSet.documents.length,62);
  const docs=sourceSet.documents.map(validateDocument);
- assert.equal(new Set(docs.map(x=>x.slug)).size,42);
- assert.ok(docs.every(x=>["income","budget","savings","planning"].includes(x.category)));
+ assert.equal(new Set(docs.map(x=>x.slug)).size,62);
+ assert.ok(docs.every(x=>["income","budget","savings","planning","spending","debt","behavior"].includes(x.category)));
  assert.ok(docs.every(x=>x.sources.length>0&&x.sources.every(s=>new URL(s.url).protocol==="https:")));
 });
+
+test("20 new fiches are queued for human approval",()=>{const set=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");const docs=set.documents.filter(x=>x.slug.startsWith("ext-")&&x.verified_at==="2026-11-18");assert.equal(docs.length,20);assert.ok(docs.every(x=>x.review_status==="pending_admin_approval"));});

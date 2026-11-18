@@ -1599,6 +1599,703 @@
       },
       "freshness": "Recontrôler la page institutionnelle avant toute réponse chiffrée ou démarche ; révision périodique au moins annuelle.",
       "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-budget-monthly-review",
+      "category": "budget",
+      "title": "Faire un point mensuel entre budget prévu et dépenses réelles",
+      "content": "Rapprocher les revenus encaissés, les dépenses payées et les échéances à venir. Comparer les montants réels aux prévisions, identifier les postes responsables des écarts et ajuster le mois suivant. Conserver l’historique : une prévision n’est pas une dépense réalisée.",
+      "keywords": [
+        "budget",
+        "suivi",
+        "dépenses",
+        "réelles",
+        "écarts",
+        "revenus"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes-0",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-budget-envelopes",
+      "category": "budget",
+      "title": "Répartir les dépenses avec la méthode des enveloppes",
+      "content": "La méthode des enveloppes répartit une somme disponible entre des postes définis à l’avance. Fixer une limite compatible avec les revenus et charges prioritaires, suivre les consommations et réexaminer les arbitrages. Elle rend les choix visibles mais ne remplace pas le suivi du compte bancaire.",
+      "keywords": [
+        "enveloppes",
+        "catégories",
+        "plafonds",
+        "budget",
+        "variable"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Méthode des enveloppes budgétaires",
+          "url": "https://www.mesquestionsdargent.fr/budget/methode-enveloppes-budgetaires",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-budget-priorities",
+      "category": "budget",
+      "title": "Hiérarchiser les dépenses essentielles et ajustables",
+      "content": "En cas de budget contraint, distinguer dépenses indispensables, engagements contractuels et dépenses ajustables. Pour chaque paiement, examiner montant, échéance, conséquences d’un retard et possibilités de négociation. Cette hiérarchisation prépare des arbitrages et une demande d’accompagnement ; elle n’autorise pas à suspendre un paiement contractuel.",
+      "keywords": [
+        "priorités",
+        "dépenses",
+        "essentielles",
+        "reste",
+        "à",
+        "vivre",
+        "charges"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Faire le point sur le budget",
+          "url": "https://www.mesquestionsdargent.fr/difficultes-budgetaires-la-maitrise-des-depenses/faire-le-point-sur-le-budget",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-spending-fixed-variable",
+      "category": "spending",
+      "title": "Distinguer dépenses fixes, variables et occasionnelles",
+      "content": "Classer les sorties en dépenses fixes et régulières, variables et ponctuelles. Le loyer ou un abonnement n’a pas le même comportement qu’une dépense alimentaire variable ou une réparation imprévue. Repérer aussi les paiements annuels et saisonniers pour ne pas sous-estimer le coût du mois.",
+      "keywords": [
+        "dépenses",
+        "fixes",
+        "variables",
+        "occasionnelles",
+        "charges"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes-0",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-spending-annual-provisions",
+      "category": "spending",
+      "title": "Anticiper les dépenses annuelles et saisonnières",
+      "content": "Recenser assurances, impôts, frais scolaires, entretien et autres dépenses prévisibles mais non mensuelles. Estimer leur montant à partir des échéanciers, puis prévoir progressivement une réserve lorsque le budget le permet. Une provision prépare la trésorerie : ce n’est pas une facture déjà payée.",
+      "keywords": [
+        "dépenses",
+        "annuelles",
+        "provision",
+        "saisonnier",
+        "échéancier"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Astuces pour faire des économies",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-des-economies/astuces-economies-accessible",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-spending-subscriptions",
+      "category": "spending",
+      "title": "Auditer les abonnements et paiements récurrents",
+      "content": "Relever abonnements, assurances et services prélevés automatiquement. Vérifier utilité, prix, fréquence, doublons et conditions de résiliation. Avant toute modification, contrôler date d’effet, engagements et continuité d’une couverture essentielle.",
+      "keywords": [
+        "abonnements",
+        "prélèvements",
+        "paiements",
+        "récurrents",
+        "résiliation"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Astuces pour faire des économies",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-des-economies/astuces-economies-accessible",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-spending-bank-fees",
+      "category": "spending",
+      "title": "Repérer et comprendre les frais bancaires",
+      "content": "Les frais peuvent provenir de la tenue de compte, des moyens de paiement, d’incidents ou d’un découvert. Lire le relevé et la brochure tarifaire, identifier l’opération à l’origine du prélèvement et demander une explication si nécessaire. En cas de frais répétés, solliciter un accompagnement.",
+      "keywords": [
+        "frais",
+        "bancaires",
+        "agios",
+        "commissions",
+        "incidents",
+        "découvert"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comprendre les frais bancaires",
+          "url": "https://www.mesquestionsdargent.fr/comptes-moyens-de-paiement/frais-bancaires",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-savings-emergency-reserve",
+      "category": "savings",
+      "title": "Dimensionner une épargne de précaution selon sa situation",
+      "content": "L’épargne de précaution sert à absorber un imprévu sans recourir immédiatement au crédit. Son montant dépend de la stabilité des revenus, des charges incompressibles, du foyer et des risques professionnels. Définir une première étape atteignable puis augmenter progressivement la réserve. Disponibilité et sécurité priment sur le rendement.",
+      "keywords": [
+        "épargne",
+        "précaution",
+        "imprévus",
+        "réserve",
+        "liquidité"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Une épargne de précaution",
+          "url": "https://www.mesquestionsdargent.fr/pourquoi-epargner/une-epargne-de-precaution",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-savings-goal-buckets",
+      "category": "savings",
+      "title": "Séparer l’épargne de précaution et l’épargne de projet",
+      "content": "Attribuer une fonction à chaque somme épargnée permet de ne pas mobiliser l’argent destiné à une échéance proche. Séparer réserve d’urgence, projets à date connue et objectifs de long terme. Pour chaque objectif, préciser montant, échéance, versements effectués et retraits, puis choisir un support selon disponibilité, risque, frais et fiscalité.",
+      "keywords": [
+        "épargne",
+        "objectifs",
+        "projets",
+        "horizon",
+        "liquidité"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Organiser son épargne",
+          "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/organiser-son-epargne",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-savings-risk-horizon",
+      "category": "savings",
+      "title": "Comparer un placement selon risque, horizon et disponibilité",
+      "content": "Examiner chaque placement selon disponibilité, risque de perte, durée recommandée, frais, fiscalité et rendement espéré. Un rendement potentiel supérieur peut s’accompagner de risques ou de contraintes. Ne pas investir une somme nécessaire à court terme dans un support dont la valeur peut baisser ou dont la sortie est limitée.",
+      "keywords": [
+        "placement",
+        "risque",
+        "horizon",
+        "liquidité",
+        "frais"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Les différents types de placements d'épargne",
+          "url": "https://www.mesquestionsdargent.fr/epargne-et-placements/placements-epargne",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-debt-early-contact",
+      "category": "debt",
+      "title": "Contacter un créancier dès les premières difficultés de paiement",
+      "content": "Lorsqu’une échéance devient difficile à payer, contacter rapidement le prêteur et demander quelles solutions contractuelles peuvent être étudiées. Préparer revenus, charges, échéances et justificatifs. Vérifier par écrit toute proposition, son coût, sa durée et ses conséquences. Éviter un nouveau crédit dans l’urgence sans évaluer le coût total.",
+      "keywords": [
+        "difficultés",
+        "paiement",
+        "créancier",
+        "échéance",
+        "crédit"
+      ],
+      "sources": [
+        {
+          "publisher": "Service-Public.fr",
+          "title": "Difficultés de remboursement d'un crédit à la consommation",
+          "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34972",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-debt-total-cost",
+      "category": "debt",
+      "title": "Comparer les dettes par coût total et conséquences",
+      "content": "Recenser chaque dette avec capital restant dû, taux, mensualité, durée restante, frais, garanties et retards. Comparer coût total et conséquences d’un impayé, sans se limiter à la mensualité. Avant un remboursement anticipé ou regroupement, demander un décompte et comparer frais et durée totale.",
+      "keywords": [
+        "dettes",
+        "taux",
+        "capital",
+        "restant",
+        "dû",
+        "mensualités",
+        "coût",
+        "total"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment réduire ses dettes",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-reduire-ses-dettes",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-debt-warning-signs",
+      "category": "debt",
+      "title": "Identifier les signaux de risque de surendettement",
+      "content": "Des retards répétés, l’usage d’un crédit pour payer les dépenses courantes, l’accumulation de découverts ou l’impossibilité de couvrir les charges essentielles peuvent signaler une situation qui se dégrade. Faire l’inventaire des dettes et ressources, éviter d’aggraver l’endettement et rechercher un accompagnement.",
+      "keywords": [
+        "surendettement",
+        "impayés",
+        "découvert",
+        "crédit",
+        "accompagnement"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Être en situation de surendettement",
+          "url": "https://www.mesquestionsdargent.fr/faire-face-aux-difficultes/surendettement",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-debt-application-documents",
+      "category": "debt",
+      "title": "Préparer un dossier de surendettement avec des informations exactes",
+      "content": "Rassembler les informations sur le foyer, les ressources, les charges, les dettes, les créanciers et le patrimoine demandé. Vérifier la liste des pièces sur le canal officiel et conserver une copie des documents transmis. Un Point conseil budget ou une association peut aider à comprendre les étapes ; la commission apprécie la recevabilité.",
+      "keywords": [
+        "dossier",
+        "surendettement",
+        "Banque",
+        "de",
+        "France",
+        "justificatifs"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Constitution du dossier de surendettement",
+          "url": "https://www.mesquestionsdargent.fr/maitrise-de-lendettement-et-surendettement/constitution-du-dossier-de-surendettement",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-behavior-impulse-pause",
+      "category": "behavior",
+      "title": "Mettre un délai de réflexion avant un achat non prévu",
+      "content": "Lorsqu’un achat non essentiel est déclenché par une émotion, une promotion ou une pression sociale, instaurer un délai de réflexion peut aider. Vérifier besoin, coût total, frais récurrents, budget disponible et ce que cet argent ne pourra plus financer. Un besoin urgent ne se traite pas comme un achat reportable.",
+      "keywords": [
+        "achat",
+        "impulsif",
+        "émotion",
+        "délai",
+        "réflexion",
+        "budget"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Astuces pour faire des économies",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-des-economies/astuces-economies-accessible",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-behavior-gambling-budget",
+      "category": "behavior",
+      "title": "Protéger le budget face aux jeux d’argent",
+      "content": "Les mises doivent rester séparées des sommes destinées au logement, à l’alimentation, aux factures, aux remboursements et à l’épargne de précaution. Définir une limite avant de jouer et ne jamais chercher à récupérer une perte par une nouvelle mise ou un emprunt. Si le jeu empiète sur les dépenses essentielles, interrompre les mises et demander de l’aide.",
+      "keywords": [
+        "jeux",
+        "argent",
+        "budget",
+        "limites",
+        "pertes",
+        "addiction",
+        "prévention"
+      ],
+      "sources": [
+        {
+          "publisher": "Joueurs Info Service",
+          "title": "Prévenir le jeu excessif",
+          "url": "https://www.joueurs-info-service.fr/content/view/pdf/67292",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-income-irregular-revenue",
+      "category": "income",
+      "title": "Construire un budget prudent avec des revenus irréguliers",
+      "content": "Distinguer revenu encaissé, revenu attendu et revenu incertain. Construire les charges récurrentes sur une base prudente issue de l’historique, puis affecter les mois favorables aux échéances futures, provisions et réserves. Pour les indépendants, anticiper séparément cotisations et impôts et actualiser les estimations lorsque l’activité évolue.",
+      "keywords": [
+        "revenus",
+        "variables",
+        "indépendant",
+        "trésorerie",
+        "cotisations",
+        "prévision"
+      ],
+      "sources": [
+        {
+          "publisher": "Urssaf",
+          "title": "Adapter ses cotisations à ses revenus",
+          "url": "https://www.urssaf.fr/accueil/independant/comprendre-payer-cotisations/adapter-cotisations-revenus.html",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-planning-cashflow-calendar",
+      "category": "planning",
+      "title": "Construire un calendrier de trésorerie des entrées et sorties",
+      "content": "Placer les dates réelles d’encaissement et de paiement sur le mois. Un budget équilibré sur le papier peut connaître un solde temporairement insuffisant si les prélèvements précèdent les revenus. Inscrire échéances certaines, dates estimées et incertitudes, puis vérifier le solde prévisionnel avant les paiements importants.",
+      "keywords": [
+        "planning",
+        "trésorerie",
+        "calendrier",
+        "échéances",
+        "solde"
+      ],
+      "sources": [
+        {
+          "publisher": "Banque de France – Mes questions d'argent",
+          "title": "Comment faire ses comptes",
+          "url": "https://www.mesquestionsdargent.fr/budget/comment-faire-ses-comptes-0",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-planning-withholding-tax",
+      "category": "planning",
+      "title": "Anticiper une variation du prélèvement à la source",
+      "content": "Le prélèvement à la source peut évoluer après une déclaration ou un changement de situation signalé à l’administration fiscale. Consulter le taux et les échéances dans l’espace officiel, puis intégrer le montant applicable au budget prévisionnel. Vérifier les démarches et conditions d’actualisation en cas de variation importante des revenus.",
+      "keywords": [
+        "impôt",
+        "prélèvement",
+        "à",
+        "la",
+        "source",
+        "revenus",
+        "taux",
+        "planification"
+      ],
+      "sources": [
+        {
+          "publisher": "Service-Public.fr",
+          "title": "Modifier le taux de prélèvement à la source",
+          "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35894",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
+    },
+    {
+      "slug": "ext-behavior-gambling-support",
+      "category": "behavior",
+      "title": "Connaître les dispositifs d’aide et d’auto-exclusion des jeux d’argent",
+      "content": "Lorsque la pratique devient difficile à contrôler, des dispositifs de protection existent, notamment l’auto-exclusion proposée par les opérateurs et l’interdiction volontaire de jeux gérée par l’autorité compétente. Un service spécialisé peut aider à parler de la situation et de ses conséquences financières. Le Coach ne remplace pas cet accompagnement.",
+      "keywords": [
+        "addiction",
+        "jeu",
+        "excessif",
+        "auto-exclusion",
+        "interdiction",
+        "volontaire",
+        "aide"
+      ],
+      "sources": [
+        {
+          "publisher": "Autorité nationale des jeux",
+          "title": "Joueurs : se protéger et limiter sa pratique",
+          "url": "https://anj.fr/joueurs",
+          "checked_at": "2026-11-18"
+        }
+      ],
+      "conditions": [
+        "Vérifier les informations propres à la situation et les documents officiels à jour."
+      ],
+      "limits": [
+        "Repère général : ne remplace ni une décision de l’organisme compétent ni un accompagnement individualisé."
+      ],
+      "verified_at": "2026-11-18",
+      "reliability": {
+        "level": "high",
+        "basis": "Source institutionnelle identifiée ; contenu général sans seuil chiffré universel."
+      },
+      "freshness": "Révision annuelle et à chaque évolution réglementaire ou contractuelle pertinente.",
+      "review_status": "pending_admin_approval"
     }
   ]
 }
