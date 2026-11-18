@@ -186,7 +186,6 @@ test("app remembers the last business page while the Coach panel is active",()=>
  assert.ok(app.includes("coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}"));
  assert.ok(app.includes('panel?.id==="coach"?(coachSourcePage||"home")'));
 });
-});
 test("chat uses server-loaded financial context and returns intent and page diagnostics",()=>{
  const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat",auth'),end=src.indexOf('app.get("/api/coach/library"',start);
  assert.ok(start>=0&&end>start);const route=src.slice(start,end);
@@ -194,5 +193,4 @@ test("chat uses server-loaded financial context and returns intent and page diag
  assert.ok(route.includes("classifyCoachIntent(q,context.pageContext)"));
  assert.ok(route.includes("pageContext:context.pageContext"));
  assert.ok(route.includes("introductions[intent]"));
-});
 });
