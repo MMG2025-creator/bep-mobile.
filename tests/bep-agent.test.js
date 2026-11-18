@@ -183,8 +183,10 @@ test("admin permission grants are explicit, granular, and fail closed",()=>{
 test("admin review route requires a digest-bound server confirmation and writes a chained audit event",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
  const audit=fs.readFileSync(path.join(__dirname,"..","admin","bep-admin.js"),"utf8");
- assert.match(server,/DOCUMENT_REVIEW_CONFIRMATION_REQUIRED/);
- assert.match(server,/req\.body\?\.candidate_digest!==candidate\.source_digest/);
+ assert.match(server,/validateReviewConfirmation\(candidate,req\.body\)/);
+ const permissions=fs.readFileSync(path.join(__dirname,"..","admin","bep-admin-permissions.js"),"utf8");
+ assert.match(permissions,/function validateReviewConfirmation\(candidate,body\)/);
+ assert.match(permissions,/body\?\.candidate_digest===candidate\.source_digest/);
  assert.match(server,/await appendAudit\(client,accountRef\(req\.session\.user\.id,auditSecret\)/);
  assert.match(server,/document_proposal_approved/);
  assert.match(server,/document_proposal_rejected/);
