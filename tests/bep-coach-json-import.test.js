@@ -9,3 +9,12 @@ test("rolls back the complete batch if a database operation fails",async()=>{con
 test("rejects non-HTTPS or non-allowlisted sources before opening a transaction",async()=>{let connections=0;const pool={connect:async()=>{connections++;throw Error("must not connect")}};await assert.rejects(()=>importStructuredDocuments({pool,documents:[{...base,sources:[{...base.sources[0],url:"http://example.org"}]}]}),/SOURCE_NOT_ALLOWLISTED/);await assert.rejects(()=>importStructuredDocuments({pool,documents:[{...base,sources:[{...base.sources[0],url:"https://example.org/doc"}]}]}),/SOURCE_NOT_ALLOWLISTED/);assert.equal(connections,0);});
 test("rejects invalid categories and non-pending documents",()=>{assert.throws(()=>validateDocument({...base,category:"unknown"}),/INVALID_CATEGORY/);assert.throws(()=>validateDocument({...base,review_status:"accepted"}),/DOCUMENT_NOT_PENDING/);});
 test("rejects duplicate slugs in the same batch before writing",async()=>{let connections=0;const pool={connect:async()=>{connections++;}};await assert.rejects(()=>importStructuredDocuments({pool,documents:[base,base]}),/DUPLICATE_DOCUMENT_SLUG/);assert.equal(connections,0);});
+
+test("the six repository documents pass the structured import contract",()=>{
+ const sourceSet=require("../src/coach/knowledge/financialCoachSources.additional.fr.json");
+ assert.equal(sourceSet.documents.length,6);
+ const docs=sourceSet.documents.map(validateDocument);
+ assert.equal(new Set(docs.map(x=>x.slug)).size,6);
+ assert.ok(docs.every(x=>["income","budget","savings","planning"].includes(x.category)));
+ assert.ok(docs.every(x=>x.sources.length>0&&x.sources.every(s=>new URL(s.url).protocol==="https:")));
+});
