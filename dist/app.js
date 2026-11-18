@@ -192,7 +192,8 @@ function updateCoachCrossState(){
  if(status)status.textContent=count<2?"Sélectionne au moins deux thématiques ("+count+" actuellement).":count+" thématiques sélectionnées. Une question transversale est prête.";
 }
 function ensureCoachWelcome(){
- // L'accueil est déjà porté par l'en-tête du Coach : ne pas afficher un second message.
+ const log=$("coachChatLog");if(!log||log.children.length)return;
+ addCoachMessage("coach","Bonjour, je peux t'aider à comprendre tes finances ?");
 }
 document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
 document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
