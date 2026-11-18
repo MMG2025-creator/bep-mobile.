@@ -41,6 +41,11 @@ function resolvePermission(req){
  if(method==="GET"&&/^\/api\/admin\/console\/documents\/[0-9a-f-]{36}$/i.test(path))return "console.read";
  return null;
 }
+function validateReviewConfirmation(candidate,body){
+ const decision=String(body?.decision||"");
+ const expected=decision==="approve"?"APPROVE_DOCUMENT":decision==="reject"?"REJECT_DOCUMENT":null;
+ return Boolean(expected&&typeof candidate?.source_digest==="string"&&/^[a-f0-9]{64}$/.test(candidate.source_digest)&&body?.confirmation===expected&&body?.candidate_digest===candidate.source_digest);
+}
 function requirePermission(req,res,next,permission){
  if(typeof permission!=="string"||!permission)return res.status(403).json({error:"ADMIN_PERMISSION_UNMAPPED"});
  const auth=req.session?.bepAdminAuth;
@@ -52,4 +57,4 @@ function requirePermission(req,res,next,permission){
  if(!allowed||!allowed.has(permission))return res.status(403).json({error:"ADMIN_PERMISSION_DENIED",permission});
  req.bepAdminPermission=permission;return next();
 }
-module.exports={PERMISSIONS,configuredGrants,resolvePermission,requirePermission};
+module.exports={PERMISSIONS,configuredGrants,resolvePermission,validateReviewConfirmation,requirePermission};
