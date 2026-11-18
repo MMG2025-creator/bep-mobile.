@@ -75,8 +75,28 @@ function createBepAdminRouter({ pool, requireAdmin }) {
     try {
       const sourcePath = path.join(__dirname, "..", "src", "coach", "knowledge", "financialCoachSources.additional.fr.json");
       const sourceDocument = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
-      const { importStructuredDocuments } = require("../lib/bep-coach-json-import");
-      const result = await importStructuredDocuments({ pool, documents: sourceDocument.documents });
+      const { importStructuredDocuments, validateDocument } = require("../lib/bep-coach-json-import");
+      const documents = sourceDocument.documents;
+      if (!Array.isArray(documents) || documents.length < 1 || documents.length > 200) {
+        throw new Error("INVALID_DOCUMENT_BATCH");
+      }
+      // Validate the complete source before writing any batch, then import in bounded
+      // transactions so the importer's per-batch safety limit remains in force.
+      const validated = documents.map(validateDocument);
+      const results = [];
+      for (let offset = 0; offset < validated.length; offset += 20) {
+        const batch = await importStructuredDocuments({ pool, documents: validated.slice(offset, offset + 20) });
+        results.push(...batch.results);
+      }
+      const result = {
+        provider: "bep-structured-json-import",
+        aiUsed: false,
+        automaticPublication: false,
+        total: results.length,
+        created: results.filter(item => item.status === "created").length,
+        duplicates: results.filter(item => item.status === "duplicate").length,
+        results
+      };
       res.setHeader("Cache-Control", "no-store");
       return res.json({ ok: true, ...result });
     } catch (error) {
