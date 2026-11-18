@@ -8,7 +8,7 @@ const BEP_ADMIN_EMAILS=String(process.env.BEP_ADMIN_EMAILS||"mmsignenoir@gmail.c
 const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
-const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
+const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources}=require("./lib/bep-coach-source-registry");
@@ -219,14 +219,35 @@ function structuredAdvice(zone,p){
  return "Les données BEP sont disponibles. Vérifie les montants enregistrés et leur période avant de prendre une décision.";
 }
 function routeStructuredQuestion(question,p){
- const q=String(question||"").toLocaleLowerCase("fr"),income=Number(p.income)||0,charges=Number(p.charges)||0,available=Number(p.available)||0,expenses=Array.isArray(p.expenses)?p.expenses:[],goals=Array.isArray(p.goals)?p.goals:[];
- const money=structuredMoney;
- if(/\b(disponible|reste.?t.?il|reste.?il|reste dans mon budget|solde disponible)\b/.test(q))return "D'après les données BEP transmises, ton montant disponible est de "+money(available)+". Vérifie que les dernières dépenses et échéances sont enregistrées.";
- if(/\b(revenu|revenus|gagne|salaire)\b/.test(q)&&/\b(combien|quel|quelle|montant|total)\b/.test(q))return "Tes revenus enregistrés représentent "+money(income)+" par mois.";
- if(/\b(charge|charges|factures)\b/.test(q)&&/\b(combien|quel|quelle|montant|total)\b/.test(q))return "Tes charges enregistrées représentent "+money(charges)+".";
- if(/\b(depense|depenses|dépense|dépenses|achat|achats)\b/.test(q)&&/\b(combien|total|montant)\b/.test(q)){const total=expenses.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0);return expenses.length?"Les dépenses présentes dans l'historique transmis totalisent "+money(total)+".":"Aucune dépense enregistrée n'est disponible dans les données transmises."}
- if(/\b(objectif|objectifs|epargne|épargne)\b/.test(q)&&/\b(combien|quel|quelle|liste|mes)\b/.test(q))return goals.length?"Tu as "+goals.length+" objectif(s) d'épargne enregistré(s) : "+goals.slice(0,5).map(x=>String(x.name||x.title||"objectif").slice(0,60)).join(", ")+".":"Aucun objectif d'épargne n'est enregistré pour le moment.";
- const purchase=q.match(/(?:acheter|achat|dépenser|depense|cout|coût)\D{0,35}(\d{1,3}(?:[\s\u00a0\u202f]\d{3})+(?:[,.]\d{1,2})?|\d{1,6}(?:[,.]\d{1,2})?)\s*(?:€|euros?)/);
+ const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+ const income=Number(p.income)||0,charges=Number(p.charges)||0,available=Number(p.available)||0,expenses=Array.isArray(p.expenses)?p.expenses:[],goals=Array.isArray(p.goals)?p.goals:[],operations=Array.isArray(p.savingsOperations)?p.savingsOperations:[];
+ const page=p.pageContext?.page||"general",subPage=p.pageContext?.subPage||"",intent=classifyCoachIntent(question,p.pageContext),money=structuredMoney;
+ if(intent==="overview"){
+  if(page==="budget"&&subPage==="income")return "Dans le sous-module Revenus, tu peux vérifier les ressources régulières, variables et exceptionnelles.\n\nLe total actuellement transmis est de "+money(income)+" par mois. Contrôle les montants réellement encaissés et leur régularité avant de les intégrer à tes engagements fixes.";
+  if(page==="budget"&&subPage==="charges")return "Dans le sous-module Charges, tu peux contrôler les dépenses récurrentes, les échéances et les montants réellement prélevés.\n\nLes charges actuellement transmises représentent "+money(charges)+". Vérifie les périodicités et les factures annuelles pour éviter les oublis et les doubles comptes.";
+  if(page==="budget"&&subPage==="monthly")return "Dans le sous-module Budget mensuel, tu peux comparer le prévisionnel et le réalisé sur la période sélectionnée.\n\nLe budget transmis prévoit "+money(Number(p.monthlyBudget?.plannedIncomeTotal)||0)+" de revenus, "+money(Number(p.monthlyBudget?.plannedChargesTotal)||0)+" de charges et "+money(Number(p.monthlyBudget?.plannedSavingsTotal)||0)+" d'épargne. Les montants réalisés doivent être comparés séparément.";
+  if(page==="budget"){
+   const month=p.monthlyBudget||p.monthlyHistory?.find(x=>x.status==="open")||p.monthlyHistory?.[0];
+   return "Sur la page Budget, tu peux comparer tes revenus, tes charges, ton disponible et tes prévisions mensuelles.\n\nDonnées actuellement disponibles : "+money(income)+" de revenus, "+money(charges)+" de charges et "+money(available)+" de disponible."+(month?" Pour "+String(month.monthKey||"le mois sélectionné")+", le budget prévoit "+money(Number(month.plannedIncomeTotal)||0)+" de revenus, "+money(Number(month.plannedChargesTotal)||0)+" de charges et "+money(Number(month.plannedSavingsTotal)||0)+" d'épargne.":"")+"\n\nLe bon réflexe est de distinguer le prévu du réellement payé, puis de vérifier les postes qui expliquent les écarts.";
+  }
+  if(page==="savings"){
+   const deposits=operations.filter(x=>x.type==="deposit").reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0),withdrawals=operations.filter(x=>x.type==="withdrawal").reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0);
+   return "Sur la page Épargne, tu peux suivre tes objectifs et les mouvements réellement effectués.\n\n"+goals.length+" objectif(s) sont enregistrés et "+operations.length+" mouvement(s) sont disponibles"+(operations.length?" : "+money(deposits)+" de versements et "+money(withdrawals)+" de retraits.":".")+"\n\nPour analyser ta progression, compare le montant cible, le capital déjà constitué et les versements réellement tenus. Ne confonds pas un objectif programmé avec une épargne déjà disponible.";
+  }
+  if(page==="spending"){
+   const total=expenses.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0),categories=[...new Set(expenses.map(x=>String(x.category||"").trim()).filter(Boolean))];
+   return "Sur la page Dépenses et achats, tu peux suivre les sorties d'argent, repérer les postes récurrents et vérifier leur poids dans ton budget.\n\nLes données transmises contiennent "+expenses.length+" dépense(s), pour un total de "+money(total)+", réparties sur "+categories.length+" catégorie(s) renseignée(s).\n\nJe peux ensuite t'aider à repérer les postes à examiner, sans assimiler automatiquement une dépense élevée à une dépense inutile.";
+  }
+  if(page==="income")return "Sur la page Revenus, tu peux distinguer les ressources régulières des revenus variables ou exceptionnels.\n\nLe total actuellement transmis est de "+money(income)+" par mois, avec "+(Array.isArray(p.incomes)?p.incomes.length:0)+" source(s) détaillée(s).\n\nLa priorité est de bâtir les engagements récurrents sur une base de revenus prudente et vérifiable.";
+  if(page==="debt")return "Sur la page Dettes et crédits, l'analyse doit rapprocher les soldes dus, les taux, les mensualités et les échéances.\n\n"+(Array.isArray(p.debts)&&p.debts.length?p.debts.length+" dette(s) sont renseignées.":"Aucune donnée de dette exploitable n'est transmise actuellement.")+" Je ne vais pas supposer qu'une dette est absente simplement parce qu'elle n'apparaît pas dans les données.";
+  return "Sur la page Accueil, BEP rassemble les principaux repères de ta situation financière.\n\nLes données transmises indiquent "+money(income)+" de revenus, "+money(charges)+" de charges et "+money(available)+" de disponible. "+(expenses.length?"L'historique contient aussi "+expenses.length+" dépense(s) pour "+money(expenses.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0))+".":"Aucune dépense détaillée n'est disponible dans ce contexte.")+"\n\nJe peux approfondir un chiffre, expliquer un indicateur ou t'aider à définir une priorité.";
+ }
+ if(/\b(disponible|solde disponible|reste.?t.?il|reste.?il|reste dans mon budget|reste a vivre|fin du mois)\b/.test(q))return "D'après les données BEP transmises, ton montant disponible est de "+money(available)+". Vérifie que les dernières dépenses et échéances sont enregistrées avant de considérer ce chiffre comme définitif.";
+ if(/\b(revenu|revenus|gagne|salaire|paie)\b/.test(q)&&/\b(combien|quel|quelle|montant|total)\b/.test(q))return "Tes revenus enregistrés représentent "+money(income)+" par mois. "+(Array.isArray(p.incomes)&&p.incomes.length?"Ils proviennent de "+p.incomes.length+" source(s) détaillée(s).":"Le détail des sources de revenus n'est pas disponible dans ce contexte.");
+ if(/\b(charge|charges|factures|loyer)\b/.test(q)&&/\b(combien|quel|quelle|montant|total)\b/.test(q))return "Tes charges enregistrées représentent "+money(charges)+". Vérifie que les échéances annuelles et les prélèvements récurrents sont bien intégrés.";
+ if(/\b(depense|depenses|achat|achats|sorties)\b/.test(q)&&/\b(combien|total|montant|somme)\b/.test(q)){const total=expenses.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0),0);return expenses.length?"Les dépenses présentes dans l'historique transmis totalisent "+money(total)+" sur "+expenses.length+" opération(s).":"Aucune dépense enregistrée n'est disponible dans les données transmises."}
+ if(/\b(objectif|objectifs|epargne)\b/.test(q)&&/\b(combien|quel|quelle|liste|mes|total)\b/.test(q))return goals.length?"Tu as "+goals.length+" objectif(s) d'épargne enregistré(s) : "+goals.slice(0,5).map(x=>String(x.name||x.title||"objectif").slice(0,60)).join(", ")+".":"Aucun objectif d'épargne n'est enregistré pour le moment.";
+ const purchase=q.match(/(?:acheter|achat|depenser|depense|cout)\D{0,35}(\d{1,3}(?:[\s\u00a0\u202f]\d{3})+(?:[,.]\d{1,2})?|\d{1,6}(?:[,.]\d{1,2})?)\s*(?:€|euros?)/);
  if(purchase){const amount=Number(purchase[1].replace(/[ \u00a0\u202f]/g,"").replace(",","."));if(Number.isFinite(amount))return amount<=available?"Le montant de "+money(amount)+" est inférieur au disponible transmis de "+money(available)+". Garde toutefois une marge pour les dépenses à venir.":"Attention : "+money(amount)+" dépasse le disponible transmis de "+money(available)+". Cet achat serait hors du disponible actuel."}
  return null;
 }
@@ -250,35 +271,26 @@ app.post("/api/ai/chat",auth,async(req,res)=>{try{
  if(!q||q.length>4000)return res.status(400).json({message:"Question invalide."});
  const p=req.body?.financialContext||{};
  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:true});
- const structured=routeStructuredQuestion(q,p);
+ const context=intelligence.context||p;
+ const structured=routeStructuredQuestion(q,context);
+ const intent=classifyCoachIntent(q,context.pageContext);
  const docs=Array.isArray(intelligence.knowledge)?intelligence.knowledge:[];
  let answer="";
  if(structured){
   answer=structured;
  }else if(docs.length){
-  answer="J’ai retrouvé ces repères dans la base documentaire BEP.\n\n"+
-   docs.slice(0,3).map((doc,index)=>(index+1)+". "+doc.title+"\n"+String(doc.content||"").trim()).join("\n\n")+
-   "\n\nCes éléments constituent les références disponibles pour ta question. Si tu veux une recommandation plus précise, indique le montant, la période ou l’objectif concerné dans BEP.";
+  const label=context.pageContext?.label||"ton espace BEP";
+  const introductions={steps:"Voici une méthode concrète, en partant de ta question et des références BEP disponibles :",explain:"Voici ce que signifient les repères documentaires pertinents pour ta question :",compare:"Pour comparer les options, voici les points qui changent réellement la décision :",list:"Voici les éléments pertinents que j'ai retrouvés :",recommendation:"Pour construire une recommandation prudente sur "+label+", voici les repères à prendre en compte :",overview:"Voici les références les plus utiles pour comprendre cette page :",amount:"Pour répondre sur les montants, voici les règles qui permettent de vérifier les chiffres :",contextual:"En tenant compte de la page "+label+", voici les repères les plus proches de ta demande :",general:"J'ai rapproché ta question des références BEP suivantes :"};
+  answer=introductions[intent]+"\n\n"+docs.slice(0,3).map((doc,index)=>(index+1)+". "+doc.title+"\n"+String(doc.content||"").trim()).join("\n\n")+"\n\nCes références donnent le cadre. Si tu veux, je peux maintenant appliquer ce cadre à un montant, une période ou un objectif précis de ton compte.";
  }else{
-  answer="Je n’ai pas trouvé de fiche suffisamment pertinente dans la base documentaire BEP pour répondre de façon fiable à cette question. Je préfère te le signaler plutôt que d’inventer une réponse. Tu peux reformuler avec un thème précis ou demander à l’administration d’enrichir la base documentaire.";
+  const label=context.pageContext?.label||"ton espace BEP";
+  const prompts={steps:"Décris l'action que tu souhaites réaliser et je te proposerai une séquence adaptée.",explain:"Indique le terme ou l'indicateur à expliquer ; je distinguerai sa définition, son calcul et ses limites.",compare:"Précise les deux options à comparer et le critère qui compte le plus pour toi.",amount:"Précise le montant ou la période recherchée afin que je vérifie les données disponibles.",recommendation:"Indique ton objectif et ta contrainte principale pour que je hiérarchise les options.",overview:"Je peux faire un état des lieux, expliquer un indicateur ou identifier une prochaine action.",contextual:"Précise l'aspect de cette page que tu veux approfondir.",general:"Précise le sujet financier et la décision que tu souhaites éclairer."};
+  answer="J'ai compris que ta demande concerne "+label+". Je n'ai pas trouvé de fiche documentaire assez précise pour affirmer une réponse fiable, et je ne vais pas inventer de règle. "+(prompts[intent]||prompts.general);
  }
  res.setHeader("Cache-Control","no-store");
- res.json({
-  answer,provider:"bep-local",model:"bep-local-documentary",mode:structured?"structured":"structured-fallback",usage:null,quota:null,
-  intelligence:{
-   enabled:true,
-   knowledge:docs.slice(0,6).map(x=>({title:x.title,source:x.source_name||"BEP",url:x.source_url||"",category:x.category,score:x.score||0})),
-   context:{
-    monthlyHistoryMonths:intelligence.context.monthlyHistory?.length||0,
-    budgets:intelligence.context.budgets?.length||0,
-    goals:intelligence.context.goals?.length||0,
-    expenses:intelligence.context.expenses?.length||0,
-    savingsOperations:intelligence.context.savingsOperations?.length||0,
-    dataWarnings:intelligence.context.dataWarnings||[]
-   }
-  }
- });
+ res.json({answer,provider:"bep-local",model:"bep-local-documentary",mode:structured?"structured":"structured-fallback",usage:null,quota:null,intelligence:{enabled:true,intent,pageContext:context.pageContext||{page:"general",label:"Espace général",subPage:null},knowledge:docs.slice(0,6).map(x=>({title:x.title,source:x.source_name||"BEP",url:x.source_url||"",category:x.category,score:x.score||0})),context:{monthlyHistoryMonths:context.monthlyHistory?.length||0,budgets:context.budgets?.length||0,goals:context.goals?.length||0,expenses:context.expenses?.length||0,savingsOperations:context.savingsOperations?.length||0,dataWarnings:context.dataWarnings||[]}}});
  }catch(e){console.error("Local Coach answer failed",String(e?.message||e).slice(0,160));res.status(503).json({message:"Le Coach documentaire BEP est momentanément indisponible. Aucun fournisseur externe n’a été sollicité."})}});
+
 app.get("/api/coach/library",auth,async(req,res)=>{try{
  const query=String(req.query.q||"").trim().slice(0,4000);
  const result=await readCoachLibrary({pool,userId:req.session.user.id,query,context:req.query.context&&typeof req.query.context==="object"?req.query.context:{},limit:Math.min(8,Math.max(1,Number(req.query.limit)||6))});

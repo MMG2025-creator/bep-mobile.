@@ -1,7 +1,8 @@
 (()=>{"use strict";
 const API=String(window.BEP_API_BASE||"https://bep-v2-api.onrender.com").replace(/\/+$/,"");
-const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",defaults={income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[],deletedRecords:{budgets:[]},treasury:{overdraftLimit:0}};
+const DB="bep-mobile-v1",ACTIVE_TAB_KEY="bep-active-tab-v1",ACTIVE_BUDGET_MODULE_KEY="bep-active-budget-module-v1",COACH_SOURCE_TAB_KEY="bep-coach-source-tab-v1",defaults={income:0,incomes:[],budgets:[],expenses:[],goals:[],transactions:[],savingsOperations:[],coachProfile:[],deletedRecords:{budgets:[]},treasury:{overdraftLimit:0}};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(DB)||"{}")}}catch{state={...defaults}}
+let coachSourcePage="home";try{const saved=localStorage.getItem(COACH_SOURCE_TAB_KEY);if(["home","budget","savings","purchases"].includes(saved))coachSourcePage=saved}catch{}
 if(!Array.isArray(state.savingsOperations))state.savingsOperations=[];
 if(!Array.isArray(state.coachProfile))state.coachProfile=[];
 if(!state.treasury||typeof state.treasury!=="object")state.treasury={overdraftLimit:0};else state.treasury={overdraftLimit:Math.max(0,Number(state.treasury.overdraftLimit)||0)};
@@ -196,7 +197,7 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  panel.querySelectorAll(".chart-data-point:not(svg .chart-data-point)").forEach((el,i)=>{el.style.animation="none";if(!reduce){void el.offsetWidth;el.style.animation="bep-chart-enter 420ms ease both "+(i*45)+"ms"}});
 }
 function setHomeRobotState(state,message){const robot=document.querySelector('.welcome-mascot[data-goto="coach"]');if(!robot)return;robot.dataset.state=["idle","thinking","advice","attention"].includes(state)?state:"idle";const label=$( "homeMascotStatus");if(label&&message)label.textContent=String(message).slice(0,64)}
-function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
+function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
 function setBudgetModule(name){if(!["income","charges","monthly"].includes(name))return;activeBudgetModule=name;try{localStorage.setItem(ACTIVE_BUDGET_MODULE_KEY,name)}catch{}document.querySelectorAll("[data-budget-module]").forEach(button=>{const active=button.dataset.budgetModule===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active))});document.querySelectorAll(".budget-module").forEach(panel=>{panel.hidden=panel.id!=="budgetModule"+name.charAt(0).toUpperCase()+name.slice(1)});requestAnimationFrame(()=>replayPanelChartAnimations(document.getElementById("budgetModule"+name.charAt(0).toUpperCase()+name.slice(1))));document.querySelectorAll("[data-budget-advice]").forEach(advice=>{advice.hidden=advice.dataset.budgetAdvice!==name});if(document.getElementById("budget")?.classList.contains("active"))recordAdvice(name)}
 // Event delegation in capture phase: keeps budget tabs functional even when
@@ -846,14 +847,10 @@ async function loadAiConnection(){
 }
 function currentCoachPageContext(){
  const panel=document.querySelector(".panel.active");
- const raw=String(panel?.id||"home").toLowerCase();
- const activePage=({
-  home:"home",budget:"budget",savings:"savings",purchases:"spending",
-  expenses:"spending",monthly:"budget",income:"income",debts:"debt",
-  goals:"goals",training:"learning",profile:"profile",settings:"general"
- })[raw]||"general";
+ const raw=String(panel?.id==="coach"?(coachSourcePage||"home"):panel?.id==="settings"?(settingsReturnTab||coachSourcePage||"home"):(panel?.id||coachSourcePage||"home")).toLowerCase();
+ const activePage=({home:"home",budget:"budget",savings:"savings",purchases:"spending",coach:"home",settings:"general"})[raw]||"general";
  const module=activePage==="budget"?String(activeBudgetModule||"budget").toLowerCase():"";
- const labels={home:"Accueil",budget:"Budget",savings:"Épargne",spending:"Dépenses et achats",income:"Revenus",debt:"Dettes et crédits",goals:"Objectifs",learning:"Formation",profile:"Profil financier",general:"Espace général"};
+ const labels={home:"Accueil",budget:"Budget",savings:"Épargne",spending:"Dépenses et achats",income:"Revenus",debt:"Dettes et crédits",goals:"Objectifs",learning:"Formation",general:"Espace général"};
  return {page:activePage,label:labels[activePage],subPage:module||null};
 }
 async function submitCoachQuestion(question){
@@ -867,6 +864,8 @@ async function submitCoachQuestion(question){
    const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
    if(d.intelligence){
     const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
+    if(d.intelligence.intent)trace.push("Intention comprise : "+d.intelligence.intent);
+    if(d.intelligence.pageContext?.label)trace.push("Page analysée : "+d.intelligence.pageContext.label+(d.intelligence.pageContext.subPage?" · "+d.intelligence.pageContext.subPage:""));
     const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
     trace.push(sources.length+" source(s) récupérée(s)");
     if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));

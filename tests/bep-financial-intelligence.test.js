@@ -5,7 +5,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,"..",file),"utf8");
 
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge}=require("../lib/bep-financial-intelligence");
+const {tokens,scoreDocument,normalizeContext,formatKnowledgePrompt,retrieveKnowledge,classifyCoachIntent}=require("../lib/bep-financial-intelligence");
 const {sourceFingerprint}=require("../lib/bep-agent/source-fingerprint");
 
 const corpus=[
@@ -115,7 +115,7 @@ test("user Coach chat is local and documentary-only with no external provider ca
  assert.match(route,/provider:"bep-local"/);
  assert.match(route,/model:"bep-local-documentary"/);
  assert.doesNotMatch(route,/invokeAi\(|userAi\(|consumeBepAiQuota\(/);
- assert.match(route,/Je n’ai pas trouvé de fiche suffisamment pertinente/);
+ assert.match(route,/Je n\x27ai pas trouvé de fiche documentaire assez précise/);
 });
 test("user Coach UI explicitly promises local documentary answers and no Gemini call",()=>{
  const html=read("index.html");
@@ -156,4 +156,50 @@ test("page context only boosts already relevant knowledge and cannot create a le
  const doc={slug:"x",category:"savings",title:"Guide sur l'épargne",content:"Réserve financière",keywords:["épargne"]};
  assert.equal(scoreDocument(doc,"quelle météo demain",{pageContext:{page:"savings"}}),0);
  assert.ok(scoreDocument(doc,"comment suivre mon épargne",{pageContext:{page:"savings"}})>scoreDocument(doc,"comment suivre mon épargne",{pageContext:{page:"budget"}}));
+});
+
+test("French conversational phrasing is classified by intent",()=>{
+ assert.equal(classifyCoachIntent("Présente-moi les éléments utiles de cette page",{page:"savings"}),"overview");
+ assert.equal(classifyCoachIntent("Peux-tu me dire combien il me reste à la fin du mois ?",{page:"budget"}),"amount");
+ assert.equal(classifyCoachIntent("Comment mettre de l'argent de côté ?",{page:"savings"}),"steps");
+ assert.equal(classifyCoachIntent("Pourquoi faut-il provisionner une dépense annuelle ?",{page:"budget"}),"explain");
+ assert.equal(classifyCoachIntent("Compare ces deux solutions",{page:"budget"}),"compare");
+});
+test("generic page overview retrieves documents from the active page category",async()=>{
+ const pool={query:async sql=>sql.includes("bep_financial_knowledge")?{rows:corpus}:sql.includes("bep_agent_approved_knowledge")?{rows:[]}:sql.includes("bep_user_coach_knowledge")?{rows:[]}:Promise.reject(Error("unexpected query"))};
+ const savings=await retrieveKnowledge({pool,userId:"user-1",query:"Présente-moi les éléments utiles de cette page",context:{pageContext:{page:"savings",label:"Épargne"}},limit:6});
+ assert.ok(savings.length>0);assert.ok(savings.every(x=>x.category==="savings"));
+ const budget=await retrieveKnowledge({pool,userId:"user-1",query:"Présente-moi les éléments utiles de cette page",context:{pageContext:{page:"budget",label:"Budget"}},limit:6});
+ assert.ok(budget.length>0);assert.ok(budget.every(x=>x.category==="budget"));
+});
+test("everyday French synonyms retrieve the right financial knowledge",()=>{
+ assert.ok(scoreDocument(corpus[1],"Comment mettre de l'argent de côté ?",{pageContext:{page:"savings"}})>0);
+ assert.ok(scoreDocument(corpus[0],"Comment prévoir les factures annuelles ?",{pageContext:{page:"budget"}})>0);
+ assert.ok(scoreDocument(corpus[2],"Je suis payé avec des commissions variables",{pageContext:{page:"income"}})>0);
+});
+test("page context never overrides a specific unrelated question",()=>{
+ assert.equal(scoreDocument(corpus[1],"Quelle météo demain ?",{pageContext:{page:"savings"}}),0);
+});
+test("app remembers the last business page while the Coach panel is active",()=>{
+ const app=read("app.js");
+ assert.ok(app.includes('COACH_SOURCE_TAB_KEY="bep-coach-source-tab-v1"'));
+ assert.ok(app.includes("coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}"));
+ assert.ok(app.includes('panel?.id==="coach"?(coachSourcePage||"home")'));
+});
+test("chat uses server-loaded financial context and returns intent and page diagnostics",()=>{
+ const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat",auth'),end=src.indexOf('app.get("/api/coach/library"',start);
+ assert.ok(start>=0&&end>start);const route=src.slice(start,end);
+ assert.ok(route.includes("routeStructuredQuestion(q,context)"));
+ assert.ok(route.includes("classifyCoachIntent(q,context.pageContext)"));
+ assert.ok(route.includes("pageContext:context.pageContext"));
+ assert.ok(route.includes("introductions[intent]"));
+});
+
+test("Coach reports the interpreted page and handles budget subpages distinctly",()=>{
+ const app=read("app.js"),server=read("server.js");
+ assert.ok(app.includes("Intention comprise : "));
+ assert.ok(app.includes("Page analysée : "));
+ assert.ok(server.includes('page==="budget"&&subPage==="income"'));
+ assert.ok(server.includes('page==="budget"&&subPage==="charges"'));
+ assert.ok(server.includes('page==="budget"&&subPage==="monthly"'));
 });
