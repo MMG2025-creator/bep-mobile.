@@ -14,9 +14,10 @@ const structuredMoney = value => new Intl.NumberFormat("fr-FR", {
   style: "currency",
   currency: "EUR"
 }).format(Number(value) || 0);
+const { classifyCoachIntent } = require("../lib/bep-financial-intelligence");
 const routeStructuredQuestion = vm.runInNewContext(
   "(" + parserSource + ")",
-  { structuredMoney }
+  { structuredMoney, classifyCoachIntent }
 );
 const context = available => ({ available, income: 0, charges: 0, expenses: [], goals: [] });
 
