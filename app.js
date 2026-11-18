@@ -967,7 +967,6 @@ async function submitCoachQuestion(question){
 }
 $("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;submitCoachQuestion(value);input.value="";input.focus()};
 document.querySelectorAll("[data-coach-prompt]").forEach(button=>button.addEventListener("click",()=>{const input=$("coachPromptInput");input.value=button.dataset.coachPrompt||"";input.focus()}));
-document.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(button&&button.dataset.coachQuestion){submitCoachQuestion(button.dataset.coachQuestion)}});
 const CHART_COLORS=["#176b50","#79b99b","#b9e8d0","#d6a85f","#7b91ad","#c78e86","#9a83b7","#8b9a92"];
 function chartEmpty(message){return '<div class="chart-empty">'+message+'</div>'}
 function compactMoney(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",notation:"compact",maximumFractionDigits:1}).format(Number(n)||0)}
