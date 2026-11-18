@@ -1812,3 +1812,59 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-live-dot,.coach-hero-bot,.coach-spark{animation:none!important}
  .coach-workspace .coach-prompt-form button.primary{transition:none}
 }
+
+/* Coach BEP — parcours guidé à trois onglets */
+.coach-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:6px;border:1px solid #e0ebe4;border-radius:15px;background:#f5f8f6}
+.coach-tab{min-width:0;min-height:44px;padding:9px 7px;border:1px solid transparent;border-radius:10px;background:transparent;color:#61756b;font:700 11px/1.25 'DM Sans',sans-serif;cursor:pointer}
+.coach-tab.active{border-color:#d5e7dc;background:#fff;color:#145b46;box-shadow:0 2px 8px #123b340d}
+.coach-tab:focus-visible,.coach-question-button:focus-visible,.coach-inline-link:focus-visible{outline:3px solid #a8d5bc;outline-offset:2px}
+.coach-tab-panel{display:none;min-width:0;padding:5px 0 0}
+.coach-tab-panel.active{display:block}
+.coach-section-heading{display:flex;justify-content:space-between;gap:12px;margin:7px 0 15px}
+.coach-section-heading h3{margin:3px 0 5px;color:#173b30;font:700 18px/1.25 Manrope,sans-serif}
+.coach-section-heading p{margin:0;color:#708179;font-size:12px;line-height:1.55}
+.coach-section-kicker{margin:0;color:#6b947f!important;font-size:9px!important;font-weight:700;letter-spacing:1.35px}
+.coach-profile-content-standalone{padding:0}
+.coach-profile-content-standalone .coach-profile-options{grid-template-columns:1fr;gap:8px}
+.coach-profile-content-standalone .coach-profile-option{min-height:68px;padding:11px 13px;border-radius:14px}
+.coach-profile-content-standalone .coach-profile-icon{width:39px;height:39px;border-radius:11px;font-size:21px}
+.coach-profile-content-standalone .coach-profile-copy strong{font-size:13px}
+.coach-profile-content-standalone .coach-profile-copy small{font-size:11px}
+.coach-profile-content-standalone .coach-profile-check{width:21px;height:21px}
+.coach-profile-next{display:grid;gap:7px;margin-top:15px;padding:14px;border:1px solid #dfebe3;border-radius:13px;background:#f7faf8}
+.coach-profile-next>span{color:#6d927d;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.coach-profile-next strong{color:#345347;font-size:12px;line-height:1.45}
+.coach-inline-link{justify-self:start;padding:5px 0;border:0;background:none;color:#176b50;font:700 12px 'DM Sans',sans-serif;cursor:pointer}
+.coach-explorer-filters,.coach-cross-options{display:flex;flex-wrap:wrap;gap:7px}
+.coach-explorer-filters label,.coach-cross-options label{position:relative;cursor:pointer}
+.coach-explorer-filters input,.coach-cross-options input{position:absolute;opacity:0;pointer-events:none}
+.coach-explorer-filters span,.coach-cross-options span{display:block;padding:8px 11px;border:1px solid #dce8e0;border-radius:999px;background:#fff;color:#60766a;font-size:11px;font-weight:600}
+.coach-explorer-filters input:checked+span,.coach-cross-options input:checked+span{border-color:#8fbea4;background:#eaf5ee;color:#176b50}
+.coach-explorer-filters input:focus-visible+span,.coach-cross-options input:focus-visible+span{outline:3px solid #a8d5bc;outline-offset:2px}
+.coach-filter-hint{margin:10px 0;color:#839188;font-size:10px;line-height:1.45}
+.coach-question-library{display:grid;gap:11px;margin-top:12px}
+.coach-question-theme{padding:13px;border:1px solid #e1ebe5;border-radius:15px;background:#fff}
+.coach-question-theme-heading{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.coach-question-theme-icon{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:11px;background:#edf5f0;color:#176b50;font-size:20px}
+.coach-question-theme-heading h4{margin:0;color:#25483a;font:700 13px Manrope,sans-serif}
+.coach-question-theme-heading p{margin:3px 0 0;color:#829087;font-size:10px;line-height:1.35}
+.coach-question-list{display:grid;gap:6px}
+.coach-question-button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 11px;border:1px solid #e7eee9;border-radius:10px;background:#fbfcfb;color:#355346;text-align:left;font:500 11px/1.45 'DM Sans',sans-serif;cursor:pointer}
+.coach-question-button:hover{border-color:#b8d8c4;background:#f1f8f3}
+.coach-question-button span:last-child{flex:none;color:#39805d;font-size:15px}
+.coach-cross-panel{display:grid;gap:12px;margin-top:16px;padding:15px;border:1px solid #dceae1;border-radius:15px;background:#f6faf7}
+.coach-cross-heading{display:flex;align-items:flex-start;gap:10px}
+.coach-cross-icon{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:#e6f2ea;color:#176b50}
+.coach-cross-heading h4{margin:0;color:#244738;font:700 14px Manrope,sans-serif}
+.coach-cross-heading p{margin:4px 0 0;color:#718178;font-size:11px;line-height:1.45}
+.coach-cross-submit{width:100%;min-height:46px}
+.coach-cross-submit:disabled{opacity:.48;cursor:not-allowed}
+.coach-cross-result{margin:0;color:#5d7568;font-size:10px;line-height:1.45}
+.coach-correlation-note{margin:0;padding-top:9px;border-top:1px solid #e2ece5;color:#829087;font-size:10px;line-height:1.5}
+.coach-conversation{display:grid;gap:12px;padding-top:5px;border-top:1px solid #e7eee9}
+.coach-conversation-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.coach-conversation-heading h3{margin:3px 0 0;color:#244738;font:700 15px Manrope,sans-serif}
+.coach-conversation-status{padding:6px 8px;border-radius:20px;background:#eef6f0;color:#5d806b;font-size:9px;white-space:nowrap}
+.coach-chat-log{min-height:104px;max-height:420px}
+.coach-workspace .coach-prompt-form{padding-top:0;border-top:0}
+@media(max-width:480px){.coach-tabs{gap:3px;padding:4px}.coach-tab{font-size:10px;padding:8px 4px}.coach-section-heading h3{font-size:16px}.coach-conversation-heading{align-items:flex-start;flex-direction:column}.coach-conversation-status{align-self:flex-start}}
