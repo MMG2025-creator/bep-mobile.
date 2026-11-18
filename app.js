@@ -798,6 +798,17 @@ async function showPurchaseAdvice(p){
  }
  target.innerHTML=(budgetWarning?"<strong>"+esc(budgetWarning)+"</strong><br><br>":"")+"<strong>"+esc(local[0])+"</strong>"+esc(local[1])+"<br><br><b>Question BEP :</b> "+esc(local[2]);
 }
+function coachQuestionIntent(question){
+ const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ");
+ if(/(cette page|cet ecran|sur cette page|sur cet ecran|elements utiles)/.test(q)&&/(presente|resume|explique|utile|aide|montre|fonction)/.test(q))return "overview";
+ if(/\b(combien|montant|total|solde|reste|cout|prix|somme|chiffre)\b/.test(q))return "amount";
+ if(/\b(compare|comparer|difference|versus|meilleur)\b/.test(q))return "compare";
+ if(/\b(comment|etape|etapes|methode|mettre en place|par ou commencer|que faire)\b/.test(q))return "steps";
+ if(/\b(pourquoi|raison|cause|signifie|signification|comprendre|explique)\b/.test(q))return "explain";
+ if(/\b(liste|quels|quelles)\b/.test(q))return "list";
+ if(/\b(conseil|conseille|recommande|devrais|priorite|prioriser|strategie)\b/.test(q))return "recommendation";
+ return "general";
+}
 function coachReply(question){
  const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
  const income=totalIncome(),spent=charges(),left=available(),budgets=state.budgets||[],goals=state.goals||[],expenses=state.expenses||[];
@@ -806,7 +817,22 @@ function coachReply(question){
  const impulsive=month.filter(p=>p.psychology==="impulsive"||p.psychology==="pressure").length;
  const monthlyGoals=goals.reduce((n,g)=>n+Number(g.monthly||0),0);
  const hi=coachFirstName?coachFirstName+", ":"";
- if(!income)return hi+"je peux t'accompagner, mais il me manque ton revenu mensuel. Renseigne-le dans l'onglet Budget pour que mes recommandations reposent sur des chiffres fiables. En attendant, évite de fixer un objectif d'épargne sans connaître ta marge réelle.";
+ const pageContext=currentCoachPageContext(),page=pageContext.page||"home",subPage=pageContext.subPage||"";
+ const intent=coachQuestionIntent(question);
+ if(intent==="overview"){
+  if(page==="budget"&&subPage==="income")return hi+"sur le sous-module Revenus, tu peux vérifier les ressources régulières, variables et exceptionnelles. "+(income>0?"Le total enregistré est de "+money(income)+" par mois.":"Aucun revenu mensuel n'est encore enregistré : je ne peux donc pas calculer ta marge.")+" Vérifie les montants réellement encaissés et leur régularité.";
+  if(page==="budget"&&subPage==="charges")return hi+"sur le sous-module Charges, tu peux contrôler les dépenses récurrentes, les échéances et les prélèvements. "+(spent>0?"Les charges enregistrées représentent "+money(spent)+".":"Aucune charge n'est encore enregistrée.")+" Vérifie les périodicités et les factures annuelles pour éviter les oublis et les doubles comptes.";
+  if(page==="budget"&&subPage==="monthly")return hi+"sur le Budget mensuel, l'objectif est de comparer le prévisionnel au réalisé, période par période. Aucun écart fiable ne peut être calculé tant que les revenus et les charges ne sont pas renseignés.";
+  if(page==="budget")return hi+"sur la page Budget, tu peux rapprocher tes revenus, tes charges et ton reste disponible. "+(income>0?"Les données locales indiquent "+money(income)+" de revenus, "+money(spent)+" de charges et "+money(left)+" de disponible.":"Il manque encore les revenus mensuels : je peux expliquer les règles, mais pas calculer une marge fiable.")+" Commence par vérifier les montants et leur périodicité.";
+  if(page==="savings")return hi+"sur la page Épargne, tu peux suivre tes objectifs et les versements réellement effectués. "+goals.length+" objectif(s) sont enregistrés, pour "+money(monthlyGoals)+" d'effort mensuel prévu. "+(income>0?"Compare cet effort à ton reste disponible de "+money(left)+".":"Sans revenu mensuel enregistré, ne programme pas encore de montant fixe : commence par établir ta marge réelle.")+" Un objectif prévu n'est pas une épargne déjà constituée.";
+  if(page==="spending")return hi+"sur la page Dépenses et achats, tu peux examiner les achats enregistrés, leur catégorie et leur caractère impulsif. "+month.length+" dépense(s) sont enregistrées ce mois-ci pour "+money(spentThisMonth)+", dont "+impulsive+" sous impulsion ou pression. "+(month.length?"Repère les déclencheurs et les postes récurrents avant de décider quoi ajuster.":"Aucun achat n'est enregistré pour le moment : il n'y a pas encore d'historique à analyser.");
+  return hi+"sur la page Accueil, tu retrouves les principaux repères de ta situation. "+(income>0?"Les données locales indiquent "+money(income)+" de revenus, "+money(spent)+" de charges et "+money(left)+" de disponible.":"Aucun revenu mensuel n'est encore renseigné : les indicateurs de reste disponible ne sont pas calculables.")+" Je peux approfondir ton budget, tes dépenses ou ton épargne.";
+ }
+ if(intent==="compare")return hi+"je peux comparer ces solutions, mais il me faut les deux options. Donne-moi pour chacune le montant, la durée, les frais éventuels et l'effet sur ton budget. Je les comparerai sur le coût total, la flexibilité, le risque et la marge financière restante, sans inventer de données.";
+ if(intent==="amount"&&/\b(reste|solde|disponible|fin du mois)\b/.test(q)&&!income)return hi+"je ne peux pas calculer de façon fiable ce qu'il te reste à la fin du mois sans revenu mensuel enregistré. Renseigne tes revenus et tes charges récurrentes ; je pourrai alors distinguer le disponible actuel du prévisionnel de fin de mois.";
+ if(intent==="steps"&&/epargne|economis|mettre.*cote/.test(q)&&!income)return hi+"pour mettre de l'argent de côté sans déséquilibrer ton budget, procède dans cet ordre : 1) enregistre tes revenus réellement encaissés ; 2) recense les charges fixes et les dépenses variables ; 3) calcule la marge après les échéances ; 4) seulement ensuite, fixe un montant d'épargne soutenable. Tant que cette marge est inconnue, ne programme pas de versement fixe.";
+ if(intent==="explain"&&/impuls|achat|craquer|envie/.test(q))return hi+"les achats impulsifs sont souvent favorisés par un déclencheur émotionnel, la fatigue, une frustration ou une offre qui pousse à décider vite. Ce n'est pas un diagnostic sur toi : pour identifier ton mécanisme, note juste avant chaque achat l'émotion, le contexte et l'urgence ressentie. Ajoute ensuite une règle de délai de 24 heures pour les achats non essentiels.";
+ if(!income)return hi+"je peux expliquer les règles générales et t'aider à clarifier une décision, mais il me manque ton revenu mensuel pour produire une analyse chiffrée fiable. Renseigne-le dans l'onglet Budget ; en attendant, je peux traiter ta question sans inventer de marge financière.";
  if(/stress|pression|peur|angoiss|difficile|panique|culpabil/.test(q)){
   return hi+"commençons par ralentir la décision. Ne prends aucun engagement financier sous le coup de la pression. Note le fait concret qui t'inquiète, distingue-le de ce que tu imagines, puis reporte toute dépense non essentielle de 24 heures. Ton reste disponible estimé est de "+money(left)+".";
  }
@@ -814,7 +840,7 @@ function coachReply(question){
   const guard=left<=0?"Ton budget ne dégage actuellement aucune marge positive : je te recommande de différer tout achat non essentiel.": "Vérifie que le montant entre dans ton reste disponible de "+money(left)+".";
   return hi+"avant de décider, vérifie trois points : est-ce un besoin concret, l'achat était-il prévu, et peux-tu attendre 24 heures ? "+guard+(impulsive?" Tu as enregistré "+impulsive+" achat(s) sous impulsion ou pression ce mois-ci : prends ce signal comme une invitation à ralentir, pas comme un jugement.":"");
  }
- if(/epargne|economis|objectif|mettre de cote|mettre de cote/.test(q)){
+ if(/epargne|economis|objectif|mettre de cote/.test(q)){
   if(left<=0)return hi+"la priorité est de retrouver une marge budgétaire avant de programmer une épargne. Tes charges atteignent "+money(spent)+" pour "+money(income)+" de revenus.";
   return hi+"ton reste disponible estimé est de "+money(left)+". Tes objectifs actuels représentent "+money(monthlyGoals)+" par mois. Une cible prudente doit rester inférieure à ta marge réelle et laisser une réserve pour les imprévus. "+(goals.length?"Revois chaque engagement avant d'en ajouter un nouveau.":"Commence par un objectif modeste et mesurable.");
  }
