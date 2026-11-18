@@ -152,6 +152,8 @@ const COACH_QUESTION_LIBRARY=[
  {key:"learning",label:"Comprendre mes finances",description:"Notions, méthodes et décisions financières",icon:"◇",questions:["Comment lire simplement ma situation financière ?","Quelle différence entre capacité d'épargne et reste à vivre ?","Comment comparer deux décisions financières ?","Quels indicateurs suivre chaque mois pour progresser ?"]}
 ];
 let coachActiveTab="profile";
+let coachExplorerInitialized=false,coachExplorerTouched=false;
+function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
 function setCoachTab(name){
  if(!["profile","explore","open"].includes(name))return;
  coachActiveTab=name;
@@ -162,6 +164,7 @@ function setCoachTab(name){
 }
 function renderCoachExplorer(){
  const target=$("coachQuestionLibrary");if(!target)return;
+ if(!coachExplorerInitialized)syncCoachExplorerFromProfile();
  const filters=[...document.querySelectorAll("[data-coach-explore-theme]:checked")].map(x=>x.dataset.coachExploreTheme);
  const themes=filters.length?COACH_QUESTION_LIBRARY.filter(x=>filters.includes(x.key)):COACH_QUESTION_LIBRARY;
  const hint=$("coachExplorerHint");if(hint)hint.textContent=filters.length?themes.length+" thématique(s) affichée(s). Modifie les filtres pour explorer d'autres sujets.":"Toutes les thématiques sont affichées. Sélectionne des filtres pour affiner les propositions.";
@@ -193,7 +196,8 @@ function ensureCoachWelcome(){
 }
 document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
 document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
-document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",renderCoachExplorer));
+document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;renderCoachExplorer()}));
+$("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
 document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
 $("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;submitCoachQuestion(button.dataset.coachQuestion)});
 $("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
