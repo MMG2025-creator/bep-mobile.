@@ -416,7 +416,7 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
   if(!found.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"CANDIDATE_NOT_FOUND"})}
   const candidate=found.rows[0];
   const expectedConfirmation=decision==="approve"?"APPROVE_DOCUMENT":"REJECT_DOCUMENT";
-  if(req.body?.confirmation!==expectedConfirmation||req.body?.candidate_digest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(400).json({error:"DOCUMENT_REVIEW_CONFIRMATION_REQUIRED"})}
+  if(typeof candidate.source_digest!=="string"||!/^[a-f0-9]{64}$/.test(candidate.source_digest)||req.body?.confirmation!==expectedConfirmation||req.body?.candidate_digest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(400).json({error:"DOCUMENT_REVIEW_CONFIRMATION_REQUIRED"})}
   if(candidate.review_status!=="pending"){await client.query("ROLLBACK");return res.status(409).json({error:"CANDIDATE_ALREADY_REVIEWED"})}
   if(decision==="approve"){
    if(candidate.proposal_type==="create"){
