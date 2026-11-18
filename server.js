@@ -10,7 +10,7 @@ const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_RE
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
-const {ingestDocumentUrl,ingestDocumentBatch}=require("./lib/bep-document-ingestion");
+const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources}=require("./lib/bep-coach-source-registry");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
@@ -292,6 +292,7 @@ app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res
  res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
  }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
 
+app.get("/api/admin/bep-coach/identified-sites",auth,requireBepAgentAdmin,async(req,res)=>{try{const result=await listIdentifiedSites(pool);res.setHeader("Cache-Control","no-store");res.json(result)}catch(e){console.error("Identified ingestion sites read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"IDENTIFIED_SITES_UNAVAILABLE"})}});
 app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const input=req.body?.sources;
  if(!Array.isArray(input)||input.length<1||input.length>10)return res.status(400).json({error:"INVALID_BATCH_SIZE",maxSources:10});

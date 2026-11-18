@@ -5,7 +5,7 @@ const {ingestDocumentUrl,ingestDocumentBatch,saveCollectedPage}=require("../lib/
 
 test("manual document ingestion stores extracted source without calling an AI provider",async()=>{
  const inserts=[];
- const pool={query:async(sql,params)=>{assert.match(sql,/INSERT INTO bep_knowledge_candidates/);inserts.push(params);return{rowCount:1,rows:[{id:17}]}}};
+ const pool={query:async(sql,params)=>{if(sql.includes("bep_document_ingestion_sites"))return{rowCount:1,rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates")){inserts.push(params);return{rowCount:1,rows:[{id:17}]}}return{rowCount:0,rows:[]}}};
  const fetchPage=async(url)=>({url,title:"Guide CNIL",text:"Contenu institutionnel documenté. ".repeat(20),links:[]});
  const result=await ingestDocumentUrl({pool,url:"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles",category:"general",fetchPage});
  assert.equal(result.enabled,true);
@@ -20,7 +20,7 @@ test("manual document ingestion stores extracted source without calling an AI pr
 });
 
 test("duplicate document ingestion creates no second pending candidate",async()=>{
- const pool={query:async()=>({rowCount:0,rows:[]})};
+ const pool={query:async(sql)=>sql.includes("bep_document_ingestion_sites")?{rowCount:1,rows:[]}:{rowCount:0,rows:[]}};
  const fetchPage=async(url)=>({url,title:"Guide CNIL",text:"Contenu institutionnel documenté. ".repeat(20),links:[]});
  const result=await ingestDocumentUrl({pool,url:"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles",fetchPage});
  assert.equal(result.candidatesCreated,0);
