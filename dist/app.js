@@ -141,6 +141,64 @@ async function persistCoachProfile(){
 document.querySelectorAll("[data-coach-theme]").forEach(input=>input.addEventListener("change",()=>{const key=input.dataset.coachTheme,selected=new Set(state.coachProfile||[]);input.checked?selected.add(key):selected.delete(key);state.coachProfile=[...selected];persistCoachProfile()}));
 renderCoachProfile();
 
+const COACH_QUESTION_LIBRARY=[
+ {key:"budget",label:"Gérer mon budget",description:"Équilibre entre revenus, charges et reste disponible",icon:"◫",questions:["Combien me reste-t-il réellement à la fin du mois ?","Comment répartir mes revenus entre charges, épargne et loisirs ?","Quelles charges pèsent le plus dans mon budget ?","Comment construire un budget réaliste qui tient dans la durée ?"]},
+ {key:"spending",label:"Maîtriser mes dépenses",description:"Habitudes, arbitrages et économies possibles",icon:"⌁",questions:["Où part réellement mon argent chaque mois ?","Quelles dépenses pourrais-je réduire sans dégrader mon quotidien ?","Comment repérer les abonnements ou dépenses récurrentes inutiles ?","Comment mieux maîtriser mes achats impulsifs ?"]},
+ {key:"savings",label:"Développer mon épargne",description:"Réserve de sécurité et régularité",icon:"◉",questions:["Quel montant puis-je épargner sans fragiliser mon budget ?","Comment constituer progressivement une épargne de précaution ?","Comment rendre mon effort d'épargne plus régulier ?","Comment répartir mon épargne entre sécurité et projets ?"]},
+ {key:"goals",label:"Atteindre mes objectifs",description:"Projets, achats importants et échéances",icon:"◎",questions:["Combien dois-je mettre de côté chaque mois pour mon projet ?","Mon projet est-il compatible avec ma situation financière actuelle ?","Comment prioriser plusieurs projets financiers ?","Quel délai réaliste prévoir pour financer un achat important ?"]},
+ {key:"income",label:"Améliorer mes revenus",description:"Ressources, stabilité et évolution",icon:"↗",questions:["Comment mieux comprendre la composition de mes revenus ?","Comment faire face à une baisse temporaire de revenus ?","Quelle marge de manœuvre ai-je si mes revenus évoluent ?","Comment intégrer des revenus variables dans mon budget ?"]},
+ {key:"debt",label:"Réduire mes dettes",description:"Crédits, remboursements et coût de l'endettement",icon:"▤",questions:["Comment connaître le poids réel de mes remboursements ?","Quelle dette rembourser en priorité ?","Comment évaluer le coût total de mes crédits ?","Comment réduire mes dettes sans déséquilibrer mon budget ?"]},
+ {key:"planning",label:"Anticiper les imprévus",description:"Dépenses annuelles, aléas et sécurité",icon:"▦",questions:["Quelles dépenses annuelles dois-je anticiper ?","Quelle réserve prévoir pour les dépenses imprévues ?","Comment lisser mes grosses dépenses sur l'année ?","Mon budget résisterait-il à une dépense exceptionnelle ?"]},
+ {key:"learning",label:"Comprendre mes finances",description:"Notions, méthodes et décisions financières",icon:"◇",questions:["Comment lire simplement ma situation financière ?","Quelle différence entre capacité d'épargne et reste à vivre ?","Comment comparer deux décisions financières ?","Quels indicateurs suivre chaque mois pour progresser ?"]}
+];
+let coachActiveTab="profile";
+function setCoachTab(name){
+ if(!["profile","explore","open"].includes(name))return;
+ coachActiveTab=name;
+ document.querySelectorAll("[data-coach-tab]").forEach(button=>{const active=button.dataset.coachTab===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1});
+ document.querySelectorAll("[data-coach-panel]").forEach(panel=>{const active=panel.dataset.coachPanel===name;panel.classList.toggle("active",active);panel.hidden=!active});
+ if(name==="explore")renderCoachExplorer();
+ if(name==="open")$("coachPromptInput")?.focus({preventScroll:true});
+}
+function renderCoachExplorer(){
+ const target=$("coachQuestionLibrary");if(!target)return;
+ const filters=[...document.querySelectorAll("[data-coach-explore-theme]:checked")].map(x=>x.dataset.coachExploreTheme);
+ const themes=filters.length?COACH_QUESTION_LIBRARY.filter(x=>filters.includes(x.key)):COACH_QUESTION_LIBRARY;
+ const hint=$("coachExplorerHint");if(hint)hint.textContent=filters.length?themes.length+" thématique(s) affichée(s). Modifie les filtres pour explorer d'autres sujets.":"Toutes les thématiques sont affichées. Sélectionne des filtres pour affiner les propositions.";
+ target.replaceChildren();
+ themes.forEach(theme=>{
+  const card=document.createElement("section");card.className="coach-question-theme";
+  const heading=document.createElement("div");heading.className="coach-question-theme-heading";
+  const icon=document.createElement("span");icon.className="coach-question-theme-icon";icon.textContent=theme.icon;
+  const copy=document.createElement("div");const title=document.createElement("h4");title.textContent=theme.label;const desc=document.createElement("p");desc.textContent=theme.description;copy.append(title,desc);heading.append(icon,copy);card.append(heading);
+  const list=document.createElement("div");list.className="coach-question-list";
+  theme.questions.forEach(question=>{const button=document.createElement("button");button.type="button";button.className="coach-question-button";button.dataset.coachQuestion=question;const text=document.createElement("span");text.textContent=question;const arrow=document.createElement("span");arrow.setAttribute("aria-hidden","true");arrow.textContent="→";button.append(text,arrow);list.append(button)});
+  card.append(list);target.append(card);
+ });
+}
+function buildCoachCrossQuestion(){
+ const selected=[...document.querySelectorAll("[data-coach-cross-theme]:checked")].map(x=>x.dataset.coachCrossTheme);
+ if(selected.length<2)return "";
+ const labels=selected.map(key=>COACH_QUESTION_LIBRARY.find(x=>x.key===key)?.label.replace(/^Gérer |^Maîtriser |^Développer |^Atteindre |^Améliorer |^Réduire |^Anticiper |^Comprendre /i,"")||key.toLowerCase());
+ return "En croisant les sujets "+labels.join(", ")+" : quelles relations peut-on observer dans ma situation financière, quels arbitrages cela fait-il apparaître et quelles actions concrètes pourrais-je envisager ? Distingue les faits établis, les hypothèses et les informations qui me manquent.";
+}
+function updateCoachCrossState(){
+ const count=document.querySelectorAll("[data-coach-cross-theme]:checked").length,button=$("coachCrossSubmit"),status=$("coachCrossStatus");
+ if(button)button.disabled=count<2;
+ if(status)status.textContent=count<2?"Sélectionne au moins deux thématiques ("+count+" actuellement).":count+" thématiques sélectionnées. Une question transversale est prête.";
+}
+function ensureCoachWelcome(){
+ const log=$("coachChatLog");if(!log||log.children.length)return;
+ addCoachMessage("coach","Bonjour ! Je suis ton Coach BEP. Je peux t'aider à comprendre tes finances, explorer tes priorités et transformer tes questions en prochaines actions concrètes. Tu peux personnaliser ton accompagnement, explorer les questions ou m'écrire librement.");
+}
+document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
+document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
+document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",renderCoachExplorer));
+document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
+$("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;submitCoachQuestion(button.dataset.coachQuestion)});
+$("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
+renderCoachExplorer();updateCoachCrossState();setCoachTab("profile");
+
 async function recordAdvice(id){
  const target=id==="home"?document.querySelector(".home-coach-card .ai-advice"):$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
  if(id==="home")setHomeRobotState("thinking","J’analyse ta situation…");
@@ -197,7 +255,7 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  panel.querySelectorAll(".chart-data-point:not(svg .chart-data-point)").forEach((el,i)=>{el.style.animation="none";if(!reduce){void el.offsetWidth;el.style.animation="bep-chart-enter 420ms ease both "+(i*45)+"ms"}});
 }
 function setHomeRobotState(state,message){const robot=document.querySelector('.welcome-mascot[data-goto="coach"]');if(!robot)return;robot.dataset.state=["idle","thinking","advice","attention"].includes(state)?state:"idle";const label=$( "homeMascotStatus");if(label&&message)label.textContent=String(message).slice(0,64)}
-function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"&&window.bepSignedIn)loadAiConnection();if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
+function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"){ensureCoachWelcome();renderCoachProfile();if(window.bepSignedIn)loadAiConnection();}if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
 function setBudgetModule(name){if(!["income","charges","monthly"].includes(name))return;activeBudgetModule=name;try{localStorage.setItem(ACTIVE_BUDGET_MODULE_KEY,name)}catch{}document.querySelectorAll("[data-budget-module]").forEach(button=>{const active=button.dataset.budgetModule===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active))});document.querySelectorAll(".budget-module").forEach(panel=>{panel.hidden=panel.id!=="budgetModule"+name.charAt(0).toUpperCase()+name.slice(1)});requestAnimationFrame(()=>replayPanelChartAnimations(document.getElementById("budgetModule"+name.charAt(0).toUpperCase()+name.slice(1))));document.querySelectorAll("[data-budget-advice]").forEach(advice=>{advice.hidden=advice.dataset.budgetAdvice!==name});if(document.getElementById("budget")?.classList.contains("active"))recordAdvice(name)}
 // Event delegation in capture phase: keeps budget tabs functional even when
