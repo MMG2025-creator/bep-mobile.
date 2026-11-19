@@ -2101,7 +2101,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-hero{min-height:0!important;padding:16px 17px 18px!important;border-radius:18px!important}
  .coach-hero h2{margin:9px 0 5px!important;font-size:24px!important}
  .coach-hero-copy>p{font-size:12px!important;line-height:1.4!important}
- .coach-hero-visual,.coach-hero-bot,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
+ .coach-hero-bottom,.coach-hero-assurance{display:none!important}
  .coach-tabs{margin-top:2px!important}
  .coach-objectives{margin-top:3px!important}
  .coach-conversation{margin-top:4px!important}
@@ -2190,4 +2190,14 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .coach-orbit-two{width:106px!important;height:86px!important}
   .coach-hero-topline{font-size:7px!important}
   .coach-conversation-heading h3{font-size:13px!important}
+}
+
+
+/* Coach BEP — robot visible sur mobile, sans dépendre d'un override tardif. */
+@media(max-width:600px){
+  .coach-hero-visual{display:grid!important;visibility:visible!important;opacity:1!important;min-height:116px!important}
+  .coach-hero-visual .coach-hero-bot{display:block!important;visibility:visible!important;opacity:1!important;width:108px!important;height:auto!important}
+}
+@media(max-width:390px){
+  .coach-hero-visual .coach-hero-bot{width:92px!important}
 }
