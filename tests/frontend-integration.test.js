@@ -517,3 +517,11 @@ test("Coach robot is not hidden on mobile and the PWA shell cache is refreshed",
  }
  for(const file of ["sw.js","dist/sw.js"])assert.match(read(file),/CACHE_NAME="bep-shell-v27"/);
 });
+
+
+test("Coach answers never display internal RAG or retrieval diagnostics",()=>{
+ const app=read("app.js");
+ assert.doesNotMatch(app,/RAG actif|RAG désactivé|coach-source-trace|source\(s\) récupérée\(s\)|Contexte chargé/);
+ assert.doesNotMatch(app,/coach-answer-source/);
+ assert.equal(app,read("dist/app.js"));
+});
