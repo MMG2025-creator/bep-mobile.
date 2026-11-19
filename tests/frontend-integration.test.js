@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=111&bep=homepage-pills-horizontal-20261119/);
+  assert.match(html,/styles\.css\?v=112&bep=coach-form-stacked-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -453,19 +453,7 @@ test("manual force sync preserves guest queues and local data without a trusted 
 });
 
 
-test("Coach free-question form keeps the textarea visible and the send button compact on desktop",()=>{
- for(const file of ["styles.css","dist/styles.css"]){
-  const css=read(file);
-  assert.match(css,/#coachPanelOpen \.coach-prompt-form\{[\s\S]*?display:flex!important/);
-  assert.match(css,/#coachPanelOpen \.coach-prompt-form textarea\{[\s\S]*?display:block!important[\s\S]*?min-height:96px!important/);
-  assert.match(css,/#coachPanelOpen \.coach-prompt-form button[\s\S]*?max-width:260px/);
-  assert.match(css,/@media\(max-width:600px\)[\s\S]*?#coachPanelOpen \.coach-prompt-form\{flex-direction:column!important/);
- }
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=111&bep=homepage-pills-horizontal-20261119/);
-});
-
- 
-test("Coach question form always stacks the textarea above the send button",()=>{
+test("Coach question form always stacks the textarea above the send button on every viewport",()=>{
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
   assert.match(css,/#coachPromptForm\.coach-prompt-form\{[\s\S]*?display:grid!important/);
