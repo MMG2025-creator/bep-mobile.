@@ -2075,3 +2075,38 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   flex:none!important;
   white-space:normal!important;
 }
+
+
+/* Coach BEP — parcours conversationnel prioritaire et compact. */
+.coach-objectives{
+  gap:7px!important;
+  margin:4px 0 8px!important;
+  padding:10px 12px!important;
+  border-radius:13px!important;
+}
+.coach-objectives-heading .coach-section-kicker{margin:0 0 3px!important;font-size:9px!important;letter-spacing:1.5px!important}
+.coach-objectives-heading h3{margin:0 0 4px!important;font-size:15px!important;line-height:1.2!important}
+.coach-objectives-heading p:last-child{font-size:11px!important;line-height:1.35!important}
+#coachChooseObjectives{justify-self:stretch!important;width:100%!important;min-height:40px!important;padding:7px 12px!important;font-size:13px!important}
+.coach-conversation{display:grid;gap:9px!important;margin-top:5px!important;padding-top:9px!important}
+.coach-conversation-heading{gap:6px!important}
+.coach-conversation-heading h3{font-size:14px!important}
+.coach-conversation-status{font-size:9px!important}
+.coach-chat-log{min-height:76px!important;max-height:420px!important;padding:7px 2px 9px!important}
+#coachPromptForm.coach-prompt-form{margin-top:2px!important;padding:10px 0 0!important;border-top:1px solid var(--line)!important}
+.coach-workspace .coach-prompt-form textarea{min-height:76px!important;max-height:150px!important}
+.coach-privacy{margin-top:14px!important}
+@media(max-width:600px){
+ .coach-workspace{gap:10px!important}
+ .coach-hero{min-height:0!important;padding:16px 17px 18px!important;border-radius:18px!important}
+ .coach-hero h2{margin:9px 0 5px!important;font-size:24px!important}
+ .coach-hero-copy>p{font-size:12px!important;line-height:1.4!important}
+ .coach-hero-visual,.coach-hero-bot,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
+ .coach-tabs{margin-top:2px!important}
+ .coach-objectives{margin-top:3px!important}
+ .coach-conversation{margin-top:4px!important}
+ .coach-conversation-heading{align-items:flex-start!important;flex-direction:row!important}
+ .coach-conversation-status{align-self:center!important}
+ .coach-chat-log{max-height:420px!important}
+ .coach-privacy{margin-top:12px!important;font-size:11px!important}
+}

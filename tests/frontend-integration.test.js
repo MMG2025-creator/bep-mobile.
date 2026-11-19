@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=112&bep=coach-form-stacked-20261119/);
+  assert.match(html,/styles\.css\?v=113&bep=coach-conversation-first-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -460,5 +460,28 @@ test("Coach question form always stacks the textarea above the send button on ev
   assert.match(css,/#coachPromptForm\.coach-prompt-form textarea\{[\s\S]*?width:100%!important/);
   assert.match(css,/#coachPromptForm\.coach-prompt-form button[\s\S]*?width:100%!important/);
  }
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=112&bep=coach-form-stacked-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=113&bep=coach-conversation-first-20261119/);
+});
+
+
+test("Coach free conversation shows objectives first, then chat, then the question form",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  const panelStart=html.indexOf('id="coachPanelOpen"');
+  const panelEnd=html.indexOf('<dialog class="coach-answer-dialog"',panelStart);
+  assert.ok(panelStart>=0&&panelEnd>panelStart,"open conversation panel exists");
+  const panel=html.slice(panelStart,panelEnd);
+  const objectives=panel.indexOf('class="coach-objectives"');
+  const conversation=panel.indexOf('class="coach-conversation"');
+  const chat=panel.indexOf('id="coachChatLog"');
+  const form=panel.indexOf('id="coachPromptForm"');
+  assert.ok(objectives>=0&&conversation>objectives,"objectives precede conversation");
+  assert.ok(chat>=0&&form>chat,"question form follows conversation messages");
+  assert.match(html,/coach-info-panel[\s\S]*?<\/details>\s*<div class="coach-privacy"/);
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.coach-objectives\{[\s\S]*?padding:10px 12px!important/);
+  assert.match(css,/\.coach-conversation\{[\s\S]*?margin-top:4px!important/);
+ }
 });
