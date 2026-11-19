@@ -276,8 +276,8 @@ renderCoachExplorer();updateCoachCrossState();setCoachTab("open");
 
 async function recordAdvice(id){
  const target=id==="home"?document.querySelector(".home-coach-card .ai-advice"):$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
- if(id==="home")setHomeRobotState("thinking","J’analyse ta situation…");
- if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode))){target.textContent=makeAdvice(id);if(id==="home")setHomeRobotState("idle","Ton Coach BEP est disponible");return}
+ 
+ if(window.bepSignedIn&&!aiConnection.mode)await loadAiConnection();if(!(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode))){target.textContent=makeAdvice(id);return}
  const context=currentFinancialContext(),fingerprint=JSON.stringify({zone:id,context,provider:aiConnection.provider,model:aiConnection.model});
  if(adviceFingerprints[id]===fingerprint&&target.textContent!=="Ton IA analyse ta situation financière…")return;
  adviceFingerprints[id]=fingerprint;
@@ -288,7 +288,7 @@ async function recordAdvice(id){
   const r=await fetch(API+"/api/ai/advice",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({zone:id==="monthly"?"budget":id,financialContext:context,coachProfile:state.coachProfile||[]})});
   const d=await r.json();if(!r.ok)throw Error(d.message||"Conseil IA indisponible.");
   if(adviceRequestIds[id]!==requestId)return;
-  target.textContent=d.answer;if(id==="home")setHomeRobotState("advice","J’ai un conseil pour toi");
+  target.textContent=d.answer;
   const elapsed=Math.max(0,performance.now()-started),tokens=Number(d.usage?.total_tokens)||Math.max(1,Math.ceil(String(d.answer||"").length/4));
   aiUsage.requests=(Number(aiUsage.requests)||0)+1;aiUsage.estimatedTokens=(Number(aiUsage.estimatedTokens)||0)+tokens;aiUsage.totalMs=(Number(aiUsage.totalMs)||0)+elapsed;aiUsage.lastByTab=aiUsage.lastByTab||{};aiUsage.lastByTab[id]=new Date().toISOString();
   try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(aiUsage))}catch{}renderAIUsage();
@@ -329,7 +329,7 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  rects.forEach((el,i)=>{el.style.transformBox="fill-box";el.style.transformOrigin="center bottom";el.style.transition="none";el.style.transform=reduce?"none":"scaleY(0)";if(!reduce)requestAnimationFrame(()=>{el.style.transition="transform 800ms cubic-bezier(.2,.7,.2,1) "+(i*65)+"ms";el.style.transform="scaleY(1)"})});
  panel.querySelectorAll(".chart-data-point:not(svg .chart-data-point)").forEach((el,i)=>{el.style.animation="none";if(!reduce){void el.offsetWidth;el.style.animation="bep-chart-enter 420ms ease both "+(i*45)+"ms"}});
 }
-function setHomeRobotState(state,message){const robot=document.querySelector('.welcome-mascot[data-goto="coach"]');if(!robot)return;robot.dataset.state=["idle","thinking","advice","attention"].includes(state)?state:"idle";const label=$( "homeMascotStatus");if(label&&message)label.textContent=String(message).slice(0,64)}
+
 function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;if(x.id==="coach"){if(isActive)x.style.removeProperty("display");else x.style.setProperty("display","none","important");}});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"){ensureCoachWelcome();renderCoachProfile();if(window.bepSignedIn)loadAiConnection();}if(id==="budget")recordAdvice(activeBudgetModule);else if(["home","savings","purchases"].includes(id))recordAdvice(id)}
 let activeBudgetModule="income";
 function setBudgetModule(name){if(!["income","charges","monthly"].includes(name))return;activeBudgetModule=name;try{localStorage.setItem(ACTIVE_BUDGET_MODULE_KEY,name)}catch{}document.querySelectorAll("[data-budget-module]").forEach(button=>{const active=button.dataset.budgetModule===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active))});document.querySelectorAll(".budget-module").forEach(panel=>{panel.hidden=panel.id!=="budgetModule"+name.charAt(0).toUpperCase()+name.slice(1)});requestAnimationFrame(()=>replayPanelChartAnimations(document.getElementById("budgetModule"+name.charAt(0).toUpperCase()+name.slice(1))));document.querySelectorAll("[data-budget-advice]").forEach(advice=>{advice.hidden=advice.dataset.budgetAdvice!==name});if(document.getElementById("budget")?.classList.contains("active"))recordAdvice(name)}
