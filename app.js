@@ -176,7 +176,7 @@ async function loadCoachExplorerCategories(){
  })();
  return coachExplorerCategoriesPromise;
 }
-let coachActiveTab="profile";
+let coachActiveTab="open";
 let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false,coachExplorerThemesHidden=true;
 function syncCoachExplorerExpandAllButton(){const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")],allOpen=!coachExplorerThemesHidden&&details.length>0&&details.every(item=>item.open),button=$("coachToggleAllThemes");coachExplorerAllExpanded=allOpen;if(button){button.textContent=coachExplorerThemesHidden||!allOpen?"Tout ouvrir":"Tout fermer";button.setAttribute("aria-expanded",String(allOpen));}}
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
