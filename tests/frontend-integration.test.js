@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=108&bep=compact-coach-mobile-navigation-20261119/);
+  assert.match(html,/styles\.css\?v=109&bep=coach-explorer-answer-dialog-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=124&bep=compact-coach-mobile-navigation-20261119/);
+  assert.match(html,/app\.js\?v=125&bep=coach-explorer-answer-dialog-20261119/);
   assert.match(html,/offline-storage\.js\?v=7&bep=force-remote-refresh-20261119/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=124&bep=compact-coach-mobile-navigation-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=125&bep=coach-explorer-answer-dialog-20261119/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
@@ -425,7 +425,7 @@ test("Google OAuth uses direct navigation and does not create a separate popup",
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.replace(API+"/api/auth/google")'));assert.ok(app.includes("window.location.replace(d.url)"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
  const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/if\(req\.session\?\.user\)return res\.redirect\(303/);assert.match(server,/Cache-Control","no-store, no-cache, must-revalidate, private/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
  for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v26/);assert.doesNotMatch(sw,/oauth-popup/);}
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=124&bep=compact-coach-mobile-navigation-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=125&bep=coach-explorer-answer-dialog-20261119/);
 });
 
 
