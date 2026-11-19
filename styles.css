@@ -2201,3 +2201,199 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 @media(max-width:390px){
   .coach-hero-visual .coach-hero-bot{width:92px!important}
 }
+
+
+/* Coach BEP — hiérarchie ergonomique : accueil compact, échange prioritaire. */
+.coach-workspace{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.coach-workspace .coach-hero{
+  margin:0!important;
+  padding:20px 22px!important;
+  min-height:0!important;
+  border-radius:22px!important;
+  align-items:center!important;
+}
+.coach-workspace .coach-hero-copy h2{
+  margin:7px 0 5px!important;
+  font-size:clamp(21px,3vw,29px)!important;
+  line-height:1.12!important;
+}
+.coach-workspace .coach-hero-copy>p{
+  max-width:38ch;
+  margin:0!important;
+  line-height:1.45!important;
+}
+.coach-workspace .coach-hero-bottom{
+  margin-top:10px!important;
+  padding-top:9px!important;
+}
+.coach-workspace .coach-tabs{
+  margin:0!important;
+}
+.coach-workspace #coachPanelOpen{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.coach-workspace .coach-objectives{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  margin:0!important;
+  padding:12px 15px!important;
+  border-radius:15px!important;
+}
+.coach-workspace .coach-objectives-heading{
+  min-width:0;
+  flex:1 1 auto;
+}
+.coach-workspace .coach-objectives-heading h3{
+  margin:2px 0 3px!important;
+  font-size:15px!important;
+}
+.coach-workspace .coach-objectives-heading p:last-child{
+  margin:0!important;
+  font-size:12px!important;
+}
+.coach-workspace #coachChooseObjectives{
+  flex:0 0 auto;
+  min-height:38px!important;
+  padding:8px 13px!important;
+  white-space:nowrap;
+}
+.coach-workspace .coach-conversation{
+  display:flex;
+  flex-direction:column;
+  gap:12px!important;
+  margin:0!important;
+  padding:18px!important;
+  border:1px solid #dce9e1!important;
+  border-radius:20px!important;
+  background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%)!important;
+  box-shadow:0 8px 24px rgba(16,61,52,.055);
+}
+.coach-workspace .coach-conversation-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.coach-workspace .coach-conversation-heading h3{
+  margin:2px 0 0!important;
+  font-size:18px!important;
+}
+.coach-workspace .coach-chat-log{
+  min-height:250px!important;
+  max-height:460px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  padding:8px 3px 12px!important;
+}
+.coach-workspace #coachPromptForm.coach-prompt-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:9px!important;
+  margin:0!important;
+  padding-top:13px!important;
+  border-top:1px solid #e5eee8!important;
+}
+.coach-workspace .coach-prompt-form textarea{
+  width:100%!important;
+  min-height:82px!important;
+  max-height:180px!important;
+  resize:vertical;
+  padding:13px 14px!important;
+  border:1px solid #d5e4da!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  font:inherit;
+  line-height:1.45;
+}
+.coach-workspace .coach-prompt-form textarea:focus{
+  outline:3px solid rgba(35,134,83,.13);
+  border-color:#238653!important;
+}
+.coach-workspace .coach-prompt-form button{
+  justify-self:end;
+  width:auto!important;
+  min-width:190px;
+  min-height:44px!important;
+  border-radius:12px!important;
+}
+.coach-workspace .coach-info-panel{
+  margin-top:0!important;
+}
+@media(max-width:600px){
+  .coach-workspace{gap:10px}
+  .coach-workspace .coach-hero{
+    grid-template-columns:minmax(0,1fr) 104px!important;
+    gap:6px!important;
+    padding:13px 14px!important;
+    border-radius:17px!important;
+  }
+  .coach-workspace .coach-hero-visual{
+    min-height:104px!important;
+  }
+  .coach-workspace .coach-hero-visual .coach-hero-bot{
+    width:100px!important;
+  }
+  .coach-workspace .coach-hero-bottom{display:none!important}
+  .coach-workspace .coach-tabs{padding:4px!important}
+  .coach-workspace #coachPanelOpen{gap:9px}
+  .coach-workspace .coach-objectives{
+    flex-direction:row!important;
+    align-items:center!important;
+    gap:8px!important;
+    padding:10px 11px!important;
+  }
+  .coach-workspace .coach-objectives-heading h3{font-size:13px!important}
+  .coach-workspace .coach-objectives-heading p:last-child{font-size:10px!important}
+  .coach-workspace #coachChooseObjectives{
+    min-height:36px!important;
+    padding:7px 9px!important;
+    font-size:11px!important;
+  }
+  .coach-workspace .coach-conversation{
+    gap:9px!important;
+    padding:13px 11px 11px!important;
+    border-radius:17px!important;
+  }
+  .coach-workspace .coach-conversation-heading h3{font-size:15px!important}
+  .coach-workspace .coach-conversation-status{
+    max-width:112px;
+    font-size:9px!important;
+    line-height:1.25;
+    text-align:center;
+  }
+  .coach-workspace .coach-chat-log{
+    min-height:220px!important;
+    max-height:42vh!important;
+    padding:4px 0 8px!important;
+  }
+  .coach-workspace #coachPromptForm.coach-prompt-form{
+    gap:8px!important;
+    padding-top:10px!important;
+  }
+  .coach-workspace .coach-prompt-form textarea{
+    min-height:72px!important;
+    max-height:140px!important;
+    padding:11px 12px!important;
+    font-size:14px!important;
+  }
+  .coach-workspace .coach-prompt-form button{
+    justify-self:stretch;
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+  }
+}
+@media(max-width:390px){
+  .coach-workspace .coach-hero{grid-template-columns:minmax(0,1fr) 88px!important}
+  .coach-workspace .coach-hero-visual .coach-hero-bot{width:88px!important}
+  .coach-workspace .coach-objectives{align-items:flex-start!important}
+  .coach-workspace #coachChooseObjectives{white-space:normal}
+}
