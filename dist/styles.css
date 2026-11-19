@@ -1966,3 +1966,44 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .coach-objectives-dialog-footer{display:grid;gap:10px;padding-top:13px;border-top:1px solid #e5eee8}
 .coach-objectives-dialog-footer .primary{width:100%;min-height:46px}
 .coach-objectives-dialog .coach-profile-count{margin:10px 2px 0}
+
+
+/* Coach BEP — rétablir le champ de saisie et limiter le bouton à sa largeur utile */
+#coachPanelOpen .coach-prompt-form{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  width:100%;
+  min-width:0;
+}
+#coachPanelOpen .coach-prompt-form textarea{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:relative!important;
+  width:0!important;
+  min-width:0!important;
+  min-height:96px!important;
+  height:auto!important;
+  max-height:180px;
+  flex:1 1 0!important;
+  box-sizing:border-box;
+}
+#coachPanelOpen .coach-prompt-form button,
+#coachPanelOpen .coach-prompt-form button.primary{
+  display:inline-flex!important;
+  visibility:visible!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:260px;
+  min-height:96px;
+  flex:0 0 auto!important;
+  white-space:normal;
+}
+@media(max-width:600px){
+  #coachPanelOpen .coach-prompt-form{flex-direction:column!important;align-items:stretch!important}
+  #coachPanelOpen .coach-prompt-form textarea{width:100%!important;min-height:88px!important;flex:0 0 auto!important}
+  #coachPanelOpen .coach-prompt-form button,
+  #coachPanelOpen .coach-prompt-form button.primary{width:100%!important;max-width:none;min-height:50px;flex:0 0 auto!important}
+}
