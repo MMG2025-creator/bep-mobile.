@@ -8,14 +8,16 @@ const html=read("index.html");
 const app=read("app.js");
 const css=read("styles.css");
 
-test("Coach exposes three accessible journeys and preserves the open question form",()=>{
- assert.match(html,/data-coach-tab="profile"/);
+test("Coach exposes two accessible journeys and preserves the open question form",()=>{
+ assert.doesNotMatch(html,/data-coach-tab="profile"/);
  assert.match(html,/data-coach-tab="explore"/);
  assert.match(html,/data-coach-tab="open"/);
  assert.match(html,/id="coachPromptForm"/);
  assert.match(html,/id="coachPromptInput"/);
  assert.match(html,/id="coachChatLog"/);
- assert.ok(html.includes("Accompagnement")&&html.includes(">Explorer</button>")&&html.includes("Question libre"));
+ assert.ok(!html.includes("Accompagnement")&&html.includes(">Explorer</button>")&&html.includes("Question libre"));
+ assert.match(html,/id="coachObjectivesSummary"/);
+ assert.match(html,/id="coachChooseObjectives"/);
  assert.ok(html.includes("Écris ta question ici…"));
  assert.ok(html.includes("coachPanelOpen")&&html.includes("coach-conversation"));
 });

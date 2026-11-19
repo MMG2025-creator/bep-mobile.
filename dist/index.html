@@ -378,28 +378,9 @@
   <div class="coach-privacy"><span aria-hidden="true">●</span> Espace privé · Agent local · Aucune transmission à une IA externe</div>
 
   <div class="coach-tabs" role="tablist" aria-label="Parcours du Coach BEP">
-    <button type="button" class="coach-tab active" id="coachTabProfile" role="tab" aria-selected="true" aria-controls="coachPanelProfile" data-coach-tab="profile">Accompagnement</button>
     <button type="button" class="coach-tab" id="coachTabExplore" role="tab" aria-selected="false" aria-controls="coachPanelExplore" data-coach-tab="explore">Explorer</button>
-    <button type="button" class="coach-tab" id="coachTabOpen" role="tab" aria-selected="false" aria-controls="coachPanelOpen" data-coach-tab="open">Question libre</button>
+    <button type="button" class="coach-tab" id="coachTabOpen" role="tab" aria-selected="true" aria-controls="coachPanelOpen" data-coach-tab="open">Question libre</button>
   </div>
-
-  <section class="coach-tab-panel active" id="coachPanelProfile" role="tabpanel" aria-labelledby="coachTabProfile" data-coach-panel="profile">
-    <div class="coach-section-heading"><div><p class="coach-section-kicker">TON PROFIL D'ACCOMPAGNEMENT</p><h3>Qu'est-ce qui compte pour toi ?</h3><p>Choisis plusieurs sujets. Le Coach donnera la priorité aux conseils et questions qui correspondent à tes attentes.</p></div></div>
-    <div class="coach-profile-content coach-profile-content-standalone">
-      <div class="coach-profile-options">
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="budget"><span class="coach-profile-icon" aria-hidden="true">◫</span><span class="coach-profile-copy"><strong>Gérer mon budget</strong><small>Équilibrer mes revenus et mes charges</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="spending"><span class="coach-profile-icon" aria-hidden="true">⌁</span><span class="coach-profile-copy"><strong>Maîtriser mes dépenses</strong><small>Repérer les dérives et les économies possibles</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="savings"><span class="coach-profile-icon" aria-hidden="true">◉</span><span class="coach-profile-copy"><strong>Développer mon épargne</strong><small>Construire une réserve et épargner régulièrement</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="goals"><span class="coach-profile-icon" aria-hidden="true">◎</span><span class="coach-profile-copy"><strong>Atteindre mes objectifs</strong><small>Préparer mes projets et mes achats importants</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="income"><span class="coach-profile-icon" aria-hidden="true">↗</span><span class="coach-profile-copy"><strong>Améliorer mes revenus</strong><small>Mieux comprendre et optimiser mes ressources</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="debt"><span class="coach-profile-icon" aria-hidden="true">▤</span><span class="coach-profile-copy"><strong>Réduire mes dettes</strong><small>Maîtriser mes crédits et remboursements</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="planning"><span class="coach-profile-icon" aria-hidden="true">▦</span><span class="coach-profile-copy"><strong>Anticiper les imprévus</strong><small>Prévoir les dépenses à venir</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="learning"><span class="coach-profile-icon" aria-hidden="true">◇</span><span class="coach-profile-copy"><strong>Comprendre mes finances</strong><small>Apprendre et progresser à mon rythme</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
-      </div>
-      <p class="coach-profile-saved" id="coachProfileSaved" role="status" aria-live="polite">Tes choix seront enregistrés dans ton profil BEP.</p>
-    </div>
-    <div class="coach-profile-next"><span>La suite</span><strong>Retrouve des questions adaptées à tes choix dans « Thématiques &amp; questions ».</strong><button type="button" class="coach-inline-link" data-coach-go-tab="explore">Explorer les questions <span aria-hidden="true">→</span></button></div>
-  </section>
 
   <section class="coach-tab-panel" id="coachPanelExplore" role="tabpanel" aria-labelledby="coachTabExplore" data-coach-panel="explore" hidden>
     <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Ouvre une thématique, puis sélectionne un sujet pour lire la réponse du Coach BEP.</p></div></div>
@@ -429,7 +410,25 @@
     </section>
   </section>
 
-  <section class="coach-tab-panel" id="coachPanelOpen" role="tabpanel" aria-labelledby="coachTabOpen" hidden>
+  <section class="coach-tab-panel active" id="coachPanelOpen" role="tabpanel" aria-labelledby="coachTabOpen" data-coach-panel="open">
+    <section class="coach-objectives" aria-labelledby="coachObjectivesTitle">
+      <div class="coach-objectives-heading"><div><p class="coach-section-kicker">AVANT DE COMMENCER</p><h3 id="coachObjectivesTitle">Personnaliser mon accompagnement</h3><p id="coachObjectivesSummary" role="status" aria-live="polite">Veuillez choisir des objectifs.</p></div></div>
+      <button type="button" class="secondary" id="coachChooseObjectives" aria-controls="coachObjectivesPicker" aria-expanded="false">Choisir mes objectifs</button>
+      <div id="coachObjectivesPicker" class="coach-profile-content" hidden>
+        <div class="coach-profile-options">
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="budget"><span class="coach-profile-icon" aria-hidden="true">◫</span><span class="coach-profile-copy"><strong>Gérer mon budget</strong><small>Équilibrer mes revenus et mes charges</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="spending"><span class="coach-profile-icon" aria-hidden="true">⌁</span><span class="coach-profile-copy"><strong>Maîtriser mes dépenses</strong><small>Repérer les dérives et les économies possibles</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="savings"><span class="coach-profile-icon" aria-hidden="true">◉</span><span class="coach-profile-copy"><strong>Développer mon épargne</strong><small>Construire une réserve et épargner régulièrement</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="goals"><span class="coach-profile-icon" aria-hidden="true">◎</span><span class="coach-profile-copy"><strong>Atteindre mes objectifs</strong><small>Préparer mes projets et mes achats importants</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="income"><span class="coach-profile-icon" aria-hidden="true">↗</span><span class="coach-profile-copy"><strong>Améliorer mes revenus</strong><small>Mieux comprendre et optimiser mes ressources</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="debt"><span class="coach-profile-icon" aria-hidden="true">▤</span><span class="coach-profile-copy"><strong>Réduire mes dettes</strong><small>Maîtriser mes crédits et remboursements</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="planning"><span class="coach-profile-icon" aria-hidden="true">▦</span><span class="coach-profile-copy"><strong>Anticiper les imprévus</strong><small>Prévoir les dépenses à venir</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+        <label class="coach-profile-option"><input type="checkbox" data-coach-theme="learning"><span class="coach-profile-icon" aria-hidden="true">◇</span><span class="coach-profile-copy"><strong>Comprendre mes finances</strong><small>Apprendre et progresser à mon rythme</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
+      </div>
+        <p class="coach-profile-count" id="coachProfileCount" aria-live="polite">Aucun objectif sélectionné</p>
+        <p class="coach-profile-saved" id="coachProfileSaved" role="status" aria-live="polite">Tes choix seront enregistrés dans ton profil BEP.</p>
+      </div>
+    </section>
     <form id="coachPromptForm" class="coach-prompt-form">
       <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
       <textarea id="coachPromptInput" rows="3" maxlength="1200" placeholder="Écris ta question ici…" required></textarea>
@@ -579,7 +578,7 @@
 <script src="./offline-storage.js?v=7&bep=force-remote-refresh-20261119"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=128&bep=coach-explorer-hidden-on-entry-20261119"></script>
+<script src="./app.js?v=129&bep=coach-two-tabs-objectives-before-chat-20261119"></script>
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"></script>
 <script src="./pwa.js?v=12"></script>

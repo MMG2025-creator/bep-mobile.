@@ -128,7 +128,9 @@ const COACH_THEMES={budget:"Gérer mon budget",spending:"Maîtriser mes dépense
 function renderCoachProfile(){
  const selected=new Set((state.coachProfile||[]).filter(x=>Object.prototype.hasOwnProperty.call(COACH_THEMES,x)));
  document.querySelectorAll("[data-coach-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachTheme);input.closest(".coach-profile-option")?.classList.toggle("selected",input.checked)});
- const count=$("coachProfileCount");if(count){const n=selected.size;count.textContent=n?n+" thématique"+(n>1?"s":"")+" sélectionnée"+(n>1?"s":""):"Aucune thématique sélectionnée"}
+ const count=$("coachProfileCount");if(count){const n=selected.size;count.textContent=n?n+" objectif"+(n>1?"s":"")+" sélectionné"+(n>1?"s":""):"Aucun objectif sélectionné"}
+ const summary=$("coachObjectivesSummary");if(summary){const labels=[...selected].map(key=>COACH_THEMES[key]);summary.textContent=labels.length?"Vos objectifs sont : "+labels.join(" · "):"Veuillez choisir des objectifs."}
+ const choose=$("coachChooseObjectives");if(choose)choose.textContent=selected.size?"Modifier mes objectifs":"Choisir mes objectifs";
 }
 async function persistCoachProfile(){
  state.coachProfile=(state.coachProfile||[]).filter(x=>Object.prototype.hasOwnProperty.call(COACH_THEMES,x));
@@ -140,6 +142,7 @@ async function persistCoachProfile(){
  else if(status)status.textContent="Profil enregistré sur cet appareil. Il sera synchronisé à la connexion.";
 }
 document.querySelectorAll("[data-coach-theme]").forEach(input=>input.addEventListener("change",()=>{const key=input.dataset.coachTheme,selected=new Set(state.coachProfile||[]);input.checked?selected.add(key):selected.delete(key);state.coachProfile=[...selected];persistCoachProfile()}));
+$("coachChooseObjectives")?.addEventListener("click",()=>{const picker=$("coachObjectivesPicker"),button=$("coachChooseObjectives");if(!picker||!button)return;picker.hidden=!picker.hidden;button.setAttribute("aria-expanded",String(!picker.hidden));if(!picker.hidden)picker.scrollIntoView({behavior:"smooth",block:"nearest"})});
 renderCoachProfile();
 
 const COACH_QUESTION_LIBRARY=[
@@ -173,12 +176,12 @@ async function loadCoachExplorerCategories(){
  })();
  return coachExplorerCategoriesPromise;
 }
-let coachActiveTab="profile";
+let coachActiveTab="open";
 let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false,coachExplorerThemesHidden=true;
 function syncCoachExplorerExpandAllButton(){const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")],allOpen=!coachExplorerThemesHidden&&details.length>0&&details.every(item=>item.open),button=$("coachToggleAllThemes");coachExplorerAllExpanded=allOpen;if(button){button.textContent=coachExplorerThemesHidden||!allOpen?"Tout ouvrir":"Tout fermer";button.setAttribute("aria-expanded",String(allOpen));}}
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
 function setCoachTab(name){
- if(!["profile","explore","open"].includes(name))return;
+ if(!["explore","open"].includes(name))return;
  coachActiveTab=name;
  document.querySelectorAll("[data-coach-tab]").forEach(button=>{const active=button.dataset.coachTab===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1});
  document.querySelectorAll("[data-coach-panel]").forEach(panel=>{const active=panel.dataset.coachPanel===name;panel.classList.toggle("active",active);panel.hidden=!active});
@@ -267,7 +270,7 @@ $("coachAnswerClose")?.addEventListener("click",()=> $("coachAnswerDialog")?.clo
 $("coachAnswerContinue")?.addEventListener("click",()=>{ $("coachAnswerDialog")?.close();setCoachTab("open");requestAnimationFrame(()=>$("coachPromptInput")?.focus({preventScroll:true}))});
 $("coachAnswerDialog")?.addEventListener("click",event=>{if(event.target===$("coachAnswerDialog"))$("coachAnswerDialog").close()});
 $("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
-renderCoachExplorer();updateCoachCrossState();setCoachTab("profile");
+renderCoachExplorer();updateCoachCrossState();setCoachTab("open");
 
 async function recordAdvice(id){
  const target=id==="home"?document.querySelector(".home-coach-card .ai-advice"):$("ai"+id.charAt(0).toUpperCase()+id.slice(1));if(!target)return;
@@ -1035,7 +1038,7 @@ async function submitCoachQuestion(question){
   addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");
  }
 }
-$("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;submitCoachQuestion(value);input.value="";input.focus()};
+$("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;if(!(state.coachProfile||[]).some(key=>Object.prototype.hasOwnProperty.call(COACH_THEMES,key))){const picker=$("coachObjectivesPicker"),button=$("coachChooseObjectives"),summary=$("coachObjectivesSummary");if(picker)picker.hidden=false;if(button)button.setAttribute("aria-expanded","true");if(summary)summary.textContent="Veuillez choisir des objectifs avant de commencer la conversation.";picker?.scrollIntoView({behavior:"smooth",block:"center"});return}submitCoachQuestion(value);input.value="";input.focus()};
 document.querySelectorAll("[data-coach-prompt]").forEach(button=>button.addEventListener("click",()=>{const input=$("coachPromptInput");input.value=button.dataset.coachPrompt||"";input.focus()}));
 const CHART_COLORS=["#176b50","#79b99b","#b9e8d0","#d6a85f","#7b91ad","#c78e86","#9a83b7","#8b9a92"];
 function chartEmpty(message){return '<div class="chart-empty">'+message+'</div>'}

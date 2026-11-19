@@ -66,3 +66,16 @@ test("Explorer starts with themes hidden and reveals them only after a filter, s
   assert.match(app, /coachExplorerSearch.*addEventListener\("input",\(\)=>\{if\(String\(/);
   assert.match(app, /if\(coachExplorerThemesHidden\)\{coachExplorerThemesHidden=false;coachExplorerAllExpanded=true;renderCoachExplorer\(\);return\}/);
 });
+
+
+test("Coach workspace has two tabs and requires objectives before free chat", () => {
+  assert.doesNotMatch(html, /data-coach-tab="profile"/);
+  assert.match(html, /data-coach-tab="explore"/);
+  assert.match(html, /data-coach-tab="open"/);
+  assert.match(html, /id="coachObjectivesSummary"[^>]*>Veuillez choisir des objectifs\.<\/p>/);
+  assert.match(html, /id="coachChooseObjectives"/);
+  assert.match(html, /id="coachObjectivesPicker"[^>]*hidden/);
+  assert.match(app, /Vos objectifs sont : /);
+  assert.match(app, /Veuillez choisir des objectifs avant de commencer la conversation/);
+  assert.match(app, /setCoachTab\("open"\)/);
+});
