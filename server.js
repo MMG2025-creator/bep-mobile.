@@ -300,6 +300,30 @@ app.get("/api/coach/library",auth,async(req,res)=>{try{
  const result=await readCoachLibrary({pool,userId:req.session.user.id,query,context:req.query.context&&typeof req.query.context==="object"?req.query.context:{},limit:Math.min(8,Math.max(1,Number(req.query.limit)||6))});
  res.setHeader("Cache-Control","no-store");res.json(result);
  }catch(e){console.error("Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_LIBRARY_UNAVAILABLE"})}});
+
+app.get("/api/coach/categories",auth,async(req,res)=>{try{
+ const [base,overlays,personal]=await Promise.all([
+  pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 2000"),
+  pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,active,source_version,source_digest,version FROM bep_agent_approved_knowledge ORDER BY category,slug").catch(()=>({rows:[]})),
+  pool.query("SELECT category,title FROM bep_user_coach_knowledge WHERE user_id=$1 AND review_status='accepted' AND (valid_until IS NULL OR valid_until>=CURRENT_DATE) ORDER BY created_at DESC LIMIT 100",[req.session.user.id]).catch(()=>({rows:[]}))
+ ]);
+ const merged=new Map(base.rows.map(item=>[item.slug,item]));
+ for(const item of overlays.rows){
+  const source=merged.get(item.slug);
+  if(source){if(Number(source.version)!==Number(item.source_version)||sourceFingerprint(source)!==item.source_digest)continue;}
+  else{const createdSource={slug:item.slug,category:item.category,title:item.title,content:item.content,source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.source_version)};if(sourceFingerprint(createdSource)!==item.source_digest)continue;}
+  if(item.active)merged.set(item.slug,{...item,version:Number(item.version)||1});else merged.delete(item.slug);
+ }
+ const labels={budget:["Gérer mon budget","Équilibre entre revenus, charges et reste disponible","◫","budget"],spending:["Maîtriser mes dépenses","Habitudes, arbitrages et économies possibles","⌁","spending"],savings:["Développer mon épargne","Réserve de sécurité et régularité","◉","savings"],debt:["Réduire mes dettes","Crédits, remboursements et coût de l'endettement","▤","debt"],behavior:["Comportements financiers","Habitudes et décisions financières","⌁","spending"],income:["Améliorer mes revenus","Ressources, stabilité et évolution","↗","income"],planning:["Anticiper les imprévus","Dépenses annuelles, aléas et sécurité","▦","planning"],general:["Comprendre mes finances","Notions, méthodes et décisions financières","◇","learning"],data_quality:["Comprendre mes données financières","Qualité, fiabilité et lecture des informations","◇","learning"]};
+ const grouped=new Map();
+ for(const doc of merged.values()){
+  const key=String(doc.category||"").trim().toLowerCase();if(!key)continue;
+  if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(String(doc.title||"").trim());
+ }
+ for(const doc of personal.rows){const key=String(doc.category||"").trim().toLowerCase();if(!key||!String(doc.title||"").trim())continue;if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(String(doc.title).trim());}
+ const categories=[...grouped.entries()].map(([key,questions])=>{const meta=labels[key]||[key.replace(/[_-]+/g," ").replace(/\b\p{L}/gu,c=>c.toLocaleUpperCase("fr")), "Questions documentaires validées dans la base BEP","◇",key];return{key,label:meta[0],description:meta[1],icon:meta[2],profileKey:meta[3],questions:[...new Set(questions.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"))};}).filter(x=>x.questions.length).sort((a,b)=>a.label.localeCompare(b.label,"fr"));
+ res.setHeader("Cache-Control","no-store");res.json({categories});
+ }catch(e){console.error("Coach categories read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_CATEGORIES_UNAVAILABLE"})}});
 app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,createCoachResearchStatusHandler({pool,env:process.env,logger:console}));
 app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
