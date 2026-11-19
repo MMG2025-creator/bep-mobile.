@@ -378,13 +378,13 @@
   <div class="coach-privacy"><span aria-hidden="true">●</span> Espace privé · Agent local · Aucune transmission à une IA externe</div>
 
   <div class="coach-tabs" role="tablist" aria-label="Parcours du Coach BEP">
-    <button type="button" class="coach-tab" id="coachTabExplore" role="tab" aria-selected="false" aria-controls="coachPanelExplore" data-coach-tab="explore">Explorer</button>
-    <button type="button" class="coach-tab" id="coachTabOpen" role="tab" aria-selected="true" aria-controls="coachPanelOpen" data-coach-tab="open">Question libre</button>
+    <button type="button" class="coach-tab active" id="coachTabOpen" role="tab" aria-selected="true" aria-controls="coachPanelOpen" data-coach-tab="open">Questions libres</button>
+    <button type="button" class="coach-tab" id="coachTabExplore" role="tab" aria-selected="false" aria-controls="coachPanelExplore" data-coach-tab="explore">FAQ</button>
   </div>
 
   <section class="coach-tab-panel" id="coachPanelExplore" role="tabpanel" aria-labelledby="coachTabExplore" data-coach-panel="explore" hidden>
-    <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Ouvre une thématique, puis sélectionne un sujet pour lire la réponse du Coach BEP.</p></div></div>
-    <label class="coach-explorer-search"><span class="sr-only">Rechercher une thématique ou une question</span><input id="coachExplorerSearch" type="search" maxlength="120" placeholder="Rechercher une thématique ou une question…"></label>
+    <div class="coach-section-heading"><div><p class="coach-section-kicker">FOIRE AUX QUESTIONS</p><h3>Consulter la FAQ</h3><p>Parcourez les thématiques et sélectionnez une question pour lire la réponse du Coach BEP.</p></div></div>
+    <label class="coach-explorer-search"><span class="sr-only">Rechercher une thématique ou une question</span><input id="coachExplorerSearch" type="search" maxlength="120" placeholder="Rechercher dans la FAQ…"></label>
     <div class="coach-explorer-filters" id="coachExplorerFilters" aria-label="Filtrer les questions">
       <label><input type="checkbox" data-coach-explore-theme="budget"><span>Budget</span></label>
       <label><input type="checkbox" data-coach-explore-theme="spending"><span>Dépenses</span></label>
@@ -413,9 +413,12 @@
   <section class="coach-tab-panel active" id="coachPanelOpen" role="tabpanel" aria-labelledby="coachTabOpen" data-coach-panel="open">
     <section class="coach-objectives" aria-labelledby="coachObjectivesTitle">
       <div class="coach-objectives-heading"><div><p class="coach-section-kicker">AVANT DE COMMENCER</p><h3 id="coachObjectivesTitle">Personnaliser mon accompagnement</h3><p id="coachObjectivesSummary" role="status" aria-live="polite">Veuillez choisir des objectifs.</p></div></div>
-      <button type="button" class="secondary" id="coachChooseObjectives" aria-controls="coachObjectivesPicker" aria-expanded="false">Choisir mes objectifs</button>
-      <div id="coachObjectivesPicker" class="coach-profile-content" hidden>
-        <div class="coach-profile-options">
+      <button type="button" class="secondary" id="coachChooseObjectives" aria-controls="coachObjectivesDialog" aria-haspopup="dialog">Choisir mes objectifs</button>
+      <dialog class="coach-answer-dialog coach-objectives-dialog" id="coachObjectivesDialog" aria-labelledby="coachObjectivesDialogTitle">
+        <div class="coach-answer-window">
+          <header class="coach-answer-header"><div><p class="coach-section-kicker">PERSONNALISATION</p><h2 id="coachObjectivesDialogTitle">Quels sont vos objectifs ?</h2></div><button type="button" class="coach-answer-close" id="coachObjectivesClose" aria-label="Fermer">×</button></header>
+          <div class="coach-objectives-dialog-body">
+
         <label class="coach-profile-option"><input type="checkbox" data-coach-theme="budget"><span class="coach-profile-icon" aria-hidden="true">◫</span><span class="coach-profile-copy"><strong>Gérer mon budget</strong><small>Équilibrer mes revenus et mes charges</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
         <label class="coach-profile-option"><input type="checkbox" data-coach-theme="spending"><span class="coach-profile-icon" aria-hidden="true">⌁</span><span class="coach-profile-copy"><strong>Maîtriser mes dépenses</strong><small>Repérer les dérives et les économies possibles</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
         <label class="coach-profile-option"><input type="checkbox" data-coach-theme="savings"><span class="coach-profile-icon" aria-hidden="true">◉</span><span class="coach-profile-copy"><strong>Développer mon épargne</strong><small>Construire une réserve et épargner régulièrement</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
@@ -426,8 +429,12 @@
         <label class="coach-profile-option"><input type="checkbox" data-coach-theme="learning"><span class="coach-profile-icon" aria-hidden="true">◇</span><span class="coach-profile-copy"><strong>Comprendre mes finances</strong><small>Apprendre et progresser à mon rythme</small></span><span class="coach-profile-check" aria-hidden="true">✓</span></label>
       </div>
         <p class="coach-profile-count" id="coachProfileCount" aria-live="polite">Aucun objectif sélectionné</p>
-        <p class="coach-profile-saved" id="coachProfileSaved" role="status" aria-live="polite">Tes choix seront enregistrés dans ton profil BEP.</p>
-      </div>
+
+
+          </div>
+          <footer class="coach-objectives-dialog-footer"><p class="coach-profile-saved" id="coachProfileSaved" role="status" aria-live="polite">Tes choix seront enregistrés dans ton profil BEP.</p><button type="button" class="primary" id="coachObjectivesValidate">Valider mes objectifs</button></footer>
+        </div>
+      </dialog>
     </section>
     <form id="coachPromptForm" class="coach-prompt-form">
       <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
@@ -578,7 +585,7 @@
 <script src="./offline-storage.js?v=7&bep=force-remote-refresh-20261119"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=129&bep=coach-two-tabs-objectives-before-chat-20261119"></script>
+<script src="./app.js?v=130&bep=coach-chat-first-faq-modal-objectives-20261119"></script>
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"></script>
 <script src="./pwa.js?v=12"></script>
