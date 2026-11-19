@@ -555,7 +555,7 @@ test("Coach workspace is forcibly hidden outside its dedicated navigation tab",(
   const css=read(file);
   assert.match(css,/#coach\[hidden\],#coach\.panel:not\(\.active\)\{display:none!important;visibility:hidden!important\}/);
  }
- for(const file of ["sw.js","dist/sw.js"])assert.match(read(file),/CACHE_NAME="bep-shell-v30"/);
+ for(const file of ["sw.js","dist/sw.js"])assert.match(read(file),/CACHE_NAME="bep-shell-v31"/);
 });
 
 
@@ -563,9 +563,9 @@ test("settings page has an explicit visible active state and is included in the 
  const html=read("index.html");
  const css=read("settings.css");
  const sw=read("sw.js");
- assert.match(html,/settings\.css\?v=5&bep=settings-panel-rendering-20261119/);
- assert.match(html,/<section id="settings" class="panel settings-panel">[\\s\\S]*?id="settingsProfileCard"[\\s\\S]*?id="settingsDataCard"[\\s\\S]*?id="settingsPrivacyCard"/);
- assert.match(css,/#settings\\.panel\\.active:not\\(\\[hidden\\]\\)\\{display:grid!important;visibility:visible!important/);
- assert.match(sw,/const CACHE_NAME="bep-shell-v31"/);
- assert.match(sw,/"\\.\\/settings\\.css"/);
+ assert.ok(html.includes('settings.css?v=5&bep=settings-panel-rendering-20261119'));
+ assert.ok(html.includes('id="settingsProfileCard"')&&html.includes('id="settingsDataCard"')&&html.includes('id="settingsPrivacyCard"'));
+ assert.ok(css.includes('#settings.panel.active:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important;'));
+ assert.ok(sw.includes('const CACHE_NAME="bep-shell-v31"'));
+ assert.ok(sw.includes('"./settings.css"'));
 });
