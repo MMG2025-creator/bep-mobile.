@@ -2039,3 +2039,39 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .welcome-pills .welcome-pill{gap:3px;padding-inline:4px;font-size:10px}
   .welcome-pills .welcome-pill svg{width:14px;height:14px;flex-basis:14px}
 }
+
+
+/* Coach BEP — formulaire systématiquement vertical : saisie au-dessus de l'envoi. */
+#coachPromptForm.coach-prompt-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-auto-flow:row!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:10px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#coachPromptForm.coach-prompt-form textarea{
+  display:block!important;
+  order:0!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:96px!important;
+  max-width:none!important;
+  flex:none!important;
+  box-sizing:border-box!important;
+}
+#coachPromptForm.coach-prompt-form button,
+#coachPromptForm.coach-prompt-form button.primary{
+  display:flex!important;
+  order:1!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:54px!important;
+  flex:none!important;
+  white-space:normal!important;
+}
