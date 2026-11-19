@@ -174,8 +174,8 @@ async function loadCoachExplorerCategories(){
  return coachExplorerCategoriesPromise;
 }
 let coachActiveTab="profile";
-let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false;
-function syncCoachExplorerExpandAllButton(){const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")],allOpen=details.length>0&&details.every(item=>item.open),button=$("coachToggleAllThemes");coachExplorerAllExpanded=allOpen;if(button){button.textContent=allOpen?"Tout fermer":"Tout ouvrir";button.setAttribute("aria-expanded",String(allOpen));}}
+let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false,coachExplorerThemesHidden=false;
+function syncCoachExplorerExpandAllButton(){const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")],allOpen=!coachExplorerThemesHidden&&details.length>0&&details.every(item=>item.open),button=$("coachToggleAllThemes");coachExplorerAllExpanded=allOpen;if(button){button.textContent=coachExplorerThemesHidden||!allOpen?"Tout ouvrir":"Tout fermer";button.setAttribute("aria-expanded",String(allOpen));}}
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
 function setCoachTab(name){
  if(!["profile","explore","open"].includes(name))return;
@@ -195,6 +195,8 @@ function renderCoachExplorer(){
  const hint=$("coachExplorerHint");
  if(hint)hint.textContent=search?themes.length+" thématique(s) correspondent à ta recherche.":filters.length?themes.length+" thématique(s) affichée(s).":"Clique sur une thématique pour afficher ses sujets, ou utilise « Tout ouvrir ».";
  target.replaceChildren();
+ if(coachExplorerThemesHidden){target.hidden=true;if(hint)hint.textContent="Toutes les thématiques sont masquées. Clique sur « Tout ouvrir » pour les afficher.";syncCoachExplorerExpandAllButton();return}
+ target.hidden=false;
  if(!themes.length){const empty=document.createElement("p");empty.className="coach-explorer-empty";empty.textContent=coachExplorerThemes!==null&&!coachExplorerThemes.length?"Aucune fiche documentaire validée n’est disponible pour le moment.":"Aucun sujet ne correspond à cette recherche.";target.append(empty);return}
  themes.forEach(theme=>{
   const details=document.createElement("details");details.className="coach-question-theme";details.open=coachExplorerAllExpanded;details.addEventListener("toggle",syncCoachExplorerExpandAllButton);
@@ -257,7 +259,7 @@ document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventLis
 document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
 document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;renderCoachExplorer()}));
 $("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
-$("coachToggleAllThemes")?.addEventListener("click",()=>{const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")];const shouldOpen=details.length>0&&!details.every(item=>item.open);coachExplorerAllExpanded=shouldOpen;details.forEach(item=>{item.open=shouldOpen});syncCoachExplorerExpandAllButton()});
+$("coachToggleAllThemes")?.addEventListener("click",()=>{if(coachExplorerThemesHidden){coachExplorerThemesHidden=false;coachExplorerAllExpanded=true;renderCoachExplorer();return}const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")];const allOpen=details.length>0&&details.every(item=>item.open);if(allOpen){coachExplorerThemesHidden=true;coachExplorerAllExpanded=false;renderCoachExplorer();return}coachExplorerAllExpanded=true;details.forEach(item=>{item.open=true});syncCoachExplorerExpandAllButton()});
 document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
 $("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;openCoachAnswer(button.dataset.coachQuestion)});
 $("coachExplorerSearch")?.addEventListener("input",renderCoachExplorer);
