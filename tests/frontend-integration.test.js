@@ -484,6 +484,5 @@ test("Coach free conversation shows objectives first, then chat, then the questi
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
   assert.match(css,/\.coach-objectives\{[\s\S]*?padding:10px 12px!important/);
-  assert.match(css,/\.coach-objectives\{[\s\S]*?padding:10px 12px!important/);
  }
 });
