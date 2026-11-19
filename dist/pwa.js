@@ -50,7 +50,7 @@ if("serviceWorker" in navigator){
     }
   };
   window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js?v=27",{scope:"./",updateViaCache:"none"})
+    navigator.serviceWorker.register("./sw.js?v=28",{scope:"./",updateViaCache:"none"})
       .then(registration=>{
         checkForUpdate(registration);
         window.addEventListener("focus",()=>checkForUpdate(registration));
