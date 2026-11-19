@@ -152,6 +152,27 @@ const COACH_QUESTION_LIBRARY=[
  {key:"planning",label:"Anticiper les imprévus",description:"Dépenses annuelles, aléas et sécurité",icon:"▦",questions:["Quelles dépenses annuelles dois-je anticiper ?","Quelle réserve prévoir pour les dépenses imprévues ?","Comment lisser mes grosses dépenses sur l'année ?","Mon budget résisterait-il à une dépense exceptionnelle ?"]},
  {key:"learning",label:"Comprendre mes finances",description:"Notions, méthodes et décisions financières",icon:"◇",questions:["Comment lire simplement ma situation financière ?","Quelle différence entre capacité d'épargne et reste à vivre ?","Comment comparer deux décisions financières ?","Quels indicateurs suivre chaque mois pour progresser ?"]}
 ];
+let coachExplorerThemes=null,coachExplorerCategoriesPromise=null;
+const COACH_CATEGORY_FALLBACK=COACH_QUESTION_LIBRARY;
+async function loadCoachExplorerCategories(){
+ if(coachExplorerCategoriesPromise)return coachExplorerCategoriesPromise;
+ if(!window.bepSignedIn){coachExplorerThemes=COACH_CATEGORY_FALLBACK;renderCoachExplorer();return}
+ const target=$("coachQuestionLibrary");if(target)target.textContent="Chargement des sujets documentaires validés…";
+ coachExplorerCategoriesPromise=(async()=>{
+  try{
+   const response=await fetch(API+"/api/coach/categories",{credentials:"include",cache:"no-store"});
+   if(!response.ok)throw Error("HTTP "+response.status);
+   const data=await response.json();
+   if(!Array.isArray(data.categories))throw Error("Réponse documentaire invalide");
+   coachExplorerThemes=data.categories.map(item=>({key:String(item.key||""),label:String(item.label||item.key||"Thématique"),description:String(item.description||"Questions documentaires validées"),icon:String(item.icon||"◇"),profileKey:String(item.profileKey||item.key||""),questions:Array.isArray(item.questions)?item.questions.map(x=>String(x||"").trim()).filter(Boolean):[]})).filter(item=>item.key&&item.questions.length);
+  }catch(error){
+   console.warn("Coach Explorer: catégories documentaires indisponibles, bibliothèque de secours utilisée.",String(error?.message||error));
+   coachExplorerThemes=COACH_CATEGORY_FALLBACK;
+  }
+  renderCoachExplorer();
+ })();
+ return coachExplorerCategoriesPromise;
+}
 let coachActiveTab="profile";
 let coachExplorerInitialized=false,coachExplorerTouched=false;
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
@@ -160,7 +181,7 @@ function setCoachTab(name){
  coachActiveTab=name;
  document.querySelectorAll("[data-coach-tab]").forEach(button=>{const active=button.dataset.coachTab===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1});
  document.querySelectorAll("[data-coach-panel]").forEach(panel=>{const active=panel.dataset.coachPanel===name;panel.classList.toggle("active",active);panel.hidden=!active});
- if(name==="explore")renderCoachExplorer();
+ if(name==="explore"){if(coachExplorerThemes===null)loadCoachExplorerCategories();else renderCoachExplorer();}
  if(name==="open")$("coachPromptInput")?.focus({preventScroll:true});
 }
 function renderCoachExplorer(){
@@ -168,11 +189,12 @@ function renderCoachExplorer(){
  if(!coachExplorerInitialized)syncCoachExplorerFromProfile();
  const filters=[...document.querySelectorAll("[data-coach-explore-theme]:checked")].map(x=>x.dataset.coachExploreTheme);
  const search=String($("coachExplorerSearch")?.value||"").trim().toLocaleLowerCase("fr");
- const themes=COACH_QUESTION_LIBRARY.filter(theme=>(!filters.length||filters.includes(theme.key))&&(!search||[theme.label,theme.description,...theme.questions].join(" ").toLocaleLowerCase("fr").includes(search)));
+ const sourceThemes=coachExplorerThemes===null?COACH_QUESTION_LIBRARY:coachExplorerThemes;
+ const themes=sourceThemes.filter(theme=>(!filters.length||filters.includes(theme.profileKey||theme.key))&&(!search||[theme.label,theme.description,...theme.questions].join(" ").toLocaleLowerCase("fr").includes(search)));
  const hint=$("coachExplorerHint");
  if(hint)hint.textContent=search?themes.length+" thématique(s) correspondent à ta recherche.":filters.length?themes.length+" thématique(s) affichée(s).":"Toutes les thématiques sont affichées.";
  target.replaceChildren();
- if(!themes.length){const empty=document.createElement("p");empty.className="coach-explorer-empty";empty.textContent="Aucun sujet ne correspond à cette recherche.";target.append(empty);return}
+ if(!themes.length){const empty=document.createElement("p");empty.className="coach-explorer-empty";empty.textContent=coachExplorerThemes!==null&&!coachExplorerThemes.length?"Aucune fiche documentaire validée n’est disponible pour le moment.":"Aucun sujet ne correspond à cette recherche.";target.append(empty);return}
  themes.forEach(theme=>{
   const details=document.createElement("details");details.className="coach-question-theme";
   const summary=document.createElement("summary");summary.className="coach-question-theme-summary";
