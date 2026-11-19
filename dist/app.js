@@ -237,8 +237,7 @@ async function openCoachAnswer(question){
  if(answer){
   const paragraph=answer.querySelector("p");
   const text=document.createElement("p");text.textContent=paragraph?.textContent||"La réponse du Coach est indisponible.";body.append(text);
-  const trace=answer.querySelector(".coach-source-trace");
-  if(trace){const detail=document.createElement("small");detail.className="coach-answer-source";detail.textContent=trace.textContent;body.append(detail)}
+
  }else{
   const fallback=document.createElement("p");fallback.textContent="La réponse n’a pas pu être récupérée. Tu peux réessayer dans Questions libres.";body.append(fallback);
  }
@@ -1023,18 +1022,7 @@ async function submitCoachQuestion(question){
    const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:{...currentFinancialContext(),pageContext:currentCoachPageContext()},coachProfile:state.coachProfile||[]})}),d=await r.json();
    if(!r.ok)throw Error(d.message||"IA indisponible.");
    const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
-   if(d.intelligence){
-    const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
-    if(d.intelligence.intent)trace.push("Intention comprise : "+d.intelligence.intent);
-    if(d.intelligence.pageContext?.label)trace.push("Page analysée : "+d.intelligence.pageContext.label+(d.intelligence.pageContext.subPage?" · "+d.intelligence.pageContext.subPage:""));
-    const sources=Array.isArray(d.intelligence.knowledge)?d.intelligence.knowledge:[];
-    trace.push(sources.length+" source(s) récupérée(s)");
-    if(sources.length)trace.push(sources.map(x=>x.title+" — "+x.source).join(" | "));
-    const c=d.intelligence.context||{};trace.push("Contexte chargé : "+(c.monthlyHistoryMonths||0)+" historique(s) mensuel(s), "+(c.budgets||0)+" charge(s), "+(c.goals||0)+" objectif(s), "+(c.expenses||0)+" dépense(s), "+(c.savingsOperations||0)+" mouvement(s) d’épargne.");(c.dataWarnings||[]).forEach(w=>trace.push("Alerte données : "+w));
-    const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
-   }
-   
-  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
+ }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
  }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
   addCoachMessage("coach",coachReply(value));
  }else{
