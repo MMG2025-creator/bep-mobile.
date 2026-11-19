@@ -221,6 +221,15 @@ function structuredAdvice(zone,p){
  if(zone==="home")return "Ta situation enregistrée présente "+structuredMoney(income)+" de revenus, "+structuredMoney(charges)+" de charges et "+structuredMoney(available)+" de disponible. "+(spent>0?"Les dépenses présentes dans l'historique transmis totalisent "+structuredMoney(spent)+".":"Ajoute tes opérations pour enrichir le suivi réel.")+" La priorité est de maintenir les données à jour avant toute décision.";
  return "Les données BEP sont disponibles. Vérifie les montants enregistrés et leur période avant de prendre une décision.";
 }
+
+function coachConversationalReply(question){
+ const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+ if(/^(oui|oui bien sur|bien sur|d accord|dac|ok|okay|avec plaisir|je veux bien|volontiers)$/.test(q))return "Parfait. Quel sujet souhaites-tu aborder en premier : ton budget, tes dépenses, ton épargne ou tes objectifs ?";
+ if(/^(non|pas vraiment|non merci)$/.test(q))return "D'accord. Dis-moi ce que tu souhaites faire, ou pose-moi directement ta question.";
+ if(/^(bonjour|bonsoir|salut|hello|coucou)$/.test(q))return "Bonjour ! Je suis là pour t'aider à comprendre tes finances. Qu'aimerais-tu regarder aujourd'hui ?";
+ if(/^(merci|merci beaucoup|super merci)$/.test(q))return "Avec plaisir. Tu peux poursuivre quand tu le souhaites.";
+ return null;
+}
 function routeStructuredQuestion(question,p){
  const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
  const income=Number(p.income)||0,charges=Number(p.charges)||0,available=Number(p.available)||0,expenses=Array.isArray(p.expenses)?p.expenses:[],goals=Array.isArray(p.goals)?p.goals:[],operations=Array.isArray(p.savingsOperations)?p.savingsOperations:[];
@@ -274,6 +283,11 @@ app.post("/api/ai/chat",auth,async(req,res)=>{try{
  const q=String(req.body?.question||"").trim();
  if(!q||q.length>4000)return res.status(400).json({message:"Question invalide."});
  const p=req.body?.financialContext||{};
+ const conversational=coachConversationalReply(q);
+ if(conversational){
+  res.setHeader("Cache-Control","no-store");
+  return res.json({answer:conversational,provider:"bep-local",model:"bep-local-conversation",mode:"conversation",usage:null,quota:null});
+ }
  const intelligence=await buildIntelligence({pool,userId:req.session.user.id,query:q,context:p,enabled:true});
  const context=intelligence.context||p;
  const structured=routeStructuredQuestion(q,context);
