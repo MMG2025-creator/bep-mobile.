@@ -2397,3 +2397,38 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   .coach-workspace .coach-objectives{align-items:flex-start!important}
   .coach-workspace #coachChooseObjectives{white-space:normal}
 }
+
+
+/* Coach BEP — corriger l’écrasement du texte des objectifs sur mobile. */
+@media(max-width:600px){
+  .coach-workspace .coach-objectives{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:9px!important;
+  }
+  .coach-workspace .coach-objectives-heading{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    flex:0 0 auto!important;
+  }
+  .coach-workspace .coach-objectives-heading h3,
+  .coach-workspace .coach-objectives-heading p:last-child{
+    max-width:none!important;
+    overflow-wrap:break-word!important;
+    word-break:normal!important;
+    white-space:normal!important;
+  }
+  .coach-workspace #coachChooseObjectives{
+    align-self:flex-start!important;
+    justify-self:start!important;
+    width:auto!important;
+    max-width:100%!important;
+    min-width:0!important;
+    flex:0 0 auto!important;
+    white-space:normal!important;
+    text-align:center!important;
+  }
+}
