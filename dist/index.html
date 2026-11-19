@@ -375,9 +375,7 @@
     </div>
     <div class="coach-hero-bottom"><span><b>01</b> Comprendre</span><span><b>02</b> Décider</span><span><b>03</b> Progresser</span></div>
   </section>
-  <div class="coach-privacy"><span aria-hidden="true">●</span> Espace privé · Agent local · Aucune transmission à une IA externe</div>
-
-  <div class="coach-tabs" role="tablist" aria-label="Parcours du Coach BEP">
+    <div class="coach-tabs" role="tablist" aria-label="Parcours du Coach BEP">
     <button type="button" class="coach-tab active" id="coachTabOpen" role="tab" aria-selected="true" aria-controls="coachPanelOpen" data-coach-tab="open">Questions libres</button>
     <button type="button" class="coach-tab" id="coachTabExplore" role="tab" aria-selected="false" aria-controls="coachPanelExplore" data-coach-tab="explore">FAQ</button>
   </div>
@@ -436,14 +434,14 @@
         </div>
       </dialog>
     </section>
+    <section class="coach-conversation" aria-labelledby="coachConversationTitle">
+      <div class="coach-conversation-heading"><div><p class="coach-section-kicker">TON ÉCHANGE</p><h3 id="coachConversationTitle">Conversation avec le Coach</h3></div><span class="coach-conversation-status">Mode documentaire local</span></div>
+      <div id="coachChatLog" class="coach-chat-log" aria-live="polite"></div>
     <form id="coachPromptForm" class="coach-prompt-form">
       <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
       <textarea id="coachPromptInput" rows="3" maxlength="1200" placeholder="Écris ta question ici…" required></textarea>
       <button class="primary" type="submit" aria-label="Envoyer au Coach BEP">Envoyer ma question</button>
     </form>
-    <section class="coach-conversation" aria-labelledby="coachConversationTitle">
-      <div class="coach-conversation-heading"><div><p class="coach-section-kicker">TON ÉCHANGE</p><h3 id="coachConversationTitle">Conversation avec le Coach</h3></div><span class="coach-conversation-status">Mode documentaire local</span></div>
-      <div id="coachChatLog" class="coach-chat-log" aria-live="polite"></div>
     </section>
   </section>
   <dialog class="coach-answer-dialog" id="coachAnswerDialog" aria-labelledby="coachAnswerTitle" aria-describedby="coachAnswerBody">
@@ -465,6 +463,7 @@
       <p class="coach-info-legal">Les réponses constituent une aide à la compréhension et ne remplacent pas un avis financier professionnel.</p>
     </div>
   </details>
+  <div class="coach-privacy"><span aria-hidden="true">●</span> Espace privé · Agent local · Aucune transmission à une IA externe</div>
 </article>
 </section>
 <section id="settings" class="panel settings-panel">
