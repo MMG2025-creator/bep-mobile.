@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=109&bep=coach-explorer-answer-dialog-20261119/);
+  assert.match(html,/styles\.css\?v=110&bep=coach-prompt-input-visible-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
