@@ -430,15 +430,12 @@
         </div>
       </dialog>
     </section>
-    <section class="coach-conversation" aria-labelledby="coachConversationTitle">
-      <div class="coach-conversation-heading"><div><p class="coach-section-kicker">TON ÉCHANGE</p><h3 id="coachConversationTitle">Conversation avec le Coach</h3></div><span class="coach-conversation-status">Mode documentaire local</span></div>
-      <div id="coachChatLog" class="coach-chat-log" aria-live="polite"></div>
+    <div id="coachChatLog" class="coach-chat-log" hidden aria-hidden="true"></div>
     <form id="coachPromptForm" class="coach-prompt-form">
       <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
       <textarea id="coachPromptInput" rows="3" maxlength="1200" placeholder="Écris ta question ici…" required></textarea>
       <button class="primary" type="submit" aria-label="Envoyer au Coach BEP">Envoyer ma question</button>
     </form>
-    </section>
   </section>
   <dialog class="coach-answer-dialog" id="coachAnswerDialog" aria-labelledby="coachAnswerTitle" aria-describedby="coachAnswerBody">
     <div class="coach-answer-window">

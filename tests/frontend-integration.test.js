@@ -475,13 +475,14 @@ test("Coach free conversation shows objectives first, then chat, then the questi
   const conversation=panel.indexOf('class="coach-conversation"');
   const chat=panel.indexOf('id="coachChatLog"');
   const form=panel.indexOf('id="coachPromptForm"');
-  assert.ok(objectives>=0&&conversation>objectives,"objectives precede conversation");
-  assert.ok(chat>=0&&form>chat,"question form follows conversation messages");
+  assert.ok(objectives>=0&&form>objectives,"question form follows objectives");
+  assert.equal(conversation,-1,"bottom conversation container is removed");
+  assert.ok(chat>=0&&form>chat,"hidden technical message log precedes the question form");
+  assert.match(panel,/id="coachChatLog"[^>]*hidden/);
   assert.match(html,/coach-info-panel[\s\S]*?<\/details>\s*<div class="coach-privacy"/);
  }
  for(const file of ["styles.css","dist/styles.css"]){
   const css=read(file);
   assert.match(css,/\.coach-objectives\{[\s\S]*?padding:10px 12px!important/);
-  assert.match(css,/\.coach-conversation\{[\s\S]*?margin-top:4px!important/);
  }
 });
