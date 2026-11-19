@@ -2015,7 +2015,6 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:8px;
   width:min(calc(100% + 72px),calc(100vw - 64px));
-  max-width:100%;
   align-items:center;
 }
 .welcome-pills .welcome-pill{
