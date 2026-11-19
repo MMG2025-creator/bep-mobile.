@@ -313,18 +313,17 @@ test("source and published homepage are one canonical HTML artifact with the pro
 });
 
 
-test("homepage BEP mascot is an accessible Coach shortcut with dynamic states",()=>{
+test("no floating homepage Coach robot remains; Coach stays reachable through navigation",()=>{
  const html=read("index.html");
- assert.match(html,/class="welcome-mascot" data-goto="coach" data-state="idle"/);
- assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
- const app=read("app.js");
- assert.match(app,/function setHomeRobotState\(state,message\)/);
- assert.match(app,/setHomeRobotState\("thinking","J’analyse ta situation…"/);
- assert.match(app,/setHomeRobotState\("advice","J’ai un conseil pour toi"\)/);
- assert.equal(app,read("dist/app.js"));
- assert.equal(read("index.html"),read("dist/index.html"));
- assert.equal(read("styles.css"),read("dist/styles.css"));
- assert.match(read("styles.css"),/bepRobotFloat/);
+ assert.doesNotMatch(html,/welcome-mascot|homeMascotStatus/);
+ assert.match(html,/data-tab="coach"/);
+ assert.match(html,/data-goto="coach">Accéder au Coach BEP/);
+ const css=read("styles.css");
+ assert.doesNotMatch(css,/welcome-mascot|bepRobotFloat/);
+ assert.match(css,/\.bep-advice-dock,\.bep-advice-robot,\.bep-advice-dialog\{display:none!important/);
+ assert.equal(read("app.js"),read("dist/app.js"));
+ assert.equal(html,read("dist/index.html"));
+ assert.equal(css,read("dist/styles.css"));
 });
 
 test("monthly budget visual workspace uses synchronized client assets and published styles",()=>{
@@ -398,7 +397,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v31"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v32"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -563,9 +562,9 @@ test("settings page has an explicit visible active state and is included in the 
  const html=read("index.html");
  const css=read("settings.css");
  const sw=read("sw.js");
- assert.ok(html.includes('settings.css?v=5&bep=settings-panel-rendering-20261119'));
+ assert.ok(html.includes('settings.css?v=6&bep=settings-panel-visibility-20261119'));
  assert.ok(html.includes('id="settingsProfileCard"')&&html.includes('id="settingsDataCard"')&&html.includes('id="settingsPrivacyCard"'));
- assert.ok(css.includes('#settings.panel.active:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important;'));
- assert.ok(sw.includes('const CACHE_NAME="bep-shell-v31"'));
+ assert.ok(css.includes('#settings.panel.active:not([hidden]){display:block!important;visibility:visible!important;opacity:1!important;'));
+ assert.ok(sw.includes('const CACHE_NAME="bep-shell-v32"'));
  assert.ok(sw.includes('"./settings.css"'));
 });
