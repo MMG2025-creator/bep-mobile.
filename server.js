@@ -349,7 +349,7 @@ app.use("/api/admin/bep-coach/library",createCoachKnowledgeAdminRouter({pool,req
   if(!allowedCategories.has(category))return res.status(400).json({error:"INVALID_LIBRARY_CATEGORY"});
   const [base,overlays]=await Promise.all([
    pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,version,active,updated_at FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 1000"),
-   pool.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,active,source_version,source_digest,version,updated_at FROM bep_agent_approved_knowledge ORDER BY category,slug").catch(()=>({rows:[]}))
+   pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,active,source_version,source_digest,version,updated_at FROM bep_agent_approved_knowledge ORDER BY category,slug").catch(()=>({rows:[]}))
   ]);
   const merged=new Map(base.rows.map(item=>[item.slug,item]));
   for(const item of overlays.rows){
