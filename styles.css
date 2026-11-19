@@ -2416,3 +2416,11 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 /* Retire définitivement les anciens assistants flottants hors du Coach dédié. */
 .bep-advice-dock,.bep-advice-robot,.bep-advice-dialog{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+
+/* Isolation stricte : aucun composant du Coach hors de son onglet dédié. */
+body:not(.bep-coach-active) #coach,
+body:not(.bep-coach-active) #coach[hidden],
+body:not(.bep-coach-active) #coach.panel,
+body:not(.bep-coach-active) #coach.panel.active{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.bep-coach-active #coach.panel.active:not([hidden]){display:block!important;visibility:visible!important;pointer-events:auto!important}
