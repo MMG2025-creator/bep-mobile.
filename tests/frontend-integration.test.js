@@ -463,3 +463,14 @@ test("Coach free-question form keeps the textarea visible and the send button co
  }
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=111&bep=homepage-pills-horizontal-20261119/);
 });
+
+
+test("Coach question form always stacks the textarea above the send button",()=>{
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/#coachPromptForm\\.coach-prompt-form\\{[\\s\\S]*?display:grid!important/);
+  assert.match(css,/#coachPromptForm\\.coach-prompt-form textarea\\{[\\s\\S]*?width:100%!important/);
+  assert.match(css,/#coachPromptForm\\.coach-prompt-form button[\\s\\S]*?width:100%!important/);
+ }
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\\.css\\?v=112&bep=coach-form-stacked-20261119/);
+});
