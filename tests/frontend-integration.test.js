@@ -485,3 +485,19 @@ test("Coach free conversation shows objectives first, then chat, then the questi
   assert.match(css,/\.coach-conversation\{[\s\S]*?margin-top:4px!important/);
  }
 });
+
+
+test("Coach mobile layout keeps the robot visible and groups the conversation compactly",()=>{
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.coach-hero-visual\{display:grid!important;min-height:116px!important\}/);
+  assert.match(css,/\.coach-hero-bot\{display:block!important;width:108px!important/);
+  assert.match(css,/\.coach-conversation\{[\s\S]*?border:1px solid #e0ece5!important/);
+  assert.match(css,/#coachPromptForm\.coach-prompt-form\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)!important/);
+ }
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/styles\.css\?v=114&bep=coach-mobile-visual-balance-20261119/);
+  assert.match(html,/class="coach-hero-visual"[\s\S]*?class="coach-hero-bot"/);
+ }
+});
