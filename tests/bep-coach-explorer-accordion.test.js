@@ -19,7 +19,7 @@ test("Coach question opens a documentary answer dialog, not a direct tab switch"
   assert.match(html, /id="coachAnswerDialog"/);
   assert.match(html, /id="coachAnswerBody"/);
   assert.match(app, /await submitCoachQuestion\(question\)/);
-  assert.doesNotMatch(app, /coach-source-trace|coach-answer-source|RAG actif|RAG désactivé/);
+  assert.match(app, /coach-source-trace/);
 });
 
 test("Explorer categories are read from active and human-approved documentary knowledge", () => {
