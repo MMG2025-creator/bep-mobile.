@@ -1955,3 +1955,14 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 #coachObjectivesPicker .coach-profile-copy strong{font-size:12px}
 #coachObjectivesPicker .coach-profile-copy small{font-size:10px}
 .coach-profile-count{margin:10px 2px 0;color:#567565;font-size:11px;font-weight:700}
+
+
+/* Coach BEP — sélecteur d'objectifs en fenêtre modale */
+.coach-objectives-dialog{width:min(520px,calc(100vw - 28px));max-height:min(84dvh,720px)}
+.coach-objectives-dialog .coach-answer-window{grid-template-rows:auto minmax(0,1fr) auto;gap:0}
+.coach-objectives-dialog-body{min-height:0;max-height:58dvh;overflow:auto;padding:14px 2px}
+.coach-objectives-dialog-body .coach-profile-options{display:grid;grid-template-columns:1fr;gap:8px}
+.coach-objectives-dialog-body .coach-profile-option{min-height:58px;padding:10px 12px}
+.coach-objectives-dialog-footer{display:grid;gap:10px;padding-top:13px;border-top:1px solid #e5eee8}
+.coach-objectives-dialog-footer .primary{width:100%;min-height:46px}
+.coach-objectives-dialog .coach-profile-count{margin:10px 2px 0}
