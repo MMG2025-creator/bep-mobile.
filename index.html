@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=108&bep=compact-coach-mobile-navigation-20261119"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=109&bep=coach-explorer-answer-dialog-20261119"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=4&bep=login-methods-status-20261113">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=6">
@@ -402,7 +402,8 @@
   </section>
 
   <section class="coach-tab-panel" id="coachPanelExplore" role="tabpanel" aria-labelledby="coachTabExplore" data-coach-panel="explore" hidden>
-    <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Choisis un ou plusieurs sujets pour afficher des questions utiles. Tu peux aussi croiser plusieurs thématiques.</p></div></div>
+    <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Ouvre une thématique, puis sélectionne un sujet pour lire la réponse du Coach BEP.</p></div></div>
+    <label class="coach-explorer-search"><span class="sr-only">Rechercher une thématique ou une question</span><input id="coachExplorerSearch" type="search" maxlength="120" placeholder="Rechercher une thématique ou une question…"></label>
     <div class="coach-explorer-filters" id="coachExplorerFilters" aria-label="Filtrer les questions">
       <label><input type="checkbox" data-coach-explore-theme="budget"><span>Budget</span></label>
       <label><input type="checkbox" data-coach-explore-theme="spending"><span>Dépenses</span></label>
@@ -438,6 +439,17 @@
       <div id="coachChatLog" class="coach-chat-log" aria-live="polite"></div>
     </section>
   </section>
+  <dialog class="coach-answer-dialog" id="coachAnswerDialog" aria-labelledby="coachAnswerTitle" aria-describedby="coachAnswerBody">
+    <div class="coach-answer-window">
+      <header class="coach-answer-header">
+        <span class="coach-answer-robot" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="13" width="32" height="25" rx="10" fill="#f4fff7" stroke="#8bcda5" stroke-width="2"/><rect x="13" y="18" width="22" height="13" rx="5" fill="#103d34"/><path d="M18 24v1m12-1v1" stroke="#a8f0c2" stroke-width="3" stroke-linecap="round"/><path d="M24 13V7m-4 0h8" stroke="#d7b75f" stroke-width="2" stroke-linecap="round"/></svg></span>
+        <div><p class="coach-section-kicker">RÉPONSE DU COACH BEP</p><h2 id="coachAnswerTitle">Ton sujet</h2></div>
+        <button type="button" class="coach-answer-close" id="coachAnswerClose" aria-label="Fermer la réponse">×</button>
+      </header>
+      <div id="coachAnswerBody" class="coach-answer-body" role="status" aria-live="polite">Le Coach BEP prépare sa réponse…</div>
+      <footer class="coach-answer-footer"><span class="coach-answer-local">● Base documentaire BEP</span><button type="button" class="primary" id="coachAnswerContinue">Poursuivre la conversation</button></footer>
+    </div>
+  </dialog>
   <details class="coach-info-panel">
     <summary class="coach-info-summary"><span id="coachAiMode">● Coach BEP · Mode local</span><span class="coach-info-toggle-label">Fonctionnement et réglages <span class="coach-info-plus" aria-hidden="true">＋</span></span></summary>
     <div class="coach-info-content">
@@ -566,7 +578,7 @@
 <script src="./offline-storage.js?v=7&bep=force-remote-refresh-20261119"></script>
 <script src="./backup-vault.js?v=1"></script>
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
-<script src="./app.js?v=124&bep=compact-coach-mobile-navigation-20261119"></script>
+<script src="./app.js?v=125&bep=coach-explorer-answer-dialog-20261119"></script>
 <script src="./auth-recovery.js?v=2"></script>
 <script src="./monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"></script>
 <script src="./pwa.js?v=12"></script>

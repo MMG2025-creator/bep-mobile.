@@ -152,6 +152,27 @@ const COACH_QUESTION_LIBRARY=[
  {key:"planning",label:"Anticiper les imprévus",description:"Dépenses annuelles, aléas et sécurité",icon:"▦",questions:["Quelles dépenses annuelles dois-je anticiper ?","Quelle réserve prévoir pour les dépenses imprévues ?","Comment lisser mes grosses dépenses sur l'année ?","Mon budget résisterait-il à une dépense exceptionnelle ?"]},
  {key:"learning",label:"Comprendre mes finances",description:"Notions, méthodes et décisions financières",icon:"◇",questions:["Comment lire simplement ma situation financière ?","Quelle différence entre capacité d'épargne et reste à vivre ?","Comment comparer deux décisions financières ?","Quels indicateurs suivre chaque mois pour progresser ?"]}
 ];
+let coachExplorerThemes=null,coachExplorerCategoriesPromise=null;
+const COACH_CATEGORY_FALLBACK=COACH_QUESTION_LIBRARY;
+async function loadCoachExplorerCategories(){
+ if(coachExplorerCategoriesPromise)return coachExplorerCategoriesPromise;
+ if(!window.bepSignedIn){coachExplorerThemes=COACH_CATEGORY_FALLBACK;renderCoachExplorer();return}
+ const target=$("coachQuestionLibrary");if(target)target.textContent="Chargement des sujets documentaires validés…";
+ coachExplorerCategoriesPromise=(async()=>{
+  try{
+   const response=await fetch(API+"/api/coach/categories",{credentials:"include",cache:"no-store"});
+   if(!response.ok)throw Error("HTTP "+response.status);
+   const data=await response.json();
+   if(!Array.isArray(data.categories))throw Error("Réponse documentaire invalide");
+   coachExplorerThemes=data.categories.map(item=>({key:String(item.key||""),label:String(item.label||item.key||"Thématique"),description:String(item.description||"Questions documentaires validées"),icon:String(item.icon||"◇"),profileKey:String(item.profileKey||item.key||""),questions:Array.isArray(item.questions)?item.questions.map(x=>String(x||"").trim()).filter(Boolean):[]})).filter(item=>item.key&&item.questions.length);
+  }catch(error){
+   console.warn("Coach Explorer: catégories documentaires indisponibles, bibliothèque de secours utilisée.",String(error?.message||error));
+   coachExplorerThemes=COACH_CATEGORY_FALLBACK;
+  }
+  renderCoachExplorer();
+ })();
+ return coachExplorerCategoriesPromise;
+}
 let coachActiveTab="profile";
 let coachExplorerInitialized=false,coachExplorerTouched=false;
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
@@ -160,25 +181,58 @@ function setCoachTab(name){
  coachActiveTab=name;
  document.querySelectorAll("[data-coach-tab]").forEach(button=>{const active=button.dataset.coachTab===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1});
  document.querySelectorAll("[data-coach-panel]").forEach(panel=>{const active=panel.dataset.coachPanel===name;panel.classList.toggle("active",active);panel.hidden=!active});
- if(name==="explore")renderCoachExplorer();
+ if(name==="explore"){if(coachExplorerThemes===null)loadCoachExplorerCategories();else renderCoachExplorer();}
  if(name==="open")$("coachPromptInput")?.focus({preventScroll:true});
 }
 function renderCoachExplorer(){
  const target=$("coachQuestionLibrary");if(!target)return;
  if(!coachExplorerInitialized)syncCoachExplorerFromProfile();
  const filters=[...document.querySelectorAll("[data-coach-explore-theme]:checked")].map(x=>x.dataset.coachExploreTheme);
- const themes=filters.length?COACH_QUESTION_LIBRARY.filter(x=>filters.includes(x.key)):COACH_QUESTION_LIBRARY;
- const hint=$("coachExplorerHint");if(hint)hint.textContent=filters.length?themes.length+" thématique(s) affichée(s). Modifie les filtres pour explorer d'autres sujets.":"Toutes les thématiques sont affichées. Sélectionne des filtres pour affiner les propositions.";
+ const search=String($("coachExplorerSearch")?.value||"").trim().toLocaleLowerCase("fr");
+ const sourceThemes=coachExplorerThemes===null?COACH_QUESTION_LIBRARY:coachExplorerThemes;
+ const themes=sourceThemes.filter(theme=>(!filters.length||filters.includes(theme.profileKey||theme.key))&&(!search||[theme.label,theme.description,...theme.questions].join(" ").toLocaleLowerCase("fr").includes(search)));
+ const hint=$("coachExplorerHint");
+ if(hint)hint.textContent=search?themes.length+" thématique(s) correspondent à ta recherche.":filters.length?themes.length+" thématique(s) affichée(s).":"Toutes les thématiques sont affichées.";
  target.replaceChildren();
+ if(!themes.length){const empty=document.createElement("p");empty.className="coach-explorer-empty";empty.textContent=coachExplorerThemes!==null&&!coachExplorerThemes.length?"Aucune fiche documentaire validée n’est disponible pour le moment.":"Aucun sujet ne correspond à cette recherche.";target.append(empty);return}
  themes.forEach(theme=>{
-  const card=document.createElement("section");card.className="coach-question-theme";
-  const heading=document.createElement("div");heading.className="coach-question-theme-heading";
+  const details=document.createElement("details");details.className="coach-question-theme";
+  const summary=document.createElement("summary");summary.className="coach-question-theme-summary";
   const icon=document.createElement("span");icon.className="coach-question-theme-icon";icon.textContent=theme.icon;
-  const copy=document.createElement("div");const title=document.createElement("h4");title.textContent=theme.label;const desc=document.createElement("p");desc.textContent=theme.description;copy.append(title,desc);heading.append(icon,copy);card.append(heading);
+  const copy=document.createElement("span");copy.className="coach-question-theme-copy";
+  const title=document.createElement("strong");title.textContent=theme.label;
+  const desc=document.createElement("small");desc.textContent=theme.description;
+  const count=document.createElement("small");count.className="coach-question-count";count.textContent=theme.questions.length+" sujets";
+  copy.append(title,desc);summary.append(icon,copy,count);details.append(summary);
   const list=document.createElement("div");list.className="coach-question-list";
-  theme.questions.forEach(question=>{const button=document.createElement("button");button.type="button";button.className="coach-question-button";button.dataset.coachQuestion=question;const text=document.createElement("span");text.textContent=question;const arrow=document.createElement("span");arrow.setAttribute("aria-hidden","true");arrow.textContent="→";button.append(text,arrow);list.append(button)});
-  card.append(list);target.append(card);
+  theme.questions.forEach(question=>{
+   const button=document.createElement("button");button.type="button";button.className="coach-question-button";button.dataset.coachQuestion=question;
+   const text=document.createElement("span");text.textContent=question;
+   const arrow=document.createElement("span");arrow.setAttribute("aria-hidden","true");arrow.textContent="→";
+   button.append(text,arrow);list.append(button);
+  });
+  details.append(list);target.append(details);
  });
+}
+async function openCoachAnswer(question){
+ const dialog=$("coachAnswerDialog"),title=$("coachAnswerTitle"),body=$("coachAnswerBody"),log=$("coachChatLog");
+ if(!dialog||!body||!log){setCoachTab("open");const input=$("coachPromptInput");if(input)input.value=question;return}
+ if(title)title.textContent=question;
+ body.textContent="Le Coach BEP analyse ta question et consulte les connaissances documentaires validées…";
+ if(!dialog.open)dialog.showModal();
+ const previousCount=log.children.length;
+ await submitCoachQuestion(question);
+ const newMessages=[...log.children].slice(previousCount);
+ const answer=[...newMessages].reverse().find(node=>node.classList.contains("coach-message-bot"));
+ body.replaceChildren();
+ if(answer){
+  const paragraph=answer.querySelector("p");
+  const text=document.createElement("p");text.textContent=paragraph?.textContent||"La réponse du Coach est indisponible.";body.append(text);
+  const trace=answer.querySelector(".coach-source-trace");
+  if(trace){const detail=document.createElement("small");detail.className="coach-answer-source";detail.textContent=trace.textContent;body.append(detail)}
+ }else{
+  const fallback=document.createElement("p");fallback.textContent="La réponse n’a pas pu être récupérée. Tu peux réessayer dans Questions libres.";body.append(fallback);
+ }
 }
 function buildCoachCrossQuestion(){
  const selected=[...document.querySelectorAll("[data-coach-cross-theme]:checked")].map(x=>x.dataset.coachCrossTheme);
@@ -192,7 +246,10 @@ function updateCoachCrossState(){
  if(status)status.textContent=count<2?"Sélectionne au moins deux thématiques ("+count+" actuellement).":count+" thématiques sélectionnées. Une question transversale est prête.";
 }
 function ensureCoachWelcome(){
- const log=$("coachChatLog");if(!log||log.children.length)return;
+ const log=$("coachChatLog");
+ const heading=$("coachHeroTitle");
+ if(heading)heading.textContent=coachFirstName?"Bonjour "+coachFirstName+" !":"Bonjour !";
+ if(!log||log.children.length)return;
  addCoachMessage("coach","Bonjour, je peux t'aider à comprendre tes finances ?");
 }
 document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
@@ -200,7 +257,11 @@ document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEvent
 document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;renderCoachExplorer()}));
 $("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
 document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
-$("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;setCoachTab("open");submitCoachQuestion(button.dataset.coachQuestion);requestAnimationFrame(()=>$("coachChatLog")?.scrollIntoView({behavior:"smooth",block:"start"}))});
+$("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;openCoachAnswer(button.dataset.coachQuestion)});
+$("coachExplorerSearch")?.addEventListener("input",renderCoachExplorer);
+$("coachAnswerClose")?.addEventListener("click",()=> $("coachAnswerDialog")?.close());
+$("coachAnswerContinue")?.addEventListener("click",()=>{ $("coachAnswerDialog")?.close();setCoachTab("open");requestAnimationFrame(()=>$("coachPromptInput")?.focus({preventScroll:true}))});
+$("coachAnswerDialog")?.addEventListener("click",event=>{if(event.target===$("coachAnswerDialog"))$("coachAnswerDialog").close()});
 $("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
 renderCoachExplorer();updateCoachCrossState();setCoachTab("profile");
 
