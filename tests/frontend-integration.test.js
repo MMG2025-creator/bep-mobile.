@@ -537,3 +537,23 @@ test("local guided assistant forms are restricted to the Coach page",()=>{
  }
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.doesNotMatch(app,/incomeCheckupForm|budgetCheckupForm/);}
 });
+
+
+test("Coach workspace is forcibly hidden outside its dedicated navigation tab",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  assert.match(html,/<section id="coach" class="panel" hidden style="display:none!important">/);
+  assert.match(html,/app\.js\?v=133&bep=coach-isolation-20261119/);
+  assert.match(html,/styles\.css\?v=118&bep=coach-isolation-20261119/);
+ }
+ for(const file of ["app.js","dist/app.js"]){
+  const app=read(file);
+  assert.match(app,/x\.hidden=!isActive;if\(x\.id==="coach"\)\{if\(isActive\)x\.style\.removeProperty\("display"\);else x\.style\.setProperty\("display","none","important"\)\}/);
+  assert.equal(app,read(file==="app.js"?"dist/app.js":"app.js"));
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/#coach\[hidden\],#coach\.panel:not\(\.active\)\{display:none!important;visibility:hidden!important\}/);
+ }
+ for(const file of ["sw.js","dist/sw.js"])assert.match(read(file),/CACHE_NAME="bep-shell-v30"/);
+});

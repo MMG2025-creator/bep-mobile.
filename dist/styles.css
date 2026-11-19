@@ -2432,3 +2432,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
     text-align:center!important;
   }
 }
+
+
+/* Hard isolation: the Coach workspace is rendered only on its dedicated tab. */
+#coach[hidden],#coach.panel:not(.active){display:none!important;visibility:hidden!important;}
+#coach.panel.active:not([hidden]){visibility:visible;}
