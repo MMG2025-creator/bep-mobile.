@@ -467,9 +467,16 @@ test("Coach question form always stacks the textarea above the send button on ev
 test("Coach free conversation shows objectives first, then chat, then the question form",()=>{
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  const panel=html.slice(html.indexOf('id="coachPanelOpen"'),html.indexOf('id="coachPanelExplore"'));
-  assert.ok(panel.indexOf('class="coach-objectives"')<panel.indexOf('class="coach-conversation"'));
-  assert.ok(panel.indexOf('id="coachChatLog"')<panel.indexOf('id="coachPromptForm"'));
+  const panelStart=html.indexOf('id="coachPanelOpen"');
+  const panelEnd=html.indexOf('<dialog class="coach-answer-dialog"',panelStart);
+  assert.ok(panelStart>=0&&panelEnd>panelStart,"open conversation panel exists");
+  const panel=html.slice(panelStart,panelEnd);
+  const objectives=panel.indexOf('class="coach-objectives"');
+  const conversation=panel.indexOf('class="coach-conversation"');
+  const chat=panel.indexOf('id="coachChatLog"');
+  const form=panel.indexOf('id="coachPromptForm"');
+  assert.ok(objectives>=0&&conversation>objectives,"objectives precede conversation");
+  assert.ok(chat>=0&&form>chat,"question form follows conversation messages");
   assert.match(html,/coach-info-panel[\s\S]*?<\/details>\s*<div class="coach-privacy"/);
  }
  for(const file of ["styles.css","dist/styles.css"]){
