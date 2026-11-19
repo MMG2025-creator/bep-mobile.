@@ -23,7 +23,9 @@ test("Coach exposes two accessible journeys and preserves the open question form
  assert.match(html,/id="coachObjectivesSummary"/);
  assert.match(html,/id="coachChooseObjectives"/);
  assert.ok(html.includes("Écris ta question ici…"));
- assert.ok(html.includes("coachPanelOpen")&&html.includes("coach-conversation"));
+ assert.ok(html.includes("coachPanelOpen")&&html.includes("id=\"coachPromptForm\""));
+ assert.doesNotMatch(html,/class="coach-conversation"/);
+ assert.match(html,/id="coachChatLog"[^>]*hidden/);
 });
 test("Coach keeps the eight profile preferences and their existing persistence model",()=>{
  for(const key of ["budget","spending","savings","goals","income","debt","planning","learning"])assert.match(html,new RegExp('data-coach-theme="'+key+'"'));
