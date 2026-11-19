@@ -108,9 +108,9 @@ test("automatic advice uses structured rules and never calls Gemini",()=>{
 });
 test("short conversational replies bypass document retrieval and respond naturally",()=>{
  const src=read("server.js");
- assert.match(src,/function coachConversationalReply\\(question\\)/);
- assert.match(src,/if\\(conversational\\)[\\s\\S]*?mode:"conversation"/);
- assert.match(src,/Parfait\\. Quel sujet souhaites-tu aborder en premier/);
+ assert.match(src,/function coachConversationalReply\(question\)/);
+ assert.match(src,/if\(conversational\)[\s\S]*?mode:"conversation"/);
+ assert.match(src,/Parfait\. Quel sujet souhaites-tu aborder en premier/);
  assert.match(src,/Bonjour ! Je suis là pour t'aider/);
 });
 test("user Coach chat is local and documentary-only with no external provider call",()=>{
