@@ -394,7 +394,9 @@ app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(
   if(overlay.rowCount&&(Number(overlay.rows[0].source_version)!==Number(source.version)||overlay.rows[0].source_digest!==digest)){
    await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SOURCE_CHANGED"});
   }
+  if(overlay.rowCount&&!overlay.rows[0].active){await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_ALREADY_ARCHIVED"})}
   const current=overlay.rowCount?overlay.rows[0]:source;
+  await client.query("INSERT INTO bep_financial_knowledge_versions(slug,version,document,change_type,actor_ref) VALUES($1,$2,$3::jsonb,'archived',$4)",[slug,Number(current.version||1),JSON.stringify(current),String(req.session.user.id)]);
   await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7,$8,$9,$10,$11,$12,FALSE,$13) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,tags=EXCLUDED.tags,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=FALSE,approved_by=EXCLUDED.approved_by,updated_at=NOW()",
    [slug,current.category,current.title,current.content,JSON.stringify(current.keywords||[]),JSON.stringify(current.tags||[]),current.source_name,current.source_url,current.evidence_level,Number(source.version),digest,Number(current.version||1),String(req.session.user.id)]);
   await client.query("COMMIT");
