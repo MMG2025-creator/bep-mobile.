@@ -68,14 +68,13 @@ test("Explorer starts with themes hidden and reveals them only after a filter, s
 });
 
 
-test("Coach workspace has two tabs and requires objectives before free chat", () => {
-  assert.doesNotMatch(html, /data-coach-tab="profile"/);
-  assert.match(html, /data-coach-tab="explore"/);
-  assert.match(html, /data-coach-tab="open"/);
-  assert.match(html, /id="coachObjectivesSummary"[^>]*>Veuillez choisir des objectifs\.<\/p>/);
-  assert.match(html, /id="coachChooseObjectives"/);
-  assert.match(html, /id="coachObjectivesPicker"[^>]*hidden/);
-  assert.match(app, /Vos objectifs sont : /);
-  assert.match(app, /Veuillez choisir des objectifs avant de commencer la conversation/);
-  assert.match(app, /setCoachTab\("open"\)/);
+
+
+test("Coach navigation puts free questions first and renames Explorer to FAQ", () => {
+  assert.match(html, /data-coach-tab="open">Questions libres<\/button>/);
+  assert.match(html, /data-coach-tab="explore">FAQ<\/button>/);
+  assert.match(html, /id="coachObjectivesDialog"[^>]*aria-labelledby="coachObjectivesDialogTitle"/);
+  assert.match(html, /id="coachObjectivesValidate"/);
+  assert.match(app, /coachObjectivesDialog.*showModal/s);
+  assert.match(app, /coachObjectivesDialog.*close/s);
 });
