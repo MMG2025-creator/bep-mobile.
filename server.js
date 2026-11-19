@@ -348,7 +348,7 @@ app.use("/api/admin/bep-coach/library",createCoachKnowledgeAdminRouter({pool,req
   const allowedCategories=new Set(["all","budget","spending","savings","debt","behavior","income","planning","general"]);
   if(!allowedCategories.has(category))return res.status(400).json({error:"INVALID_LIBRARY_CATEGORY"});
   const [base,overlays]=await Promise.all([
-   pool.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version,active,updated_at FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 1000"),
+   pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,version,active,updated_at FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 1000"),
    pool.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,active,source_version,source_digest,version,updated_at FROM bep_agent_approved_knowledge ORDER BY category,slug").catch(()=>({rows:[]}))
   ]);
   const merged=new Map(base.rows.map(item=>[item.slug,item]));
@@ -364,7 +364,7 @@ app.use("/api/admin/bep-coach/library",createCoachKnowledgeAdminRouter({pool,req
   }
   const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
   res.setHeader("Cache-Control","no-store");
-  res.json({items:all.slice(0,100).map(item=>({slug:item.slug,category:item.category,title:item.title,content:item.content,keywords:item.keywords||[],source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.version)||1,updated_at:item.updated_at||null})),total:all.length,limit:100,truncated:all.length>100,readOnly:true});
+  res.json({items:all.slice(0,100).map(item=>({slug:item.slug,category:item.category,title:item.title,content:item.content,keywords:item.keywords||[],tags:item.tags||[],source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.version)||1,updated_at:item.updated_at||null})),total:all.length,limit:100,truncated:all.length>100,readOnly:false,editingEnabled:true,versionHistory:true});
  }catch(e){console.error("BEP admin Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_ADMIN_LIBRARY_UNAVAILABLE"})}
 });
 app.get("/api/admin/bep-coach/proposals.json",auth,requireBepAgentAdmin,createCoachProposalsDocumentHandler({pool,logger:console}));
@@ -386,8 +386,8 @@ app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(
  const client=await pool.connect();
  try{
   await client.query("BEGIN");
-  const base=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
-  const overlay=await client.query("SELECT slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active FROM bep_agent_approved_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
+  const base=await client.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,version FROM bep_financial_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
+  const overlay=await client.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,source_version,source_digest,version,active FROM bep_agent_approved_knowledge WHERE slug=$1 FOR UPDATE",[slug]);
   if(!base.rowCount&&!overlay.rowCount){await client.query("ROLLBACK");return res.status(404).json({error:"KNOWLEDGE_NOT_FOUND"})}
   const source=base.rowCount?base.rows[0]:{...overlay.rows[0],version:Number(overlay.rows[0].source_version)};
   const digest=sourceFingerprint(source);
@@ -395,8 +395,8 @@ app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(
    await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SOURCE_CHANGED"});
   }
   const current=overlay.rowCount?overlay.rows[0]:source;
-  await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10,$11,FALSE,$12) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=FALSE,approved_by=EXCLUDED.approved_by,updated_at=NOW()",
-   [slug,current.category,current.title,current.content,JSON.stringify(current.keywords||[]),current.source_name,current.source_url,current.evidence_level,Number(source.version),digest,Number(current.version||1),String(req.session.user.id)]);
+  await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7,$8,$9,$10,$11,$12,FALSE,$13) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,tags=EXCLUDED.tags,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=FALSE,approved_by=EXCLUDED.approved_by,updated_at=NOW()",
+   [slug,current.category,current.title,current.content,JSON.stringify(current.keywords||[]),JSON.stringify(current.tags||[]),current.source_name,current.source_url,current.evidence_level,Number(source.version),digest,Number(current.version||1),String(req.session.user.id)]);
   await client.query("COMMIT");
   res.json({ok:true,slug,active:false,archived:true});
  }catch(e){await client.query("ROLLBACK").catch(()=>{});console.error("BEP knowledge removal failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"KNOWLEDGE_REMOVE_UNAVAILABLE"})}finally{client.release()}
