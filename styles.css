@@ -2007,3 +2007,36 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
   #coachPanelOpen .coach-prompt-form button,
   #coachPanelOpen .coach-prompt-form button.primary{width:100%!important;max-width:none;min-height:50px;flex:0 0 auto!important}
 }
+
+
+/* Homepage — keep the three welcome actions on one compact row on mobile. */
+.welcome-pills{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  width:min(calc(100% + 72px),calc(100vw - 64px));
+  max-width:100%;
+  align-items:center;
+}
+.welcome-pills .welcome-pill{
+  display:flex;
+  min-width:0;
+  min-height:42px;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:9px 7px;
+  white-space:nowrap;
+  font-size:clamp(10px,2.8vw,13px);
+  line-height:1.15;
+}
+.welcome-pills .welcome-pill svg{
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+}
+@media(max-width:360px){
+  .welcome-pills{width:min(calc(100% + 54px),calc(100vw - 48px));gap:5px}
+  .welcome-pills .welcome-pill{gap:3px;padding-inline:4px;font-size:10px}
+  .welcome-pills .welcome-pill svg{width:14px;height:14px;flex-basis:14px}
+}
