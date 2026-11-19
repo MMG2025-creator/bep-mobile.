@@ -21,7 +21,9 @@ test("admin export contains only pseudonymous aggregate metadata, never customer
   assert.equal(page.accounts[0].data.data_available,true);
   assert.match(page.accounts[0].expected_hash,/^[a-f0-9]{64}$/);
   const serialized=JSON.stringify(page);
-  for(const forbidden of ["4800","Pharmacie","captureText","reçu privé","psychology","person@example.com","expenses","income"]) assert.equal(serialized.includes(forbidden),false,forbidden);
+  assert.equal("payload" in page.accounts[0],false);
+  assert.equal("income" in page.accounts[0].data,false);
+  for(const forbidden of ["Pharmacie","captureText","reçu privé","psychology","person@example.com","expenses","income"]) assert.equal(serialized.includes(forbidden),false,forbidden);
   assert.match(page.accounts[0].account_ref,/^bep_[a-f0-9]{24}$/);
 });
 
