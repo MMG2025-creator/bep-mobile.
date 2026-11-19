@@ -451,3 +451,15 @@ test("manual force sync preserves guest queues and local data without a trusted 
  assert.match(offline,/ne seront pas remplacées|ne seront pas remplacés|préservées pour éviter tout écrasement/);
  assert.equal(offline,read("dist/offline-storage.js"));
 });
+
+
+test("Coach free-question form keeps the textarea visible and the send button compact on desktop",()=>{
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/#coachPanelOpen \.coach-prompt-form\{[\s\S]*?display:flex!important/);
+  assert.match(css,/#coachPanelOpen \.coach-prompt-form textarea\{[\s\S]*?display:block!important[\s\S]*?min-height:96px!important/);
+  assert.match(css,/#coachPanelOpen \.coach-prompt-form button[\s\S]*?max-width:260px/);
+  assert.match(css,/@media\(max-width:600px\)[\s\S]*?#coachPanelOpen \.coach-prompt-form\{flex-direction:column!important/);
+ }
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=110&bep=coach-prompt-input-visible-20261119/);
+});
