@@ -223,14 +223,13 @@ function structuredAdvice(zone,p){
 }
 
 function coachConversationalReply(question){
- const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[’']/g," ").replace(/[^a-z0-9\\s]/g," ").replace(/\\s+/g," ").trim();
+ const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
  if(/^(oui|oui bien sur|bien sur|d accord|dac|ok|okay|avec plaisir|je veux bien|volontiers)$/.test(q))return "Parfait. Quel sujet souhaites-tu aborder en premier : ton budget, tes dépenses, ton épargne ou tes objectifs ?";
  if(/^(non|pas vraiment|non merci)$/.test(q))return "D'accord. Dis-moi ce que tu souhaites faire, ou pose-moi directement ta question.";
  if(/^(bonjour|bonsoir|salut|hello|coucou)$/.test(q))return "Bonjour ! Je suis là pour t'aider à comprendre tes finances. Qu'aimerais-tu regarder aujourd'hui ?";
  if(/^(merci|merci beaucoup|super merci)$/.test(q))return "Avec plaisir. Tu peux poursuivre quand tu le souhaites.";
  return null;
 }
-
 function routeStructuredQuestion(question,p){
  const q=String(question||"").toLocaleLowerCase("fr").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
  const income=Number(p.income)||0,charges=Number(p.charges)||0,available=Number(p.available)||0,expenses=Array.isArray(p.expenses)?p.expenses:[],goals=Array.isArray(p.goals)?p.goals:[],operations=Array.isArray(p.savingsOperations)?p.savingsOperations:[];
