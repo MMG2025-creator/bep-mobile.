@@ -33,35 +33,35 @@ if(button)button.addEventListener("click",async()=>{
   window.alert(instructions);
 });
 if("serviceWorker" in navigator){
-  let hadController=Boolean(navigator.serviceWorker.controller);
-  let updateBannerShown=false;
-  const showUpdateBanner=()=>{
-    if(updateBannerShown||!document.body)return;
-    updateBannerShown=true;
-    const banner=document.createElement("div");
-    banner.id="bepUpdateAvailable";
-    banner.setAttribute("role","status");
-    banner.setAttribute("aria-live","polite");
-    banner.style.cssText="position:fixed;z-index:10001;top:calc(env(safe-area-inset-top, 0px) + 12px);left:12px;right:12px;max-width:560px;margin:0 auto;padding:13px 14px;border:1px solid #c9d9ce;border-radius:14px;background:#fff;box-shadow:0 8px 28px rgba(15,45,34,.18);display:flex;align-items:center;gap:12px;color:#173b30;font:500 14px/1.35 system-ui,sans-serif";
-    banner.innerHTML='<span style="flex:1">Une nouvelle version de BEP est disponible.</span><button type="button" data-bep-update-now style="border:0;border-radius:999px;background:#176b50;color:#fff;padding:9px 13px;font-weight:700;white-space:nowrap">Actualiser</button><button type="button" data-bep-update-dismiss aria-label="Fermer" style="border:0;background:transparent;color:#52665d;font-size:21px;padding:2px 5px">×</button>';
-    banner.querySelector("[data-bep-update-now]").addEventListener("click",()=>window.location.reload());
-    banner.querySelector("[data-bep-update-dismiss]").addEventListener("click",()=>banner.remove());
-    document.body.appendChild(banner);
+  const reloadAfterControllerChange=()=>{
+    try{
+      const key="bep-sw-controller-refresh";
+      const previous=Number(sessionStorage.getItem(key)||0);
+      const now=Date.now();
+      if(now-previous<30000)return;
+      sessionStorage.setItem(key,String(now));
+    }catch(_error){}
+    window.location.reload();
   };
-  navigator.serviceWorker.addEventListener("controllerchange",()=>{
-    if(hadController)showUpdateBanner();
-    hadController=true;
-  });
+  navigator.serviceWorker.addEventListener("controllerchange",reloadAfterControllerChange);
   const checkForUpdate=registration=>{
-    if(document.visibilityState==="visible"&&navigator.onLine)registration.update().catch(()=>{});
+    if(document.visibilityState==="visible"&&navigator.onLine){
+      registration.update().catch(error=>console.warn("BEP PWA: vérification de mise à jour impossible",error));
+    }
   };
   window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js",{scope:"./",updateViaCache:"none"})
+    navigator.serviceWorker.register("./sw.js?v=27",{scope:"./",updateViaCache:"none"})
       .then(registration=>{
         checkForUpdate(registration);
         window.addEventListener("focus",()=>checkForUpdate(registration));
         document.addEventListener("visibilitychange",()=>checkForUpdate(registration));
         window.setInterval(()=>checkForUpdate(registration),5*60*1000);
+        registration.addEventListener("updatefound",()=>{
+          const worker=registration.installing;
+          if(worker)worker.addEventListener("statechange",()=>{
+            if(worker.state==="redundant")console.error("BEP PWA: le nouveau Service Worker n'a pas pu être installé");
+          });
+        });
       })
       .catch(error=>console.warn("BEP PWA: service worker non disponible",error));
   });

@@ -1,6 +1,6 @@
 "use strict";
-const CACHE_NAME="bep-shell-v26";
-const RUNTIME_CACHE="bep-runtime-v1";
+const CACHE_NAME="bep-shell-v27";
+const RUNTIME_CACHE="bep-runtime-v2";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
   "./",
@@ -9,6 +9,7 @@ const APP_SHELL=[
   "./styles.css",
   "./monthly-budget-ui.css",
   "./ui-polish.css",
+  "./settings.css",
   "./auth-recovery.css",
   "./spend-experience.css",
   "./runtime-config.js",
@@ -30,15 +31,21 @@ const APP_SHELL=[
 ];
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
-    const cache=await caches.open(CACHE_NAME);
-    await cache.addAll(APP_SHELL);
-    await self.skipWaiting();
+    try{
+      const cache=await caches.open(CACHE_NAME);
+      await cache.addAll(APP_SHELL);
+      await self.skipWaiting();
+    }catch(error){
+      await caches.delete(CACHE_NAME);
+      throw error;
+    }
   })());
 });
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(keys.filter(key=>![CACHE_NAME,RUNTIME_CACHE].includes(key)).map(key=>caches.delete(key)));
+    const obsolete=keys.filter(key=>key.startsWith("bep-")&&![CACHE_NAME,RUNTIME_CACHE].includes(key));
+    await Promise.all(obsolete.map(key=>caches.delete(key)));
     await self.clients.claim();
   })());
 });
