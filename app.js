@@ -142,7 +142,10 @@ async function persistCoachProfile(){
  else if(status)status.textContent="Profil enregistré sur cet appareil. Il sera synchronisé à la connexion.";
 }
 document.querySelectorAll("[data-coach-theme]").forEach(input=>input.addEventListener("change",()=>{const key=input.dataset.coachTheme,selected=new Set(state.coachProfile||[]);input.checked?selected.add(key):selected.delete(key);state.coachProfile=[...selected];persistCoachProfile()}));
-$("coachChooseObjectives")?.addEventListener("click",()=>{const picker=$("coachObjectivesPicker"),button=$("coachChooseObjectives");if(!picker||!button)return;picker.hidden=!picker.hidden;button.setAttribute("aria-expanded",String(!picker.hidden));if(!picker.hidden)picker.scrollIntoView({behavior:"smooth",block:"nearest"})});
+$("coachChooseObjectives")?.addEventListener("click",()=> $("coachObjectivesDialog")?.showModal());
+$("coachObjectivesClose")?.addEventListener("click",()=> $("coachObjectivesDialog")?.close());
+$("coachObjectivesValidate")?.addEventListener("click",()=> $("coachObjectivesDialog")?.close());
+$("coachObjectivesDialog")?.addEventListener("click",event=>{if(event.target===$("coachObjectivesDialog"))$("coachObjectivesDialog").close()});
 renderCoachProfile();
 
 const COACH_QUESTION_LIBRARY=[
@@ -1038,7 +1041,7 @@ async function submitCoachQuestion(question){
   addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");
  }
 }
-$("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;if(!(state.coachProfile||[]).some(key=>Object.prototype.hasOwnProperty.call(COACH_THEMES,key))){const picker=$("coachObjectivesPicker"),button=$("coachChooseObjectives"),summary=$("coachObjectivesSummary");if(picker)picker.hidden=false;if(button)button.setAttribute("aria-expanded","true");if(summary)summary.textContent="Veuillez choisir des objectifs avant de commencer la conversation.";picker?.scrollIntoView({behavior:"smooth",block:"center"});return}submitCoachQuestion(value);input.value="";input.focus()};
+$("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;if(!(state.coachProfile||[]).some(key=>Object.prototype.hasOwnProperty.call(COACH_THEMES,key))){const summary=$("coachObjectivesSummary");if(summary)summary.textContent="Veuillez choisir des objectifs avant de commencer la conversation.";if(!$("coachObjectivesDialog")?.open)$("coachObjectivesDialog")?.showModal();return}submitCoachQuestion(value);input.value="";input.focus()};
 document.querySelectorAll("[data-coach-prompt]").forEach(button=>button.addEventListener("click",()=>{const input=$("coachPromptInput");input.value=button.dataset.coachPrompt||"";input.focus()}));
 const CHART_COLORS=["#176b50","#79b99b","#b9e8d0","#d6a85f","#7b91ad","#c78e86","#9a83b7","#8b9a92"];
 function chartEmpty(message){return '<div class="chart-empty">'+message+'</div>'}

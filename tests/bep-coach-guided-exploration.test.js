@@ -15,7 +15,11 @@ test("Coach exposes two accessible journeys and preserves the open question form
  assert.match(html,/id="coachPromptForm"/);
  assert.match(html,/id="coachPromptInput"/);
  assert.match(html,/id="coachChatLog"/);
- assert.ok(!html.includes("Accompagnement")&&html.includes(">Explorer</button>")&&html.includes("Question libre"));
+ assert.ok(html.includes(">Questions libres</button>")&&html.includes(">FAQ</button>"));
+ assert.match(html,/id="coachObjectivesDialog"[^>]*aria-labelledby="coachObjectivesDialogTitle"/);
+ assert.match(html,/id="coachObjectivesValidate"/);
+ assert.match(app,/showModal\(\)/);
+ assert.match(app,/coachObjectivesValidate/);
  assert.match(html,/id="coachObjectivesSummary"/);
  assert.match(html,/id="coachChooseObjectives"/);
  assert.ok(html.includes("Écris ta question ici…"));
