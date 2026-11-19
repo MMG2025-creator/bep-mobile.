@@ -125,9 +125,9 @@
 .settings-account-status .hint{margin:4px 0 0;overflow-wrap:anywhere}
 @media(max-width:480px){.settings-modal-header-green{margin:-18px -18px 16px;padding:18px}}
 
-/* Explicit active-state rendering for the Settings page. */
-#settings.panel.active:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important;position:relative;isolation:isolate;min-height:180px}
-#settings.panel.active:not([hidden])>.settings-page-heading,
+/* Settings visibility: the active panel must remain in normal document flow. */
+#settings.panel.active:not([hidden]){display:block!important;visibility:visible!important;opacity:1!important;position:relative;isolation:isolate;min-height:180px}
+#settings.panel.active:not([hidden])>.settings-page-heading{display:flex!important;visibility:visible!important;opacity:1!important}
 #settings.panel.active:not([hidden])>.settings-card,
-#settings.panel.active:not([hidden])>.settings-session{display:block;visibility:visible;opacity:1}
-#settings.panel.active:not([hidden])>.settings-page-heading{display:flex}
+#settings.panel.active:not([hidden])>.settings-session{display:block!important;visibility:visible!important;opacity:1!important}
+#settings.panel:not(.active),#settings.panel[hidden]{display:none!important;visibility:hidden!important}
