@@ -45,3 +45,12 @@ test("Coach robot remains visible on mobile and greeting uses the connected prof
   assert.match(app, /coachFirstName\?"Bonjour "\+coachFirstName/);
   assert.match(css, /\.coach-hero-visual\{display:grid!important/);
 });
+
+
+test("Explorer themes stay collapsed by default and can all be expanded or collapsed together", () => {
+  assert.match(html, /id="coachToggleAllThemes"[^>]*aria-expanded="false">Tout ouvrir/);
+  assert.match(app, /details\.open=coachExplorerAllExpanded/);
+  assert.match(app, /coachToggleAllThemes.*addEventListener\("click"/);
+  assert.match(app, /allOpen\?"Tout fermer":"Tout ouvrir"/);
+  assert.match(app, /Clique sur une thématique pour afficher ses sujets/);
+});
