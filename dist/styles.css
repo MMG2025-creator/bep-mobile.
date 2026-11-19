@@ -2110,3 +2110,84 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-chat-log{max-height:420px!important}
  .coach-privacy{margin-top:12px!important;font-size:11px!important}
 }
+
+
+/* Coach BEP — équilibre visuel mobile, robot conservé et dialogue rapproché. */
+@media(max-width:600px){
+  .coach-workspace{gap:8px!important;padding:12px 10px!important}
+  .coach-hero{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 108px!important;
+    align-items:center!important;
+    gap:4px!important;
+    min-height:0!important;
+    padding:17px 14px 43px!important;
+    border-radius:20px!important;
+  }
+  .coach-hero-copy{min-width:0!important;max-width:none!important}
+  .coach-hero-topline{display:flex!important;flex-wrap:wrap!important;font-size:8px!important;letter-spacing:.9px!important;gap:5px!important}
+  .coach-hero-version{margin-left:auto!important;font-size:7px!important;padding:4px 6px!important}
+  .coach-hero h2{margin:13px 0 6px!important;font-size:clamp(23px,6vw,29px)!important}
+  .coach-hero-copy>p{font-size:12px!important;line-height:1.45!important}
+  .coach-hero-visual{display:grid!important;min-height:116px!important;overflow:visible!important}
+  .coach-hero-bot{display:block!important;width:108px!important;max-width:none!important}
+  .coach-orbit-one{width:105px!important;height:84px!important}
+  .coach-orbit-two{width:124px!important;height:98px!important}
+  .coach-spark-one{right:0!important;top:8%!important}
+  .coach-spark-two{left:0!important;bottom:18%!important}
+  .coach-visual-caption{right:-5px!important;bottom:-3px!important;padding:5px 7px!important;font-size:8px!important}
+  .coach-hero-bottom{display:none!important}
+  .coach-hero-assurance{display:none!important}
+  .coach-tabs{margin:0!important;padding:4px!important}
+  #coachPanelOpen{margin:0!important;padding:0!important}
+  .coach-objectives{margin:7px 0 8px!important;padding:11px 12px!important;gap:7px!important}
+  .coach-objectives-heading h3{font-size:14px!important;line-height:1.25!important}
+  .coach-objectives-heading p:last-child{font-size:11px!important;line-height:1.35!important}
+  #coachChooseObjectives{min-height:38px!important}
+  .coach-conversation{
+    margin:0!important;
+    padding:12px 11px 10px!important;
+    gap:9px!important;
+    border:1px solid #e0ece5!important;
+    border-radius:17px!important;
+    background:#fbfdfb!important;
+  }
+  .coach-conversation-heading{align-items:center!important;flex-direction:row!important;justify-content:space-between!important;gap:7px!important}
+  .coach-conversation-heading h3{font-size:14px!important;line-height:1.25!important}
+  .coach-conversation-status{font-size:8px!important;padding:5px 7px!important;white-space:normal!important;text-align:center!important}
+  .coach-chat-log{min-height:0!important;max-height:340px!important;padding:2px 0 5px!important;gap:7px!important}
+  .coach-message{max-width:100%!important;padding:10px 12px!important;font-size:13px!important}
+  #coachPromptForm.coach-prompt-form{
+    margin:0!important;
+    padding:9px 0 0!important;
+    border-top:1px solid #e5eee8!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  .coach-workspace .coach-prompt-form textarea{
+    width:100%!important;
+    min-height:64px!important;
+    max-height:120px!important;
+    padding:11px 12px!important;
+    border-radius:12px!important;
+    font-size:13px!important;
+  }
+  .coach-workspace .coach-prompt-form button,
+  .coach-workspace .coach-prompt-form button.primary{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:9px 12px!important;
+    font-size:14px!important;
+  }
+  .coach-privacy{margin-top:9px!important;padding:8px 10px!important;font-size:10px!important;line-height:1.4!important}
+}
+@media(max-width:390px){
+  .coach-hero{grid-template-columns:minmax(0,1fr) 88px!important;padding-left:12px!important;padding-right:10px!important}
+  .coach-hero-bot{width:92px!important}
+  .coach-orbit-one{width:91px!important;height:75px!important}
+  .coach-orbit-two{width:106px!important;height:86px!important}
+  .coach-hero-topline{font-size:7px!important}
+  .coach-conversation-heading h3{font-size:13px!important}
+}
