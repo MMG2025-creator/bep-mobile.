@@ -402,7 +402,8 @@
   </section>
 
   <section class="coach-tab-panel" id="coachPanelExplore" role="tabpanel" aria-labelledby="coachTabExplore" data-coach-panel="explore" hidden>
-    <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Choisis un ou plusieurs sujets pour afficher des questions utiles. Tu peux aussi croiser plusieurs thématiques.</p></div></div>
+    <div class="coach-section-heading"><div><p class="coach-section-kicker">BIBLIOTHÈQUE DE DÉCOUVERTE</p><h3>Explorer mes questions</h3><p>Ouvre une thématique, puis sélectionne un sujet pour lire la réponse du Coach BEP.</p></div></div>
+    <label class="coach-explorer-search"><span class="sr-only">Rechercher une thématique ou une question</span><input id="coachExplorerSearch" type="search" maxlength="120" placeholder="Rechercher une thématique ou une question…"></label>
     <div class="coach-explorer-filters" id="coachExplorerFilters" aria-label="Filtrer les questions">
       <label><input type="checkbox" data-coach-explore-theme="budget"><span>Budget</span></label>
       <label><input type="checkbox" data-coach-explore-theme="spending"><span>Dépenses</span></label>
@@ -438,6 +439,17 @@
       <div id="coachChatLog" class="coach-chat-log" aria-live="polite"></div>
     </section>
   </section>
+  <dialog class="coach-answer-dialog" id="coachAnswerDialog" aria-labelledby="coachAnswerTitle" aria-describedby="coachAnswerBody">
+    <div class="coach-answer-window">
+      <header class="coach-answer-header">
+        <span class="coach-answer-robot" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="13" width="32" height="25" rx="10" fill="#f4fff7" stroke="#8bcda5" stroke-width="2"/><rect x="13" y="18" width="22" height="13" rx="5" fill="#103d34"/><path d="M18 24v1m12-1v1" stroke="#a8f0c2" stroke-width="3" stroke-linecap="round"/><path d="M24 13V7m-4 0h8" stroke="#d7b75f" stroke-width="2" stroke-linecap="round"/></svg></span>
+        <div><p class="coach-section-kicker">RÉPONSE DU COACH BEP</p><h2 id="coachAnswerTitle">Ton sujet</h2></div>
+        <button type="button" class="coach-answer-close" id="coachAnswerClose" aria-label="Fermer la réponse">×</button>
+      </header>
+      <div id="coachAnswerBody" class="coach-answer-body" role="status" aria-live="polite">Le Coach BEP prépare sa réponse…</div>
+      <footer class="coach-answer-footer"><span class="coach-answer-local">● Base documentaire BEP</span><button type="button" class="primary" id="coachAnswerContinue">Poursuivre la conversation</button></footer>
+    </div>
+  </dialog>
   <details class="coach-info-panel">
     <summary class="coach-info-summary"><span id="coachAiMode">● Coach BEP · Mode local</span><span class="coach-info-toggle-label">Fonctionnement et réglages <span class="coach-info-plus" aria-hidden="true">＋</span></span></summary>
     <div class="coach-info-content">
