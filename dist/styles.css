@@ -1869,3 +1869,22 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .coach-chat-log{min-height:104px;max-height:420px}
 .coach-workspace .coach-prompt-form{padding-top:0;border-top:0}
 @media(max-width:480px){.coach-tabs{gap:3px;padding:4px}.coach-tab{font-size:10px;padding:8px 4px}.coach-section-heading h3{font-size:16px}.coach-conversation-heading{align-items:flex-start;flex-direction:column}.coach-conversation-status{align-self:flex-start}}
+
+ 
+/* Coach BEP — navigation mobile courte et conversation au bon endroit */
+.coach-hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:17px 18px 18px;border-radius:18px}
+.coach-hero h2{margin:9px 0 4px;font-size:clamp(23px,4vw,28px);line-height:1.12}
+.coach-hero-copy>p{max-width:none;font-size:12px;line-height:1.45}
+.coach-hero-visual,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
+.coach-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:4px}
+.coach-tab{min-height:42px;padding:8px 5px;font-size:clamp(10px,2.7vw,12px);line-height:1.15;white-space:nowrap;letter-spacing:-.1px}
+.coach-tab-panel{padding-top:2px}
+.coach-conversation{margin-top:16px;padding-top:13px;border-top:1px solid #e7eee9}
+.coach-chat-log{min-height:0;max-height:360px;padding:10px 2px 12px}
+.coach-message-bot{padding:12px 14px;font-size:13px}
+.coach-workspace .coach-prompt-form textarea{min-height:76px}
+@media(max-width:380px){
+ .coach-tab{font-size:9px;padding-inline:2px}
+ .coach-hero{padding:15px}
+ .coach-hero h2{font-size:23px}
+}
