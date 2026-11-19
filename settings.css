@@ -124,3 +124,10 @@
 .settings-account-status strong{display:block;color:#173c32;font:800 13px Manrope,sans-serif}
 .settings-account-status .hint{margin:4px 0 0;overflow-wrap:anywhere}
 @media(max-width:480px){.settings-modal-header-green{margin:-18px -18px 16px;padding:18px}}
+
+/* Explicit active-state rendering for the Settings page. */
+#settings.panel.active:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important;position:relative;isolation:isolate;min-height:180px}
+#settings.panel.active:not([hidden])>.settings-page-heading,
+#settings.panel.active:not([hidden])>.settings-card,
+#settings.panel.active:not([hidden])>.settings-session{display:block;visibility:visible;opacity:1}
+#settings.panel.active:not([hidden])>.settings-page-heading{display:flex}
