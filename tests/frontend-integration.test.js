@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=114&bep=coach-mobile-visual-balance-20261119/);
+  assert.match(html,/styles\.css\?v=115&bep=coach-robot-cache-refresh-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -460,7 +460,7 @@ test("Coach question form always stacks the textarea above the send button on ev
   assert.match(css,/#coachPromptForm\.coach-prompt-form textarea\{[\s\S]*?width:100%!important/);
   assert.match(css,/#coachPromptForm\.coach-prompt-form button[\s\S]*?width:100%!important/);
  }
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=114&bep=coach-mobile-visual-balance-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=115&bep=coach-robot-cache-refresh-20261119/);
 });
 
 
@@ -497,7 +497,7 @@ test("Coach mobile layout keeps the robot visible and groups the conversation co
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=114&bep=coach-mobile-visual-balance-20261119/);
+  assert.match(html,/styles\.css\?v=115&bep=coach-robot-cache-refresh-20261119/);
   assert.match(html,/class="coach-hero-visual"[\s\S]*?class="coach-hero-bot"/);
  }
 });
