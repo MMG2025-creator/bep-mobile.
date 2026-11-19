@@ -174,7 +174,7 @@ async function loadCoachExplorerCategories(){
  return coachExplorerCategoriesPromise;
 }
 let coachActiveTab="profile";
-let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false,coachExplorerThemesHidden=false;
+let coachExplorerInitialized=false,coachExplorerTouched=false,coachExplorerAllExpanded=false,coachExplorerThemesHidden=true;
 function syncCoachExplorerExpandAllButton(){const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")],allOpen=!coachExplorerThemesHidden&&details.length>0&&details.every(item=>item.open),button=$("coachToggleAllThemes");coachExplorerAllExpanded=allOpen;if(button){button.textContent=coachExplorerThemesHidden||!allOpen?"Tout ouvrir":"Tout fermer";button.setAttribute("aria-expanded",String(allOpen));}}
 function syncCoachExplorerFromProfile(){if(coachExplorerTouched)return;const selected=new Set(state.coachProfile||[]);document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=selected.has(input.dataset.coachExploreTheme)});coachExplorerInitialized=true;}
 function setCoachTab(name){
@@ -193,7 +193,7 @@ function renderCoachExplorer(){
  const sourceThemes=coachExplorerThemes===null?COACH_QUESTION_LIBRARY:coachExplorerThemes;
  const themes=sourceThemes.filter(theme=>(!filters.length||filters.includes(theme.profileKey||theme.key))&&(!search||[theme.label,theme.description,...theme.questions].join(" ").toLocaleLowerCase("fr").includes(search)));
  const hint=$("coachExplorerHint");
- if(hint)hint.textContent=search?themes.length+" thématique(s) correspondent à ta recherche.":filters.length?themes.length+" thématique(s) affichée(s).":"Clique sur une thématique pour afficher ses sujets, ou utilise « Tout ouvrir ».";
+ if(hint)hint.textContent=search?themes.length+" thématique(s) correspondent à ta recherche.":filters.length?themes.length+" thématique(s) affichée(s).":coachExplorerThemesHidden?"Choisis une thématique, recherche un sujet ou affiche toute la bibliothèque.":"Clique sur une thématique pour afficher ses sujets, ou utilise « Tout ouvrir ».";
  target.replaceChildren();
  if(coachExplorerThemesHidden){target.hidden=true;if(hint)hint.textContent="Toutes les thématiques sont masquées. Clique sur « Tout ouvrir » pour les afficher.";syncCoachExplorerExpandAllButton();return}
  target.hidden=false;
@@ -257,12 +257,12 @@ function ensureCoachWelcome(){
 }
 document.querySelectorAll("[data-coach-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachTab)));
 document.querySelectorAll("[data-coach-go-tab]").forEach(button=>button.addEventListener("click",()=>setCoachTab(button.dataset.coachGoTab)));
-document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;renderCoachExplorer()}));
-$("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
+document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>input.addEventListener("change",()=>{coachExplorerTouched=true;coachExplorerThemesHidden=false;coachExplorerAllExpanded=false;renderCoachExplorer()}));
+$("coachShowAllThemes")?.addEventListener("click",()=>{coachExplorerTouched=true;coachExplorerThemesHidden=false;coachExplorerAllExpanded=false;document.querySelectorAll("[data-coach-explore-theme]").forEach(input=>{input.checked=false});renderCoachExplorer()});
 $("coachToggleAllThemes")?.addEventListener("click",()=>{if(coachExplorerThemesHidden){coachExplorerThemesHidden=false;coachExplorerAllExpanded=true;renderCoachExplorer();return}const details=[...document.querySelectorAll("#coachQuestionLibrary details.coach-question-theme")];const allOpen=details.length>0&&details.every(item=>item.open);if(allOpen){coachExplorerThemesHidden=true;coachExplorerAllExpanded=false;renderCoachExplorer();return}coachExplorerAllExpanded=true;details.forEach(item=>{item.open=true});syncCoachExplorerExpandAllButton()});
 document.querySelectorAll("[data-coach-cross-theme]").forEach(input=>input.addEventListener("change",updateCoachCrossState));
 $("coachQuestionLibrary")?.addEventListener("click",event=>{const button=event.target.closest("[data-coach-question]");if(!button)return;openCoachAnswer(button.dataset.coachQuestion)});
-$("coachExplorerSearch")?.addEventListener("input",renderCoachExplorer);
+$("coachExplorerSearch")?.addEventListener("input",()=>{if(String($("coachExplorerSearch")?.value||"").trim()){coachExplorerThemesHidden=false;coachExplorerAllExpanded=false}renderCoachExplorer()});
 $("coachAnswerClose")?.addEventListener("click",()=> $("coachAnswerDialog")?.close());
 $("coachAnswerContinue")?.addEventListener("click",()=>{ $("coachAnswerDialog")?.close();setCoachTab("open");requestAnimationFrame(()=>$("coachPromptInput")?.focus({preventScroll:true}))});
 $("coachAnswerDialog")?.addEventListener("click",event=>{if(event.target===$("coachAnswerDialog"))$("coachAnswerDialog").close()});
