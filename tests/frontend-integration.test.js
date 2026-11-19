@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=118&bep=coach-isolation-20261119/);
+  assert.match(html,/styles\.css\?v=119&bep=remove-floating-coach-robot-20261119/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=133&bep=coach-isolation-20261119/);
+  assert.match(html,/app\.js\?v=134&bep=remove-home-robot-20261119/);
   assert.match(html,/offline-storage\.js\?v=7&bep=force-remote-refresh-20261119/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=133&bep=coach-isolation-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=134&bep=remove-home-robot-20261119/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
@@ -313,18 +313,17 @@ test("source and published homepage are one canonical HTML artifact with the pro
 });
 
 
-test("homepage BEP mascot is an accessible Coach shortcut with dynamic states",()=>{
+test("no floating homepage Coach robot remains; Coach stays reachable through navigation",()=>{
  const html=read("index.html");
- assert.match(html,/class="welcome-mascot" data-goto="coach" data-state="idle"/);
- assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
- const app=read("app.js");
- assert.match(app,/function setHomeRobotState\(state,message\)/);
- assert.match(app,/setHomeRobotState\("thinking","J’analyse ta situation…"/);
- assert.match(app,/setHomeRobotState\("advice","J’ai un conseil pour toi"\)/);
- assert.equal(app,read("dist/app.js"));
- assert.equal(read("index.html"),read("dist/index.html"));
- assert.equal(read("styles.css"),read("dist/styles.css"));
- assert.match(read("styles.css"),/bepRobotFloat/);
+ assert.doesNotMatch(html,/welcome-mascot|homeMascotStatus/);
+ assert.match(html,/data-tab="coach"/);
+ assert.match(html,/data-goto="coach">Accéder au Coach BEP/);
+ const css=read("styles.css");
+ assert.doesNotMatch(css,/welcome-mascot|bepRobotFloat/);
+ assert.match(css,/\.bep-advice-dock,\.bep-advice-robot,\.bep-advice-dialog\{display:none!important/);
+ assert.equal(read("app.js"),read("dist/app.js"));
+ assert.equal(html,read("dist/index.html"));
+ assert.equal(css,read("dist/styles.css"));
 });
 
 test("monthly budget visual workspace uses synchronized client assets and published styles",()=>{
@@ -398,7 +397,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v31"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v32"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -425,7 +424,7 @@ test("Google OAuth uses direct navigation and does not create a separate popup",
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.replace(API+"/api/auth/google")'));assert.ok(app.includes("window.location.replace(d.url)"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
  const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/if\(req\.session\?\.user\)return res\.redirect\(303/);assert.match(server,/Cache-Control","no-store, no-cache, must-revalidate, private/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
  for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v31/);assert.doesNotMatch(sw,/oauth-popup/);}
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=133&bep=coach-isolation-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=134&bep=remove-home-robot-20261119/);
 });
 
 
@@ -460,7 +459,7 @@ test("Coach question form always stacks the textarea above the send button on ev
   assert.match(css,/#coachPromptForm\.coach-prompt-form textarea\{[\s\S]*?width:100%!important/);
   assert.match(css,/#coachPromptForm\.coach-prompt-form button[\s\S]*?width:100%!important/);
  }
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=118&bep=coach-isolation-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=119&bep=remove-floating-coach-robot-20261119/);
 });
 
 
@@ -497,7 +496,7 @@ test("Coach mobile layout keeps the robot visible and groups the conversation co
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=118&bep=coach-isolation-20261119/);
+  assert.match(html,/styles\.css\?v=119&bep=remove-floating-coach-robot-20261119/);
   assert.match(html,/class="coach-hero-visual"[\s\S]*?class="coach-hero-bot"/);
  }
 });
@@ -512,7 +511,7 @@ test("Coach robot is not hidden on mobile and the PWA shell cache is refreshed",
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=118&bep=coach-isolation-20261119/);
+  assert.match(html,/styles\.css\?v=119&bep=remove-floating-coach-robot-20261119/);
   assert.match(html,/class="coach-hero-visual"[\s\S]*?class="coach-hero-bot"/);
  }
  for(const file of ["sw.js","dist/sw.js"])assert.match(read(file),/CACHE_NAME="bep-shell-v31"/);
@@ -543,8 +542,8 @@ test("Coach workspace is forcibly hidden outside its dedicated navigation tab",(
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
   assert.match(html,/<section id="coach" class="panel" hidden style="display:none!important">/);
-  assert.match(html,/app\.js\?v=133&bep=coach-isolation-20261119/);
-  assert.match(html,/styles\.css\?v=118&bep=coach-isolation-20261119/);
+  assert.match(html,/app\.js\?v=134&bep=remove-home-robot-20261119/);
+  assert.match(html,/styles\.css\?v=119&bep=remove-floating-coach-robot-20261119/);
  }
  for(const file of ["app.js","dist/app.js"]){
   const app=read(file);
@@ -563,9 +562,9 @@ test("settings page has an explicit visible active state and is included in the 
  const html=read("index.html");
  const css=read("settings.css");
  const sw=read("sw.js");
- assert.ok(html.includes('settings.css?v=5&bep=settings-panel-rendering-20261119'));
+ assert.ok(html.includes('settings.css?v=6&bep=settings-panel-visibility-20261119'));
  assert.ok(html.includes('id="settingsProfileCard"')&&html.includes('id="settingsDataCard"')&&html.includes('id="settingsPrivacyCard"'));
- assert.ok(css.includes('#settings.panel.active:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important;'));
- assert.ok(sw.includes('const CACHE_NAME="bep-shell-v31"'));
+ assert.ok(css.includes('#settings.panel.active:not([hidden]){display:block!important;visibility:visible!important;opacity:1!important;'));
+ assert.ok(sw.includes('const CACHE_NAME="bep-shell-v32"'));
  assert.ok(sw.includes('"./settings.css"'));
 });
