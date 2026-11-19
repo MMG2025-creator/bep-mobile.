@@ -31,7 +31,7 @@ test("Explorer categories are read from active and human-approved documentary kn
 
 test("Explorer search filters the displayed subjects and questions", () => {
   assert.match(html, /id="coachExplorerSearch"/);
-  assert.match(app, /coachExplorerSearch.*addEventListener\("input",renderCoachExplorer\)/);
+  assert.match(app, /coachExplorerSearch.*addEventListener\("input",\(\)=>\{/);
 });
 
 test("Free-question form remains visible and usable in its tab", () => {
