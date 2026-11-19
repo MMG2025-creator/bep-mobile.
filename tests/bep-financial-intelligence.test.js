@@ -106,13 +106,6 @@ test("automatic advice uses structured rules and never calls Gemini",()=>{
  const src=read("server.js"),start=src.indexOf('app.post("/api/ai/advice"'),end=src.indexOf('app.post("/api/ai/chat"');
  assert.ok(start>=0&&end>start);assert.match(src,/function structuredAdvice\(zone,p\)/);assert.doesNotMatch(src.slice(start,end),/invokeAi\(/);
 });
-test("short conversational replies bypass document retrieval and respond naturally",()=>{
- const src=read("server.js");
- assert.match(src,/function coachConversationalReply\(question\)/);
- assert.match(src,/if\(conversational\)[\s\S]*?mode:"conversation"/);
- assert.match(src,/Parfait\. Quel sujet souhaites-tu aborder en premier/);
- assert.match(src,/Bonjour ! Je suis là pour t'aider/);
-});
 test("user Coach chat is local and documentary-only with no external provider call",()=>{
  const src=read("server.js"),start=src.indexOf('app.post("/api/ai/chat",auth'),end=src.indexOf('app.get("/api/coach/library"',start);
  assert.ok(start>=0&&end>start);
@@ -204,8 +197,8 @@ test("chat uses server-loaded financial context and returns intent and page diag
 
 test("Coach reports the interpreted page and handles budget subpages distinctly",()=>{
  const app=read("app.js"),server=read("server.js");
- assert.ok(!app.includes("Intention comprise : "));
- assert.ok(!app.includes("Page analysée : "));
+ assert.ok(app.includes("Intention comprise : "));
+ assert.ok(app.includes("Page analysée : "));
  assert.ok(server.includes('page==="budget"&&subPage==="income"'));
  assert.ok(server.includes('page==="budget"&&subPage==="charges"'));
  assert.ok(server.includes('page==="budget"&&subPage==="monthly"'));

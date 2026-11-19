@@ -1706,6 +1706,31 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 #removeOverdraftBtn:active{background:#fff5f4;}
 
 
+/* BEP Home robot — interactive assistant states */
+.welcome-mascot[data-goto="coach"]{position:absolute;z-index:3;right:5%;top:50%;width:clamp(104px,25vw,158px);height:clamp(132px,31vw,184px);transform:translateY(-50%);display:grid;place-items:center;align-content:center;gap:3px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bepRobotFloat 3.8s ease-in-out infinite}
+.welcome-mascot .welcome-bot{width:100%;height:calc(100% - 24px);overflow:visible;transition:filter .25s ease}
+.welcome-mascot .welcome-bot path,.welcome-mascot .welcome-bot rect,.welcome-mascot .welcome-bot ellipse{transform-box:fill-box}
+.welcome-mascot .home-robot-eyes{transform-origin:center;animation:bepRobotBlink 5s infinite}
+.welcome-mascot .home-robot-mouth{transform-origin:center;transition:transform .2s ease}
+.welcome-mascot .home-robot-arms{transform-origin:center;transition:transform .25s ease}
+.welcome-mascot[data-state="advice"] .home-robot-arms{transform:rotate(-5deg)}
+.welcome-mascot[data-state="thinking"] .home-robot-mouth{transform:scaleX(.55)}
+@keyframes bepRobotBlink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.12)}}
+.welcome-mascot .home-mascot-status{display:block;max-width:100%;padding:4px 8px;border:1px solid rgba(204,246,224,.35);border-radius:999px;background:rgba(2,42,35,.72);color:#e8fff2;font-size:9px;font-weight:700;line-height:1.2;text-align:center;white-space:nowrap;opacity:.9}
+.welcome-mascot:focus-visible{outline:3px solid #f0c85d;outline-offset:5px;border-radius:18px}
+.welcome-mascot[data-state="thinking"] .welcome-bot{filter:drop-shadow(0 0 10px rgba(120,255,200,.8))}
+.welcome-mascot[data-state="thinking"] .home-mascot-status{background:#0b7459;animation:bepRobotStatusPulse 1.1s ease-in-out infinite}
+.welcome-mascot[data-state="thinking"] .welcome-bot path:nth-of-type(3){animation:bepRobotThink 1s ease-in-out infinite}
+.welcome-mascot[data-state="advice"] .welcome-bot{filter:drop-shadow(0 0 12px rgba(240,200,93,.65))}
+.welcome-mascot[data-state="advice"] .home-mascot-status{border-color:#f0c85d;color:#fff4c8}
+.welcome-mascot[data-state="attention"] .home-mascot-status{background:#79502b;color:#fff5dc}
+@keyframes bepRobotFloat{0%,100%{margin-top:0}50%{margin-top:-7px}}
+@keyframes bepRobotThink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bepRobotStatusPulse{0%,100%{opacity:.75}50%{opacity:1}}
+@media(max-width:430px){.welcome-mascot[data-goto="coach"]{right:2%;width:30%;height:150px}.welcome-mascot .home-mascot-status{font-size:8px;padding:3px 6px}.welcome .welcome-copy{max-width:72%}}
+@media(prefers-reduced-motion:reduce){.welcome-mascot[data-goto="coach"],.welcome-mascot[data-state="thinking"] .home-mascot-status{animation:none!important}}
+
+
 /* Coach BEP — direction artistique dynamique 2026 */
 .coach-workspace{gap:16px}
 .coach-hero{
@@ -2076,7 +2101,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-hero{min-height:0!important;padding:16px 17px 18px!important;border-radius:18px!important}
  .coach-hero h2{margin:9px 0 5px!important;font-size:24px!important}
  .coach-hero-copy>p{font-size:12px!important;line-height:1.4!important}
- .coach-hero-bottom,.coach-hero-assurance{display:none!important}
+ .coach-hero-visual,.coach-hero-bot,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
  .coach-tabs{margin-top:2px!important}
  .coach-objectives{margin-top:3px!important}
  .coach-conversation{margin-top:4px!important}
@@ -2085,342 +2110,3 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-chat-log{max-height:420px!important}
  .coach-privacy{margin-top:12px!important;font-size:11px!important}
 }
-
-
-/* Coach BEP — équilibre visuel mobile, robot conservé et dialogue rapproché. */
-@media(max-width:600px){
-  .coach-workspace{gap:8px!important;padding:12px 10px!important}
-  .coach-hero{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) 108px!important;
-    align-items:center!important;
-    gap:4px!important;
-    min-height:0!important;
-    padding:17px 14px 43px!important;
-    border-radius:20px!important;
-  }
-  .coach-hero-copy{min-width:0!important;max-width:none!important}
-  .coach-hero-topline{display:flex!important;flex-wrap:wrap!important;font-size:8px!important;letter-spacing:.9px!important;gap:5px!important}
-  .coach-hero-version{margin-left:auto!important;font-size:7px!important;padding:4px 6px!important}
-  .coach-hero h2{margin:13px 0 6px!important;font-size:clamp(23px,6vw,29px)!important}
-  .coach-hero-copy>p{font-size:12px!important;line-height:1.45!important}
-  .coach-hero-visual{display:grid!important;min-height:116px!important;overflow:visible!important}
-  .coach-hero-bot{display:block!important;width:108px!important;max-width:none!important}
-  .coach-orbit-one{width:105px!important;height:84px!important}
-  .coach-orbit-two{width:124px!important;height:98px!important}
-  .coach-spark-one{right:0!important;top:8%!important}
-  .coach-spark-two{left:0!important;bottom:18%!important}
-  .coach-visual-caption{right:-5px!important;bottom:-3px!important;padding:5px 7px!important;font-size:8px!important}
-  .coach-hero-bottom{display:none!important}
-  .coach-hero-assurance{display:none!important}
-  .coach-tabs{margin:0!important;padding:4px!important}
-  #coachPanelOpen{margin:0!important;padding:0!important}
-  .coach-objectives{margin:7px 0 8px!important;padding:11px 12px!important;gap:7px!important}
-  .coach-objectives-heading h3{font-size:14px!important;line-height:1.25!important}
-  .coach-objectives-heading p:last-child{font-size:11px!important;line-height:1.35!important}
-  #coachChooseObjectives{min-height:38px!important}
-  .coach-conversation{
-    margin:0!important;
-    padding:12px 11px 10px!important;
-    gap:9px!important;
-    border:1px solid #e0ece5!important;
-    border-radius:17px!important;
-    background:#fbfdfb!important;
-  }
-  .coach-conversation-heading{align-items:center!important;flex-direction:row!important;justify-content:space-between!important;gap:7px!important}
-  .coach-conversation-heading h3{font-size:14px!important;line-height:1.25!important}
-  .coach-conversation-status{font-size:8px!important;padding:5px 7px!important;white-space:normal!important;text-align:center!important}
-  .coach-chat-log{min-height:0!important;max-height:340px!important;padding:2px 0 5px!important;gap:7px!important}
-  .coach-message{max-width:100%!important;padding:10px 12px!important;font-size:13px!important}
-  #coachPromptForm.coach-prompt-form{
-    margin:0!important;
-    padding:9px 0 0!important;
-    border-top:1px solid #e5eee8!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:8px!important;
-  }
-  .coach-workspace .coach-prompt-form textarea{
-    width:100%!important;
-    min-height:64px!important;
-    max-height:120px!important;
-    padding:11px 12px!important;
-    border-radius:12px!important;
-    font-size:13px!important;
-  }
-  .coach-workspace .coach-prompt-form button,
-  .coach-workspace .coach-prompt-form button.primary{
-    width:100%!important;
-    min-width:0!important;
-    min-height:46px!important;
-    padding:9px 12px!important;
-    font-size:14px!important;
-  }
-  .coach-privacy{margin-top:9px!important;padding:8px 10px!important;font-size:10px!important;line-height:1.4!important}
-}
-@media(max-width:390px){
-  .coach-hero{grid-template-columns:minmax(0,1fr) 88px!important;padding-left:12px!important;padding-right:10px!important}
-  .coach-hero-bot{width:92px!important}
-  .coach-orbit-one{width:91px!important;height:75px!important}
-  .coach-orbit-two{width:106px!important;height:86px!important}
-  .coach-hero-topline{font-size:7px!important}
-  .coach-conversation-heading h3{font-size:13px!important}
-}
-
-
-/* Coach BEP — robot visible sur mobile, sans dépendre d'un override tardif. */
-@media(max-width:600px){
-  .coach-hero-visual{display:grid!important;visibility:visible!important;opacity:1!important;min-height:116px!important}
-  .coach-hero-visual .coach-hero-bot{display:block!important;visibility:visible!important;opacity:1!important;width:108px!important;height:auto!important}
-}
-@media(max-width:390px){
-  .coach-hero-visual .coach-hero-bot{width:92px!important}
-}
-
-
-/* Coach BEP — hiérarchie ergonomique : accueil compact, échange prioritaire. */
-.coach-workspace{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-.coach-workspace .coach-hero{
-  margin:0!important;
-  padding:20px 22px!important;
-  min-height:0!important;
-  border-radius:22px!important;
-  align-items:center!important;
-}
-.coach-workspace .coach-hero-copy h2{
-  margin:7px 0 5px!important;
-  font-size:clamp(21px,3vw,29px)!important;
-  line-height:1.12!important;
-}
-.coach-workspace .coach-hero-copy>p{
-  max-width:38ch;
-  margin:0!important;
-  line-height:1.45!important;
-}
-.coach-workspace .coach-hero-bottom{
-  margin-top:10px!important;
-  padding-top:9px!important;
-}
-.coach-workspace .coach-tabs{
-  margin:0!important;
-}
-.coach-workspace #coachPanelOpen{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.coach-workspace .coach-objectives{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:14px!important;
-  margin:0!important;
-  padding:12px 15px!important;
-  border-radius:15px!important;
-}
-.coach-workspace .coach-objectives-heading{
-  min-width:0;
-  flex:1 1 auto;
-}
-.coach-workspace .coach-objectives-heading h3{
-  margin:2px 0 3px!important;
-  font-size:15px!important;
-}
-.coach-workspace .coach-objectives-heading p:last-child{
-  margin:0!important;
-  font-size:12px!important;
-}
-.coach-workspace #coachChooseObjectives{
-  flex:0 0 auto;
-  min-height:38px!important;
-  padding:8px 13px!important;
-  white-space:nowrap;
-}
-.coach-workspace .coach-conversation{
-  display:flex;
-  flex-direction:column;
-  gap:12px!important;
-  margin:0!important;
-  padding:18px!important;
-  border:1px solid #dce9e1!important;
-  border-radius:20px!important;
-  background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%)!important;
-  box-shadow:0 8px 24px rgba(16,61,52,.055);
-}
-.coach-workspace .coach-conversation-heading{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.coach-workspace .coach-conversation-heading h3{
-  margin:2px 0 0!important;
-  font-size:18px!important;
-}
-.coach-workspace .coach-chat-log{
-  min-height:250px!important;
-  max-height:460px!important;
-  overflow-y:auto!important;
-  overscroll-behavior:contain;
-  padding:8px 3px 12px!important;
-}
-.coach-workspace #coachPromptForm.coach-prompt-form{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:9px!important;
-  margin:0!important;
-  padding-top:13px!important;
-  border-top:1px solid #e5eee8!important;
-}
-.coach-workspace .coach-prompt-form textarea{
-  width:100%!important;
-  min-height:82px!important;
-  max-height:180px!important;
-  resize:vertical;
-  padding:13px 14px!important;
-  border:1px solid #d5e4da!important;
-  border-radius:13px!important;
-  background:#fff!important;
-  font:inherit;
-  line-height:1.45;
-}
-.coach-workspace .coach-prompt-form textarea:focus{
-  outline:3px solid rgba(35,134,83,.13);
-  border-color:#238653!important;
-}
-.coach-workspace .coach-prompt-form button{
-  justify-self:end;
-  width:auto!important;
-  min-width:190px;
-  min-height:44px!important;
-  border-radius:12px!important;
-}
-.coach-workspace .coach-info-panel{
-  margin-top:0!important;
-}
-@media(max-width:600px){
-  .coach-workspace{gap:10px}
-  .coach-workspace .coach-hero{
-    grid-template-columns:minmax(0,1fr) 104px!important;
-    gap:6px!important;
-    padding:13px 14px!important;
-    border-radius:17px!important;
-  }
-  .coach-workspace .coach-hero-visual{
-    min-height:104px!important;
-  }
-  .coach-workspace .coach-hero-visual .coach-hero-bot{
-    width:100px!important;
-  }
-  .coach-workspace .coach-hero-bottom{display:none!important}
-  .coach-workspace .coach-tabs{padding:4px!important}
-  .coach-workspace #coachPanelOpen{gap:9px}
-  .coach-workspace .coach-objectives{
-    flex-direction:row!important;
-    align-items:center!important;
-    gap:8px!important;
-    padding:10px 11px!important;
-  }
-  .coach-workspace .coach-objectives-heading h3{font-size:13px!important}
-  .coach-workspace .coach-objectives-heading p:last-child{font-size:10px!important}
-  .coach-workspace #coachChooseObjectives{
-    min-height:36px!important;
-    padding:7px 9px!important;
-    font-size:11px!important;
-  }
-  .coach-workspace .coach-conversation{
-    gap:9px!important;
-    padding:13px 11px 11px!important;
-    border-radius:17px!important;
-  }
-  .coach-workspace .coach-conversation-heading h3{font-size:15px!important}
-  .coach-workspace .coach-conversation-status{
-    max-width:112px;
-    font-size:9px!important;
-    line-height:1.25;
-    text-align:center;
-  }
-  .coach-workspace .coach-chat-log{
-    min-height:220px!important;
-    max-height:42vh!important;
-    padding:4px 0 8px!important;
-  }
-  .coach-workspace #coachPromptForm.coach-prompt-form{
-    gap:8px!important;
-    padding-top:10px!important;
-  }
-  .coach-workspace .coach-prompt-form textarea{
-    min-height:72px!important;
-    max-height:140px!important;
-    padding:11px 12px!important;
-    font-size:14px!important;
-  }
-  .coach-workspace .coach-prompt-form button{
-    justify-self:stretch;
-    width:100%!important;
-    min-width:0!important;
-    min-height:44px!important;
-  }
-}
-@media(max-width:390px){
-  .coach-workspace .coach-hero{grid-template-columns:minmax(0,1fr) 88px!important}
-  .coach-workspace .coach-hero-visual .coach-hero-bot{width:88px!important}
-  .coach-workspace .coach-objectives{align-items:flex-start!important}
-  .coach-workspace #coachChooseObjectives{white-space:normal}
-}
-
-
-/* Coach BEP — corriger l’écrasement du texte des objectifs sur mobile. */
-@media(max-width:600px){
-  .coach-workspace .coach-objectives{
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    justify-content:flex-start!important;
-    gap:9px!important;
-  }
-  .coach-workspace .coach-objectives-heading{
-    display:block!important;
-    width:100%!important;
-    min-width:0!important;
-    flex:0 0 auto!important;
-  }
-  .coach-workspace .coach-objectives-heading h3,
-  .coach-workspace .coach-objectives-heading p:last-child{
-    max-width:none!important;
-    overflow-wrap:break-word!important;
-    word-break:normal!important;
-    white-space:normal!important;
-  }
-  .coach-workspace #coachChooseObjectives{
-    align-self:flex-start!important;
-    justify-self:start!important;
-    width:auto!important;
-    max-width:100%!important;
-    min-width:0!important;
-    flex:0 0 auto!important;
-    white-space:normal!important;
-    text-align:center!important;
-  }
-}
-
-
-/* Hard isolation: the Coach workspace is rendered only on its dedicated tab. */
-#coach[hidden],#coach.panel:not(.active){display:none!important;visibility:hidden!important;}
-#coach.panel.active:not([hidden]){visibility:visible;}
-
-
-/* Retire définitivement les anciens assistants flottants hors du Coach dédié. */
-.bep-advice-dock,.bep-advice-robot,.bep-advice-dialog{display:none!important;visibility:hidden!important;pointer-events:none!important}
-
-
-/* Isolation stricte : aucun composant du Coach hors de son onglet dédié. */
-body:not(.bep-coach-active) #coach,
-body:not(.bep-coach-active) #coach[hidden],
-body:not(.bep-coach-active) #coach.panel,
-body:not(.bep-coach-active) #coach.panel.active{display:none!important;visibility:hidden!important;pointer-events:none!important}
-body.bep-coach-active #coach.panel.active:not([hidden]){display:block!important;visibility:visible!important;pointer-events:auto!important}
