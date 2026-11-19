@@ -345,7 +345,7 @@ app.use("/api/admin/bep-coach/library",createCoachKnowledgeAdminRouter({pool,req
  try{
   const query=String(req.query.q||"").trim().toLocaleLowerCase("fr").slice(0,160);
   const category=String(req.query.category||"all");
-  const allowedCategories=new Set(["all","budget","spending","savings","debt","behavior","income","planning","general"]);
+  const allowedCategories=new Set(["all","budget","spending","savings","debt","behavior","income","planning","general","data_quality"]);
   if(!allowedCategories.has(category))return res.status(400).json({error:"INVALID_LIBRARY_CATEGORY"});
   const [base,overlays]=await Promise.all([
    pool.query("SELECT slug,category,title,content,keywords,tags,source_name,source_url,evidence_level,version,active,updated_at FROM bep_financial_knowledge WHERE active=TRUE ORDER BY category,slug LIMIT 1000"),
@@ -362,7 +362,7 @@ app.use("/api/admin/bep-coach/library",createCoachKnowledgeAdminRouter({pool,req
    }
    if(item.active)merged.set(item.slug,{...item,version:Number(item.version)||1});else merged.delete(item.slug);
   }
-  const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
+  const all=[...merged.values()].filter(item=>(category==="all"||item.category===category)&&(!query||[item.title,item.content,item.category,item.source_name,item.source_url,...(Array.isArray(item.keywords)?item.keywords:[]),...(Array.isArray(item.tags)?item.tags:[])].join(" ").toLocaleLowerCase("fr").includes(query))).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))||String(a.title).localeCompare(String(b.title),"fr"));
   res.setHeader("Cache-Control","no-store");
   res.json({items:all.slice(0,100).map(item=>({slug:item.slug,category:item.category,title:item.title,content:item.content,keywords:item.keywords||[],tags:item.tags||[],source_name:item.source_name,source_url:item.source_url,evidence_level:item.evidence_level,version:Number(item.version)||1,updated_at:item.updated_at||null})),total:all.length,limit:100,truncated:all.length>100,readOnly:false,editingEnabled:true,versionHistory:true});
  }catch(e){console.error("BEP admin Coach library read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_ADMIN_LIBRARY_UNAVAILABLE"})}
