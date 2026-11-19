@@ -31,7 +31,7 @@ test("Explorer categories are read from active and human-approved documentary kn
 
 test("Explorer search filters the displayed subjects and questions", () => {
   assert.match(html, /id="coachExplorerSearch"/);
-  assert.match(app, /coachExplorerSearch.*addEventListener\("input",renderCoachExplorer\)/);
+  assert.match(app, /coachExplorerSearch.*addEventListener\("input",\(\)=>\{/);
 });
 
 test("Free-question form remains visible and usable in its tab", () => {
@@ -57,4 +57,12 @@ test("Explorer themes stay collapsed by default; Tout fermer hides every theme b
   assert.match(app, /if\(allOpen\)\{coachExplorerThemesHidden=true/);
   assert.match(app, /if\(coachExplorerThemesHidden\)\{coachExplorerThemesHidden=false/);
   assert.match(app, /Clique sur une thématique pour afficher ses sujets/);
+});
+
+test("Explorer starts with themes hidden and reveals them only after a filter, show-all, search, or expand-all action", () => {
+  assert.match(app, /coachExplorerThemesHidden=true/);
+  assert.match(app, /coachExplorerThemesHidden=false;coachExplorerAllExpanded=false;renderCoachExplorer\(\)/);
+  assert.match(app, /coachExplorerThemesHidden=false;coachExplorerAllExpanded=false;document\.querySelectorAll/);
+  assert.match(app, /coachExplorerSearch.*addEventListener\("input",\(\)=>\{if\(String\(/);
+  assert.match(app, /if\(coachExplorerThemesHidden\)\{coachExplorerThemesHidden=false;coachExplorerAllExpanded=true;renderCoachExplorer\(\);return\}/);
 });
