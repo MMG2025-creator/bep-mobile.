@@ -23,10 +23,10 @@ test("Coach question opens a documentary answer dialog, not a direct tab switch"
 });
 
 test("Explorer categories are read from active and human-approved documentary knowledge", () => {
-  assert.match(server, /api\\/coach\\/categories/);
-  assert.match(server, /WHERE active=TRUE ORDER BY category,slug/);
-  assert.match(server, /review_status=\\'accepted\\'/);
-  assert.match(app, /coachExplorerThemes=data\\.categories\\.map/);
+  assert.ok(server.includes('app.get("/api/coach/categories"'));
+  assert.ok(server.includes("WHERE active=TRUE ORDER BY category,slug"));
+  assert.ok(server.includes("review_status='accepted'"));
+  assert.ok(app.includes("coachExplorerThemes=data.categories.map"));
 });
 
 test("Explorer search filters the displayed subjects and questions", () => {
