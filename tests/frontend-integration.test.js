@@ -462,3 +462,20 @@ test("Coach question form always stacks the textarea above the send button on ev
  }
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=112&bep=coach-form-stacked-20261119/);
 });
+
+
+test("Coach free conversation shows objectives first, then chat, then the question form",()=>{
+ for(const file of ["index.html","dist/index.html"]){
+  const html=read(file);
+  const panel=html.slice(html.indexOf('id="coachPanelOpen"'),html.indexOf('id="coachPanelExplore"'));
+  assert.ok(panel.indexOf('class="coach-objectives"')<panel.indexOf('class="coach-conversation"'));
+  assert.ok(panel.indexOf('id="coachChatLog"')<panel.indexOf('id="coachPromptForm"'));
+  assert.match(html,/coach-info-panel[\\s\\S]*?<\\/details>\\s*<div class="coach-privacy"/);
+  assert.ok(!panel.includes('id="coachPromptForm"')||panel.indexOf('id="coachChatLog"')<panel.indexOf('id="coachPromptForm"'));
+ }
+ for(const file of ["styles.css","dist/styles.css"]){
+  const css=read(file);
+  assert.match(css,/\.coach-objectives\\{[\\s\\S]*?padding:10px 12px!important/);
+  assert.match(css,/\.coach-conversation\\{[\\s\\S]*?margin-top:4px!important/);
+ }
+});
