@@ -994,14 +994,14 @@ function currentCoachPageContext(){
  return {page:activePage,label:labels[activePage],subPage:module||null};
 }
 async function submitCoachQuestion(question){
- const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);
+ const value=String(question||"").trim();if(!value)return;addCoachMessage("user",value);setHomeRobotState("thinking","J’analyse ta situation…");
  if(window.bepSignedIn&&(!aiConnection.mode||aiConnection.mode==="unavailable"))await loadAiConnection();
  if(window.bepSignedIn&&["bep","structured"].includes(aiConnection?.mode)){
   addCoachMessage("coach",aiConnection.mode==="bep"?"Le Coach BEP analyse ta demande…":"Le moteur financier BEP analyse ta demande…");const log=$("coachChatLog"),last=log?.lastElementChild;
   try{
    const r=await fetch(API+"/api/ai/chat",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:value,financialContext:{...currentFinancialContext(),pageContext:currentCoachPageContext()},coachProfile:state.coachProfile||[]})}),d=await r.json();
    if(!r.ok)throw Error(d.message||"IA indisponible.");
-   const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);
+   const p=last?.querySelector("p");if(p)p.textContent=d.answer;else addCoachMessage("coach",d.answer);setHomeRobotState("advice","J’ai un conseil pour toi");
    if(d.intelligence){
     const trace=[];trace.push(d.intelligence.enabled?"RAG actif":"RAG désactivé");
     if(d.intelligence.intent)trace.push("Intention comprise : "+d.intelligence.intent);
@@ -1013,11 +1013,11 @@ async function submitCoachQuestion(question){
     const detail=document.createElement("small");detail.className="coach-source-trace";detail.textContent=trace.join(" · ");last?.appendChild(detail);
    }
    
-  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message}
+  }catch(e){const p=last?.querySelector("p");if(p)p.textContent="Le Coach documentaire BEP n’a pas pu accéder à ses connaissances locales. Aucun fournisseur externe n’a été sollicité. Détail : "+e.message;setHomeRobotState("attention","Je rencontre une difficulté")}
  }else if(!window.bepSignedIn||aiConnection?.mode==="structured"){
-  addCoachMessage("coach",coachReply(value));
+  addCoachMessage("coach",coachReply(value));setHomeRobotState("advice","J’ai un conseil pour toi");
  }else{
-  addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");
+  addCoachMessage("coach","Le service IA BEP est momentanément injoignable. Aucune réponse générative n’a été produite. Réessaie après vérification de la connexion.");setHomeRobotState("attention","Je rencontre une difficulté");
  }
 }
 $("coachPromptForm").onsubmit=e=>{e.preventDefault();const input=$("coachPromptInput"),value=input.value.trim();if(!value)return;if(!(state.coachProfile||[]).some(key=>Object.prototype.hasOwnProperty.call(COACH_THEMES,key))){const summary=$("coachObjectivesSummary");if(summary)summary.textContent="Veuillez choisir des objectifs avant de commencer la conversation.";if(!$("coachObjectivesDialog")?.open)$("coachObjectivesDialog")?.showModal();return}submitCoachQuestion(value);input.value="";input.focus()};
