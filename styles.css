@@ -2101,7 +2101,10 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-hero{min-height:0!important;padding:16px 17px 18px!important;border-radius:18px!important}
  .coach-hero h2{margin:9px 0 5px!important;font-size:24px!important}
  .coach-hero-copy>p{font-size:12px!important;line-height:1.4!important}
- .coach-hero-visual,.coach-hero-bot,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
+ .coach-hero-bottom,.coach-hero-assurance{display:none!important}
+ .coach-hero-visual{display:grid!important;min-height:112px;align-self:center;overflow:visible}
+ .coach-hero-bot{display:block!important;width:104px;max-width:100%;height:auto;animation:coachFloat 3.8s ease-in-out infinite;transform-origin:50% 75%}
+ .coach-hero-visual .coach-spark{animation:coachSpark 2.4s ease-in-out infinite}
  .coach-tabs{margin-top:2px!important}
  .coach-objectives{margin-top:3px!important}
  .coach-conversation{margin-top:4px!important}
