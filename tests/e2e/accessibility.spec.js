@@ -17,7 +17,8 @@ test('les champs de formulaire ont un nom accessible', async ({ page }) => {
 test('cliquer sur le texte d’une ligne active sa case à cocher', async ({ page }) => {
   const details = page.locator('#budgetCheckupDetails');
   await expect(details).toHaveCount(1);
-  await details.locator('summary').click();
+  await details.evaluate((element) => { element.open = true; });
+  await expect(details).toHaveAttribute('open', '');
   const row = details.locator('.budget-checkup-row').first();
   const checkbox = row.locator('input[type="checkbox"]');
   await expect(checkbox).not.toBeChecked();
