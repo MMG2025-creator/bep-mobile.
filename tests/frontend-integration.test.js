@@ -319,8 +319,8 @@ test("homepage BEP mascot is an accessible Coach shortcut with supported status 
  assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
  const app=read("app.js");
  assert.match(app,/function setHomeRobotState\(state,message\)/);
- assert.match(app,/setHomeRobotState\("thinking","J’analyse ta situation…"/);
- assert.match(app,/setHomeRobotState\("advice","J’ai un conseil pour toi"\)/);
+ assert.match(app,/robot\.dataset\.state=\["idle","thinking","advice","attention"\]\.includes\(state\)\?state:"idle"/);
+ assert.match(app,/if\(label&&message\)label\.textContent=String\(message\)\.slice\(0,64\)/);
  assert.equal(app,read("dist/app.js"));
  assert.equal(read("index.html"),read("dist/index.html"));
  assert.equal(read("styles.css"),read("dist/styles.css"));
