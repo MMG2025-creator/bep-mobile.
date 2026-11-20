@@ -32,7 +32,9 @@ test("source and published service workers use the same cache and include offlin
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
  assert.match(source,/bep-shell-v29/);
- assert.match(source,/await cache.addAll\(APP_SHELL\)/);\n assert.match(source,/BEP_SKIP_WAITING/);\n assert.match(source,/self\\.skipWaiting\\(\\)/);
+ assert.match(source,/await cache.addAll\(APP_SHELL\)/);
+ assert.match(source,/BEP_SKIP_WAITING/);
+ assert.match(source,/self\.skipWaiting\(\)/);
  assert.match(source,/key.startsWith\("bep-"\)/);
  assert.match(source,/\.\/settings\.css/);
  assert.match(source,/fetch\(request,\{cache:"no-store"\}\)/);
