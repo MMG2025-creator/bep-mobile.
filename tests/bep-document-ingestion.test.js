@@ -45,3 +45,28 @@ test("batch ingestion isolates source failures and continues processing",async()
  assert.equal(result.failed,1);
  assert.equal(result.candidatesCreated,1);
 });
+
+test("HTTP 403 is a permanent collection failure and never creates a candidate",async()=>{
+ const writes=[];
+ const pool={query:async(sql,params)=>{if(sql.includes("INSERT INTO bep_knowledge_candidates"))writes.push(params);return{rowCount:0,rows:[]}}};
+ const fetchPage=async()=>{throw new Error("SOURCE_HTTP_403")};
+ await assert.rejects(()=>ingestDocumentUrl({pool,url:"https://blocked.example.org/guide",category:"general",fetchPage}),error=>error.message==="SOURCE_HTTP_403");
+ assert.equal(writes.length,0);
+});
+
+test("HTTP 404 is not treated as extractable content and never creates a candidate",async()=>{
+ const writes=[];
+ const pool={query:async(sql,params)=>{if(sql.includes("INSERT INTO bep_knowledge_candidates"))writes.push(params);return{rowCount:0,rows:[]}}};
+ const fetchPage=async()=>{throw new Error("SOURCE_HTTP_404")};
+ await assert.rejects(()=>ingestDocumentUrl({pool,url:"https://missing.example.org/guide",category:"general",fetchPage}),error=>error.message==="SOURCE_HTTP_404");
+ assert.equal(writes.length,0);
+});
+
+test("deep collection keeps partial pages explicit and does not hide blocked-page warnings",async()=>{
+ const pool={query:async(sql)=>sql.includes("INSERT INTO bep_knowledge_candidates")?{rowCount:1,rows:[{id:33}]}:{rowCount:1,rows:[]}};
+ const fetchPage=async(url)=>{if(url.endsWith("/blocked"))throw new Error("SOURCE_HTTP_403");return{url,title:"Guide public",text:"Contenu institutionnel suffisamment long. ".repeat(8),links:["https://example.org/blocked"]}};
+ const result=await ingestDocumentUrl({pool,url:"https://example.org/start",mode:"deep",category:"general",fetchPage});
+ assert.equal(result.candidatesCreated,1);
+ assert.equal(result.warnings.length,1);
+ assert.equal(result.warnings[0].code,"SOURCE_HTTP_403");
+});
