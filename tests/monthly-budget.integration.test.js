@@ -261,7 +261,9 @@ if (!databaseUrl) {
       assert.ok(audit.rows.some(x => x.action === "created"));
       assert.ok(audit.rows.some(x => x.action === "updated"));
       assert.ok(audit.rows.some(x => x.action === "closed"));
-      assert.ok(audit.rows.some(x => x.action === "reopened"));\n      assert.ok(audit.rows.some(x => x.action === "deleted"));\n      assert.ok(audit.rows.some(x => x.action === "restored"));
+      assert.ok(audit.rows.some(x => x.action === "reopened"));
+      assert.ok(audit.rows.some(x => x.action === "deleted"));
+      assert.ok(audit.rows.some(x => x.action === "restored"));
     });
   });
 
