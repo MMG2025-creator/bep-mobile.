@@ -6,6 +6,7 @@ Date : 20 novembre 2026
 - Contrôle en lecture seule des références Git, pull requests, services Render et déploiements.
 - Inventaire initial : 363 branches, SHA de `main` = `ec4f073e8c00a8b820b270bf308109037ec42cb2`.
 - Une branche de sauvegarde additive a ensuite été créée : `backup/pre-cleanup-main-20261120`, pointant exactement sur ce SHA. Sa référence a été relue et vérifiée.
+- Après cette création, le dépôt compte 364 branches : les 363 références de l'inventaire initial, plus cette sauvegarde.
 - Aucun nettoyage, déplacement de ref, fusion, déploiement, changement de configuration ou accès aux données applicatives n'a été effectué.
 
 ## Classification initiale des 363 branches
@@ -31,6 +32,7 @@ Date : 20 novembre 2026
 - `main` : `ec4f073e8c00a8b820b270bf308109037ec42cb2`.
 - Sauvegarde pré-nettoyage : `backup/pre-cleanup-main-20261120` → même SHA exact.
 - Référence V1.5 documentée dans Notion : `release/BEP-v1.5-pre-prod-v2-20261114` et `backup/BEP-v1.5-pre-prod-v2-20261114` → `320f57a9032b702839ac8f11ccfe78c68290618d`. Cette référence documentaire V1.5 est un jalon historique, pas le HEAD actuel de production.
+- La page Notion « Référence officielle de production » contient une instruction de référence V1.5 stricte, alors que Render montre le frontend LIVE sur le SHA actuel de `main` (19 novembre). Cette divergence documentaire doit être arbitrée avant de fixer une cible de restauration ou une base de travail.
 - Inventaire initial : `audit/pre-cleanup-inventory-20261120.json`.
 - Pull requests ouvertes relevées : 40. Toute branche liée à une PR ouverte est exclue de tout lot de nettoyage jusqu'à clôture et vérification de l'état fusionné/abandonné.
 - L'inventaire de branches indique `protected=false` pour les 363 refs inspectées et l'API Rulesets retourne une liste vide. La lecture du endpoint classique de protection de branche a été refusée par l'intégration (403) : la configuration complète des règles de protection n'est donc pas certifiée par ce contrôle.
