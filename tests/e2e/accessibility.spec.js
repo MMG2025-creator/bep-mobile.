@@ -127,11 +127,13 @@ test('le robot du Coach reste visible et cadré sur mobile et desktop', async ({
 });
 
 test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile et desktop', async ({ page }) => {
-  await page.route('https://bep-v2-api.onrender.com/api/budgets/months', route => route.fulfill({
+  await page.route('**/api/auth/status', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'playwright-budget-user', email: 'budget-test@example.invalid' } }) }));
+  await page.route('**/api/data', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ payload: {} }) }));
+  await page.route('**/api/budgets/months', route => route.fulfill({
     status: 200, contentType: 'application/json',
     body: JSON.stringify({ months: [{ monthKey: '2026-11', status: 'open', version: 1 }] })
   }));
-  await page.route('https://bep-v2-api.onrender.com/api/budgets/months/2026-11?**', route => route.fulfill({
+  await page.route('**/api/budgets/months/2026-11', route => route.fulfill({
     status: 200, contentType: 'application/json',
     body: JSON.stringify({ budget: { monthKey: '2026-11', status: 'open', version: 1, items: [
       { itemType: 'income', label: 'Salaire', plannedAmount: 3000 },
@@ -140,15 +142,14 @@ test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile
       { itemType: 'savings', label: 'Épargne', plannedAmount: 300 }
     ] } })
   }));
-  await page.route('https://bep-v2-api.onrender.com/api/budgets/months/2026-11/actuals?**', route => route.fulfill({
+  await page.route('**/api/budgets/months/2026-11/actuals**', route => route.fulfill({
     status: 200, contentType: 'application/json',
     body: JSON.stringify({ expenses: [], actualExpenseTotal: '0.00', count: 0 })
   }));
+  // Reload after installing all routes so the real startup auth flow is deterministic.
+  await page.reload({ waitUntil: 'load' });
+  await expect.poll(() => page.evaluate(() => window.bepSignedIn)).toBe(true);
   await page.locator('#authGate').evaluate((element) => element.remove());
-  await page.evaluate(() => {
-    window.bepSignedIn = true;
-    window.dispatchEvent(new Event('bep:auth-ready'));
-  });
   await expect(page.locator('#monthlyBudgetWorkspace')).toBeVisible({ timeout: 10000 });
   await page.locator('.tab[data-tab="budget"]').click();
   await page.locator('[data-budget-module="monthly"]').click();
