@@ -1,0 +1,5394 @@
+{
+  "generated_at": "2026-11-20",
+  "repository": "MMG2025-creator/bep-mobile.",
+  "main_sha": "ec4f073e8c00a8b820b270bf308109037ec42cb2",
+  "branch_count": 365,
+  "open_pull_requests": [
+    {
+      "number": 288,
+      "head": "fix/monthly-home-financial-snapshot",
+      "sha": "65fe1bedd494877c9d6174068c228eb525047bff",
+      "title": "Fix homepage financial snapshot from monthly budget",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/288"
+    },
+    {
+      "number": 287,
+      "head": "fix/coach-mobile-navigation-20261119",
+      "sha": "2a7003f77f0325cfb18300bc63e4fa2ef5bbe618",
+      "title": "fix(coach): simplifier la navigation mobile",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/287"
+    },
+    {
+      "number": 285,
+      "head": "test/gemini-agent-triggered-validation-20261118",
+      "sha": "a6b18f687a89818bb9deb5ab0e0f87b68b5e9da5",
+      "title": "test: validate Gemini Agent telemetry isolation",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/285"
+    },
+    {
+      "number": 275,
+      "head": "fix/admin-structured-knowledge-batch-import",
+      "sha": "977c9c9777bdb228c5074a27b20f932e5f6904a5",
+      "title": "Fix import of institutional knowledge proposals",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/275"
+    },
+    {
+      "number": 270,
+      "head": "fix/coach-collector-http-errors-20261118",
+      "sha": "9b29581aabb3f6ea95c4e1aac459e8cac4e3827a",
+      "title": "Coach BEP — fiabiliser les erreurs de collecte HTTP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/270"
+    },
+    {
+      "number": 268,
+      "head": "feature/coach-account-first-response",
+      "sha": "7d549cce0e23a8608052cc1bd7d3ba5a2d543031",
+      "title": "Coach BEP — analyse les comptes avant le RAG",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/268"
+    },
+    {
+      "number": 267,
+      "head": "security/phase-1-granular-admin-audit",
+      "sha": "013ae945c6afe1651e853b23c9bba450631b434b",
+      "title": "Sécuriser les permissions administrateur et les validations documentaires",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/267"
+    },
+    {
+      "number": 257,
+      "head": "feat/bep-manual-knowledge-import",
+      "sha": "e45cc026c5a1b160a47a2f82ba9baa1ecb888c1e",
+      "title": "BEP — import manuel sécurisé des fiches Coach",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/257"
+    },
+    {
+      "number": 256,
+      "head": "feat/persistent-manual-ingestion-queue-20261117",
+      "sha": "a57fe298a3069e4421c71bb823c9d1d40147c572",
+      "title": "Add persistent, consent-gated manual ingestion retries",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/256"
+    },
+    {
+      "number": 245,
+      "head": "feat/gemini-admin-console",
+      "sha": "95543b2e4363e27694fa213fcc7dea2e32342afc",
+      "title": "Build Gemini admin console and isolate execution in Worker",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/245"
+    },
+    {
+      "number": 235,
+      "head": "fix/admin-api-worker-separation",
+      "sha": "2e75557a2621d76e26fc8c80296821297a61f811",
+      "title": "Decouple BEP admin queue API from worker runtime",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/235"
+    },
+    {
+      "number": 234,
+      "head": "research/coach-sources-enrichment-20261116",
+      "sha": "b8437746a01e22b2ca191ce3d198bf65ac0aefd4",
+      "title": "docs(coach): enrichir les sources financières officielles",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/234"
+    },
+    {
+      "number": 223,
+      "head": "fix/overdraft-delete-no-validity-20261115",
+      "sha": "0092edc4287de79dd4863cf02f2b00c642b7b7db",
+      "title": "Allow deleting overdraft authorization and remove validity date",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/223"
+    },
+    {
+      "number": 218,
+      "head": "fix/mobile-footer-spacing-20261115",
+      "sha": "cdf735de16db6e9511ea37b5c372633d9c4361a0",
+      "title": "Réduire l’espace du pied de page sur mobile",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/218"
+    },
+    {
+      "number": 212,
+      "head": "fix/spend-impulse-kpi-overflow",
+      "sha": "03a5adc63c50d74f02f11d280ac521e542f230cf",
+      "title": "Fix mobile impulse KPI overflow on expenses page",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/212"
+    },
+    {
+      "number": 211,
+      "head": "fix/pwa-design-deletion-guard-verified",
+      "sha": "2992cf375ee5e14fd21872b4c46c11b0fdbff77b",
+      "title": "Fix PWA source drift and prevent deleted charges from returning",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/211"
+    },
+    {
+      "number": 201,
+      "head": "fix/bep-receipt-deduplication-hardening-20261115",
+      "sha": "f7085a43369cbc27e9b661df4bb8608ed46c9913",
+      "title": "Prevent duplicate receipt imports across OCR variations and API sync",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/201"
+    },
+    {
+      "number": 199,
+      "head": "qa/certification-preflight-20261115",
+      "sha": "3b8cee34b8262a717e9f9e345aff942e2a07ce21",
+      "title": "QA: sécuriser et fiabiliser le préflight de certification BEP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/199"
+    },
+    {
+      "number": 173,
+      "head": "fix/per-device-rate-limits-20261114",
+      "sha": "a4a6fae46c3d5679f3b8edf617bf17c580d00a5f",
+      "title": "BEP — limiter API isolé par appareil",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/173"
+    },
+    {
+      "number": 171,
+      "head": "fix/bep-purchases-scroll-advice-dock-20261114",
+      "sha": "706ab343a5571e78116d325caee00e4e4ee457a1",
+      "title": "BEP — liste des achats défilante et bouton Conseil accessible",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/171"
+    },
+    {
+      "number": 162,
+      "head": "feature/gemini-shared-learning-readonly-20261114",
+      "sha": "0c43892604a069a588217c320141d28b24752e46",
+      "title": "[Draft] Connect Gemini to approved shared BEP learning",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/162"
+    },
+    {
+      "number": 161,
+      "head": "simulation/coach-corpus-3mo-20261114",
+      "sha": "a2106bb81807ec3217c46f42af57664f4d92cd97",
+      "title": "BEP V1.6 — corpus Coach synthétique JSON sur trois mois",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/161"
+    },
+    {
+      "number": 153,
+      "head": "fix/budget-longpress-hints",
+      "sha": "90a1e4fc084ba7fe07783d02f266aef9368604bb",
+      "title": "Correct long-press guidance in budget lists",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/153"
+    },
+    {
+      "number": 152,
+      "head": "fix/bep-inherited-regression-checks-v2-20261113",
+      "sha": "280424e6d4a4e4af00658acfc54da971588c2010",
+      "title": "Fix — écarts hérités de validation BEP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/152"
+    },
+    {
+      "number": 149,
+      "head": "fix/coach-external-ai-consent-gate-20261113",
+      "sha": "da6704a58739f2f228258ddf53edea91060c5af6",
+      "title": "Fix — consentement explicite pour le Coach IA externe",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/149"
+    },
+    {
+      "number": 147,
+      "head": "fix/trusted-offline-snapshot-20261113",
+      "sha": "8c05bc549256e1136239dfe99a8e30686e329c59",
+      "title": "[Draft] Protect offline snapshots and monthly budget selection",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/147"
+    },
+    {
+      "number": 145,
+      "head": "fix/atomic-multisession-sync-20261113",
+      "sha": "b5377e7eae97b64d06c5865c2f9c90fabc1a0f0c",
+      "title": "[WIP] Empêcher les écrasements financiers entre sessions BEP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/145"
+    },
+    {
+      "number": 130,
+      "head": "fix/offline-logout-auth-state-main",
+      "sha": "c83062063f50e578587baa3079eb80ca13372321",
+      "title": "[WIP] Séparer déconnexion, authentification et mode hors ligne",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/130"
+    },
+    {
+      "number": 125,
+      "head": "feature/single-active-session",
+      "sha": "debf490ff74828a579139f216c526d4c7b17256e",
+      "title": "[WIP] Verrouiller une connexion BEP avec expiration après 15 min d’inactivité",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/125"
+    },
+    {
+      "number": 106,
+      "head": "perf/bep-startup-optimization-2026-11-13",
+      "sha": "6a601d142f10d7e2245724af77ee2726602043d0",
+      "title": "Intégrer les optimisations de chargement BEP à main",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/106"
+    },
+    {
+      "number": 94,
+      "head": "fix/monthly-actuals-refresh-js-audit",
+      "sha": "19b6ef0e14e167979fd6db06b23eade7928a813b",
+      "title": "Actualiser les dépenses mensuelles et fiabiliser les contrôles JS",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/94"
+    },
+    {
+      "number": 87,
+      "head": "fix/selection-checkbox-inside-purchase-main",
+      "sha": "b8943439cc10784ca0723b2389e9e3e64ba19cbb",
+      "title": "Corriger l’emplacement de la case de sélection des revenus et charges",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/87"
+    },
+    {
+      "number": 79,
+      "head": "fix/budget-expenses-savings-reconciliation",
+      "sha": "3be98449dfe5b0dc4ef76aa3a873fdb3ad10bd57",
+      "title": "Reconcile Budget, Expenses and Savings data",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/79"
+    },
+    {
+      "number": 72,
+      "head": "feat/unified-financial-modals",
+      "sha": "881fca21fe201744aaf058511d7bc969ee8f3785",
+      "title": "Unifier les parcours financiers en fenêtres modales",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/72"
+    },
+    {
+      "number": 50,
+      "head": "feat/budget-advisor-above-modules",
+      "sha": "23cc5f220548e494199193f8c44f5ffc0c9de4ee",
+      "title": "Place budget modules below shared Conseil BEP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/50"
+    },
+    {
+      "number": 27,
+      "head": "feature/budget-completeness-checkup",
+      "sha": "32b3362630b1615fad9325fa5c0cdd92ef839442",
+      "title": "Add guided budget completeness checkup",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/27"
+    },
+    {
+      "number": 15,
+      "head": "feature/bep-design-ergonomics-refresh",
+      "sha": "55919ea6e580801dd7cea7772e8ec396100fb9f2",
+      "title": "Design: harmoniser le design et améliorer l'ergonomie BEP",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/15"
+    },
+    {
+      "number": 14,
+      "head": "ui/header-solid-brand-2026-11",
+      "sha": "002d9b049a91f7d4c98f84d2397e8b20a634e77f",
+      "title": "Harmoniser l’en-tête BEP sur un fond vert uni",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/14"
+    },
+    {
+      "number": 13,
+      "head": "feature/email-code-resend-cooldown",
+      "sha": "5c753660f04525f62f323559e9ed32a941a28e61",
+      "title": "Auth: sécuriser le renvoi du code e-mail",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/13"
+    },
+    {
+      "number": 3,
+      "head": "feature/bep-knowledge-engine",
+      "sha": "2c4b348dfd63c01b9b2244ec2479c492889ad0a9",
+      "title": "feat(bep): build controlled AI knowledge engine",
+      "url": "https://github.com/MMG2025-creator/bep-mobile./pull/3"
+    }
+  ],
+  "render_services": [
+    {
+      "name": "bep-v1-6-preprod-v2-frontend-test",
+      "id": "srv-dbs5eqmi0phs73c5tr7g",
+      "branch": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-v1-6-preprod-v2-api-test",
+      "id": "srv-dbs5eomc6qcc7387jcu0",
+      "branch": "feature/bep-document-ingestion-no-ai",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-v13-qa-4d522c94",
+      "id": "srv-dbrrfq8n74is7381lro0",
+      "branch": "qa/bep-v1.3-4d522c94",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-coach-functional-test-api-vouu",
+      "id": "srv-dbrqpa3rjlhs73c8ts70",
+      "branch": "test/bep-coach-functional-20261114",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-coach-functional-test",
+      "id": "srv-dbrqoj5bedkc738ih4p0",
+      "branch": "test/bep-coach-functional-20261114",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-gemini-agent-test-api-j65o",
+      "id": "srv-dbrqifl6e07s73ftgni0",
+      "branch": "feature/gemini-shared-learning-readonly-20261114",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-v1-1-test",
+      "id": "srv-dbret3tbedkc73ddihvg",
+      "branch": "test-v1.1",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-savings-demo-local",
+      "id": "srv-dbrel0ou01pc73b1668g",
+      "branch": "demo-local-no-auth",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-coach-qa-lab",
+      "id": "srv-dbr50qt9fdbs73d9t37g",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-budget-test",
+      "id": "srv-dbr2rkuc6qcc73aghgpg",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-depenses-preview",
+      "id": "srv-dbr2r3bl550s73c40hq0",
+      "branch": "main",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-financial-modals-pr72-preview",
+      "id": "srv-dbqvb4h5efls73du0vgg",
+      "branch": "feat/unified-financial-modals",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-coach-staging-api",
+      "id": "srv-dbqggrgae00c738bbe00",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-coach-staging",
+      "id": "srv-dbqggq2jnfac738kgmtg",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-savings-staging",
+      "id": "srv-dbqfa7egekts73ebc980",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-savings-staging-api",
+      "id": "srv-dbqf7mqfngtc73fdsk5g",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-loadtest-api",
+      "id": "srv-dbqb5it9fdbs73c55oig",
+      "branch": "main",
+      "autoDeploy": "yes"
+    },
+    {
+      "name": "bep-v2-api",
+      "id": "srv-dbpbcb5bedkc73893520",
+      "branch": "main",
+      "autoDeploy": "no"
+    },
+    {
+      "name": "bep-mobile",
+      "id": "srv-dbpb7ubbc2fs739nec5g",
+      "branch": "main",
+      "autoDeploy": "no"
+    }
+  ],
+  "render_unique_branches": [
+    "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+    "feature/bep-document-ingestion-no-ai",
+    "qa/bep-v1.3-4d522c94",
+    "test/bep-coach-functional-20261114",
+    "feature/gemini-shared-learning-readonly-20261114",
+    "test-v1.1",
+    "demo-local-no-auth",
+    "main",
+    "feat/unified-financial-modals"
+  ],
+  "rulesets": [],
+  "counts": {
+    "branches": 365,
+    "open_prs": 40,
+    "render_services": 19,
+    "render_unique_branches": 9,
+    "historical_or_control_family": 61,
+    "compared_active_branches": 265,
+    "compared_ahead_positive": 255,
+    "compared_behind_only": 10,
+    "manual_deletion_candidates": 8,
+    "human_review_behind_only": 2,
+    "github_protected_flags": 0
+  },
+  "behind_only": {
+    "feature/bep-coach-v1-release-20261115": {
+      "ahead": 0,
+      "behind": 156
+    },
+    "feature/coach-external-ai-exchange": {
+      "ahead": 0,
+      "behind": 878
+    },
+    "feature/overdraft-settings-popup": {
+      "ahead": 0,
+      "behind": 265
+    },
+    "fix/budget-purchases-separation-bulk-delete": {
+      "ahead": 0,
+      "behind": 891
+    },
+    "fix/connection-state-and-reload-guards": {
+      "ahead": 0,
+      "behind": 217
+    },
+    "fix/coach-only-on-coach-tab": {
+      "ahead": 0,
+      "behind": 2
+    },
+    "fix/multi-device-session-sync": {
+      "ahead": 0,
+      "behind": 45
+    },
+    "fix/pwa-cache-invalidation-v27": {
+      "ahead": 0,
+      "behind": 11
+    },
+    "implementation/gemini-supervisor-v2-20261114": {
+      "ahead": 0,
+      "behind": 203
+    },
+    "perf/module-isolation-20261114": {
+      "ahead": 0,
+      "behind": 216
+    }
+  },
+  "deletion_candidates": {
+    "feature/bep-coach-v1-release-20261115": {
+      "sha": "b1efaf5c7c089b4f414611a96f83ffb751feebf6",
+      "ahead": 0,
+      "behind": 156,
+      "pr": null,
+      "note": "Nom contenant release mais branche sous préfixe feature/. Commit déjà dans main ; vérifier que ce n'est pas utilisé comme jalon métier avant suppression."
+    },
+    "feature/coach-external-ai-exchange": {
+      "sha": "86c0a650f46a2f63f8bba9cda8e29ced15f5f5ef",
+      "ahead": 0,
+      "behind": 878,
+      "pr": 6,
+      "note": "PR #6 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    "feature/overdraft-settings-popup": {
+      "sha": "a545bc1507f534d17aba965d0feddfe13855063e",
+      "ahead": 0,
+      "behind": 265,
+      "pr": null,
+      "note": "Ancienne branche distincte de feature/overdraft-settings-popup-v2 (PR #124) ; cette branche exacte n'a pas de PR ouverte ni de service Render."
+    },
+    "fix/budget-purchases-separation-bulk-delete": {
+      "sha": "8ae1e3fc145bb1fbfdaade3227690113c8609f04",
+      "ahead": 0,
+      "behind": 891,
+      "pr": 5,
+      "note": "PR #5 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    "fix/connection-state-and-reload-guards": {
+      "sha": "a019a7ddcf44e0e2e1b9057e1f28095d9834099a",
+      "ahead": 0,
+      "behind": 217,
+      "pr": null,
+      "note": "Aucun PR exact sur cette branche ; les commits sont déjà dans main. À vérifier comme ancien pointeur de travaux liés à la connexion/session."
+    },
+    "fix/coach-only-on-coach-tab": {
+      "sha": "1061c60b478d50c408484779df965e4d315dede2",
+      "ahead": 0,
+      "behind": 2,
+      "pr": 316,
+      "note": "PR #316 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    "fix/multi-device-session-sync": {
+      "sha": "31dc21dee35eab95b0468a86bb2a2bc45ab16f33",
+      "ahead": 0,
+      "behind": 45,
+      "pr": 290,
+      "note": "PR #290 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    "fix/pwa-cache-invalidation-v27": {
+      "sha": "7c12fc34f492289b03945e6a57451d5490c74d0c",
+      "ahead": 0,
+      "behind": 11,
+      "pr": 315,
+      "note": "PR #315 fusionnée ; aucune dépendance Render ni PR ouverte."
+    }
+  },
+  "human_review_behind_only": {
+    "implementation/gemini-supervisor-v2-20261114": "PR #160 fermée sans fusion ; conserver pour revue humaine malgré l'absence de commits exclusifs à main.",
+    "perf/module-isolation-20261114": "SHA partagé avec les références backup/release V1.3 ; conserver comme pointeur de jalon historique."
+  },
+  "branches": [
+    {
+      "name": "archive/BEP-gemini-supervisor-v2-audit-20261114",
+      "sha": "3b0c8cd7bb07e6dea2a91db01ee9bf184cd4291f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "archive/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille archive/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "archive/BEP-v1.6-pre-prod-v2-20261114",
+      "sha": "f829a0ed6002c0fa8c7057e090dd6fecdbdfbdf6",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "archive/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille archive/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "archive/developpements-post-2.0.0-2026-11-19",
+      "sha": "893775ceb534f01143b951eb088be0fc60096d3f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "archive/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille archive/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "archive/savings-preprod-before-production-sync-2026-11-12",
+      "sha": "fc9de65601f8603e097d827cbfc450e47907befa",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "archive/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille archive/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "audit/gemini-supervisor-v2-20261114",
+      "sha": "3b0c8cd7bb07e6dea2a91db01ee9bf184cd4291f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "audit/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille audit/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "audit/pre-cleanup-inventory-20261120",
+      "sha": "f8f770359e59effa3501a9638a0358854f53a6b7",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "audit/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille audit/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.3-production-stable-20261114-0226",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.3-production-stable-20261114",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.4-IA-Agent-production-20261114",
+      "sha": "5cae41acdafbc602041b34fb41a77cbcee61a8dd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.5-pre-prod-v2-20261114",
+      "sha": "320f57a9032b702839ac8f11ccfe78c68290618d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.9-admin-in-progress-pre-import-20261118-api",
+      "sha": "f7b0cc9ba94492370e4fd2ceadc0c463af8ce567",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/BEP-v1.9-admin-in-progress-pre-import-20261118-frontend",
+      "sha": "b53e592c2298c795387da1f7a67f48c6e499ccfd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/bep-budget-test-2026-11-12",
+      "sha": "f04e2c2145f34634931fead10f516a6291b5824d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/coach-staging-before-mainline-sync-20261112",
+      "sha": "d88ec4d81345c0059d688574e64397e14b3d08df",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/pre-cleanup-main-20261120",
+      "sha": "ec4f073e8c00a8b820b270bf308109037ec42cb2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/pre-rollback-2026-11-13",
+      "sha": "6f6382eb0c5af4e64378facad67c803805b151d6",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/prod-2026-11-12",
+      "sha": "4269bb01d3a35772a77a6a28e3c24654782bebcf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/prod-v1.2-stable-2026-11-13",
+      "sha": "75f89f6f6ead38502b23406b6d37268fd60d4f06",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/prod-v1.3-2026-11-13",
+      "sha": "dc4de67dafd14258062701492dc2f06180b9db3b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "backup/stable-2026-11-11-password-reset",
+      "sha": "ada905c198a47716c03b9157fcdfa4007dc7b1f9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "backup/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille backup/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "chore/ci-production-sha-validation",
+      "sha": "4c893d92ef574c41ebed2b102c613901173e79c8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "ci/fix-monthly-budget-asset-checks",
+      "sha": "fd79fbe684c5a5034a2b19757e0204c08fe0f1c4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "copy/coach-gemini-explanation",
+      "sha": "036109f8de306348f6bdcb0e702470c6d7a26eca",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "demo-local-no-auth",
+      "sha": "57af8816fc462271d3fea47131de539684e302e6",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-savings-demo-local",
+          "id": "srv-dbrel0ou01pc73b1668g",
+          "autoDeploy": "yes"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "deploy/budget-completeness-checkup-mainline-20261111",
+      "sha": "e37b246454332c316a230a75e8430d3cdf8183f2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "deploy/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille deploy/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "sha": "81d79c1d3775be8a9bf4164c1934646e0a6d00a3",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-v1-6-preprod-v2-frontend-test",
+          "id": "srv-dbs5eqmi0phs73c5tr7g",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": "deployment-test/",
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "docs/production-certification-no-go-20261115",
+      "sha": "b2fe31452b478051987b1e82b64d7bef4b008307",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "docs/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille docs/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "feat/admin-article-accordion-import-cleaning",
+      "sha": "ed635044b71de670dd6d69f4c74931169634f66d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/admin-auth-loader-20261118",
+      "sha": "ff4af0c8279736e2d9231dee90c4b13a2d5e2c7e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/admin-coach-knowledge-editor-20261119",
+      "sha": "bb530ddf444c1329d8aafff2a407683a577dd37e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/admin-gemini-json-documentary-review",
+      "sha": "aa5580914686b35fe4113a537c692818016435f5",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/admin-gemini-ops-visibility-20261116",
+      "sha": "d6c817696d571674a3477e715889a4b592d99841",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/admin-menu-logout-cache-20261118",
+      "sha": "3af02f2c7b9ec76e6c53423dcc8a5b0a517108c8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-coach-50-source-batch",
+      "sha": "d904d2c4bc7316272ae7a7fa140aed0890a3a167",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-coach-source-registry",
+      "sha": "0ea9814414b36b9add8026bcb745606fe29aa170",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-encrypted-backup-restore-20261114",
+      "sha": "24a2e0bd0cb1cb7b139f54ab361eae707ff044b7",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-financial-knowledge-20-20261118",
+      "sha": "f7fdcc3a90268b5a51bab69eb61f8a36b3a2f702",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-gemini-agent-v1-20261114",
+      "sha": "2199d51f639cb122f8e6fbd770418827b75325bd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-hybrid-ai-router",
+      "sha": "1ed539214bf33edac7d747be8f7960ddd2c73d74",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/bep-manual-knowledge-import",
+      "sha": "e45cc026c5a1b160a47a2f82ba9baa1ecb888c1e",
+      "github_protected": false,
+      "open_pr": {
+        "number": 257,
+        "sha": "e45cc026c5a1b160a47a2f82ba9baa1ecb888c1e",
+        "title": "BEP — import manuel sécurisé des fiches Coach",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/257"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #257 ouverte ; conserver."
+    },
+    {
+      "name": "feat/bep-rate-limit-explainer-20261114",
+      "sha": "ff81b57fb9b4245f0f0b489f737ae49b9d1f25b8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/budget-action-and-receipt-feedback-20261114",
+      "sha": "cc79c840ac0358846419e10d6cc8ab487fb9188c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/budget-action-cards-income-charges-20261114",
+      "sha": "9072a20ddebaba3e834a345e945bddf6b4682d68",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/budget-advisor-above-modules",
+      "sha": "23cc5f220548e494199193f8c44f5ffc0c9de4ee",
+      "github_protected": false,
+      "open_pr": {
+        "number": 50,
+        "sha": "23cc5f220548e494199193f8c44f5ffc0c9de4ee",
+        "title": "Place budget modules below shared Conseil BEP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/50"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #50 ouverte ; conserver."
+    },
+    {
+      "name": "feat/budget-advisor-above-modules-v2",
+      "sha": "47a8f89607419c0ad2ae03ccbb8e9fdbcf993c52",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/budget-totals-ai-adviser",
+      "sha": "89333d17f98de83aad4752b7c80f7807f6b8a1bf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-chat-first-faq-modal-objectives-20261119",
+      "sha": "5c40e5172b6038edf496b2852aa93ae2c6ed1d57",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-conversation-first-layout-20261119",
+      "sha": "69c8bcb41b0450bd3a73db0e2453071415110932",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-document-library-explorer",
+      "sha": "bc1567703b3a210a9e20199c65f674ff96fbed23",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-ergonomic-workspace-20261119",
+      "sha": "5e5b076ba4b20cf2e39c1147d8b4be683933129b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-explorer-accordion-answer-modal-20261119",
+      "sha": "d443e319aaf21f7b1f0ff660dd8f301efe8fabcd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-explorer-expand-collapse-all-20261119",
+      "sha": "b9b8fe6f142c711a5233d80823b768113089942f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-personalization-profile",
+      "sha": "864275611e85dd73d403386ae2f394be9688e738",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-personalization-profile-v2",
+      "sha": "87f87f7171169fb88bc15fa4e6433181612e437f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/coach-two-tabs-objectives-before-chat-20261119",
+      "sha": "aab527ee1ddbcf989851098ee06a9c66edba6ef8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/compact-budget-action-tiles-20261114",
+      "sha": "b1657043b7a06b3541d8773a6d7c2eab73f88384",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/gemini-admin-console",
+      "sha": "95543b2e4363e27694fa213fcc7dea2e32342afc",
+      "github_protected": false,
+      "open_pr": {
+        "number": 245,
+        "sha": "95543b2e4363e27694fa213fcc7dea2e32342afc",
+        "title": "Build Gemini admin console and isolate execution in Worker",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/245"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #245 ouverte ; conserver."
+    },
+    {
+      "name": "feat/home-statistics-open-animation",
+      "sha": "f7d1d6119ffa744a524ab8713f9fe3048295d3eb",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/impulse-purchase-history-highlighting-20261114",
+      "sha": "6bf2c339881bd5a784660871df1de03fcf040e0b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/integrate-coach-research-admin",
+      "sha": "6372a95bf5638fa2016b9725fbb814b689eff7f7",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/login-methods-verification-design",
+      "sha": "ebede38cd17dab38f00cb269b69730a40009753e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/manual-source-ingestion-20261116",
+      "sha": "ee2a167d8df4a80621f0f1c6ec820a3d7933b1b2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/manual-source-ingestion-v2-20261116",
+      "sha": "454bd87c41e33ea5628a54acfff2f798c863cf64",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/monthly-budget-navigation-tab",
+      "sha": "47b604e0b27c12558470b5fb0b26441f3a61cb7d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/monthly-budget-ux-test-proposal",
+      "sha": "badba1a0154134a9e85bc578abf851d82cafd4fd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/monthly-budget-visual-workspace",
+      "sha": "5384187ddc52c575cef9bd19f40df99c7a170f64",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/persistent-manual-ingestion-queue-20261117",
+      "sha": "a57fe298a3069e4421c71bb823c9d1d40147c572",
+      "github_protected": false,
+      "open_pr": {
+        "number": 256,
+        "sha": "a57fe298a3069e4421c71bb823c9d1d40147c572",
+        "title": "Add persistent, consent-gated manual ingestion retries",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/256"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #256 ouverte ; conserver."
+    },
+    {
+      "name": "feat/purchase-history-accordion-20261114",
+      "sha": "2eee3f450a6bc8c524d30e262e4336e9f072e761",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/replay-module-chart-animations",
+      "sha": "26ef8b8655e1de6855854088196c4b263b1900ca",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/single-session-connection-status",
+      "sha": "0bd413b4983959bc477c149750f62e8ef59d7974",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/spending-actions-visual-order-20261114",
+      "sha": "957dc436e93d6124b624bc34269262d12fccd775",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/spending-page-interactive-layout-20261114",
+      "sha": "0522fb92954a9675421fab1ee80552c350c0bad9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feat/unified-financial-modals",
+      "sha": "881fca21fe201744aaf058511d7bc969ee8f3785",
+      "github_protected": false,
+      "open_pr": {
+        "number": 72,
+        "sha": "881fca21fe201744aaf058511d7bc969ee8f3785",
+        "title": "Unifier les parcours financiers en fenêtres modales",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/72"
+      },
+      "render_services": [
+        {
+          "service": "bep-financial-modals-pr72-preview",
+          "id": "srv-dbqvb4h5efls73du0vgg",
+          "autoDeploy": "yes"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #72 ouverte ; conserver."
+    },
+    {
+      "name": "feature/account-login-methods",
+      "sha": "d4b56ec1c1ddbaab0f3f48e080931c1ffaacbb2d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/admin-navigation-menu",
+      "sha": "b2a608a1f5e2c8206e98390fe707f7834fa7bf73",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/auth-app-isolation-step1",
+      "sha": "81218a18334d40e165fb3ec80052924d94913ad4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/auth-banner-full-width",
+      "sha": "9447ae5d3d5108d6652d58fc5cfc8da7252db96e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/auth-password-reset-login-branding",
+      "sha": "65ca0c4238630a0f78ef58376d9547a4b3ebcc92",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-admin-json-console-20261115",
+      "sha": "02749a7eb80de842491c5f76df641422c0b6c955",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-admin-production-flag-20261115",
+      "sha": "34050bd03068f729a86cab43df1b75241f756510",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-basic-spinner-loader",
+      "sha": "193b8f590438bf1e38f4d1560c5a09b0831ddff5",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-budget-calendar-context-details-20261115",
+      "sha": "55738108bb86540aba836b699b6d5c62b268bdab",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-coach-structured-json-import",
+      "sha": "be68c306d31eaa206472497ab16a147edd38fc9b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-coach-v1-release-20261115",
+      "sha": "b1efaf5c7c089b4f414611a96f83ffb751feebf6",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 156
+      },
+      "reason": "Nom contenant release mais branche sous préfixe feature/. Commit déjà dans main ; vérifier que ce n'est pas utilisé comme jalon métier avant suppression."
+    },
+    {
+      "name": "feature/bep-design-ergonomics-refresh",
+      "sha": "55919ea6e580801dd7cea7772e8ec396100fb9f2",
+      "github_protected": false,
+      "open_pr": {
+        "number": 15,
+        "sha": "55919ea6e580801dd7cea7772e8ec396100fb9f2",
+        "title": "Design: harmoniser le design et améliorer l'ergonomie BEP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/15"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #15 ouverte ; conserver."
+    },
+    {
+      "name": "feature/bep-document-ingestion-no-ai",
+      "sha": "74cfa106c75c5838e69399d53d86d83f656a4b3e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-v1-6-preprod-v2-api-test",
+          "id": "srv-dbs5eomc6qcc7387jcu0",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "feature/bep-income-charges-advisors",
+      "sha": "df069e13b223a3e1b6844ecbd4c99315418e930a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-knowledge-56-candidates",
+      "sha": "0046c0192c31deddeb8acac5a7a4a4b21b35ff08",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-knowledge-engine",
+      "sha": "2c4b348dfd63c01b9b2244ec2479c492889ad0a9",
+      "github_protected": false,
+      "open_pr": {
+        "number": 3,
+        "sha": "2c4b348dfd63c01b9b2244ec2479c492889ad0a9",
+        "title": "feat(bep): build controlled AI knowledge engine",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/3"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #3 ouverte ; conserver."
+    },
+    {
+      "name": "feature/bep-offline-first-sync",
+      "sha": "1def4f9ccfb8d74e5db944f1ae1336ea535a0ef4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/bep-startup-loader",
+      "sha": "f469fded9ab867e68465a3913f57ffd46fb035bf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/budget-completeness-checkup",
+      "sha": "32b3362630b1615fad9325fa5c0cdd92ef839442",
+      "github_protected": false,
+      "open_pr": {
+        "number": 27,
+        "sha": "32b3362630b1615fad9325fa5c0cdd92ef839442",
+        "title": "Add guided budget completeness checkup",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/27"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #27 ouverte ; conserver."
+    },
+    {
+      "name": "feature/budget-image-onboarding",
+      "sha": "27990e5f4773fbdf5b26f7161d1dd7fc0b9a772d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/budget-pdf-import",
+      "sha": "332576e880640e9bab75ef10d9dbbb55afa52881",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/budget-pdf-import-main",
+      "sha": "38b577d040d0a05da26f548fa354a66a247eb8ca",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/budget-ux-and-coach-restoration",
+      "sha": "b665127764df62d21a54467524eee198fc641cb2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/charges-total-banner",
+      "sha": "ab46eee896a000a2bab40600fde06d626ce35603",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/charges-total-banner-safe",
+      "sha": "575a85893ebce12ca94f0a41b4a4e785dc875c96",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-account-first-response",
+      "sha": "7d549cce0e23a8608052cc1bd7d3ba5a2d543031",
+      "github_protected": false,
+      "open_pr": {
+        "number": 268,
+        "sha": "7d549cce0e23a8608052cc1bd7d3ba5a2d543031",
+        "title": "Coach BEP — analyse les comptes avant le RAG",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/268"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #268 ouverte ; conserver."
+    },
+    {
+      "name": "feature/coach-bep-dynamic-ui-20261116",
+      "sha": "d750d597e90b504699250eeed196ff090e24e1c9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-exchange-one-shot-prompt",
+      "sha": "ff53ccd3cb0471ac2048197a0fa0ec3498e19474",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-external-ai-exchange",
+      "sha": "86c0a650f46a2f63f8bba9cda8e29ced15f5f5ef",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 878
+      },
+      "reason": "PR #6 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    {
+      "name": "feature/coach-guided-exploration-20261118",
+      "sha": "b0b39f55d4b264e25b3c0acb916ee36bd8680565",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-home-knowledge-services",
+      "sha": "029cf2ee87e992f52f6c8c4ccfc60162a72a435b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-home-knowledge-services-final",
+      "sha": "f8e9bf534374ce55df6fd88aa71b0b6efa129f65",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/coach-page-context-layer-20261118",
+      "sha": "4021d1f5a27ac82b877f6de835383c939121c7e2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/email-code-resend-cooldown",
+      "sha": "5c753660f04525f62f323559e9ed32a941a28e61",
+      "github_protected": false,
+      "open_pr": {
+        "number": 13,
+        "sha": "5c753660f04525f62f323559e9ed32a941a28e61",
+        "title": "Auth: sécuriser le renvoi du code e-mail",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/13"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #13 ouverte ; conserver."
+    },
+    {
+      "name": "feature/financial-engine-unification-2026-11-12",
+      "sha": "8b0f3bbdddd5353f56b429b61d2e08f315c37843",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/financial-engine-unification-v2-2026-11-12",
+      "sha": "7d1a16c9aa7393128040b4713a38777073023f5b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/financial-intelligence-mainline",
+      "sha": "78e25588ba7c95f82801c4ce83a0de9140bd0417",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/gemini-admin-on-demand-free-tier-20261116",
+      "sha": "0ee53ae8603b8f039dcac077375ae306d6c1982d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/gemini-peripheral-json-service-v1",
+      "sha": "63a7c559117c65b237e6d74e4c990c50243b19bb",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/gemini-shared-learning-readonly-20261114",
+      "sha": "0c43892604a069a588217c320141d28b24752e46",
+      "github_protected": false,
+      "open_pr": {
+        "number": 162,
+        "sha": "0c43892604a069a588217c320141d28b24752e46",
+        "title": "[Draft] Connect Gemini to approved shared BEP learning",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/162"
+      },
+      "render_services": [
+        {
+          "service": "bep-gemini-agent-test-api-j65o",
+          "id": "srv-dbrqifl6e07s73ftgni0",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #162 ouverte ; conserver."
+    },
+    {
+      "name": "feature/income-sources-checkup",
+      "sha": "35a2d39ceaa22974c5d57e1151b4fb9b38c5b268",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/local-financial-coach-engine",
+      "sha": "a8e456c3845191153988b3c991bf6c803f4a410e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/madame-michu-ux-accessibility",
+      "sha": "f031286904aa19bfb787e9348f358223d54669e0",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/monthly-budget-history",
+      "sha": "295f9786225498d87170745c188031f19641e817",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/overdraft-settings-popup",
+      "sha": "a545bc1507f534d17aba965d0feddfe13855063e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 265
+      },
+      "reason": "Ancienne branche distincte de feature/overdraft-settings-popup-v2 (PR #124) ; cette branche exacte n'a pas de PR ouverte ni de service Render."
+    },
+    {
+      "name": "feature/overdraft-settings-popup-v2",
+      "sha": "e5f9884fef40c577d3f57adc07eabcb3cb1fc80b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/savings-objective-first-ux",
+      "sha": "3145af3a9e1e22f8b4a407ae878b3d89736d1512",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/savings-redesign-v1-final",
+      "sha": "4707c7fe35d94a0bebddc8ccc26e5f35439692b8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/savings-redesign-v1",
+      "sha": "76dc7300bf06375fa6c048169e306e56fc69c229",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/settings-buttons-layout-20261113",
+      "sha": "3685c4b7ac538079b2f4c09cfd1b396cfeb38955",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/settings-cleanup-test-20261113",
+      "sha": "566e02ddcc935eecc27e48ce133ba3b1bd8f9cf4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/settings-toggle-panel-20261113",
+      "sha": "e61963249f9aff6fad7d7e56a7ab26b3973ec26f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "feature/single-active-session",
+      "sha": "debf490ff74828a579139f216c526d4c7b17256e",
+      "github_protected": false,
+      "open_pr": {
+        "number": 125,
+        "sha": "debf490ff74828a579139f216c526d4c7b17256e",
+        "title": "[WIP] Verrouiller une connexion BEP avec expiration après 15 min d’inactivité",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/125"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #125 ouverte ; conserver."
+    },
+    {
+      "name": "feature/treasury-overdraft-management",
+      "sha": "8b60222c92fd1a8d6955abde7ba6acf8ffe1d62a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-api-worker-separation",
+      "sha": "2e75557a2621d76e26fc8c80296821297a61f811",
+      "github_protected": false,
+      "open_pr": {
+        "number": 235,
+        "sha": "2e75557a2621d76e26fc8c80296821297a61f811",
+        "title": "Decouple BEP admin queue API from worker runtime",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/235"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #235 ouverte ; conserver."
+    },
+    {
+      "name": "fix/admin-console-allowlist-email",
+      "sha": "7a200b0854d8d7864da4b23bce7e21605e2f9809",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-email-code-type",
+      "sha": "1d50c5282abcec119484a960006ab5cd7072e088",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-enrollment-diagnostics",
+      "sha": "9229c779671b4b21414ea585053ebff2cc4f4c64",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-independent-session-flow",
+      "sha": "5ffc209b1027912ef94dfeb3815f807250f8ef22",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-pseudonymized-aggregate-view",
+      "sha": "c95c5dfaf078e9e9b40f33e354d64937dd73fd79",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/admin-structured-knowledge-batch-import",
+      "sha": "977c9c9777bdb228c5074a27b20f932e5f6904a5",
+      "github_protected": false,
+      "open_pr": {
+        "number": 275,
+        "sha": "977c9c9777bdb228c5074a27b20f932e5f6904a5",
+        "title": "Fix import of institutional knowledge proposals",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/275"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #275 ouverte ; conserver."
+    },
+    {
+      "name": "fix/advice-robot-hit-area-20261115",
+      "sha": "0eaa981c897ec63c1e90d735d81c31c96ea0cf62",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/aligned-home-cards-oauth-popup-navigation-20261115",
+      "sha": "72af45c3f58a24ff147191fb561312c1c82c237c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/api-csp-connect-src-startup",
+      "sha": "b43f24c218f2c012cf5191cf930033077c37eb48",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/api-readiness-healthcheck-20261119",
+      "sha": "81591608e008aff31920b77974ac882d3c7940f2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/atomic-multisession-api-20261113",
+      "sha": "3dc5a35a1c3ae0795d4c55365630012921556afc",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/atomic-multisession-sync-20261113",
+      "sha": "b5377e7eae97b64d06c5865c2f9c90fabc1a0f0c",
+      "github_protected": false,
+      "open_pr": {
+        "number": 145,
+        "sha": "b5377e7eae97b64d06c5865c2f9c90fabc1a0f0c",
+        "title": "[WIP] Empêcher les écrasements financiers entre sessions BEP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/145"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #145 ouverte ; conserver."
+    },
+    {
+      "name": "fix/auth-buttons-and-cache-20261113",
+      "sha": "6ca914b7d282f439d42ea710312843842102790c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-duplicate-email-guard",
+      "sha": "faf7b5be7622ee4b310fd3bb5ca6a033c3914898",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-gate-hidden-css",
+      "sha": "98c68c9650a1a75d28cc273389cfd879ea70b573",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-hide-floating-coach-before-login",
+      "sha": "b2730e5c94263a2afb6bc31b943d85d9a85e2562",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-login-banner-polish-2026-11-13",
+      "sha": "66060c67be99fa27211d37fe24c3d1cc654b9594",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-rate-limit-designed-page-20261114",
+      "sha": "c67d06864134b37485eef11a13f0c20665ab3374",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/auth-root-hard-isolation",
+      "sha": "047a5dc133be438f95847a8b53906acb1594e749",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-admin-super-admin-allowlist-20261118",
+      "sha": "1bd4c3a0a81f7b8d7e4a71c5fd18608f51e4c92e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-agent-test-syntax-20261116",
+      "sha": "35de300e7cc0f028ae20e6160d4994be12f77922",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-calendar-service-worker-refresh-20261115",
+      "sha": "70f99697a71f4df44cb136490281d4da27217b8c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-coach-json-import-rebased-20261118",
+      "sha": "22cd5f8a06ba46824f39a1e03f716465ae895bac",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-coach-reuse-existing-gemini-key",
+      "sha": "f38c9501e63ee4fdcb8946e5586a7f11f0224125",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-coach-staging-cors-20261117",
+      "sha": "56e13e2cd07547c7263cfb1b9f1a2affa8251b49",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-danger-action-confirmations-20261114",
+      "sha": "9a621eafadd83a245c97f36b3b857e9adc3c8902",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-device-scoped-rate-limits-20261114",
+      "sha": "430d2cd59c9a5ac60dcd82236ed3ebeb86e1fffd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-hide-login-during-startup",
+      "sha": "4c63dadbfeac362e3496a5d3d783a54a1b53aded",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-inherited-regression-checks-20261113",
+      "sha": "29b61a25f4ed85aa2370cbc67a001193c9e00c73",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-inherited-regression-checks-v2-20261113",
+      "sha": "280424e6d4a4e4af00658acfc54da971588c2010",
+      "github_protected": false,
+      "open_pr": {
+        "number": 152,
+        "sha": "280424e6d4a4e4af00658acfc54da971588c2010",
+        "title": "Fix — écarts hérités de validation BEP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/152"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #152 ouverte ; conserver."
+    },
+    {
+      "name": "fix/bep-inline-startup-loader",
+      "sha": "1ccc821c443ee155a7520a52b5dfeec52abb81af",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-loader-minimum-display",
+      "sha": "2901cd990702de10edf2305740da2838eed67768",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-local-cache-clear-render-20261114",
+      "sha": "070c220e566e84a08567413c548066ce649b0a53",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-local-cache-label-20261114",
+      "sha": "18ce87e30ba51e89a07c5a67b9330efb420c056d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-multidevice-sync-reconciliation-20261115",
+      "sha": "b5c6eb92346813c360e231f609bd644f6031c1c1",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-native-alert-modal-20261114",
+      "sha": "d6ab92727a49acc87d923a56226ed0d2b1186ead",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-purchases-accordion-shortcuts-20261114",
+      "sha": "0df33c4506862927a03f9d145e5affb79ce4344d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bep-purchases-scroll-advice-dock-20261114",
+      "sha": "706ab343a5571e78116d325caee00e4e4ee457a1",
+      "github_protected": false,
+      "open_pr": {
+        "number": 171,
+        "sha": "706ab343a5571e78116d325caee00e4e4ee457a1",
+        "title": "BEP — liste des achats défilante et bouton Conseil accessible",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/171"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #171 ouverte ; conserver."
+    },
+    {
+      "name": "fix/bep-receipt-deduplication-hardening-20261115",
+      "sha": "f7085a43369cbc27e9b661df4bb8608ed46c9913",
+      "github_protected": false,
+      "open_pr": {
+        "number": 201,
+        "sha": "f7085a43369cbc27e9b661df4bb8608ed46c9913",
+        "title": "Prevent duplicate receipt imports across OCR variations and API sync",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/201"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #201 ouverte ; conserver."
+    },
+    {
+      "name": "fix/bep-savings-date-and-receipt-feedback-20261115",
+      "sha": "c46b756de5e5ac255cb7df0a33b1a2796a1620c8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-advisor-card-spacing",
+      "sha": "659d91fa4df0292d25602a73a2ad5cd1dad5757a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-expenses-panel-isolation-20261113",
+      "sha": "745461bfeff09da36c5fb8b59e46b05f2d2ef4ef",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-expenses-savings-reconciliation",
+      "sha": "3be98449dfe5b0dc4ef76aa3a873fdb3ad10bd57",
+      "github_protected": false,
+      "open_pr": {
+        "number": 79,
+        "sha": "3be98449dfe5b0dc4ef76aa3a873fdb3ad10bd57",
+        "title": "Reconcile Budget, Expenses and Savings data",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/79"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #79 ouverte ; conserver."
+    },
+    {
+      "name": "fix/budget-income-entry-dialogs",
+      "sha": "3710dbc9bec4db9c7f5459375cad28ea518a75cc",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-income-modal-action",
+      "sha": "735f572eae1ecb0d9d247f3726f84f7a5d365524",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-longpress-hints",
+      "sha": "90a1e4fc084ba7fe07783d02f266aef9368604bb",
+      "github_protected": false,
+      "open_pr": {
+        "number": 153,
+        "sha": "90a1e4fc084ba7fe07783d02f266aef9368604bb",
+        "title": "Correct long-press guidance in budget lists",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/153"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #153 ouverte ; conserver."
+    },
+    {
+      "name": "fix/budget-longpress-hints-alignment",
+      "sha": "a35982db327df7ec0cc4c64312edb3e31c398bd9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-module-event-delegation",
+      "sha": "ac19cf7a06a1a19a8114179d1885313954d1aa59",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-multiselect-and-month-expenses",
+      "sha": "a000e0e6123912a151a47155846fa1be1ac78458",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-purchases-separation-bulk-delete",
+      "sha": "8ae1e3fc145bb1fbfdaade3227690113c8609f04",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 891
+      },
+      "reason": "PR #5 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    {
+      "name": "fix/budget-saved-row-css-specificity",
+      "sha": "077180ef8b74fd89a342d56587df7aae2a900a75",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/budget-two-column-layout",
+      "sha": "a605ef4aee70e2b2a0f497a0a35b5482f3367055",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/bump-spend-css-cache-v21",
+      "sha": "24c6c31bf33454c9446f2bd10e12469565a444ab",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-collector-http-errors-20261118",
+      "sha": "9b29581aabb3f6ea95c4e1aac459e8cac4e3827a",
+      "github_protected": false,
+      "open_pr": {
+        "number": 270,
+        "sha": "9b29581aabb3f6ea95c4e1aac459e8cac4e3827a",
+        "title": "Coach BEP — fiabiliser les erreurs de collecte HTTP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/270"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #270 ouverte ; conserver."
+    },
+    {
+      "name": "fix/coach-contextual-conversation",
+      "sha": "711f53c8644da12b54821faa472b3e94a7e88085",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-conversation-container-20261119",
+      "sha": "6314d6c21f3497b5d53cd9b3e095927a5e9f9fc4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-conversation-fallback-20261119",
+      "sha": "735e0e934c0c7a5bc1e770f7599cea6606e84838",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-explorer-hidden-on-entry-20261119",
+      "sha": "19e7b817cb0492dfa87483ff2ed50a9389a1bd88",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-explorer-hide-all-themes-20261119",
+      "sha": "2cbd5c18862b1d81180b6717065b4562bca968b8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-external-ai-consent-gate-20261113",
+      "sha": "da6704a58739f2f228258ddf53edea91060c5af6",
+      "github_protected": false,
+      "open_pr": {
+        "number": 149,
+        "sha": "da6704a58739f2f228258ddf53edea91060c5af6",
+        "title": "Fix — consentement explicite pour le Coach IA externe",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/149"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #149 ouverte ; conserver."
+    },
+    {
+      "name": "fix/coach-financial-context-validation",
+      "sha": "762e9b21ea1a82ae717d4acb49d93b1124e34217",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-form-vertical-layout-20261119",
+      "sha": "6ef5c425446ca83733eced516cbe2935a594fd94",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-grounding-quota-metering",
+      "sha": "7a689fb54945cd802393b55a547193986a606ab5",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-local-budget-vs-actual-explanation",
+      "sha": "b9a9a95ebe17054edc579200a796b4692fda48ee",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-local-documentary-user-space",
+      "sha": "99cf5d5548cb5131a91a545fe1023959d6d9f0e0",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-local-fallback-understands-intent",
+      "sha": "9aff815e9d348f19de616cf0bc6e8908caae5943",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-local-intent-and-calculations",
+      "sha": "1740232824f4d33fc1ae7728187db3e5c9d9ed11",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-mobile-navigation-20261119",
+      "sha": "2a7003f77f0325cfb18300bc63e4fa2ef5bbe618",
+      "github_protected": false,
+      "open_pr": {
+        "number": 287,
+        "sha": "2a7003f77f0325cfb18300bc63e4fa2ef5bbe618",
+        "title": "fix(coach): simplifier la navigation mobile",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/287"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #287 ouverte ; conserver."
+    },
+    {
+      "name": "fix/coach-mobile-navigation-clean-20261119",
+      "sha": "9182b626849fc2d468d30459dc60aabdc86819f0",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-mobile-visual-continuity-20261119",
+      "sha": "b9e2b54d84d64b52cf5967dd5208872c5bd405e8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-no-false-zero-and-relevance",
+      "sha": "03e90d88958e9996baf35dc3ed7a533d05300680",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-objectives-mobile-layout-20261119",
+      "sha": "4b886ea3064fff7ba6713d79add30c5eb46a61ee",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-only-local-agent-20261119",
+      "sha": "6f3395d4ff958d92ff5baa20684c8505d476f9da",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-only-on-coach-tab",
+      "sha": "1061c60b478d50c408484779df965e4d315dede2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 2
+      },
+      "reason": "PR #316 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    {
+      "name": "fix/coach-panel-only-coach-tab-20261119",
+      "sha": "3f3b8b0a3e8598962b16fcc82c11fa2841181d59",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-prompt-input-visible-20261119",
+      "sha": "81aa215d97c4ea00dcfa4b034868425333c0712d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-relevance-intent-precision",
+      "sha": "1c72fd57d601e1ae41c38b25cddb3da75fd58b6f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-relevance-intent-precision-v2",
+      "sha": "d98e82116e68e30c08c154f4a93fdf78d633d2ce",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-research-page-and-robot-fallback",
+      "sha": "c511ea9ff01f0e4c1dd8b2d23ceb42a869c95e80",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-robot-cache-refresh-20261119",
+      "sha": "0cc6a9605627ab01f774888302fc9e80d65d56cc",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/coach-single-dropdown",
+      "sha": "7fa897e9d9dc9269a9f7eb567b5ef8506da2e72c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/connection-state-and-reload-guards",
+      "sha": "a019a7ddcf44e0e2e1b9057e1f28095d9834099a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 217
+      },
+      "reason": "Aucun PR exact sur cette branche ; les commits sont déjà dans main. À vérifier comme ancien pointeur de travaux liés à la connexion/session."
+    },
+    {
+      "name": "fix/conseil-bep-remove-minimize",
+      "sha": "e86376ec0d9ba5919e0a7e31094f7f8a3e37ec2e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/csp-connect-src-origin-validation",
+      "sha": "7924ae0f6cab4c9ed0a352e61217061c7c39568f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/embed-expert-prompt-in-json",
+      "sha": "09b1a7724bb390bfd2ee24f3665ff593e417e4c1",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/final-spend-assets-cache-bust-20261114",
+      "sha": "c6aeb6030c052f6388d20ddb79be4395e692f437",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/financial-persistence-recette-20261114",
+      "sha": "56ad32ea07654f0424acc87ee2c2e17e229df484",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/force-hide-coach-outside-tab-20261119",
+      "sha": "8e6822584981475e0411fb4a4f9dcd4a723036e6",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/gemini-503-retry-diagnostics-20261116",
+      "sha": "07d9e51fcd6d326d32f189332a42292e734c3635",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/gemini-agent-independent-admin-auth",
+      "sha": "8bf327e5deb83357cbf984b744fd2485c13cb637",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/gemini-free-tier-activation",
+      "sha": "0d7cd6e336929a0eb859c08e97ed7a42188ad695",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/gemini-search-interactions-api-20261116",
+      "sha": "e57128b96724186d3b3946ab6a0496096ef33649",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/google-login-session-transition",
+      "sha": "6309212e2bce31850fc89bef7820fdbb9d1a78a7",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/google-oauth-mobile-popup-20261115",
+      "sha": "cced7ab267603df825c04526dcb7d5198975f612",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/google-oauth-wake-api",
+      "sha": "9430ab3c36b1797835ca0727e29768c7699f401d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/hide-advice-dock-in-expenses",
+      "sha": "2a23165a4366861dc60a55c87a827053718a5500",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/home-dashboard-financial-totals",
+      "sha": "3c72e25fdd7e3687e0d8d200d61ac5e22cd18a2f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/home-savings-capital",
+      "sha": "75f5f7e6c865b1be2dc65feb94cc9f78d0300009",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/homepage-welcome-pills-horizontal-20261119",
+      "sha": "2f36c8582cd755f60cc5f8c73e568ad8922f9db2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/income-assistant-layout",
+      "sha": "cb0c3b7af9ddb3e6eccc62168d83c626c7463bc9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/income-checkup-editable-types",
+      "sha": "3fbe2c24b9677df5df8c931c40a344cec2ab44e0",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/income-dialogs-and-ux",
+      "sha": "fae2701093cb84129c1297dde8eb228c2a66a82d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/isolate-coach-workspace-20261119",
+      "sha": "caad204e352653a95998a077b9d7d65db87baa3f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/local-clear-render-error-20261114",
+      "sha": "386f071a1ded2f1f02ce7862982a5866a485d40d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/local-data-clear-button-20261113",
+      "sha": "bb4db55e89ffad25dc655c2ef1aed67a4245c17b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/local-data-clear-robustness-20261114",
+      "sha": "1bdf59c0c3687011ef432b2ffe83d71f335bc7bb",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/manual-ingestion-dns-lookup-20261116",
+      "sha": "b8b46f2c8a5cf5abddfb8c044c06cc6e1ecf637d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/mobile-budget-tiles-two-columns-20261114",
+      "sha": "b6f323ad87e4472247e6ec43fa23e733e04891cd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/mobile-footer-and-advice-touch-feedback-20261115",
+      "sha": "05ff0d939f5247667fce1af7ce3387f257471a8d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/mobile-footer-spacing-20261115",
+      "sha": "cdf735de16db6e9511ea37b5c372633d9c4361a0",
+      "github_protected": false,
+      "open_pr": {
+        "number": 218,
+        "sha": "cdf735de16db6e9511ea37b5c372633d9c4361a0",
+        "title": "Réduire l’espace du pied de page sur mobile",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/218"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #218 ouverte ; conserver."
+    },
+    {
+      "name": "fix/mobile-footer-spacing-current-main-20261115",
+      "sha": "67abc8a998e271ae9ad3dec9c6b581929c03610b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/mobile-pwa-cache-refresh-v18",
+      "sha": "dbda5622ad06f651fe3711186a50c1fd3a2b91cf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/month-calendar-on-demand",
+      "sha": "b8b887740c416d1920a9931bfbf886a1b0d9d215",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/month-key-date-normalization",
+      "sha": "51406e51ab7dbcc600ef620c6ba092c51a3460fa",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/monthly-actuals-refresh-js-audit",
+      "sha": "19b6ef0e14e167979fd6db06b23eade7928a813b",
+      "github_protected": false,
+      "open_pr": {
+        "number": 94,
+        "sha": "19b6ef0e14e167979fd6db06b23eade7928a813b",
+        "title": "Actualiser les dépenses mensuelles et fiabiliser les contrôles JS",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/94"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #94 ouverte ; conserver."
+    },
+    {
+      "name": "fix/monthly-actuals-refresh-production",
+      "sha": "73d8a12878439abd739b717144b08b9b72f52363",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/monthly-budget-create-reload-latency",
+      "sha": "34aeb16fb00a5574e05c3cbd596bdb67f9ea0eeb",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/monthly-budget-offline-prod",
+      "sha": "c1c20b21fbdda3b0777685d413fd846589fb9355",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/monthly-budget-row-icon-actions",
+      "sha": "77038be4889edf44b6c2e994fc260045af5505ce",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/monthly-home-financial-snapshot",
+      "sha": "65fe1bedd494877c9d6174068c228eb525047bff",
+      "github_protected": false,
+      "open_pr": {
+        "number": 288,
+        "sha": "65fe1bedd494877c9d6174068c228eb525047bff",
+        "title": "Fix homepage financial snapshot from monthly budget",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/288"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #288 ouverte ; conserver."
+    },
+    {
+      "name": "fix/move-coach-knowledge-link-to-admin",
+      "sha": "6326289878392a54f1807caeabaff2348f88afee",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/multi-device-session-sync",
+      "sha": "31dc21dee35eab95b0468a86bb2a2bc45ab16f33",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 45
+      },
+      "reason": "PR #290 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    {
+      "name": "fix/null-profile-email-dom-20261114",
+      "sha": "e45560a19606eb679f5f4fd9d227238e528697bf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/offline-global-revocation-guard",
+      "sha": "6c407d254898e5350f701c8bd689f1bdcdaa2922",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/offline-logout-auth-state",
+      "sha": "5dde8aceb7a82902fa74bb66fd4f85050e11ef1e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/offline-logout-auth-state-main",
+      "sha": "c83062063f50e578587baa3079eb80ca13372321",
+      "github_protected": false,
+      "open_pr": {
+        "number": 130,
+        "sha": "c83062063f50e578587baa3079eb80ca13372321",
+        "title": "[WIP] Séparer déconnexion, authentification et mode hors ligne",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/130"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #130 ouverte ; conserver."
+    },
+    {
+      "name": "fix/overdraft-delete-no-validity-20261115",
+      "sha": "0092edc4287de79dd4863cf02f2b00c642b7b7db",
+      "github_protected": false,
+      "open_pr": {
+        "number": 223,
+        "sha": "0092edc4287de79dd4863cf02f2b00c642b7b7db",
+        "title": "Allow deleting overdraft authorization and remove validity date",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/223"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #223 ouverte ; conserver."
+    },
+    {
+      "name": "fix/overdraft-delete-no-validity-current-main-20261115",
+      "sha": "9702ed11b7c7ce5237788f84540e3092b4d3ee2e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/per-device-rate-limits-20261114",
+      "sha": "a4a6fae46c3d5679f3b8edf617bf17c580d00a5f",
+      "github_protected": false,
+      "open_pr": {
+        "number": 173,
+        "sha": "a4a6fae46c3d5679f3b8edf617bf17c580d00a5f",
+        "title": "BEP — limiter API isolé par appareil",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/173"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #173 ouverte ; conserver."
+    },
+    {
+      "name": "fix/persist-income-array",
+      "sha": "447dd15e7706a8f32317db5ad29c95f84789a8a9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/preserve-treasury-offline-sync",
+      "sha": "da4bc89e71e9789d9dea0e8ee25dc9004d4a1dbb",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/production-home-overdraft-coach-mobile-compact-20261115",
+      "sha": "1ecb25800a171415564f2bc76ae65454d1356288",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/production-purchases-panel-isolation",
+      "sha": "e0871b1ce03c26adc3ead99ae0c515c6aaaf09dc",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-cache-and-save-20261113",
+      "sha": "9b50fc2da03e78057d3df75fe305e004e80e5932",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-direct-edit-modal-20261113",
+      "sha": "90054b3cea5b1f7fb6df622eb9d5b969886b71e3",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-direct-form-cache-v10-20261113",
+      "sha": "05ebcd8fd071b7a80f633b3ef9de2e5b87a22747",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-direct-form-sw-regex-20261113",
+      "sha": "8a8925bbb721c561d658ec438b7cb20ad969dca4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-modal-center-20261114",
+      "sha": "128420e3b5486dcedd68daa952131b0c1e8646b0",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-modals-open-directly-20261113",
+      "sha": "ab3846738071907097c967710d579c906065923a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-pwa-stale-shell-20261114",
+      "sha": "9e31e92aa31d39ce6005667bc2cf71eb571d4b9b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-settings-direct-action-20261114",
+      "sha": "4d18b44dffbf0fb793a61f25b5a300a011b70e39",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/profile-single-view-edit-modal-20261113",
+      "sha": "b598a543d39e7c0c0a8b010e4bf66459884f6748",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/publish-spend-highlight-dist-css-20261114",
+      "sha": "59c19cbe5dc85a749b74f692f7a59d1b293def98",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/publish-spend-history-fix-20261114",
+      "sha": "f476927c8e87d271a798cafa5a44df5e560acdff",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/published-bundle-income",
+      "sha": "7338a9a2d969facf0e64b1d24118fa57ed29e26e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/purchases-history-interactions-20261114",
+      "sha": "e0fe2105a7ebc3620fe0d635b7614cfdd313fede",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/pwa-cache-invalidation-v27",
+      "sha": "7c12fc34f492289b03945e6a57451d5490c74d0c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "DELETE_CANDIDATE",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 11
+      },
+      "reason": "PR #315 fusionnée ; aucune dépendance Render ni PR ouverte."
+    },
+    {
+      "name": "fix/pwa-design-and-charge-deletion-guard",
+      "sha": "a86e051801fbe94bb5ec9f35c5d83fcb70e5fb1b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/pwa-design-deletion-guard-verified",
+      "sha": "2992cf375ee5e14fd21872b4c46c11b0fdbff77b",
+      "github_protected": false,
+      "open_pr": {
+        "number": 211,
+        "sha": "2992cf375ee5e14fd21872b4c46c11b0fdbff77b",
+        "title": "Fix PWA source drift and prevent deleted charges from returning",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/211"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #211 ouverte ; conserver."
+    },
+    {
+      "name": "fix/remove-budget-expense-shortcut",
+      "sha": "2cee33f675e19aa1089fe4de93b51aaf194ba828",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/remove-profile-cancel-button",
+      "sha": "3ad78533b4c073b1e719998d175b543bd88ed91b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/restore-production-home-design",
+      "sha": "f3b14241269e64b19af4b6d9592fdd81cfe17a6f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-budget-row-layout-final",
+      "sha": "2610b2b0c288ca84b995ad13ddd3e4d36addf843",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-income-charge-selection-layout",
+      "sha": "9eda54f6bd1f5da8158cf9a3b7e3a479a0b33db9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid",
+      "sha": "38c75e0dbdb7e865ed96e35c17f063ea9cef98f8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid-v2",
+      "sha": "481fdaf7f5a563938e13eb665ccb41353e5e0868",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid-v3",
+      "sha": "96d99094d5ab0ea4b30a703d8ca382449ead5b38",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-list-selection-grid-v2",
+      "sha": "7df082eecb759a79a98440ecb1564eb83fa92059",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-lists-reuse-purchase-row-design",
+      "sha": "252ec9e48d378d057b181e348ea999f3c21d510f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-row-price-right-align-v2",
+      "sha": "0e3e53c29f6c9e7b0010957d5c4e85421a179bb2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/saved-rows-match-expense-grid-exactly",
+      "sha": "c37b6d308b98cbb81c2665692d946cd056de7906",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/savings-capacity-consistency",
+      "sha": "f3e334571fb827c086a234b6163371f7573e5c64",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/savings-goals-shared-collapse",
+      "sha": "94f92148e409c45230ffe86152feec316cb71998",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/savings-ring-counter-replay-v18",
+      "sha": "d6a79c551241b7d14b32ea282965ff93199532cf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/selection-checkbox-inside-purchase-main",
+      "sha": "b8943439cc10784ca0723b2389e9e3e64ba19cbb",
+      "github_protected": false,
+      "open_pr": {
+        "number": 87,
+        "sha": "b8943439cc10784ca0723b2389e9e3e64ba19cbb",
+        "title": "Corriger l’emplacement de la case de sélection des revenus et charges",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/87"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #87 ouverte ; conserver."
+    },
+    {
+      "name": "fix/selection-checkbox-inside-purchase-main-v2",
+      "sha": "dd04171482fa20ae379690e9d3eba1224404233c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-and-remove-floating-coach-robot-20261119",
+      "sha": "62120a72b976913178146a8c0db5783fc90ae8f3",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-dist-production-20261113",
+      "sha": "9a8de017eb9abbd108e48a8ed425df81bfbdcd04",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-exclusive-panel-close-20261113",
+      "sha": "d8cdab24fe026084356bf75aea646a0a3729dd9a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-icon-only",
+      "sha": "f149e233b88c53d4fa605a72a310cf83e4d47d72",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-navigation-state-refresh-20261113",
+      "sha": "a071dda7c78fcf88d7176156b51c40e75cd9bd7b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-panel-modal-navigation-20261113",
+      "sha": "54075acea933fc692a5c4c964577e77f52ba0cab",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-panel-rendering-20261119",
+      "sha": "287390185541bf5902120b7f573aa3d1356c98c4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/settings-profile-dialog-handlers-dist-20261113",
+      "sha": "30cda899191cf07d9da4cffb79e6d6e0d5bc9759",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/spend-clean-ui-cache-bust-20261114",
+      "sha": "903d8d4bcc55502f6763f2e1b84f7b22fbfbb252",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/spend-impulse-kpi-overflow",
+      "sha": "03a5adc63c50d74f02f11d280ac521e542f230cf",
+      "github_protected": false,
+      "open_pr": {
+        "number": 212,
+        "sha": "03a5adc63c50d74f02f11d280ac521e542f230cf",
+        "title": "Fix mobile impulse KPI overflow on expenses page",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/212"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #212 ouverte ; conserver."
+    },
+    {
+      "name": "fix/spend-loading-advice-click-20261115",
+      "sha": "aa85116da2afbea3cd9520cf086066be340e5c1e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/spend-monthly-header-stats",
+      "sha": "343ca85c1432bb0db0304fb5ee5b469ef97f88c8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/spending-actions-survive-clean-ui-20261114",
+      "sha": "f2ee3469e33b64aa33f932ce8128a6c71774021e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/spending-page-ui-final-20261114",
+      "sha": "77efafaffdcb8d8d4a8c926b5e626d87163550e4",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/trusted-offline-client-release-20261113",
+      "sha": "e5af8c5e64457cd9626650fc1d965266868b003f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "fix/trusted-offline-snapshot-20261113",
+      "sha": "8c05bc549256e1136239dfe99a8e30686e329c59",
+      "github_protected": false,
+      "open_pr": {
+        "number": 147,
+        "sha": "8c05bc549256e1136239dfe99a8e30686e329c59",
+        "title": "[Draft] Protect offline snapshots and monthly budget selection",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/147"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #147 ouverte ; conserver."
+    },
+    {
+      "name": "governance/bep-environment-contract-v1.1-2026-11-12",
+      "sha": "3cbc83f1d81e8e7a42b6af6e9f0ae656b3124f4c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "governance/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille governance/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "hotfix/api-init-sql-and-purchase-advice-2026-11-12",
+      "sha": "2dde5eb75db5f1d312706a22e2d974d124677748",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "hotfix/mobile-mutation-observer-20261115",
+      "sha": "82a13e9c6457cca57d380061a833aff59b974898",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "implementation/gemini-supervisor-v2-20261114",
+      "sha": "e7f8102c2033be15c67cb6e4b170a72c2db28852",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "HUMAN_REVIEW_BEHIND_ONLY",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 203
+      },
+      "reason": "PR #160 fermée sans fusion ; conserver pour revue humaine malgré l'absence de commits exclusifs à main."
+    },
+    {
+      "name": "improve/coach-knowledge-relevance-20261118",
+      "sha": "06d71be450871c1af319d11335715f022dffe0c3",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "integration/savings-budget-reconciliation-2026-11-12",
+      "sha": "b45411eacdb735418f9c7773a3911746f462cbce",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "integration/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille integration/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "integration/v1.3-baseline-20261114",
+      "sha": "8a56d25607681002f82dd7b86765ac251a663080",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "integration/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille integration/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "main",
+      "sha": "ec4f073e8c00a8b820b270bf308109037ec42cb2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-coach-qa-lab",
+          "id": "srv-dbr50qt9fdbs73d9t37g",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-budget-test",
+          "id": "srv-dbr2rkuc6qcc73aghgpg",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-depenses-preview",
+          "id": "srv-dbr2r3bl550s73c40hq0",
+          "autoDeploy": "no"
+        },
+        {
+          "service": "bep-coach-staging-api",
+          "id": "srv-dbqggrgae00c738bbe00",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-coach-staging",
+          "id": "srv-dbqggq2jnfac738kgmtg",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-savings-staging",
+          "id": "srv-dbqfa7egekts73ebc980",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-savings-staging-api",
+          "id": "srv-dbqf7mqfngtc73fdsk5g",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-loadtest-api",
+          "id": "srv-dbqb5it9fdbs73c55oig",
+          "autoDeploy": "yes"
+        },
+        {
+          "service": "bep-v2-api",
+          "id": "srv-dbpbcb5bedkc73893520",
+          "autoDeploy": "no"
+        },
+        {
+          "service": "bep-mobile",
+          "id": "srv-dbpb7ubbc2fs739nec5g",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "PROTECTED_CORE",
+      "comparison_to_main": null,
+      "reason": "Branche principale ; ne pas supprimer."
+    },
+    {
+      "name": "perf/bep-startup-optimization-2026-11-13",
+      "sha": "6a601d142f10d7e2245724af77ee2726602043d0",
+      "github_protected": false,
+      "open_pr": {
+        "number": 106,
+        "sha": "6a601d142f10d7e2245724af77ee2726602043d0",
+        "title": "Intégrer les optimisations de chargement BEP à main",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/106"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #106 ouverte ; conserver."
+    },
+    {
+      "name": "perf/lazy-load-feature-assets-20261113",
+      "sha": "f478eb4d704278a9807b76adea3262677cbed854",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "perf/module-isolation-20261114",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "HUMAN_REVIEW_BEHIND_ONLY",
+      "comparison_to_main": {
+        "ahead": 0,
+        "behind": 216
+      },
+      "reason": "SHA partagé avec les références backup/release V1.3 ; conserver comme pointeur de jalon historique."
+    },
+    {
+      "name": "qa/bep-v1.3-4d522c94",
+      "sha": "4d522c94caab98efc7e3d825675621abb42250de",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-v13-qa-4d522c94",
+          "id": "srv-dbrrfq8n74is7381lro0",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": "qa/",
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "qa/certification-preflight-20261115",
+      "sha": "3b8cee34b8262a717e9f9e345aff942e2a07ce21",
+      "github_protected": false,
+      "open_pr": {
+        "number": 199,
+        "sha": "3b8cee34b8262a717e9f9e345aff942e2a07ce21",
+        "title": "QA: sécuriser et fiabiliser le préflight de certification BEP",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/199"
+      },
+      "render_services": [],
+      "preservation_family": "qa/",
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #199 ouverte ; conserver."
+    },
+    {
+      "name": "refactor/auth-css-js-isolation-20261113",
+      "sha": "27dd4e935b520fae1207a6932f2f29d3369dd3f5",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "refactor/auth-module-contract",
+      "sha": "aaa877dd8fb219e3795b48668435bffd4f49508c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "release/BEP-v1.3-production-stable-20261114-0226",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/BEP-v1.4-IA-Agent-production-20261114",
+      "sha": "5cae41acdafbc602041b34fb41a77cbcee61a8dd",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/BEP-v1.5-pre-prod-v2-20261114",
+      "sha": "320f57a9032b702839ac8f11ccfe78c68290618d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/budget-list-layout",
+      "sha": "5ef4117c310c69735adb559e8c72e5444e673f8e",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/expenses-proof-import-20261112",
+      "sha": "b47afd62e830bff2bb756892b66e1ac9bf81e89c",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/financial-modals-prod",
+      "sha": "778bf18be39f383ec95874cefd4ce0b07f1a5bec",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/prod-v1.1-2026-11-12",
+      "sha": "4269bb01d3a35772a77a6a28e3c24654782bebcf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/prod-v1.2-stable-2026-11-13",
+      "sha": "75f89f6f6ead38502b23406b6d37268fd60d4f06",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/prod-v1.3-2026-11-13",
+      "sha": "dc4de67dafd14258062701492dc2f06180b9db3b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/prod-v1.3-stable-2026-11-14",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "release/spend-challenges-available-advisor-2026-11-12",
+      "sha": "18662c90f1208d2f0e38937de761872804c83f66",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "release/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille release/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "research/coach-sources-enrichment-20261116",
+      "sha": "b8437746a01e22b2ca191ce3d198bf65ac0aefd4",
+      "github_protected": false,
+      "open_pr": {
+        "number": 234,
+        "sha": "b8437746a01e22b2ca191ce3d198bf65ac0aefd4",
+        "title": "docs(coach): enrichir les sources financières officielles",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/234"
+      },
+      "render_services": [],
+      "preservation_family": "research/",
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #234 ouverte ; conserver."
+    },
+    {
+      "name": "revert/auth-banner-full-width",
+      "sha": "65afc65920bf7e99cf9687c403ae2bfc55dbf5f2",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "revert/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille revert/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "revert/bep-startup-loader",
+      "sha": "9f22d34710894e8d526be7c6c0eb3d4838872a56",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "revert/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille revert/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "rollback/restore-1141-20261119",
+      "sha": "f6190af52a49419cde7dc06e07f2a9d8515c243b",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "rollback/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille rollback/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "security/hardening-2026-11",
+      "sha": "e7d3a70fbd70bb19464e8f885afbc75a404aa12f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "security/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille security/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "security/phase-1-granular-admin-audit",
+      "sha": "013ae945c6afe1651e853b23c9bba450631b434b",
+      "github_protected": false,
+      "open_pr": {
+        "number": 267,
+        "sha": "013ae945c6afe1651e853b23c9bba450631b434b",
+        "title": "Sécuriser les permissions administrateur et les validations documentaires",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/267"
+      },
+      "render_services": [],
+      "preservation_family": "security/",
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #267 ouverte ; conserver."
+    },
+    {
+      "name": "security/savings-module-guard-2026-11-12",
+      "sha": "06cd9d5bedb05e46a3da54ba10bcebfaa0597e94",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "security/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille security/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "security/shared-rate-limit-2026-11",
+      "sha": "a54e8003669f449699ad70e2fcc91280eab6301d",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "security/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille security/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "simulation/coach-corpus-3mo-20261114",
+      "sha": "a2106bb81807ec3217c46f42af57664f4d92cd97",
+      "github_protected": false,
+      "open_pr": {
+        "number": 161,
+        "sha": "a2106bb81807ec3217c46f42af57664f4d92cd97",
+        "title": "BEP V1.6 — corpus Coach synthétique JSON sur trois mois",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/161"
+      },
+      "render_services": [],
+      "preservation_family": "simulation/",
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #161 ouverte ; conserver."
+    },
+    {
+      "name": "stable/savings-v1-2026-11-12",
+      "sha": "fc9de65601f8603e097d827cbfc450e47907befa",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "stable/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille stable/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "stable/1.0.0",
+      "sha": "ecc70c0705b721865933050939f46aaaf00c88e7",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "stable/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille stable/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "stable/2026-11-10",
+      "sha": "4312eea026731ed1201b6986d5e53cc0da2a8774",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "stable/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille stable/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "test/bep-coach-functional-20261114",
+      "sha": "77209f7ea0e98b591899ded7a15d4d5f55e95471",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-coach-functional-test-api-vouu",
+          "id": "srv-dbrqpa3rjlhs73c8ts70",
+          "autoDeploy": "no"
+        },
+        {
+          "service": "bep-coach-functional-test",
+          "id": "srv-dbrqoj5bedkc738ih4p0",
+          "autoDeploy": "no"
+        }
+      ],
+      "preservation_family": "test/",
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "test/gemini-agent-triggered-validation-20261118",
+      "sha": "a6b18f687a89818bb9deb5ab0e0f87b68b5e9da5",
+      "github_protected": false,
+      "open_pr": {
+        "number": 285,
+        "sha": "a6b18f687a89818bb9deb5ab0e0f87b68b5e9da5",
+        "title": "test: validate Gemini Agent telemetry isolation",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/285"
+      },
+      "render_services": [],
+      "preservation_family": "test/",
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #285 ouverte ; conserver."
+    },
+    {
+      "name": "test/k6-production-load-20261115",
+      "sha": "7fbb7150f9b099c50b338c18bf123c62123eb739",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "test/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille test/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "test-v1.1",
+      "sha": "4813e68a4cd1fbdda1a0e716e9eb5557c8cd8b89",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [
+        {
+          "service": "bep-v1-1-test",
+          "id": "srv-dbret3tbedkc73ddihvg",
+          "autoDeploy": "yes"
+        }
+      ],
+      "preservation_family": null,
+      "classification": "RENDER_DEPENDENCY",
+      "comparison_to_main": null,
+      "reason": "Branche référencée par au moins un service Render ; conserver."
+    },
+    {
+      "name": "ui/budget-coach-robot-launcher-20261115",
+      "sha": "1b872da0a337761fa8cf40882297740aeeea1e84",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "ui/coach-ai-settings-bottom",
+      "sha": "e172d76427b633544e8a3e15644be2145b5292b9",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "ui/coach-ai-settings-production",
+      "sha": "a1de4c8d2d79e85a07aad971bab550b3f06adaff",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "ui/coach-gemini-info-panel",
+      "sha": "d9cc19b72a4f9acbec4d23a683e69f4335964cc8",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "ui/header-solid-brand-2026-11",
+      "sha": "002d9b049a91f7d4c98f84d2397e8b20a634e77f",
+      "github_protected": false,
+      "open_pr": {
+        "number": 14,
+        "sha": "002d9b049a91f7d4c98f84d2397e8b20a634e77f",
+        "title": "Harmoniser l’en-tête BEP sur un fond vert uni",
+        "url": "https://github.com/MMG2025-creator/bep-mobile./pull/14"
+      },
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "OPEN_PULL_REQUEST",
+      "comparison_to_main": null,
+      "reason": "PR #14 ouverte ; conserver."
+    },
+    {
+      "name": "ui/settings-navigation-labels",
+      "sha": "14f220a358957a0df0cb1dd2ede4bef4789cb184",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": null,
+      "classification": "KEEP_UNIQUE_COMMITS",
+      "comparison_to_main": {
+        "ahead_positive": true
+      },
+      "reason": "Comparaison avec main : ahead > 0 ; contient des commits non présents dans main."
+    },
+    {
+      "name": "work/offline-api-guard-20261113",
+      "sha": "864ce0fd027df64e5e1e12f16f40a2df42b6fe24",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-api-response-20261113",
+      "sha": "b8dd805c7b8a12661b6c3ed02295e7eaa80a240a",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-conflict-ui-20261113",
+      "sha": "256d95b52df3f92c78379f428a3c1d9abfe462e5",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-conflict-ui-rebased-20261113",
+      "sha": "3149a6d4d0067a9831dfb847b57a55fece7fb7ee",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-phase4-20261113",
+      "sha": "e7d2f9d373211bc0b1977af310fbd130e3ef1e77",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-phase4-canonical-20261113",
+      "sha": "a7d79544b3d8996d3b764dbfb29e49c11650dfaf",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    },
+    {
+      "name": "work/offline-phase4-rebased-20261113",
+      "sha": "bc3e92311382165b2dac3cb4339825dc50751d8f",
+      "github_protected": false,
+      "open_pr": null,
+      "render_services": [],
+      "preservation_family": "work/",
+      "classification": "HISTORICAL_OR_CONTROL_REFERENCE",
+      "comparison_to_main": null,
+      "reason": "Famille work/ ; conserver jusqu'à arbitrage explicite."
+    }
+  ]
+}
