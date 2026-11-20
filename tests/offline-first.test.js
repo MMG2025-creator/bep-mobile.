@@ -31,7 +31,7 @@ test("offline startup restores the local session and sets the remote baseline",(
 test("source and published service workers use the same cache and include offline dependencies",()=>{
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
- assert.match(source,/bep-shell-v27/);
+ assert.match(source,/bep-shell-v29/);
  assert.match(source,/await cache.addAll\(APP_SHELL\);[\s\S]*await self.skipWaiting\(\)/);
  assert.match(source,/key.startsWith\("bep-"\)/);
  assert.match(source,/\.\/settings\.css/);
@@ -49,9 +49,9 @@ test("PWA update checks refresh the service worker and offer a safe user-trigger
  assert.equal(pwa,read("dist/pwa.js"));
  assert.match(pwa,/updateViaCache:"none"/);
  assert.match(pwa,/registration\.update\(\)/);
- assert.match(pwa,/5\*60\*1000/);
+ assert.match(pwa,/5\*60\*1000/);\n assert.match(pwa,/let updateInFlight=null/);\n assert.match(pwa,/let lastUpdateAttempt=0/);\n assert.match(pwa,/now-lastUpdateAttempt<60000/);\n assert.match(pwa,/sw\.js\\\?v=29/);
  assert.match(pwa,/controllerchange/);
- assert.match(pwa,/Une nouvelle version de BEP est disponible/);
+ assert.match(pwa,/vérification de mise à jour impossible/);
  assert.match(pwa,/window\.location\.reload\(\)/);
  assert.match(pwa,/data-bep-update-dismiss/);
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=12/);
