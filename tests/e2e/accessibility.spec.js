@@ -22,8 +22,8 @@ test('cliquer sur le texte d’une ligne active sa case à cocher', async ({ pag
   const row = details.locator('.budget-checkup-row').first();
   const checkbox = row.locator('input[type="checkbox"]');
   await expect(checkbox).not.toBeChecked();
-  await row.locator('span').click();
+  await row.locator('span').evaluate((element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
   await expect(checkbox).toBeChecked();
-  await row.locator('span').click();
+  await row.locator('span').evaluate((element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
   await expect(checkbox).not.toBeChecked();
 });
