@@ -605,4 +605,15 @@
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',sync);
 })();
 </script>
+<script id="bep-budget-checkup-row-accessibility">
+// Keep the text part of a checkbox row actionable after using a neutral div wrapper.
+document.addEventListener('click', (event) => {
+  const text = event.target.closest('.budget-checkup-row > span');
+  if (!text) return;
+  const checkbox = text.parentElement.querySelector('input[type="checkbox"]');
+  if (!checkbox || checkbox.disabled) return;
+  checkbox.checked = !checkbox.checked;
+  checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+});
+</script>
 </body></html>
