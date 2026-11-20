@@ -26,7 +26,6 @@ const APP_SHELL=[
   "./spend-experience.js",
   "./spend-clean-ui.js",
   "./spend-clean-ui.css",
-  "./receipt-ocr.js",
   "./icons/bep-icon.svg"
 ];
 self.addEventListener("install",event=>{
