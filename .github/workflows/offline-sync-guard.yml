@@ -8,7 +8,7 @@ on:
       - "tests/offline-sync-api.test.js"
       - ".github/workflows/offline-sync-guard.yml"
   pull_request:
-    branches: [main]
+    branches: [main, fix/global-audit-pwa-regression-20261120]
     paths:
       - "server.js"
       - "tests/offline-sync-api.test.js"
