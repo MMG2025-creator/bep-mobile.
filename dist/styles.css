@@ -2111,3 +2111,8 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
  .coach-privacy{margin-top:12px!important;font-size:11px!important}
 }
 
+
+/* Stable Coach form selectors retained for the tab-contained conversation. */
+#coachPromptForm.coach-prompt-form{display:grid!important;grid-template-columns:minmax(0,1fr);gap:10px;width:100%;min-width:0;margin:4px 0 14px}
+#coachPromptForm.coach-prompt-form textarea{display:block!important;width:100%!important;min-width:0}
+#coachPromptForm.coach-prompt-form button{display:block!important;width:100%!important}
