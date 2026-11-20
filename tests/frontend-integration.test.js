@@ -171,7 +171,7 @@ test("destructive settings actions require an explicit BEP confirmation dialog",
  assert.ok(offline.includes("if(pending!==null&&pending!==undefined)throw Error("),"pending offline changes must block local erasure");
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/app\.js\?v=130&bep=coach-chat-first-faq-modal-objectives-20261119/);
+  assert.match(html,/app\.js\?v=131&bep=coach-chat-first-faq-modal-objectives-20261119/);
   assert.match(html,/offline-storage\.js\?v=7&bep=force-remote-refresh-20261119/);
  }
 });
@@ -250,7 +250,7 @@ test("successful local-data clearing does not re-render the cleared application 
  assert.match(handler,/authMessage\.textContent="Les données locales de cet appareil ont été effacées/);
  assert.doesNotMatch(handler,/render\(\);notify\("Données locales effacées"\)/);
  assert.match(handler,/window\.BEPOffline\?\.clearLocalData\)await window\.BEPOffline\.clearLocalData\(\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=130&bep=coach-chat-first-faq-modal-objectives-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=131&bep=coach-chat-first-faq-modal-objectives-20261119/);
 });
 
 test("purchase history observer does not rewrite unchanged hidden attributes",()=>{
@@ -307,8 +307,8 @@ test("source and published homepage are one canonical HTML artifact with the pro
  const source=read("index.html"),published=read("dist/index.html");
  assert.equal(source,published,"dist/index.html must be generated from the canonical source without design drift");
  assert.match(source,/ui-polish\.css\?v=4/);
- assert.match(source,/settings\.css\?v=4/);
- assert.match(source,/pwa\.js\?v=12/);
+ assert.match(source,/settings\.css\?v=5/);
+ assert.match(source,/pwa\.js\?v=15/);
  assert.match(source,/home-financial-snapshot/);
 });
 
@@ -398,7 +398,7 @@ test("monthly expense calendar opens a read-only contextual detail dialog for da
 
 
 test("service worker shell cache is advanced when monthly calendar HTML and assets change",()=>{
- assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v26"/);
+ assert.match(read("sw.js"),/const CACHE_NAME="bep-shell-v29"/);
  assert.equal(read("sw.js"),read("dist/sw.js"));
  assert.match(read("pwa.js"),/updateViaCache:"none"/);
 });
@@ -424,8 +424,8 @@ test("all six homepage financial tiles use the same aligned label, amount and ac
 test("Google OAuth uses direct navigation and does not create a separate popup",()=>{
  for(const file of ["app.js","dist/app.js"]){const app=read(file);assert.ok(app.includes('window.location.replace(API+"/api/auth/google")'));assert.ok(app.includes("window.location.replace(d.url)"));assert.doesNotMatch(app,/window\.open\("about:blank"|bep-google-oauth-result:|flow_id/);}
  const server=read("server.js");assert.doesNotMatch(server,/oauth-popup\.html|flow_id|flowId/);assert.match(server,/oauthPopupRedirect\(res,result,retryAfter\)/);assert.match(server,/if\(req\.session\?\.user\)return res\.redirect\(303/);assert.match(server,/Cache-Control","no-store, no-cache, must-revalidate, private/);assert.match(server,/\^\[a-f0-9\]\{64\}\$/);
- for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v26/);assert.doesNotMatch(sw,/oauth-popup/);}
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=130&bep=coach-chat-first-faq-modal-objectives-20261119/);
+ for(const file of ["sw.js","dist/sw.js"]){const sw=read(file);assert.match(sw,/bep-shell-v29/);assert.doesNotMatch(sw,/oauth-popup/);}
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/app\.js\?v=131&bep=coach-chat-first-faq-modal-objectives-20261119/);
 });
 
 
@@ -438,7 +438,7 @@ test("manual force sync verifies the server session and refreshes remote data wi
  const offline=read("offline-storage.js"),status=read("connection-status.js"),app=read("app.js"),html=read("index.html"),sw=read("sw.js");
  assert.match(offline,/async function forceSync\(\)/);assert.match(offline,/await enqueueChain/);assert.match(offline,/stable\(local\)!==stable\(baseline\)/);assert.match(offline,/bep:remote-data-refreshed/);
  assert.match(status,/forceSyncBtn/);assert.match(status,/window\.BEPOffline\.forceSync\(\)/);assert.match(status,/Données vérifiées récemment/);assert.match(app,/bep:remote-data-refreshed/);
- assert.match(html,/id="forceSyncBtn"/);assert.match(html,/id="forceSyncFeedback"/);assert.match(sw,/bep-shell-v26/);
+ assert.match(html,/id="forceSyncBtn"/);assert.match(html,/id="forceSyncFeedback"/);assert.match(sw,/bep-shell-v29/);
  assert.equal(offline,read("dist/offline-storage.js"));assert.equal(status,read("dist/connection-status.js"));assert.equal(app,read("dist/app.js"));assert.equal(html,read("dist/index.html"));assert.equal(sw,read("dist/sw.js"));assert.equal(read("connection-status.css"),read("dist/connection-status.css"));
 });
 
