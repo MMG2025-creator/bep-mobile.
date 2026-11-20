@@ -1875,7 +1875,7 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 .coach-hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:17px 18px 18px;border-radius:18px}
 .coach-hero h2{margin:9px 0 4px;font-size:clamp(23px,4vw,28px);line-height:1.12}
 .coach-hero-copy>p{max-width:none;font-size:12px;line-height:1.45}
-.coach-hero-visual,.coach-hero-bottom,.coach-hero-assurance{display:none!important}
+.coach-hero-bottom,.coach-hero-assurance{display:none!important}
 .coach-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:4px}
 .coach-tab{min-height:42px;padding:8px 5px;font-size:clamp(10px,2.7vw,12px);line-height:1.15;white-space:nowrap;letter-spacing:-.1px}
 .coach-tab-panel{padding-top:2px}
