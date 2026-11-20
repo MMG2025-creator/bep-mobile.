@@ -126,6 +126,25 @@ test('le robot du Coach reste visible et cadré sur mobile et desktop', async ({
   }
 });
 
+test('un seul bandeau est affiché sur le Coach, sans masquer le bandeau d’accueil ailleurs', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    const welcome = page.locator('.welcome-playful');
+    await page.locator('.tab[data-tab="home"]').click();
+    await expect(welcome).toBeVisible();
+
+    await page.locator('.tab[data-tab="coach"]').click();
+    await expect(page.locator('.tab[data-tab="coach"]')).toHaveClass(/active/);
+    await expect(welcome).toBeHidden();
+    await expect(page.locator('#coach .coach-hero')).toBeVisible();
+    await expect(page.locator('#coach .coach-hero h2')).toContainText('Bonjour');
+
+    await page.locator('.tab[data-tab="home"]').click();
+    await expect(welcome).toBeVisible();
+  }
+});
+
 test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile et desktop', async ({ page }) => {
   await page.route('**/api/auth/status', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'playwright-budget-user', email: 'budget-test@example.invalid' } }) }));
   await page.route('**/api/data', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ payload: {} }) }));
