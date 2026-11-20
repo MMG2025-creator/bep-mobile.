@@ -91,6 +91,93 @@ function snapshot(budget, items) {
 function createMonthlyBudgetRouter({ pool, auth }) {
   const router = express.Router();
 
+  router.post("/charges/sync", auth, async (req, res) => {
+    const monthKey = req.body?.monthKey;
+    const incoming = validateItems(req.body?.items);
+    if (!validMonth(monthKey) || !incoming || incoming.some(item => item.itemType !== "charge" || !item.sourceItemId) ||
+        new Set(incoming.map(item => item.sourceItemId)).size !== incoming.length)
+      return res.status(400).json({ error: "MONTHLY_CHARGE_SYNC_INVALID" });
+    const client = await pool.connect();
+    const userId = req.session.user.id;
+    try {
+      await client.query("BEGIN");
+      const budgets = await client.query(
+        "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key >= $2::date AND status='open' AND deleted_at IS NULL ORDER BY month_key FOR UPDATE",
+        [userId, monthKey + "-01"]
+      );
+      const updatedMonths = [];
+      for (const budget of budgets.rows) {
+        const existing = await client.query(
+          "SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id FOR UPDATE",
+          [budget.id]
+        );
+        const beforeState = snapshot(budget, existing.rows);
+        const bySource = new Map(incoming.map(item => [item.sourceItemId, item]));
+        const existingBySource = new Map(existing.rows.filter(item => item.source_item_id).map(item => [item.source_item_id, item]));
+        let changed = false;
+        for (const row of existing.rows) {
+          const source = row.metadata && typeof row.metadata === "object" ? row.metadata.source : null;
+          if (!row.source_item_id || !["legacy-budget", "legacy-charge-sync"].includes(source)) continue;
+          const replacement = bySource.get(row.source_item_id);
+          if (!replacement) {
+            await client.query("DELETE FROM bep_monthly_budget_items WHERE id=$1", [row.id]);
+            changed = true;
+            continue;
+          }
+          const nextMetadata = { ...(row.metadata || {}), source: "legacy-budget" };
+          if (row.label !== replacement.label || row.category !== replacement.category ||
+              row.nature !== replacement.nature || Number(row.planned_amount) !== Number(replacement.amount)) {
+            await client.query(
+              "UPDATE bep_monthly_budget_items SET label=$2,category=$3,nature=$4,planned_amount=$5,metadata=$6::jsonb,updated_at=NOW() WHERE id=$1",
+              [row.id, replacement.label, replacement.category, replacement.nature, replacement.amount, JSON.stringify(nextMetadata)]
+            );
+            changed = true;
+          }
+        }
+        for (const item of incoming) {
+          if (existingBySource.has(item.sourceItemId)) continue;
+          await client.query(
+            "INSERT INTO bep_monthly_budget_items(budget_id,item_type,source_item_id,label,category,nature,planned_amount,metadata) VALUES($1,'charge',$2,$3,$4,$5,$6,$7::jsonb)",
+            [budget.id, item.sourceItemId, item.label, item.category, item.nature, item.amount,
+              JSON.stringify({ ...(item.metadata || {}), source: "legacy-budget" })]
+          );
+          changed = true;
+        }
+        if (!changed) continue;
+        const sum = await client.query(
+          "SELECT COALESCE(SUM(planned_amount),0)::numeric(14,2) AS total FROM bep_monthly_budget_items WHERE budget_id=$1 AND item_type='charge'",
+          [budget.id]
+        );
+        const totalsResult = await client.query(
+          "SELECT item_type,COALESCE(SUM(planned_amount),0)::numeric(14,2) AS total FROM bep_monthly_budget_items WHERE budget_id=$1 GROUP BY item_type",
+          [budget.id]
+        );
+        const totalsByType = { income: "0.00", charge: "0.00", savings: "0.00" };
+        for (const row of totalsResult.rows) totalsByType[row.item_type] = Number(row.total).toFixed(2);
+        const updated = await client.query(
+          "UPDATE bep_monthly_budgets SET planned_income_total=$2,planned_charges_total=$3,planned_savings_total=$4,version=version+1,updated_at=NOW() WHERE id=$1 RETURNING *",
+          [budget.id, totalsByType.income, totalsByType.charge, totalsByType.savings]
+        );
+        const afterItems = await client.query("SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id", [budget.id]);
+        const afterState = snapshot(updated.rows[0], afterItems.rows);
+        await client.query(
+          "INSERT INTO bep_budget_audit_log(user_id,budget_id,action,before_state,after_state,reason) VALUES($1,$2,'updated',$3::jsonb,$4::jsonb,$5)",
+          [userId, budget.id, JSON.stringify(beforeState), JSON.stringify(afterState), "Synchronisation automatique des charges enregistrées"]
+        );
+        updatedMonths.push({ monthKey: monthKeyFromDate(updated.rows[0].month_key), version: Number(updated.rows[0].version), plannedChargesTotal: updated.rows[0].planned_charges_total });
+      }
+      await client.query("COMMIT");
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ ok: true, updatedMonths });
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
+      console.error("Monthly charge synchronization failed", error.message);
+      res.status(503).json({ error: "MONTHLY_CHARGE_SYNC_FAILED" });
+    } finally {
+      client.release();
+    }
+  });
+
   router.get("/months/deleted", auth, async (req, res) => {
     try {
       const result = await pool.query(
