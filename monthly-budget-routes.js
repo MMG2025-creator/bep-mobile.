@@ -113,11 +113,11 @@ function createMonthlyBudgetRouter({ pool, auth }) {
         );
         const beforeState = snapshot(budget, existing.rows);
         const bySource = new Map(incoming.map(item => [item.sourceItemId, item]));
-        const existingBySource = new Map(existing.rows.filter(item => item.source_item_id).map(item => [item.source_item_id, item]));
+        const existingBySource = new Map(existing.rows.filter(item => item.item_type === "charge" && item.source_item_id).map(item => [item.source_item_id, item]));
         let changed = false;
         for (const row of existing.rows) {
           const source = row.metadata && typeof row.metadata === "object" ? row.metadata.source : null;
-          if (!row.source_item_id || !["legacy-budget", "legacy-charge-sync"].includes(source)) continue;
+          if (row.item_type !== "charge" || !row.source_item_id || !["legacy-budget", "legacy-charge-sync"].includes(source)) continue;
           const replacement = bySource.get(row.source_item_id);
           if (!replacement) {
             await client.query("DELETE FROM bep_monthly_budget_items WHERE id=$1", [row.id]);
