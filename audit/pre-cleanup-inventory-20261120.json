@@ -1,0 +1,5182 @@
+{
+  "generated_at": "2026-11-20",
+  "repository": "MMG2025-creator/bep-mobile.",
+  "main_sha": "ec4f073e8c00a8b820b270bf308109037ec42cb2",
+  "branch_count": 363,
+  "branches": [
+    {
+      "name": "archive/BEP-gemini-supervisor-v2-audit-20261114",
+      "sha": "3b0c8cd7bb07e6dea2a91db01ee9bf184cd4291f",
+      "protected": false
+    },
+    {
+      "name": "archive/BEP-v1.6-pre-prod-v2-20261114",
+      "sha": "f829a0ed6002c0fa8c7057e090dd6fecdbdfbdf6",
+      "protected": false
+    },
+    {
+      "name": "archive/developpements-post-2.0.0-2026-11-19",
+      "sha": "893775ceb534f01143b951eb088be0fc60096d3f",
+      "protected": false
+    },
+    {
+      "name": "archive/savings-preprod-before-production-sync-2026-11-12",
+      "sha": "fc9de65601f8603e097d827cbfc450e47907befa",
+      "protected": false
+    },
+    {
+      "name": "audit/gemini-supervisor-v2-20261114",
+      "sha": "3b0c8cd7bb07e6dea2a91db01ee9bf184cd4291f",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.3-production-stable-20261114-0226",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.3-production-stable-20261114",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.4-IA-Agent-production-20261114",
+      "sha": "5cae41acdafbc602041b34fb41a77cbcee61a8dd",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.5-pre-prod-v2-20261114",
+      "sha": "320f57a9032b702839ac8f11ccfe78c68290618d",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.9-admin-in-progress-pre-import-20261118-api",
+      "sha": "f7b0cc9ba94492370e4fd2ceadc0c463af8ce567",
+      "protected": false
+    },
+    {
+      "name": "backup/BEP-v1.9-admin-in-progress-pre-import-20261118-frontend",
+      "sha": "b53e592c2298c795387da1f7a67f48c6e499ccfd",
+      "protected": false
+    },
+    {
+      "name": "backup/bep-budget-test-2026-11-12",
+      "sha": "f04e2c2145f34634931fead10f516a6291b5824d",
+      "protected": false
+    },
+    {
+      "name": "backup/coach-staging-before-mainline-sync-20261112",
+      "sha": "d88ec4d81345c0059d688574e64397e14b3d08df",
+      "protected": false
+    },
+    {
+      "name": "backup/pre-rollback-2026-11-13",
+      "sha": "6f6382eb0c5af4e64378facad67c803805b151d6",
+      "protected": false
+    },
+    {
+      "name": "backup/prod-2026-11-12",
+      "sha": "4269bb01d3a35772a77a6a28e3c24654782bebcf",
+      "protected": false
+    },
+    {
+      "name": "backup/prod-v1.2-stable-2026-11-13",
+      "sha": "75f89f6f6ead38502b23406b6d37268fd60d4f06",
+      "protected": false
+    },
+    {
+      "name": "backup/prod-v1.3-2026-11-13",
+      "sha": "dc4de67dafd14258062701492dc2f06180b9db3b",
+      "protected": false
+    },
+    {
+      "name": "backup/stable-2026-11-11-password-reset",
+      "sha": "ada905c198a47716c03b9157fcdfa4007dc7b1f9",
+      "protected": false
+    },
+    {
+      "name": "chore/ci-production-sha-validation",
+      "sha": "4c893d92ef574c41ebed2b102c613901173e79c8",
+      "protected": false
+    },
+    {
+      "name": "ci/fix-monthly-budget-asset-checks",
+      "sha": "fd79fbe684c5a5034a2b19757e0204c08fe0f1c4",
+      "protected": false
+    },
+    {
+      "name": "copy/coach-gemini-explanation",
+      "sha": "036109f8de306348f6bdcb0e702470c6d7a26eca",
+      "protected": false
+    },
+    {
+      "name": "demo-local-no-auth",
+      "sha": "57af8816fc462271d3fea47131de539684e302e6",
+      "protected": false
+    },
+    {
+      "name": "deploy/budget-completeness-checkup-mainline-20261111",
+      "sha": "e37b246454332c316a230a75e8430d3cdf8183f2",
+      "protected": false
+    },
+    {
+      "name": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "sha": "81d79c1d3775be8a9bf4164c1934646e0a6d00a3",
+      "protected": false
+    },
+    {
+      "name": "docs/production-certification-no-go-20261115",
+      "sha": "b2fe31452b478051987b1e82b64d7bef4b008307",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-article-accordion-import-cleaning",
+      "sha": "ed635044b71de670dd6d69f4c74931169634f66d",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-auth-loader-20261118",
+      "sha": "ff4af0c8279736e2d9231dee90c4b13a2d5e2c7e",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-coach-knowledge-editor-20261119",
+      "sha": "bb530ddf444c1329d8aafff2a407683a577dd37e",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-gemini-json-documentary-review",
+      "sha": "aa5580914686b35fe4113a537c692818016435f5",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-gemini-ops-visibility-20261116",
+      "sha": "d6c817696d571674a3477e715889a4b592d99841",
+      "protected": false
+    },
+    {
+      "name": "feat/admin-menu-logout-cache-20261118",
+      "sha": "3af02f2c7b9ec76e6c53423dcc8a5b0a517108c8",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-coach-50-source-batch",
+      "sha": "d904d2c4bc7316272ae7a7fa140aed0890a3a167",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-coach-source-registry",
+      "sha": "0ea9814414b36b9add8026bcb745606fe29aa170",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-encrypted-backup-restore-20261114",
+      "sha": "24a2e0bd0cb1cb7b139f54ab361eae707ff044b7",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-financial-knowledge-20-20261118",
+      "sha": "f7fdcc3a90268b5a51bab69eb61f8a36b3a2f702",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-gemini-agent-v1-20261114",
+      "sha": "2199d51f639cb122f8e6fbd770418827b75325bd",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-hybrid-ai-router",
+      "sha": "1ed539214bf33edac7d747be8f7960ddd2c73d74",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-manual-knowledge-import",
+      "sha": "e45cc026c5a1b160a47a2f82ba9baa1ecb888c1e",
+      "protected": false
+    },
+    {
+      "name": "feat/bep-rate-limit-explainer-20261114",
+      "sha": "ff81b57fb9b4245f0f0b489f737ae49b9d1f25b8",
+      "protected": false
+    },
+    {
+      "name": "feat/budget-action-and-receipt-feedback-20261114",
+      "sha": "cc79c840ac0358846419e10d6cc8ab487fb9188c",
+      "protected": false
+    },
+    {
+      "name": "feat/budget-action-cards-income-charges-20261114",
+      "sha": "9072a20ddebaba3e834a345e945bddf6b4682d68",
+      "protected": false
+    },
+    {
+      "name": "feat/budget-advisor-above-modules",
+      "sha": "23cc5f220548e494199193f8c44f5ffc0c9de4ee",
+      "protected": false
+    },
+    {
+      "name": "feat/budget-advisor-above-modules-v2",
+      "sha": "47a8f89607419c0ad2ae03ccbb8e9fdbcf993c52",
+      "protected": false
+    },
+    {
+      "name": "feat/budget-totals-ai-adviser",
+      "sha": "89333d17f98de83aad4752b7c80f7807f6b8a1bf",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-chat-first-faq-modal-objectives-20261119",
+      "sha": "5c40e5172b6038edf496b2852aa93ae2c6ed1d57",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-conversation-first-layout-20261119",
+      "sha": "69c8bcb41b0450bd3a73db0e2453071415110932",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-document-library-explorer",
+      "sha": "bc1567703b3a210a9e20199c65f674ff96fbed23",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-ergonomic-workspace-20261119",
+      "sha": "5e5b076ba4b20cf2e39c1147d8b4be683933129b",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-explorer-accordion-answer-modal-20261119",
+      "sha": "d443e319aaf21f7b1f0ff660dd8f301efe8fabcd",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-explorer-expand-collapse-all-20261119",
+      "sha": "b9b8fe6f142c711a5233d80823b768113089942f",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-personalization-profile",
+      "sha": "864275611e85dd73d403386ae2f394be9688e738",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-personalization-profile-v2",
+      "sha": "87f87f7171169fb88bc15fa4e6433181612e437f",
+      "protected": false
+    },
+    {
+      "name": "feat/coach-two-tabs-objectives-before-chat-20261119",
+      "sha": "aab527ee1ddbcf989851098ee06a9c66edba6ef8",
+      "protected": false
+    },
+    {
+      "name": "feat/compact-budget-action-tiles-20261114",
+      "sha": "b1657043b7a06b3541d8773a6d7c2eab73f88384",
+      "protected": false
+    },
+    {
+      "name": "feat/gemini-admin-console",
+      "sha": "95543b2e4363e27694fa213fcc7dea2e32342afc",
+      "protected": false
+    },
+    {
+      "name": "feat/home-statistics-open-animation",
+      "sha": "f7d1d6119ffa744a524ab8713f9fe3048295d3eb",
+      "protected": false
+    },
+    {
+      "name": "feat/impulse-purchase-history-highlighting-20261114",
+      "sha": "6bf2c339881bd5a784660871df1de03fcf040e0b",
+      "protected": false
+    },
+    {
+      "name": "feat/integrate-coach-research-admin",
+      "sha": "6372a95bf5638fa2016b9725fbb814b689eff7f7",
+      "protected": false
+    },
+    {
+      "name": "feat/login-methods-verification-design",
+      "sha": "ebede38cd17dab38f00cb269b69730a40009753e",
+      "protected": false
+    },
+    {
+      "name": "feat/manual-source-ingestion-20261116",
+      "sha": "ee2a167d8df4a80621f0f1c6ec820a3d7933b1b2",
+      "protected": false
+    },
+    {
+      "name": "feat/manual-source-ingestion-v2-20261116",
+      "sha": "454bd87c41e33ea5628a54acfff2f798c863cf64",
+      "protected": false
+    },
+    {
+      "name": "feat/monthly-budget-navigation-tab",
+      "sha": "47b604e0b27c12558470b5fb0b26441f3a61cb7d",
+      "protected": false
+    },
+    {
+      "name": "feat/monthly-budget-ux-test-proposal",
+      "sha": "badba1a0154134a9e85bc578abf851d82cafd4fd",
+      "protected": false
+    },
+    {
+      "name": "feat/monthly-budget-visual-workspace",
+      "sha": "5384187ddc52c575cef9bd19f40df99c7a170f64",
+      "protected": false
+    },
+    {
+      "name": "feat/persistent-manual-ingestion-queue-20261117",
+      "sha": "a57fe298a3069e4421c71bb823c9d1d40147c572",
+      "protected": false
+    },
+    {
+      "name": "feat/purchase-history-accordion-20261114",
+      "sha": "2eee3f450a6bc8c524d30e262e4336e9f072e761",
+      "protected": false
+    },
+    {
+      "name": "feat/replay-module-chart-animations",
+      "sha": "26ef8b8655e1de6855854088196c4b263b1900ca",
+      "protected": false
+    },
+    {
+      "name": "feat/single-session-connection-status",
+      "sha": "0bd413b4983959bc477c149750f62e8ef59d7974",
+      "protected": false
+    },
+    {
+      "name": "feat/spending-actions-visual-order-20261114",
+      "sha": "957dc436e93d6124b624bc34269262d12fccd775",
+      "protected": false
+    },
+    {
+      "name": "feat/spending-page-interactive-layout-20261114",
+      "sha": "0522fb92954a9675421fab1ee80552c350c0bad9",
+      "protected": false
+    },
+    {
+      "name": "feat/unified-financial-modals",
+      "sha": "881fca21fe201744aaf058511d7bc969ee8f3785",
+      "protected": false
+    },
+    {
+      "name": "feature/account-login-methods",
+      "sha": "d4b56ec1c1ddbaab0f3f48e080931c1ffaacbb2d",
+      "protected": false
+    },
+    {
+      "name": "feature/admin-navigation-menu",
+      "sha": "b2a608a1f5e2c8206e98390fe707f7834fa7bf73",
+      "protected": false
+    },
+    {
+      "name": "feature/auth-app-isolation-step1",
+      "sha": "81218a18334d40e165fb3ec80052924d94913ad4",
+      "protected": false
+    },
+    {
+      "name": "feature/auth-banner-full-width",
+      "sha": "9447ae5d3d5108d6652d58fc5cfc8da7252db96e",
+      "protected": false
+    },
+    {
+      "name": "feature/auth-password-reset-login-branding",
+      "sha": "65ca0c4238630a0f78ef58376d9547a4b3ebcc92",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-admin-json-console-20261115",
+      "sha": "02749a7eb80de842491c5f76df641422c0b6c955",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-admin-production-flag-20261115",
+      "sha": "34050bd03068f729a86cab43df1b75241f756510",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-basic-spinner-loader",
+      "sha": "193b8f590438bf1e38f4d1560c5a09b0831ddff5",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-budget-calendar-context-details-20261115",
+      "sha": "55738108bb86540aba836b699b6d5c62b268bdab",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-coach-structured-json-import",
+      "sha": "be68c306d31eaa206472497ab16a147edd38fc9b",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-coach-v1-release-20261115",
+      "sha": "b1efaf5c7c089b4f414611a96f83ffb751feebf6",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-design-ergonomics-refresh",
+      "sha": "55919ea6e580801dd7cea7772e8ec396100fb9f2",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-document-ingestion-no-ai",
+      "sha": "74cfa106c75c5838e69399d53d86d83f656a4b3e",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-income-charges-advisors",
+      "sha": "df069e13b223a3e1b6844ecbd4c99315418e930a",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-knowledge-56-candidates",
+      "sha": "0046c0192c31deddeb8acac5a7a4a4b21b35ff08",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-knowledge-engine",
+      "sha": "2c4b348dfd63c01b9b2244ec2479c492889ad0a9",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-offline-first-sync",
+      "sha": "1def4f9ccfb8d74e5db944f1ae1336ea535a0ef4",
+      "protected": false
+    },
+    {
+      "name": "feature/bep-startup-loader",
+      "sha": "f469fded9ab867e68465a3913f57ffd46fb035bf",
+      "protected": false
+    },
+    {
+      "name": "feature/budget-completeness-checkup",
+      "sha": "32b3362630b1615fad9325fa5c0cdd92ef839442",
+      "protected": false
+    },
+    {
+      "name": "feature/budget-image-onboarding",
+      "sha": "27990e5f4773fbdf5b26f7161d1dd7fc0b9a772d",
+      "protected": false
+    },
+    {
+      "name": "feature/budget-pdf-import",
+      "sha": "332576e880640e9bab75ef10d9dbbb55afa52881",
+      "protected": false
+    },
+    {
+      "name": "feature/budget-pdf-import-main",
+      "sha": "38b577d040d0a05da26f548fa354a66a247eb8ca",
+      "protected": false
+    },
+    {
+      "name": "feature/budget-ux-and-coach-restoration",
+      "sha": "b665127764df62d21a54467524eee198fc641cb2",
+      "protected": false
+    },
+    {
+      "name": "feature/charges-total-banner",
+      "sha": "ab46eee896a000a2bab40600fde06d626ce35603",
+      "protected": false
+    },
+    {
+      "name": "feature/charges-total-banner-safe",
+      "sha": "575a85893ebce12ca94f0a41b4a4e785dc875c96",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-account-first-response",
+      "sha": "7d549cce0e23a8608052cc1bd7d3ba5a2d543031",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-bep-dynamic-ui-20261116",
+      "sha": "d750d597e90b504699250eeed196ff090e24e1c9",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-exchange-one-shot-prompt",
+      "sha": "ff53ccd3cb0471ac2048197a0fa0ec3498e19474",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-external-ai-exchange",
+      "sha": "86c0a650f46a2f63f8bba9cda8e29ced15f5f5ef",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-guided-exploration-20261118",
+      "sha": "b0b39f55d4b264e25b3c0acb916ee36bd8680565",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-home-knowledge-services",
+      "sha": "029cf2ee87e992f52f6c8c4ccfc60162a72a435b",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-home-knowledge-services-final",
+      "sha": "f8e9bf534374ce55df6fd88aa71b0b6efa129f65",
+      "protected": false
+    },
+    {
+      "name": "feature/coach-page-context-layer-20261118",
+      "sha": "4021d1f5a27ac82b877f6de835383c939121c7e2",
+      "protected": false
+    },
+    {
+      "name": "feature/email-code-resend-cooldown",
+      "sha": "5c753660f04525f62f323559e9ed32a941a28e61",
+      "protected": false
+    },
+    {
+      "name": "feature/financial-engine-unification-2026-11-12",
+      "sha": "8b0f3bbdddd5353f56b429b61d2e08f315c37843",
+      "protected": false
+    },
+    {
+      "name": "feature/financial-engine-unification-v2-2026-11-12",
+      "sha": "7d1a16c9aa7393128040b4713a38777073023f5b",
+      "protected": false
+    },
+    {
+      "name": "feature/financial-intelligence-mainline",
+      "sha": "78e25588ba7c95f82801c4ce83a0de9140bd0417",
+      "protected": false
+    },
+    {
+      "name": "feature/gemini-admin-on-demand-free-tier-20261116",
+      "sha": "0ee53ae8603b8f039dcac077375ae306d6c1982d",
+      "protected": false
+    },
+    {
+      "name": "feature/gemini-peripheral-json-service-v1",
+      "sha": "63a7c559117c65b237e6d74e4c990c50243b19bb",
+      "protected": false
+    },
+    {
+      "name": "feature/gemini-shared-learning-readonly-20261114",
+      "sha": "0c43892604a069a588217c320141d28b24752e46",
+      "protected": false
+    },
+    {
+      "name": "feature/income-sources-checkup",
+      "sha": "35a2d39ceaa22974c5d57e1151b4fb9b38c5b268",
+      "protected": false
+    },
+    {
+      "name": "feature/local-financial-coach-engine",
+      "sha": "a8e456c3845191153988b3c991bf6c803f4a410e",
+      "protected": false
+    },
+    {
+      "name": "feature/madame-michu-ux-accessibility",
+      "sha": "f031286904aa19bfb787e9348f358223d54669e0",
+      "protected": false
+    },
+    {
+      "name": "feature/monthly-budget-history",
+      "sha": "295f9786225498d87170745c188031f19641e817",
+      "protected": false
+    },
+    {
+      "name": "feature/overdraft-settings-popup",
+      "sha": "a545bc1507f534d17aba965d0feddfe13855063e",
+      "protected": false
+    },
+    {
+      "name": "feature/overdraft-settings-popup-v2",
+      "sha": "e5f9884fef40c577d3f57adc07eabcb3cb1fc80b",
+      "protected": false
+    },
+    {
+      "name": "feature/savings-objective-first-ux",
+      "sha": "3145af3a9e1e22f8b4a407ae878b3d89736d1512",
+      "protected": false
+    },
+    {
+      "name": "feature/savings-redesign-v1-final",
+      "sha": "4707c7fe35d94a0bebddc8ccc26e5f35439692b8",
+      "protected": false
+    },
+    {
+      "name": "feature/savings-redesign-v1",
+      "sha": "76dc7300bf06375fa6c048169e306e56fc69c229",
+      "protected": false
+    },
+    {
+      "name": "feature/settings-buttons-layout-20261113",
+      "sha": "3685c4b7ac538079b2f4c09cfd1b396cfeb38955",
+      "protected": false
+    },
+    {
+      "name": "feature/settings-cleanup-test-20261113",
+      "sha": "566e02ddcc935eecc27e48ce133ba3b1bd8f9cf4",
+      "protected": false
+    },
+    {
+      "name": "feature/settings-toggle-panel-20261113",
+      "sha": "e61963249f9aff6fad7d7e56a7ab26b3973ec26f",
+      "protected": false
+    },
+    {
+      "name": "feature/single-active-session",
+      "sha": "debf490ff74828a579139f216c526d4c7b17256e",
+      "protected": false
+    },
+    {
+      "name": "feature/treasury-overdraft-management",
+      "sha": "8b60222c92fd1a8d6955abde7ba6acf8ffe1d62a",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-api-worker-separation",
+      "sha": "2e75557a2621d76e26fc8c80296821297a61f811",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-console-allowlist-email",
+      "sha": "7a200b0854d8d7864da4b23bce7e21605e2f9809",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-email-code-type",
+      "sha": "1d50c5282abcec119484a960006ab5cd7072e088",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-enrollment-diagnostics",
+      "sha": "9229c779671b4b21414ea585053ebff2cc4f4c64",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-independent-session-flow",
+      "sha": "5ffc209b1027912ef94dfeb3815f807250f8ef22",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-pseudonymized-aggregate-view",
+      "sha": "c95c5dfaf078e9e9b40f33e354d64937dd73fd79",
+      "protected": false
+    },
+    {
+      "name": "fix/admin-structured-knowledge-batch-import",
+      "sha": "977c9c9777bdb228c5074a27b20f932e5f6904a5",
+      "protected": false
+    },
+    {
+      "name": "fix/advice-robot-hit-area-20261115",
+      "sha": "0eaa981c897ec63c1e90d735d81c31c96ea0cf62",
+      "protected": false
+    },
+    {
+      "name": "fix/aligned-home-cards-oauth-popup-navigation-20261115",
+      "sha": "72af45c3f58a24ff147191fb561312c1c82c237c",
+      "protected": false
+    },
+    {
+      "name": "fix/api-csp-connect-src-startup",
+      "sha": "b43f24c218f2c012cf5191cf930033077c37eb48",
+      "protected": false
+    },
+    {
+      "name": "fix/api-readiness-healthcheck-20261119",
+      "sha": "81591608e008aff31920b77974ac882d3c7940f2",
+      "protected": false
+    },
+    {
+      "name": "fix/atomic-multisession-api-20261113",
+      "sha": "3dc5a35a1c3ae0795d4c55365630012921556afc",
+      "protected": false
+    },
+    {
+      "name": "fix/atomic-multisession-sync-20261113",
+      "sha": "b5377e7eae97b64d06c5865c2f9c90fabc1a0f0c",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-buttons-and-cache-20261113",
+      "sha": "6ca914b7d282f439d42ea710312843842102790c",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-duplicate-email-guard",
+      "sha": "faf7b5be7622ee4b310fd3bb5ca6a033c3914898",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-gate-hidden-css",
+      "sha": "98c68c9650a1a75d28cc273389cfd879ea70b573",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-hide-floating-coach-before-login",
+      "sha": "b2730e5c94263a2afb6bc31b943d85d9a85e2562",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-login-banner-polish-2026-11-13",
+      "sha": "66060c67be99fa27211d37fe24c3d1cc654b9594",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-rate-limit-designed-page-20261114",
+      "sha": "c67d06864134b37485eef11a13f0c20665ab3374",
+      "protected": false
+    },
+    {
+      "name": "fix/auth-root-hard-isolation",
+      "sha": "047a5dc133be438f95847a8b53906acb1594e749",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-admin-super-admin-allowlist-20261118",
+      "sha": "1bd4c3a0a81f7b8d7e4a71c5fd18608f51e4c92e",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-agent-test-syntax-20261116",
+      "sha": "35de300e7cc0f028ae20e6160d4994be12f77922",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-calendar-service-worker-refresh-20261115",
+      "sha": "70f99697a71f4df44cb136490281d4da27217b8c",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-coach-json-import-rebased-20261118",
+      "sha": "22cd5f8a06ba46824f39a1e03f716465ae895bac",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-coach-reuse-existing-gemini-key",
+      "sha": "f38c9501e63ee4fdcb8946e5586a7f11f0224125",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-coach-staging-cors-20261117",
+      "sha": "56e13e2cd07547c7263cfb1b9f1a2affa8251b49",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-danger-action-confirmations-20261114",
+      "sha": "9a621eafadd83a245c97f36b3b857e9adc3c8902",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-device-scoped-rate-limits-20261114",
+      "sha": "430d2cd59c9a5ac60dcd82236ed3ebeb86e1fffd",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-hide-login-during-startup",
+      "sha": "4c63dadbfeac362e3496a5d3d783a54a1b53aded",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-inherited-regression-checks-20261113",
+      "sha": "29b61a25f4ed85aa2370cbc67a001193c9e00c73",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-inherited-regression-checks-v2-20261113",
+      "sha": "280424e6d4a4e4af00658acfc54da971588c2010",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-inline-startup-loader",
+      "sha": "1ccc821c443ee155a7520a52b5dfeec52abb81af",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-loader-minimum-display",
+      "sha": "2901cd990702de10edf2305740da2838eed67768",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-local-cache-clear-render-20261114",
+      "sha": "070c220e566e84a08567413c548066ce649b0a53",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-local-cache-label-20261114",
+      "sha": "18ce87e30ba51e89a07c5a67b9330efb420c056d",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-multidevice-sync-reconciliation-20261115",
+      "sha": "b5c6eb92346813c360e231f609bd644f6031c1c1",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-native-alert-modal-20261114",
+      "sha": "d6ab92727a49acc87d923a56226ed0d2b1186ead",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-purchases-accordion-shortcuts-20261114",
+      "sha": "0df33c4506862927a03f9d145e5affb79ce4344d",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-purchases-scroll-advice-dock-20261114",
+      "sha": "706ab343a5571e78116d325caee00e4e4ee457a1",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-receipt-deduplication-hardening-20261115",
+      "sha": "f7085a43369cbc27e9b661df4bb8608ed46c9913",
+      "protected": false
+    },
+    {
+      "name": "fix/bep-savings-date-and-receipt-feedback-20261115",
+      "sha": "c46b756de5e5ac255cb7df0a33b1a2796a1620c8",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-advisor-card-spacing",
+      "sha": "659d91fa4df0292d25602a73a2ad5cd1dad5757a",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-expenses-panel-isolation-20261113",
+      "sha": "745461bfeff09da36c5fb8b59e46b05f2d2ef4ef",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-expenses-savings-reconciliation",
+      "sha": "3be98449dfe5b0dc4ef76aa3a873fdb3ad10bd57",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-income-entry-dialogs",
+      "sha": "3710dbc9bec4db9c7f5459375cad28ea518a75cc",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-income-modal-action",
+      "sha": "735f572eae1ecb0d9d247f3726f84f7a5d365524",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-longpress-hints",
+      "sha": "90a1e4fc084ba7fe07783d02f266aef9368604bb",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-longpress-hints-alignment",
+      "sha": "a35982db327df7ec0cc4c64312edb3e31c398bd9",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-module-event-delegation",
+      "sha": "ac19cf7a06a1a19a8114179d1885313954d1aa59",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-multiselect-and-month-expenses",
+      "sha": "a000e0e6123912a151a47155846fa1be1ac78458",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-purchases-separation-bulk-delete",
+      "sha": "8ae1e3fc145bb1fbfdaade3227690113c8609f04",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-saved-row-css-specificity",
+      "sha": "077180ef8b74fd89a342d56587df7aae2a900a75",
+      "protected": false
+    },
+    {
+      "name": "fix/budget-two-column-layout",
+      "sha": "a605ef4aee70e2b2a0f497a0a35b5482f3367055",
+      "protected": false
+    },
+    {
+      "name": "fix/bump-spend-css-cache-v21",
+      "sha": "24c6c31bf33454c9446f2bd10e12469565a444ab",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-collector-http-errors-20261118",
+      "sha": "9b29581aabb3f6ea95c4e1aac459e8cac4e3827a",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-contextual-conversation",
+      "sha": "711f53c8644da12b54821faa472b3e94a7e88085",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-conversation-container-20261119",
+      "sha": "6314d6c21f3497b5d53cd9b3e095927a5e9f9fc4",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-conversation-fallback-20261119",
+      "sha": "735e0e934c0c7a5bc1e770f7599cea6606e84838",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-explorer-hidden-on-entry-20261119",
+      "sha": "19e7b817cb0492dfa87483ff2ed50a9389a1bd88",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-explorer-hide-all-themes-20261119",
+      "sha": "2cbd5c18862b1d81180b6717065b4562bca968b8",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-external-ai-consent-gate-20261113",
+      "sha": "da6704a58739f2f228258ddf53edea91060c5af6",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-financial-context-validation",
+      "sha": "762e9b21ea1a82ae717d4acb49d93b1124e34217",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-form-vertical-layout-20261119",
+      "sha": "6ef5c425446ca83733eced516cbe2935a594fd94",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-grounding-quota-metering",
+      "sha": "7a689fb54945cd802393b55a547193986a606ab5",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-local-budget-vs-actual-explanation",
+      "sha": "b9a9a95ebe17054edc579200a796b4692fda48ee",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-local-documentary-user-space",
+      "sha": "99cf5d5548cb5131a91a545fe1023959d6d9f0e0",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-local-fallback-understands-intent",
+      "sha": "9aff815e9d348f19de616cf0bc6e8908caae5943",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-local-intent-and-calculations",
+      "sha": "1740232824f4d33fc1ae7728187db3e5c9d9ed11",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-mobile-navigation-20261119",
+      "sha": "2a7003f77f0325cfb18300bc63e4fa2ef5bbe618",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-mobile-navigation-clean-20261119",
+      "sha": "9182b626849fc2d468d30459dc60aabdc86819f0",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-mobile-visual-continuity-20261119",
+      "sha": "b9e2b54d84d64b52cf5967dd5208872c5bd405e8",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-no-false-zero-and-relevance",
+      "sha": "03e90d88958e9996baf35dc3ed7a533d05300680",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-objectives-mobile-layout-20261119",
+      "sha": "4b886ea3064fff7ba6713d79add30c5eb46a61ee",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-only-local-agent-20261119",
+      "sha": "6f3395d4ff958d92ff5baa20684c8505d476f9da",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-only-on-coach-tab",
+      "sha": "1061c60b478d50c408484779df965e4d315dede2",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-panel-only-coach-tab-20261119",
+      "sha": "3f3b8b0a3e8598962b16fcc82c11fa2841181d59",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-prompt-input-visible-20261119",
+      "sha": "81aa215d97c4ea00dcfa4b034868425333c0712d",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-relevance-intent-precision",
+      "sha": "1c72fd57d601e1ae41c38b25cddb3da75fd58b6f",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-relevance-intent-precision-v2",
+      "sha": "d98e82116e68e30c08c154f4a93fdf78d633d2ce",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-research-page-and-robot-fallback",
+      "sha": "c511ea9ff01f0e4c1dd8b2d23ceb42a869c95e80",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-robot-cache-refresh-20261119",
+      "sha": "0cc6a9605627ab01f774888302fc9e80d65d56cc",
+      "protected": false
+    },
+    {
+      "name": "fix/coach-single-dropdown",
+      "sha": "7fa897e9d9dc9269a9f7eb567b5ef8506da2e72c",
+      "protected": false
+    },
+    {
+      "name": "fix/connection-state-and-reload-guards",
+      "sha": "a019a7ddcf44e0e2e1b9057e1f28095d9834099a",
+      "protected": false
+    },
+    {
+      "name": "fix/conseil-bep-remove-minimize",
+      "sha": "e86376ec0d9ba5919e0a7e31094f7f8a3e37ec2e",
+      "protected": false
+    },
+    {
+      "name": "fix/csp-connect-src-origin-validation",
+      "sha": "7924ae0f6cab4c9ed0a352e61217061c7c39568f",
+      "protected": false
+    },
+    {
+      "name": "fix/embed-expert-prompt-in-json",
+      "sha": "09b1a7724bb390bfd2ee24f3665ff593e417e4c1",
+      "protected": false
+    },
+    {
+      "name": "fix/final-spend-assets-cache-bust-20261114",
+      "sha": "c6aeb6030c052f6388d20ddb79be4395e692f437",
+      "protected": false
+    },
+    {
+      "name": "fix/financial-persistence-recette-20261114",
+      "sha": "56ad32ea07654f0424acc87ee2c2e17e229df484",
+      "protected": false
+    },
+    {
+      "name": "fix/force-hide-coach-outside-tab-20261119",
+      "sha": "8e6822584981475e0411fb4a4f9dcd4a723036e6",
+      "protected": false
+    },
+    {
+      "name": "fix/gemini-503-retry-diagnostics-20261116",
+      "sha": "07d9e51fcd6d326d32f189332a42292e734c3635",
+      "protected": false
+    },
+    {
+      "name": "fix/gemini-agent-independent-admin-auth",
+      "sha": "8bf327e5deb83357cbf984b744fd2485c13cb637",
+      "protected": false
+    },
+    {
+      "name": "fix/gemini-free-tier-activation",
+      "sha": "0d7cd6e336929a0eb859c08e97ed7a42188ad695",
+      "protected": false
+    },
+    {
+      "name": "fix/gemini-search-interactions-api-20261116",
+      "sha": "e57128b96724186d3b3946ab6a0496096ef33649",
+      "protected": false
+    },
+    {
+      "name": "fix/google-login-session-transition",
+      "sha": "6309212e2bce31850fc89bef7820fdbb9d1a78a7",
+      "protected": false
+    },
+    {
+      "name": "fix/google-oauth-mobile-popup-20261115",
+      "sha": "cced7ab267603df825c04526dcb7d5198975f612",
+      "protected": false
+    },
+    {
+      "name": "fix/google-oauth-wake-api",
+      "sha": "9430ab3c36b1797835ca0727e29768c7699f401d",
+      "protected": false
+    },
+    {
+      "name": "fix/hide-advice-dock-in-expenses",
+      "sha": "2a23165a4366861dc60a55c87a827053718a5500",
+      "protected": false
+    },
+    {
+      "name": "fix/home-dashboard-financial-totals",
+      "sha": "3c72e25fdd7e3687e0d8d200d61ac5e22cd18a2f",
+      "protected": false
+    },
+    {
+      "name": "fix/home-savings-capital",
+      "sha": "75f5f7e6c865b1be2dc65feb94cc9f78d0300009",
+      "protected": false
+    },
+    {
+      "name": "fix/homepage-welcome-pills-horizontal-20261119",
+      "sha": "2f36c8582cd755f60cc5f8c73e568ad8922f9db2",
+      "protected": false
+    },
+    {
+      "name": "fix/income-assistant-layout",
+      "sha": "cb0c3b7af9ddb3e6eccc62168d83c626c7463bc9",
+      "protected": false
+    },
+    {
+      "name": "fix/income-checkup-editable-types",
+      "sha": "3fbe2c24b9677df5df8c931c40a344cec2ab44e0",
+      "protected": false
+    },
+    {
+      "name": "fix/income-dialogs-and-ux",
+      "sha": "fae2701093cb84129c1297dde8eb228c2a66a82d",
+      "protected": false
+    },
+    {
+      "name": "fix/isolate-coach-workspace-20261119",
+      "sha": "caad204e352653a95998a077b9d7d65db87baa3f",
+      "protected": false
+    },
+    {
+      "name": "fix/local-clear-render-error-20261114",
+      "sha": "386f071a1ded2f1f02ce7862982a5866a485d40d",
+      "protected": false
+    },
+    {
+      "name": "fix/local-data-clear-button-20261113",
+      "sha": "bb4db55e89ffad25dc655c2ef1aed67a4245c17b",
+      "protected": false
+    },
+    {
+      "name": "fix/local-data-clear-robustness-20261114",
+      "sha": "1bdf59c0c3687011ef432b2ffe83d71f335bc7bb",
+      "protected": false
+    },
+    {
+      "name": "fix/manual-ingestion-dns-lookup-20261116",
+      "sha": "b8b46f2c8a5cf5abddfb8c044c06cc6e1ecf637d",
+      "protected": false
+    },
+    {
+      "name": "fix/mobile-budget-tiles-two-columns-20261114",
+      "sha": "b6f323ad87e4472247e6ec43fa23e733e04891cd",
+      "protected": false
+    },
+    {
+      "name": "fix/mobile-footer-and-advice-touch-feedback-20261115",
+      "sha": "05ff0d939f5247667fce1af7ce3387f257471a8d",
+      "protected": false
+    },
+    {
+      "name": "fix/mobile-footer-spacing-20261115",
+      "sha": "cdf735de16db6e9511ea37b5c372633d9c4361a0",
+      "protected": false
+    },
+    {
+      "name": "fix/mobile-footer-spacing-current-main-20261115",
+      "sha": "67abc8a998e271ae9ad3dec9c6b581929c03610b",
+      "protected": false
+    },
+    {
+      "name": "fix/mobile-pwa-cache-refresh-v18",
+      "sha": "dbda5622ad06f651fe3711186a50c1fd3a2b91cf",
+      "protected": false
+    },
+    {
+      "name": "fix/month-calendar-on-demand",
+      "sha": "b8b887740c416d1920a9931bfbf886a1b0d9d215",
+      "protected": false
+    },
+    {
+      "name": "fix/month-key-date-normalization",
+      "sha": "51406e51ab7dbcc600ef620c6ba092c51a3460fa",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-actuals-refresh-js-audit",
+      "sha": "19b6ef0e14e167979fd6db06b23eade7928a813b",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-actuals-refresh-production",
+      "sha": "73d8a12878439abd739b717144b08b9b72f52363",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-budget-create-reload-latency",
+      "sha": "34aeb16fb00a5574e05c3cbd596bdb67f9ea0eeb",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-budget-offline-prod",
+      "sha": "c1c20b21fbdda3b0777685d413fd846589fb9355",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-budget-row-icon-actions",
+      "sha": "77038be4889edf44b6c2e994fc260045af5505ce",
+      "protected": false
+    },
+    {
+      "name": "fix/monthly-home-financial-snapshot",
+      "sha": "65fe1bedd494877c9d6174068c228eb525047bff",
+      "protected": false
+    },
+    {
+      "name": "fix/move-coach-knowledge-link-to-admin",
+      "sha": "6326289878392a54f1807caeabaff2348f88afee",
+      "protected": false
+    },
+    {
+      "name": "fix/multi-device-session-sync",
+      "sha": "31dc21dee35eab95b0468a86bb2a2bc45ab16f33",
+      "protected": false
+    },
+    {
+      "name": "fix/null-profile-email-dom-20261114",
+      "sha": "e45560a19606eb679f5f4fd9d227238e528697bf",
+      "protected": false
+    },
+    {
+      "name": "fix/offline-global-revocation-guard",
+      "sha": "6c407d254898e5350f701c8bd689f1bdcdaa2922",
+      "protected": false
+    },
+    {
+      "name": "fix/offline-logout-auth-state",
+      "sha": "5dde8aceb7a82902fa74bb66fd4f85050e11ef1e",
+      "protected": false
+    },
+    {
+      "name": "fix/offline-logout-auth-state-main",
+      "sha": "c83062063f50e578587baa3079eb80ca13372321",
+      "protected": false
+    },
+    {
+      "name": "fix/overdraft-delete-no-validity-20261115",
+      "sha": "0092edc4287de79dd4863cf02f2b00c642b7b7db",
+      "protected": false
+    },
+    {
+      "name": "fix/overdraft-delete-no-validity-current-main-20261115",
+      "sha": "9702ed11b7c7ce5237788f84540e3092b4d3ee2e",
+      "protected": false
+    },
+    {
+      "name": "fix/per-device-rate-limits-20261114",
+      "sha": "a4a6fae46c3d5679f3b8edf617bf17c580d00a5f",
+      "protected": false
+    },
+    {
+      "name": "fix/persist-income-array",
+      "sha": "447dd15e7706a8f32317db5ad29c95f84789a8a9",
+      "protected": false
+    },
+    {
+      "name": "fix/preserve-treasury-offline-sync",
+      "sha": "da4bc89e71e9789d9dea0e8ee25dc9004d4a1dbb",
+      "protected": false
+    },
+    {
+      "name": "fix/production-home-overdraft-coach-mobile-compact-20261115",
+      "sha": "1ecb25800a171415564f2bc76ae65454d1356288",
+      "protected": false
+    },
+    {
+      "name": "fix/production-purchases-panel-isolation",
+      "sha": "e0871b1ce03c26adc3ead99ae0c515c6aaaf09dc",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-cache-and-save-20261113",
+      "sha": "9b50fc2da03e78057d3df75fe305e004e80e5932",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-direct-edit-modal-20261113",
+      "sha": "90054b3cea5b1f7fb6df622eb9d5b969886b71e3",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-direct-form-cache-v10-20261113",
+      "sha": "05ebcd8fd071b7a80f633b3ef9de2e5b87a22747",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-direct-form-sw-regex-20261113",
+      "sha": "8a8925bbb721c561d658ec438b7cb20ad969dca4",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-modal-center-20261114",
+      "sha": "128420e3b5486dcedd68daa952131b0c1e8646b0",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-modals-open-directly-20261113",
+      "sha": "ab3846738071907097c967710d579c906065923a",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-pwa-stale-shell-20261114",
+      "sha": "9e31e92aa31d39ce6005667bc2cf71eb571d4b9b",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-settings-direct-action-20261114",
+      "sha": "4d18b44dffbf0fb793a61f25b5a300a011b70e39",
+      "protected": false
+    },
+    {
+      "name": "fix/profile-single-view-edit-modal-20261113",
+      "sha": "b598a543d39e7c0c0a8b010e4bf66459884f6748",
+      "protected": false
+    },
+    {
+      "name": "fix/publish-spend-highlight-dist-css-20261114",
+      "sha": "59c19cbe5dc85a749b74f692f7a59d1b293def98",
+      "protected": false
+    },
+    {
+      "name": "fix/publish-spend-history-fix-20261114",
+      "sha": "f476927c8e87d271a798cafa5a44df5e560acdff",
+      "protected": false
+    },
+    {
+      "name": "fix/published-bundle-income",
+      "sha": "7338a9a2d969facf0e64b1d24118fa57ed29e26e",
+      "protected": false
+    },
+    {
+      "name": "fix/purchases-history-interactions-20261114",
+      "sha": "e0fe2105a7ebc3620fe0d635b7614cfdd313fede",
+      "protected": false
+    },
+    {
+      "name": "fix/pwa-cache-invalidation-v27",
+      "sha": "7c12fc34f492289b03945e6a57451d5490c74d0c",
+      "protected": false
+    },
+    {
+      "name": "fix/pwa-design-and-charge-deletion-guard",
+      "sha": "a86e051801fbe94bb5ec9f35c5d83fcb70e5fb1b",
+      "protected": false
+    },
+    {
+      "name": "fix/pwa-design-deletion-guard-verified",
+      "sha": "2992cf375ee5e14fd21872b4c46c11b0fdbff77b",
+      "protected": false
+    },
+    {
+      "name": "fix/remove-budget-expense-shortcut",
+      "sha": "2cee33f675e19aa1089fe4de93b51aaf194ba828",
+      "protected": false
+    },
+    {
+      "name": "fix/remove-profile-cancel-button",
+      "sha": "3ad78533b4c073b1e719998d175b543bd88ed91b",
+      "protected": false
+    },
+    {
+      "name": "fix/restore-production-home-design",
+      "sha": "f3b14241269e64b19af4b6d9592fdd81cfe17a6f",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-budget-row-layout-final",
+      "sha": "2610b2b0c288ca84b995ad13ddd3e4d36addf843",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-income-charge-selection-layout",
+      "sha": "9eda54f6bd1f5da8158cf9a3b7e3a479a0b33db9",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid",
+      "sha": "38c75e0dbdb7e865ed96e35c17f063ea9cef98f8",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid-v2",
+      "sha": "481fdaf7f5a563938e13eb665ccb41353e5e0868",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-list-row-explicit-grid-v3",
+      "sha": "96d99094d5ab0ea4b30a703d8ca382449ead5b38",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-list-selection-grid-v2",
+      "sha": "7df082eecb759a79a98440ecb1564eb83fa92059",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-lists-reuse-purchase-row-design",
+      "sha": "252ec9e48d378d057b181e348ea999f3c21d510f",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-row-price-right-align-v2",
+      "sha": "0e3e53c29f6c9e7b0010957d5c4e85421a179bb2",
+      "protected": false
+    },
+    {
+      "name": "fix/saved-rows-match-expense-grid-exactly",
+      "sha": "c37b6d308b98cbb81c2665692d946cd056de7906",
+      "protected": false
+    },
+    {
+      "name": "fix/savings-capacity-consistency",
+      "sha": "f3e334571fb827c086a234b6163371f7573e5c64",
+      "protected": false
+    },
+    {
+      "name": "fix/savings-goals-shared-collapse",
+      "sha": "94f92148e409c45230ffe86152feec316cb71998",
+      "protected": false
+    },
+    {
+      "name": "fix/savings-ring-counter-replay-v18",
+      "sha": "d6a79c551241b7d14b32ea282965ff93199532cf",
+      "protected": false
+    },
+    {
+      "name": "fix/selection-checkbox-inside-purchase-main",
+      "sha": "b8943439cc10784ca0723b2389e9e3e64ba19cbb",
+      "protected": false
+    },
+    {
+      "name": "fix/selection-checkbox-inside-purchase-main-v2",
+      "sha": "dd04171482fa20ae379690e9d3eba1224404233c",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-and-remove-floating-coach-robot-20261119",
+      "sha": "62120a72b976913178146a8c0db5783fc90ae8f3",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-dist-production-20261113",
+      "sha": "9a8de017eb9abbd108e48a8ed425df81bfbdcd04",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-exclusive-panel-close-20261113",
+      "sha": "d8cdab24fe026084356bf75aea646a0a3729dd9a",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-icon-only",
+      "sha": "f149e233b88c53d4fa605a72a310cf83e4d47d72",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-navigation-state-refresh-20261113",
+      "sha": "a071dda7c78fcf88d7176156b51c40e75cd9bd7b",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-panel-modal-navigation-20261113",
+      "sha": "54075acea933fc692a5c4c964577e77f52ba0cab",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-panel-rendering-20261119",
+      "sha": "287390185541bf5902120b7f573aa3d1356c98c4",
+      "protected": false
+    },
+    {
+      "name": "fix/settings-profile-dialog-handlers-dist-20261113",
+      "sha": "30cda899191cf07d9da4cffb79e6d6e0d5bc9759",
+      "protected": false
+    },
+    {
+      "name": "fix/spend-clean-ui-cache-bust-20261114",
+      "sha": "903d8d4bcc55502f6763f2e1b84f7b22fbfbb252",
+      "protected": false
+    },
+    {
+      "name": "fix/spend-impulse-kpi-overflow",
+      "sha": "03a5adc63c50d74f02f11d280ac521e542f230cf",
+      "protected": false
+    },
+    {
+      "name": "fix/spend-loading-advice-click-20261115",
+      "sha": "aa85116da2afbea3cd9520cf086066be340e5c1e",
+      "protected": false
+    },
+    {
+      "name": "fix/spend-monthly-header-stats",
+      "sha": "343ca85c1432bb0db0304fb5ee5b469ef97f88c8",
+      "protected": false
+    },
+    {
+      "name": "fix/spending-actions-survive-clean-ui-20261114",
+      "sha": "f2ee3469e33b64aa33f932ce8128a6c71774021e",
+      "protected": false
+    },
+    {
+      "name": "fix/spending-page-ui-final-20261114",
+      "sha": "77efafaffdcb8d8d4a8c926b5e626d87163550e4",
+      "protected": false
+    },
+    {
+      "name": "fix/trusted-offline-client-release-20261113",
+      "sha": "e5af8c5e64457cd9626650fc1d965266868b003f",
+      "protected": false
+    },
+    {
+      "name": "fix/trusted-offline-snapshot-20261113",
+      "sha": "8c05bc549256e1136239dfe99a8e30686e329c59",
+      "protected": false
+    },
+    {
+      "name": "governance/bep-environment-contract-v1.1-2026-11-12",
+      "sha": "3cbc83f1d81e8e7a42b6af6e9f0ae656b3124f4c",
+      "protected": false
+    },
+    {
+      "name": "hotfix/api-init-sql-and-purchase-advice-2026-11-12",
+      "sha": "2dde5eb75db5f1d312706a22e2d974d124677748",
+      "protected": false
+    },
+    {
+      "name": "hotfix/mobile-mutation-observer-20261115",
+      "sha": "82a13e9c6457cca57d380061a833aff59b974898",
+      "protected": false
+    },
+    {
+      "name": "implementation/gemini-supervisor-v2-20261114",
+      "sha": "e7f8102c2033be15c67cb6e4b170a72c2db28852",
+      "protected": false
+    },
+    {
+      "name": "improve/coach-knowledge-relevance-20261118",
+      "sha": "06d71be450871c1af319d11335715f022dffe0c3",
+      "protected": false
+    },
+    {
+      "name": "integration/savings-budget-reconciliation-2026-11-12",
+      "sha": "b45411eacdb735418f9c7773a3911746f462cbce",
+      "protected": false
+    },
+    {
+      "name": "integration/v1.3-baseline-20261114",
+      "sha": "8a56d25607681002f82dd7b86765ac251a663080",
+      "protected": false
+    },
+    {
+      "name": "main",
+      "sha": "ec4f073e8c00a8b820b270bf308109037ec42cb2",
+      "protected": false
+    },
+    {
+      "name": "perf/bep-startup-optimization-2026-11-13",
+      "sha": "6a601d142f10d7e2245724af77ee2726602043d0",
+      "protected": false
+    },
+    {
+      "name": "perf/lazy-load-feature-assets-20261113",
+      "sha": "f478eb4d704278a9807b76adea3262677cbed854",
+      "protected": false
+    },
+    {
+      "name": "perf/module-isolation-20261114",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "protected": false
+    },
+    {
+      "name": "qa/bep-v1.3-4d522c94",
+      "sha": "4d522c94caab98efc7e3d825675621abb42250de",
+      "protected": false
+    },
+    {
+      "name": "qa/certification-preflight-20261115",
+      "sha": "3b8cee34b8262a717e9f9e345aff942e2a07ce21",
+      "protected": false
+    },
+    {
+      "name": "refactor/auth-css-js-isolation-20261113",
+      "sha": "27dd4e935b520fae1207a6932f2f29d3369dd3f5",
+      "protected": false
+    },
+    {
+      "name": "refactor/auth-module-contract",
+      "sha": "aaa877dd8fb219e3795b48668435bffd4f49508c",
+      "protected": false
+    },
+    {
+      "name": "release/BEP-v1.3-production-stable-20261114-0226",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "protected": false
+    },
+    {
+      "name": "release/BEP-v1.4-IA-Agent-production-20261114",
+      "sha": "5cae41acdafbc602041b34fb41a77cbcee61a8dd",
+      "protected": false
+    },
+    {
+      "name": "release/BEP-v1.5-pre-prod-v2-20261114",
+      "sha": "320f57a9032b702839ac8f11ccfe78c68290618d",
+      "protected": false
+    },
+    {
+      "name": "release/budget-list-layout",
+      "sha": "5ef4117c310c69735adb559e8c72e5444e673f8e",
+      "protected": false
+    },
+    {
+      "name": "release/expenses-proof-import-20261112",
+      "sha": "b47afd62e830bff2bb756892b66e1ac9bf81e89c",
+      "protected": false
+    },
+    {
+      "name": "release/financial-modals-prod",
+      "sha": "778bf18be39f383ec95874cefd4ce0b07f1a5bec",
+      "protected": false
+    },
+    {
+      "name": "release/prod-v1.1-2026-11-12",
+      "sha": "4269bb01d3a35772a77a6a28e3c24654782bebcf",
+      "protected": false
+    },
+    {
+      "name": "release/prod-v1.2-stable-2026-11-13",
+      "sha": "75f89f6f6ead38502b23406b6d37268fd60d4f06",
+      "protected": false
+    },
+    {
+      "name": "release/prod-v1.3-2026-11-13",
+      "sha": "dc4de67dafd14258062701492dc2f06180b9db3b",
+      "protected": false
+    },
+    {
+      "name": "release/prod-v1.3-stable-2026-11-14",
+      "sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "protected": false
+    },
+    {
+      "name": "release/spend-challenges-available-advisor-2026-11-12",
+      "sha": "18662c90f1208d2f0e38937de761872804c83f66",
+      "protected": false
+    },
+    {
+      "name": "research/coach-sources-enrichment-20261116",
+      "sha": "b8437746a01e22b2ca191ce3d198bf65ac0aefd4",
+      "protected": false
+    },
+    {
+      "name": "revert/auth-banner-full-width",
+      "sha": "65afc65920bf7e99cf9687c403ae2bfc55dbf5f2",
+      "protected": false
+    },
+    {
+      "name": "revert/bep-startup-loader",
+      "sha": "9f22d34710894e8d526be7c6c0eb3d4838872a56",
+      "protected": false
+    },
+    {
+      "name": "rollback/restore-1141-20261119",
+      "sha": "f6190af52a49419cde7dc06e07f2a9d8515c243b",
+      "protected": false
+    },
+    {
+      "name": "security/hardening-2026-11",
+      "sha": "e7d3a70fbd70bb19464e8f885afbc75a404aa12f",
+      "protected": false
+    },
+    {
+      "name": "security/phase-1-granular-admin-audit",
+      "sha": "013ae945c6afe1651e853b23c9bba450631b434b",
+      "protected": false
+    },
+    {
+      "name": "security/savings-module-guard-2026-11-12",
+      "sha": "06cd9d5bedb05e46a3da54ba10bcebfaa0597e94",
+      "protected": false
+    },
+    {
+      "name": "security/shared-rate-limit-2026-11",
+      "sha": "a54e8003669f449699ad70e2fcc91280eab6301d",
+      "protected": false
+    },
+    {
+      "name": "simulation/coach-corpus-3mo-20261114",
+      "sha": "a2106bb81807ec3217c46f42af57664f4d92cd97",
+      "protected": false
+    },
+    {
+      "name": "stable/savings-v1-2026-11-12",
+      "sha": "fc9de65601f8603e097d827cbfc450e47907befa",
+      "protected": false
+    },
+    {
+      "name": "stable/1.0.0",
+      "sha": "ecc70c0705b721865933050939f46aaaf00c88e7",
+      "protected": false
+    },
+    {
+      "name": "stable/2026-11-10",
+      "sha": "4312eea026731ed1201b6986d5e53cc0da2a8774",
+      "protected": false
+    },
+    {
+      "name": "test/bep-coach-functional-20261114",
+      "sha": "77209f7ea0e98b591899ded7a15d4d5f55e95471",
+      "protected": false
+    },
+    {
+      "name": "test/gemini-agent-triggered-validation-20261118",
+      "sha": "a6b18f687a89818bb9deb5ab0e0f87b68b5e9da5",
+      "protected": false
+    },
+    {
+      "name": "test/k6-production-load-20261115",
+      "sha": "7fbb7150f9b099c50b338c18bf123c62123eb739",
+      "protected": false
+    },
+    {
+      "name": "test-v1.1",
+      "sha": "4813e68a4cd1fbdda1a0e716e9eb5557c8cd8b89",
+      "protected": false
+    },
+    {
+      "name": "ui/budget-coach-robot-launcher-20261115",
+      "sha": "1b872da0a337761fa8cf40882297740aeeea1e84",
+      "protected": false
+    },
+    {
+      "name": "ui/coach-ai-settings-bottom",
+      "sha": "e172d76427b633544e8a3e15644be2145b5292b9",
+      "protected": false
+    },
+    {
+      "name": "ui/coach-ai-settings-production",
+      "sha": "a1de4c8d2d79e85a07aad971bab550b3f06adaff",
+      "protected": false
+    },
+    {
+      "name": "ui/coach-gemini-info-panel",
+      "sha": "d9cc19b72a4f9acbec4d23a683e69f4335964cc8",
+      "protected": false
+    },
+    {
+      "name": "ui/header-solid-brand-2026-11",
+      "sha": "002d9b049a91f7d4c98f84d2397e8b20a634e77f",
+      "protected": false
+    },
+    {
+      "name": "ui/settings-navigation-labels",
+      "sha": "14f220a358957a0df0cb1dd2ede4bef4789cb184",
+      "protected": false
+    },
+    {
+      "name": "work/offline-api-guard-20261113",
+      "sha": "864ce0fd027df64e5e1e12f16f40a2df42b6fe24",
+      "protected": false
+    },
+    {
+      "name": "work/offline-api-response-20261113",
+      "sha": "b8dd805c7b8a12661b6c3ed02295e7eaa80a240a",
+      "protected": false
+    },
+    {
+      "name": "work/offline-conflict-ui-20261113",
+      "sha": "256d95b52df3f92c78379f428a3c1d9abfe462e5",
+      "protected": false
+    },
+    {
+      "name": "work/offline-conflict-ui-rebased-20261113",
+      "sha": "3149a6d4d0067a9831dfb847b57a55fece7fb7ee",
+      "protected": false
+    },
+    {
+      "name": "work/offline-phase4-20261113",
+      "sha": "e7d2f9d373211bc0b1977af310fbd130e3ef1e77",
+      "protected": false
+    },
+    {
+      "name": "work/offline-phase4-canonical-20261113",
+      "sha": "a7d79544b3d8996d3b764dbfb29e49c11650dfaf",
+      "protected": false
+    },
+    {
+      "name": "work/offline-phase4-rebased-20261113",
+      "sha": "bc3e92311382165b2dac3cb4339825dc50751d8f",
+      "protected": false
+    }
+  ],
+  "pull_request_count": 317,
+  "pull_requests": [
+    {
+      "number": 317,
+      "state": "closed",
+      "merged_at": "2026-11-19T17:04:33Z",
+      "head": "fix/coach-conversation-container-20261119",
+      "head_sha": "6314d6c21f3497b5d53cd9b3e095927a5e9f9fc4",
+      "base": "main",
+      "draft": false,
+      "title": "Remove bottom Coach conversation container"
+    },
+    {
+      "number": 316,
+      "state": "closed",
+      "merged_at": "2026-11-19T16:10:56Z",
+      "head": "fix/coach-only-on-coach-tab",
+      "head_sha": "1061c60b478d50c408484779df965e4d315dede2",
+      "base": "main",
+      "draft": false,
+      "title": "Keep Coach BEP exclusively on its own tab"
+    },
+    {
+      "number": 315,
+      "state": "closed",
+      "merged_at": "2026-11-19T15:56:50Z",
+      "head": "fix/pwa-cache-invalidation-v27",
+      "head_sha": "7c12fc34f492289b03945e6a57451d5490c74d0c",
+      "base": "main",
+      "draft": false,
+      "title": "Fix PWA cache invalidation and refresh active clients"
+    },
+    {
+      "number": 314,
+      "state": "closed",
+      "merged_at": "2026-11-19T15:29:39Z",
+      "head": "rollback/restore-1141-20261119",
+      "head_sha": "f6190af52a49419cde7dc06e07f2a9d8515c243b",
+      "base": "main",
+      "draft": false,
+      "title": "Restaurer l’instantané BEP de 11 h 41"
+    },
+    {
+      "number": 313,
+      "state": "closed",
+      "merged_at": "2026-11-19T15:03:46Z",
+      "head": "fix/isolate-coach-workspace-20261119",
+      "head_sha": "caad204e352653a95998a077b9d7d65db87baa3f",
+      "base": "main",
+      "draft": false,
+      "title": "Isoler le Coach sur son onglet dédié"
+    },
+    {
+      "number": 312,
+      "state": "closed",
+      "merged_at": "2026-11-19T14:20:15Z",
+      "head": "fix/settings-and-remove-floating-coach-robot-20261119",
+      "head_sha": "62120a72b976913178146a8c0db5783fc90ae8f3",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Settings visibility and remove floating Coach robot"
+    },
+    {
+      "number": 311,
+      "state": "closed",
+      "merged_at": "2026-11-19T13:34:08Z",
+      "head": "fix/settings-panel-rendering-20261119",
+      "head_sha": "287390185541bf5902120b7f573aa3d1356c98c4",
+      "base": "main",
+      "draft": false,
+      "title": "Fix BEP Settings panel rendering and offline cache"
+    },
+    {
+      "number": 310,
+      "state": "closed",
+      "merged_at": "2026-11-19T13:03:26Z",
+      "head": "fix/force-hide-coach-outside-tab-20261119",
+      "head_sha": "8e6822584981475e0411fb4a4f9dcd4a723036e6",
+      "base": "main",
+      "draft": false,
+      "title": "Force Coach workspace isolation to its own tab"
+    },
+    {
+      "number": 309,
+      "state": "closed",
+      "merged_at": "2026-11-19T12:46:21Z",
+      "head": "fix/coach-panel-only-coach-tab-20261119",
+      "head_sha": "3f3b8b0a3e8598962b16fcc82c11fa2841181d59",
+      "base": "main",
+      "draft": false,
+      "title": "Hide Coach conversation outside Coach tab"
+    },
+    {
+      "number": 308,
+      "state": "closed",
+      "merged_at": "2026-11-19T12:35:35Z",
+      "head": "fix/coach-only-local-agent-20261119",
+      "head_sha": "6f3395d4ff958d92ff5baa20684c8505d476f9da",
+      "base": "main",
+      "draft": false,
+      "title": "Restrict local assistant to Coach BEP"
+    },
+    {
+      "number": 307,
+      "state": "closed",
+      "merged_at": "2026-11-19T11:41:14Z",
+      "head": "fix/coach-conversation-fallback-20261119",
+      "head_sha": "735e0e934c0c7a5bc1e770f7599cea6606e84838",
+      "base": "main",
+      "draft": false,
+      "title": "Restore natural Coach conversation for short replies"
+    },
+    {
+      "number": 306,
+      "state": "closed",
+      "merged_at": "2026-11-19T11:47:33Z",
+      "head": "fix/coach-objectives-mobile-layout-20261119",
+      "head_sha": "4b886ea3064fff7ba6713d79add30c5eb46a61ee",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Coach objectives layout on mobile"
+    },
+    {
+      "number": 305,
+      "state": "closed",
+      "merged_at": "2026-11-19T11:33:24Z",
+      "head": "feat/coach-ergonomic-workspace-20261119",
+      "head_sha": "5e5b076ba4b20cf2e39c1147d8b4be683933129b",
+      "base": "main",
+      "draft": false,
+      "title": "Améliorer l’ergonomie du Coach BEP"
+    },
+    {
+      "number": 304,
+      "state": "closed",
+      "merged_at": "2026-11-19T11:05:39Z",
+      "head": "fix/coach-robot-cache-refresh-20261119",
+      "head_sha": "0cc6a9605627ab01f774888302fc9e80d65d56cc",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): restaurer le robot et invalider le cache PWA"
+    },
+    {
+      "number": 303,
+      "state": "closed",
+      "merged_at": "2026-11-19T11:00:21Z",
+      "head": "fix/coach-mobile-visual-continuity-20261119",
+      "head_sha": "b9e2b54d84d64b52cf5967dd5208872c5bd405e8",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): restaurer le robot et équilibrer la page mobile"
+    },
+    {
+      "number": 302,
+      "state": "closed",
+      "merged_at": "2026-11-19T10:41:00Z",
+      "head": "feat/coach-conversation-first-layout-20261119",
+      "head_sha": "69c8bcb41b0450bd3a73db0e2453071415110932",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): prioriser la conversation et raccourcir la page"
+    },
+    {
+      "number": 301,
+      "state": "closed",
+      "merged_at": "2026-11-19T10:22:29Z",
+      "head": "fix/coach-form-vertical-layout-20261119",
+      "head_sha": "6ef5c425446ca83733eced516cbe2935a594fd94",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): placer le champ de question au-dessus du bouton"
+    },
+    {
+      "number": 300,
+      "state": "closed",
+      "merged_at": "2026-11-19T08:29:00Z",
+      "head": "fix/homepage-welcome-pills-horizontal-20261119",
+      "head_sha": "2f36c8582cd755f60cc5f8c73e568ad8922f9db2",
+      "base": "main",
+      "draft": false,
+      "title": "fix(home): afficher les trois actions sur une ligne"
+    },
+    {
+      "number": 299,
+      "state": "closed",
+      "merged_at": "2026-11-19T08:23:18Z",
+      "head": "fix/coach-prompt-input-visible-20261119",
+      "head_sha": "81aa215d97c4ea00dcfa4b034868425333c0712d",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): restore visible question input and compact send button"
+    },
+    {
+      "number": 298,
+      "state": "closed",
+      "merged_at": "2026-11-19T07:02:49Z",
+      "head": "feat/coach-chat-first-faq-modal-objectives-20261119",
+      "head_sha": "5c40e5172b6038edf496b2852aa93ae2c6ed1d57",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): questions libres first, FAQ second, objectives modal"
+    },
+    {
+      "number": 297,
+      "state": "closed",
+      "merged_at": "2026-11-19T06:57:05Z",
+      "head": "feat/coach-two-tabs-objectives-before-chat-20261119",
+      "head_sha": "aab527ee1ddbcf989851098ee06a9c66edba6ef8",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): integrate objectives before chat in two-tab workspace"
+    },
+    {
+      "number": 296,
+      "state": "closed",
+      "merged_at": "2026-11-19T06:48:04Z",
+      "head": "fix/coach-explorer-hidden-on-entry-20261119",
+      "head_sha": "19e7b817cb0492dfa87483ff2ed50a9389a1bd88",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): hide Explorer themes on initial entry"
+    },
+    {
+      "number": 295,
+      "state": "closed",
+      "merged_at": "2026-11-19T06:38:45Z",
+      "head": "fix/coach-explorer-hide-all-themes-20261119",
+      "head_sha": "2cbd5c18862b1d81180b6717065b4562bca968b8",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): masquer toutes les thématiques avec Tout fermer"
+    },
+    {
+      "number": 294,
+      "state": "closed",
+      "merged_at": "2026-11-19T06:32:22Z",
+      "head": "feat/coach-explorer-expand-collapse-all-20261119",
+      "head_sha": "b9b8fe6f142c711a5233d80823b768113089942f",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): ouvrir et fermer toutes les thématiques"
+    },
+    {
+      "number": 293,
+      "state": "closed",
+      "merged_at": "2026-11-19T01:38:27Z",
+      "head": "feat/coach-explorer-accordion-answer-modal-20261119",
+      "head_sha": "d443e319aaf21f7b1f0ff660dd8f301efe8fabcd",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): explorer en accordéons et réponses en pop-up"
+    },
+    {
+      "number": 292,
+      "state": "closed",
+      "merged_at": "2026-11-19T00:43:11Z",
+      "head": "feat/admin-coach-knowledge-editor-20261119",
+      "head_sha": "bb530ddf444c1329d8aafff2a407683a577dd37e",
+      "base": "main",
+      "draft": false,
+      "title": "feat(admin): éditer et versionner les fiches du Coach BEP"
+    },
+    {
+      "number": 291,
+      "state": "closed",
+      "merged_at": "2026-11-19T00:09:49Z",
+      "head": "fix/coach-mobile-navigation-clean-20261119",
+      "head_sha": "9182b626849fc2d468d30459dc60aabdc86819f0",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): navigation mobile compacte — branche reconstruite"
+    },
+    {
+      "number": 290,
+      "state": "closed",
+      "merged_at": "2026-11-18T23:46:42Z",
+      "head": "fix/multi-device-session-sync",
+      "head_sha": "31dc21dee35eab95b0468a86bb2a2bc45ab16f33",
+      "base": "main",
+      "draft": false,
+      "title": "Add a real force-sync action to BEP settings"
+    },
+    {
+      "number": 289,
+      "state": "closed",
+      "merged_at": "2026-11-18T23:38:36Z",
+      "head": "fix/api-readiness-healthcheck-20261119",
+      "head_sha": "81591608e008aff31920b77974ac882d3c7940f2",
+      "base": "main",
+      "draft": false,
+      "title": "fix(api): rendre le health check fidèle à la disponibilité PostgreSQL"
+    },
+    {
+      "number": 288,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/monthly-home-financial-snapshot",
+      "head_sha": "65fe1bedd494877c9d6174068c228eb525047bff",
+      "base": "main",
+      "draft": false,
+      "title": "Fix homepage financial snapshot from monthly budget"
+    },
+    {
+      "number": 287,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/coach-mobile-navigation-20261119",
+      "head_sha": "2a7003f77f0325cfb18300bc63e4fa2ef5bbe618",
+      "base": "main",
+      "draft": false,
+      "title": "fix(coach): simplifier la navigation mobile"
+    },
+    {
+      "number": 286,
+      "state": "closed",
+      "merged_at": "2026-11-18T23:06:55Z",
+      "head": "feature/coach-guided-exploration-20261118",
+      "head_sha": "b0b39f55d4b264e25b3c0acb916ee36bd8680565",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): structurer le Coach BEP en parcours guidé"
+    },
+    {
+      "number": 285,
+      "state": "open",
+      "merged_at": null,
+      "head": "test/gemini-agent-triggered-validation-20261118",
+      "head_sha": "a6b18f687a89818bb9deb5ab0e0f87b68b5e9da5",
+      "base": "main",
+      "draft": false,
+      "title": "test: validate Gemini Agent telemetry isolation"
+    },
+    {
+      "number": 284,
+      "state": "closed",
+      "merged_at": "2026-11-18T22:17:39Z",
+      "head": "fix/coach-local-budget-vs-actual-explanation",
+      "head_sha": "b9a9a95ebe17054edc579200a796b4692fda48ee",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — expliquer le budget prévisionnel sans revenu enregistré"
+    },
+    {
+      "number": 283,
+      "state": "closed",
+      "merged_at": "2026-11-18T22:13:35Z",
+      "head": "fix/coach-relevance-intent-precision-v2",
+      "head_sha": "d98e82116e68e30c08c154f4a93fdf78d633d2ce",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — filtrer les sources hors sujet et mieux comprendre les explications"
+    },
+    {
+      "number": 282,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/coach-relevance-intent-precision",
+      "head_sha": "1c72fd57d601e1ae41c38b25cddb3da75fd58b6f",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — améliorer la précision documentaire et les intentions"
+    },
+    {
+      "number": 281,
+      "state": "closed",
+      "merged_at": "2026-11-18T22:05:05Z",
+      "head": "fix/coach-no-false-zero-and-relevance",
+      "head_sha": "03e90d88958e9996baf35dc3ed7a533d05300680",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — éviter les faux soldes et affiner les sources comportementales"
+    },
+    {
+      "number": 280,
+      "state": "closed",
+      "merged_at": "2026-11-18T21:57:34Z",
+      "head": "fix/coach-local-fallback-understands-intent",
+      "head_sha": "9aff815e9d348f19de616cf0bc6e8908caae5943",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — rendre le mode local sensible à l'intention"
+    },
+    {
+      "number": 279,
+      "state": "closed",
+      "merged_at": "2026-11-18T21:47:06Z",
+      "head": "fix/coach-contextual-conversation",
+      "head_sha": "711f53c8644da12b54821faa472b3e94a7e88085",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — corriger le contexte et améliorer la compréhension conversationnelle"
+    },
+    {
+      "number": 278,
+      "state": "closed",
+      "merged_at": "2026-11-18T21:24:33Z",
+      "head": "feature/coach-page-context-layer-20261118",
+      "head_sha": "4021d1f5a27ac82b877f6de835383c939121c7e2",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP — contextualisation par page"
+    },
+    {
+      "number": 277,
+      "state": "closed",
+      "merged_at": "2026-11-18T21:06:52Z",
+      "head": "improve/coach-knowledge-relevance-20261118",
+      "head_sha": "06d71be450871c1af319d11335715f022dffe0c3",
+      "base": "main",
+      "draft": false,
+      "title": "Improve BEP Coach knowledge relevance"
+    },
+    {
+      "number": 276,
+      "state": "closed",
+      "merged_at": "2026-11-18T20:31:51Z",
+      "head": "feat/admin-article-accordion-import-cleaning",
+      "head_sha": "ed635044b71de670dd6d69f4c74931169634f66d",
+      "base": "main",
+      "draft": false,
+      "title": "Improve documentary admin display and import quality filters"
+    },
+    {
+      "number": 275,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/admin-structured-knowledge-batch-import",
+      "head_sha": "977c9c9777bdb228c5074a27b20f932e5f6904a5",
+      "base": "main",
+      "draft": false,
+      "title": "Fix import of institutional knowledge proposals"
+    },
+    {
+      "number": 274,
+      "state": "closed",
+      "merged_at": "2026-11-18T18:01:40Z",
+      "head": "fix/bep-admin-super-admin-allowlist-20261118",
+      "head_sha": "1bd4c3a0a81f7b8d7e4a71c5fd18608f51e4c92e",
+      "base": "main",
+      "draft": false,
+      "title": "Fix admin allowlist and assign SUPER_ADMIN role"
+    },
+    {
+      "number": 273,
+      "state": "closed",
+      "merged_at": "2026-11-18T17:46:40Z",
+      "head": "feat/bep-financial-knowledge-20-20261118",
+      "head_sha": "f7fdcc3a90268b5a51bab69eb61f8a36b3a2f702",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach — ajouter 20 fiches financières structurées"
+    },
+    {
+      "number": 272,
+      "state": "closed",
+      "merged_at": "2026-11-18T17:29:53Z",
+      "head": "feat/admin-auth-loader-20261118",
+      "head_sha": "ff4af0c8279736e2d9231dee90c4b13a2d5e2c7e",
+      "base": "main",
+      "draft": false,
+      "title": "Administration — loader pendant la vérification de session"
+    },
+    {
+      "number": 271,
+      "state": "closed",
+      "merged_at": "2026-11-18T17:18:20Z",
+      "head": "feat/admin-menu-logout-cache-20261118",
+      "head_sha": "3af02f2c7b9ec76e6c53423dcc8a5b0a517108c8",
+      "base": "main",
+      "draft": false,
+      "title": "Administration — ajouter déconnexion et suppression du cache"
+    },
+    {
+      "number": 270,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/coach-collector-http-errors-20261118",
+      "head_sha": "9b29581aabb3f6ea95c4e1aac459e8cac4e3827a",
+      "base": "main",
+      "draft": true,
+      "title": "Coach BEP — fiabiliser les erreurs de collecte HTTP"
+    },
+    {
+      "number": 269,
+      "state": "closed",
+      "merged_at": "2026-11-18T17:01:45Z",
+      "head": "fix/admin-independent-session-flow",
+      "head_sha": "5ffc209b1027912ef94dfeb3815f807250f8ef22",
+      "base": "main",
+      "draft": false,
+      "title": "Admin BEP — fiabiliser la session indépendante"
+    },
+    {
+      "number": 268,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/coach-account-first-response",
+      "head_sha": "7d549cce0e23a8608052cc1bd7d3ba5a2d543031",
+      "base": "main",
+      "draft": true,
+      "title": "Coach BEP — analyse les comptes avant le RAG"
+    },
+    {
+      "number": 267,
+      "state": "open",
+      "merged_at": null,
+      "head": "security/phase-1-granular-admin-audit",
+      "head_sha": "013ae945c6afe1651e853b23c9bba450631b434b",
+      "base": "main",
+      "draft": true,
+      "title": "Sécuriser les permissions administrateur et les validations documentaires"
+    },
+    {
+      "number": 266,
+      "state": "closed",
+      "merged_at": "2026-11-18T15:47:20Z",
+      "head": "feature/admin-navigation-menu",
+      "head_sha": "b2a608a1f5e2c8206e98390fe707f7834fa7bf73",
+      "base": "main",
+      "draft": false,
+      "title": "Add clear navigation menu to BEP administration"
+    },
+    {
+      "number": 265,
+      "state": "closed",
+      "merged_at": "2026-11-18T15:03:13Z",
+      "head": "feature/bep-knowledge-56-candidates",
+      "head_sha": "0046c0192c31deddeb8acac5a7a4a4b21b35ff08",
+      "base": "main",
+      "draft": false,
+      "title": "Add 36 pending BEP knowledge candidates (target 56)"
+    },
+    {
+      "number": 264,
+      "state": "closed",
+      "merged_at": "2026-11-18T14:12:14Z",
+      "head": "fix/bep-coach-json-import-rebased-20261118",
+      "head_sha": "22cd5f8a06ba46824f39a1e03f716465ae895bac",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach — importer les six fiches JSON sans Gemini (rebased)"
+    },
+    {
+      "number": 263,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/bep-coach-structured-json-import",
+      "head_sha": "be68c306d31eaa206472497ab16a147edd38fc9b",
+      "base": "main",
+      "draft": true,
+      "title": "BEP Coach — importer les fiches JSON sans Gemini"
+    },
+    {
+      "number": 262,
+      "state": "closed",
+      "merged_at": "2026-11-18T14:02:35Z",
+      "head": "feature/bep-document-ingestion-no-ai",
+      "head_sha": "74cfa106c75c5838e69399d53d86d83f656a4b3e",
+      "base": "main",
+      "draft": false,
+      "title": "Ingestion documentaire BEP sans dépendance à Gemini"
+    },
+    {
+      "number": 261,
+      "state": "closed",
+      "merged_at": "2026-11-17T14:54:21Z",
+      "head": "feat/bep-coach-source-registry",
+      "head_sha": "0ea9814414b36b9add8026bcb745606fe29aa170",
+      "base": "main",
+      "draft": false,
+      "title": "Add a manual Banque de France source registry"
+    },
+    {
+      "number": 260,
+      "state": "closed",
+      "merged_at": "2026-11-17T13:46:30Z",
+      "head": "fix/bep-coach-staging-cors-20261117",
+      "head_sha": "56e13e2cd07547c7263cfb1b9f1a2affa8251b49",
+      "base": "main",
+      "draft": false,
+      "title": "Fix BEP Coach staging API CORS allowlist"
+    },
+    {
+      "number": 259,
+      "state": "closed",
+      "merged_at": "2026-11-17T13:26:04Z",
+      "head": "fix/bep-coach-reuse-existing-gemini-key",
+      "head_sha": "f38c9501e63ee4fdcb8946e5586a7f11f0224125",
+      "base": "main",
+      "draft": false,
+      "title": "Reuse existing BEP Gemini key for Coach ingestion"
+    },
+    {
+      "number": 258,
+      "state": "closed",
+      "merged_at": "2026-11-17T12:46:43Z",
+      "head": "feat/bep-coach-50-source-batch",
+      "head_sha": "d904d2c4bc7316272ae7a7fa140aed0890a3a167",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach — référencer les 50 sources Mes questions d'argent"
+    },
+    {
+      "number": 257,
+      "state": "open",
+      "merged_at": null,
+      "head": "feat/bep-manual-knowledge-import",
+      "head_sha": "e45cc026c5a1b160a47a2f82ba9baa1ecb888c1e",
+      "base": "main",
+      "draft": true,
+      "title": "BEP — import manuel sécurisé des fiches Coach"
+    },
+    {
+      "number": 256,
+      "state": "open",
+      "merged_at": null,
+      "head": "feat/persistent-manual-ingestion-queue-20261117",
+      "head_sha": "a57fe298a3069e4421c71bb823c9d1d40147c572",
+      "base": "main",
+      "draft": true,
+      "title": "Add persistent, consent-gated manual ingestion retries"
+    },
+    {
+      "number": 255,
+      "state": "closed",
+      "merged_at": "2026-11-16T22:22:22Z",
+      "head": "fix/gemini-503-retry-diagnostics-20261116",
+      "head_sha": "07d9e51fcd6d326d32f189332a42292e734c3635",
+      "base": "main",
+      "draft": false,
+      "title": "Fix: retry Gemini 503 and retain safe diagnostics"
+    },
+    {
+      "number": 254,
+      "state": "closed",
+      "merged_at": "2026-11-16T21:27:58Z",
+      "head": "fix/manual-ingestion-dns-lookup-20261116",
+      "head_sha": "b8b46f2c8a5cf5abddfb8c044c06cc6e1ecf637d",
+      "base": "main",
+      "draft": false,
+      "title": "Fix DNS lookup callback for manual Coach ingestion"
+    },
+    {
+      "number": 253,
+      "state": "closed",
+      "merged_at": "2026-11-16T21:10:10Z",
+      "head": "feat/manual-source-ingestion-v2-20261116",
+      "head_sha": "454bd87c41e33ea5628a54acfff2f798c863cf64",
+      "base": "main",
+      "draft": false,
+      "title": "feat: alimentation manuelle assistée des connaissances BEP"
+    },
+    {
+      "number": 252,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/manual-source-ingestion-20261116",
+      "head_sha": "ee2a167d8df4a80621f0f1c6ec820a3d7933b1b2",
+      "base": "main",
+      "draft": true,
+      "title": "feat: alimentation manuelle assistée des connaissances BEP"
+    },
+    {
+      "number": 251,
+      "state": "closed",
+      "merged_at": "2026-11-16T19:54:14Z",
+      "head": "fix/gemini-search-interactions-api-20261116",
+      "head_sha": "e57128b96724186d3b3946ab6a0496096ef33649",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Gemini web research with Interactions API"
+    },
+    {
+      "number": 250,
+      "state": "closed",
+      "merged_at": "2026-11-16T18:49:22Z",
+      "head": "feat/admin-gemini-ops-visibility-20261116",
+      "head_sha": "d6c817696d571674a3477e715889a4b592d99841",
+      "base": "main",
+      "draft": false,
+      "title": "Make Gemini admin audit scoped and observable"
+    },
+    {
+      "number": 249,
+      "state": "closed",
+      "merged_at": "2026-11-16T16:39:26Z",
+      "head": "fix/coach-grounding-quota-metering",
+      "head_sha": "7a689fb54945cd802393b55a547193986a606ab5",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach — suppression du quota artificiel et suivi mensuel Gemini"
+    },
+    {
+      "number": 248,
+      "state": "closed",
+      "merged_at": "2026-11-16T14:36:45Z",
+      "head": "fix/gemini-free-tier-activation",
+      "head_sha": "0d7cd6e336929a0eb859c08e97ed7a42188ad695",
+      "base": "main",
+      "draft": false,
+      "title": "Enable Gemini free-tier research without billing gate"
+    },
+    {
+      "number": 247,
+      "state": "closed",
+      "merged_at": "2026-11-16T14:21:16Z",
+      "head": "feat/coach-document-library-explorer",
+      "head_sha": "bc1567703b3a210a9e20199c65f674ff96fbed23",
+      "base": "main",
+      "draft": false,
+      "title": "Add Coach documentary library explorer"
+    },
+    {
+      "number": 246,
+      "state": "closed",
+      "merged_at": "2026-11-16T13:57:32Z",
+      "head": "feat/integrate-coach-research-admin",
+      "head_sha": "6372a95bf5638fa2016b9725fbb814b689eff7f7",
+      "base": "main",
+      "draft": false,
+      "title": "Integrate Coach research into existing BEP administration"
+    },
+    {
+      "number": 245,
+      "state": "open",
+      "merged_at": null,
+      "head": "feat/gemini-admin-console",
+      "head_sha": "95543b2e4363e27694fa213fcc7dea2e32342afc",
+      "base": "main",
+      "draft": false,
+      "title": "Build Gemini admin console and isolate execution in Worker"
+    },
+    {
+      "number": 244,
+      "state": "closed",
+      "merged_at": "2026-11-16T13:10:20Z",
+      "head": "fix/gemini-agent-independent-admin-auth",
+      "head_sha": "8bf327e5deb83357cbf984b744fd2485c13cb637",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Gemini admin-agent authorization"
+    },
+    {
+      "number": 243,
+      "state": "closed",
+      "merged_at": "2026-11-16T12:46:18Z",
+      "head": "fix/admin-pseudonymized-aggregate-view",
+      "head_sha": "5c0b71f3a9e47165ebd1b5aac8ecc5f47d269d43",
+      "base": "main",
+      "draft": false,
+      "title": "Admin: vue agrégée pseudonymisée sans détails financiers individuels"
+    },
+    {
+      "number": 242,
+      "state": "closed",
+      "merged_at": "2026-11-16T12:33:20Z",
+      "head": "fix/admin-console-allowlist-email",
+      "head_sha": "7a200b0854d8d7864da4b23bce7e21605e2f9809",
+      "base": "main",
+      "draft": false,
+      "title": "Fix admin console allowlist authorization"
+    },
+    {
+      "number": 241,
+      "state": "closed",
+      "merged_at": "2026-11-16T11:12:45Z",
+      "head": "fix/admin-email-code-type",
+      "head_sha": "1d50c5282abcec119484a960006ab5cd7072e088",
+      "base": "main",
+      "draft": false,
+      "title": "Fix independent admin authentication email routing"
+    },
+    {
+      "number": 240,
+      "state": "closed",
+      "merged_at": "2026-11-16T10:52:59Z",
+      "head": "fix/api-csp-connect-src-startup",
+      "head_sha": "b43f24c218f2c012cf5191cf930033077c37eb48",
+      "base": "main",
+      "draft": false,
+      "title": "Fix API startup CSP connect-src validation"
+    },
+    {
+      "number": 239,
+      "state": "closed",
+      "merged_at": "2026-11-16T10:50:56Z",
+      "head": "fix/bep-agent-test-syntax-20261116",
+      "head_sha": "35de300e7cc0f028ae20e6160d4994be12f77922",
+      "base": "main",
+      "draft": false,
+      "title": "Fix BEP agent safety test syntax"
+    },
+    {
+      "number": 238,
+      "state": "closed",
+      "merged_at": "2026-11-16T10:47:33Z",
+      "head": "fix/admin-enrollment-diagnostics",
+      "head_sha": "9229c779671b4b21414ea585053ebff2cc4f4c64",
+      "base": "main",
+      "draft": false,
+      "title": "Fix BEP admin enrollment diagnostics and mail failure cleanup"
+    },
+    {
+      "number": 237,
+      "state": "closed",
+      "merged_at": "2026-11-16T10:37:34Z",
+      "head": "fix/csp-connect-src-origin-validation",
+      "head_sha": "7924ae0f6cab4c9ed0a352e61217061c7c39568f",
+      "base": "main",
+      "draft": false,
+      "title": "Fix CSP connect-src origin validation"
+    },
+    {
+      "number": 236,
+      "state": "closed",
+      "merged_at": "2026-11-16T10:28:24Z",
+      "head": "feature/gemini-admin-on-demand-free-tier-20261116",
+      "head_sha": "0ee53ae8603b8f039dcac077375ae306d6c1982d",
+      "base": "main",
+      "draft": false,
+      "title": "Gemini gratuit : exécution ponctuelle depuis l’administration BEP"
+    },
+    {
+      "number": 235,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/admin-api-worker-separation",
+      "head_sha": "2e75557a2621d76e26fc8c80296821297a61f811",
+      "base": "main",
+      "draft": false,
+      "title": "Decouple BEP admin queue API from worker runtime"
+    },
+    {
+      "number": 234,
+      "state": "open",
+      "merged_at": null,
+      "head": "research/coach-sources-enrichment-20261116",
+      "head_sha": "b8437746a01e22b2ca191ce3d198bf65ac0aefd4",
+      "base": "main",
+      "draft": false,
+      "title": "docs(coach): enrichir les sources financières officielles"
+    },
+    {
+      "number": 233,
+      "state": "closed",
+      "merged_at": "2026-11-16T00:00:40Z",
+      "head": "feat/admin-gemini-json-documentary-review",
+      "head_sha": "aa5580914686b35fe4113a537c692818016435f5",
+      "base": "main",
+      "draft": false,
+      "title": "Add admin Gemini review of documentary JSON files"
+    },
+    {
+      "number": 232,
+      "state": "closed",
+      "merged_at": "2026-11-16T00:01:38Z",
+      "head": "feature/coach-bep-dynamic-ui-20261116",
+      "head_sha": "d750d597e90b504699250eeed196ff090e24e1c9",
+      "base": "main",
+      "draft": false,
+      "title": "feat(coach): refonte visuelle dynamique du Coach BEP"
+    },
+    {
+      "number": 231,
+      "state": "closed",
+      "merged_at": "2026-11-15T23:47:55Z",
+      "head": "fix/coach-local-documentary-user-space",
+      "head_sha": "99cf5d5548cb5131a91a545fe1023959d6d9f0e0",
+      "base": "main",
+      "draft": false,
+      "title": "Make BEP Coach local and documentary-only for users"
+    },
+    {
+      "number": 230,
+      "state": "closed",
+      "merged_at": "2026-11-15T23:30:12Z",
+      "head": "fix/move-coach-knowledge-link-to-admin",
+      "head_sha": "6326289878392a54f1807caeabaff2348f88afee",
+      "base": "main",
+      "draft": false,
+      "title": "Move Coach knowledge access to administrator settings"
+    },
+    {
+      "number": 229,
+      "state": "closed",
+      "merged_at": "2026-11-15T23:24:25Z",
+      "head": "fix/coach-research-page-and-robot-fallback",
+      "head_sha": "c511ea9ff01f0e4c1dd8b2d23ceb42a869c95e80",
+      "base": "main",
+      "draft": false,
+      "title": "Finalize Coach robot navigation and independent research page"
+    },
+    {
+      "number": 228,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/coach-home-knowledge-services-final",
+      "head_sha": "f8e9bf534374ce55df6fd88aa71b0b6efa129f65",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach: interactive homepage robot and independent knowledge services"
+    },
+    {
+      "number": 227,
+      "state": "closed",
+      "merged_at": "2026-11-15T19:55:27Z",
+      "head": "feature/coach-home-knowledge-services",
+      "head_sha": "029cf2ee87e992f52f6c8c4ccfc60162a72a435b",
+      "base": "main",
+      "draft": false,
+      "title": "BEP Coach: homepage robot and independent knowledge services"
+    },
+    {
+      "number": 226,
+      "state": "closed",
+      "merged_at": "2026-11-15T17:47:28Z",
+      "head": "fix/google-oauth-mobile-popup-20261115",
+      "head_sha": "cced7ab267603df825c04526dcb7d5198975f612",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Google OAuth popup on mobile"
+    },
+    {
+      "number": 225,
+      "state": "closed",
+      "merged_at": "2026-11-15T17:20:03Z",
+      "head": "fix/overdraft-delete-no-validity-current-main-20261115",
+      "head_sha": "9702ed11b7c7ce5237788f84540e3092b4d3ee2e",
+      "base": "main",
+      "draft": false,
+      "title": "Allow deleting overdraft authorization and remove validity date"
+    },
+    {
+      "number": 224,
+      "state": "closed",
+      "merged_at": "2026-11-15T17:11:58Z",
+      "head": "fix/mobile-footer-spacing-current-main-20261115",
+      "head_sha": "67abc8a998e271ae9ad3dec9c6b581929c03610b",
+      "base": "main",
+      "draft": false,
+      "title": "Réduire l’espace du pied de page sur mobile"
+    },
+    {
+      "number": 223,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/overdraft-delete-no-validity-20261115",
+      "head_sha": "0092edc4287de79dd4863cf02f2b00c642b7b7db",
+      "base": "main",
+      "draft": false,
+      "title": "Allow deleting overdraft authorization and remove validity date"
+    },
+    {
+      "number": 222,
+      "state": "closed",
+      "merged_at": "2026-11-15T14:18:47Z",
+      "head": "feature/bep-admin-production-flag-20261115",
+      "head_sha": "34050bd03068f729a86cab43df1b75241f756510",
+      "base": "main",
+      "draft": false,
+      "title": "Add gated BEP JSON admin console and independent authentication"
+    },
+    {
+      "number": 221,
+      "state": "closed",
+      "merged_at": "2026-11-15T12:23:22Z",
+      "head": "feature/bep-admin-json-console-20261115",
+      "head_sha": "02749a7eb80de842491c5f76df641422c0b6c955",
+      "base": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "draft": false,
+      "title": "BEP Admin — console JSON isolée en préproduction"
+    },
+    {
+      "number": 220,
+      "state": "closed",
+      "merged_at": "2026-11-15T11:50:06Z",
+      "head": "fix/aligned-home-cards-oauth-popup-navigation-20261115",
+      "head_sha": "72af45c3f58a24ff147191fb561312c1c82c237c",
+      "base": "main",
+      "draft": false,
+      "title": "Align homepage financial tiles and isolate Google OAuth navigation"
+    },
+    {
+      "number": 219,
+      "state": "closed",
+      "merged_at": "2026-11-15T11:30:04Z",
+      "head": "fix/production-home-overdraft-coach-mobile-compact-20261115",
+      "head_sha": "1ecb25800a171415564f2bc76ae65454d1356288",
+      "base": "main",
+      "draft": false,
+      "title": "Polish mobile home snapshot and Coach BEP"
+    },
+    {
+      "number": 218,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/mobile-footer-spacing-20261115",
+      "head_sha": "cdf735de16db6e9511ea37b5c372633d9c4361a0",
+      "base": "main",
+      "draft": false,
+      "title": "Réduire l’espace du pied de page sur mobile"
+    },
+    {
+      "number": 217,
+      "state": "closed",
+      "merged_at": "2026-11-15T07:34:09Z",
+      "head": "fix/bep-calendar-service-worker-refresh-20261115",
+      "head_sha": "70f99697a71f4df44cb136490281d4da27217b8c",
+      "base": "main",
+      "draft": false,
+      "title": "Refresh PWA shell cache for monthly calendar dialog"
+    },
+    {
+      "number": 216,
+      "state": "closed",
+      "merged_at": "2026-11-15T07:27:51Z",
+      "head": "feature/bep-budget-calendar-context-details-20261115",
+      "head_sha": "55738108bb86540aba836b699b6d5c62b268bdab",
+      "base": "main",
+      "draft": false,
+      "title": "Add contextual expense details to monthly budget calendar"
+    },
+    {
+      "number": 215,
+      "state": "closed",
+      "merged_at": "2026-11-15T07:09:29Z",
+      "head": "ui/budget-coach-robot-launcher-20261115",
+      "head_sha": "1b872da0a337761fa8cf40882297740aeeea1e84",
+      "base": "main",
+      "draft": false,
+      "title": "Ajuster l’en-tête des budgets mensuels et retirer le conseil flottant"
+    },
+    {
+      "number": 214,
+      "state": "closed",
+      "merged_at": "2026-11-15T06:56:24Z",
+      "head": "fix/month-calendar-on-demand",
+      "head_sha": "b8b887740c416d1920a9931bfbf886a1b0d9d215",
+      "base": "main",
+      "draft": false,
+      "title": "Afficher le calendrier au clic sur un mois"
+    },
+    {
+      "number": 213,
+      "state": "closed",
+      "merged_at": "2026-11-15T06:42:14Z",
+      "head": "feat/monthly-budget-visual-workspace",
+      "head_sha": "5384187ddc52c575cef9bd19f40df99c7a170f64",
+      "base": "main",
+      "draft": false,
+      "title": "Improve monthly budget visual workspace"
+    },
+    {
+      "number": 212,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/spend-impulse-kpi-overflow",
+      "head_sha": "03a5adc63c50d74f02f11d280ac521e542f230cf",
+      "base": "main",
+      "draft": false,
+      "title": "Fix mobile impulse KPI overflow on expenses page"
+    },
+    {
+      "number": 211,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/pwa-design-deletion-guard-verified",
+      "head_sha": "2992cf375ee5e14fd21872b4c46c11b0fdbff77b",
+      "base": "main",
+      "draft": false,
+      "title": "Fix PWA source drift and prevent deleted charges from returning"
+    },
+    {
+      "number": 210,
+      "state": "closed",
+      "merged_at": "2026-11-15T06:19:41Z",
+      "head": "fix/pwa-design-and-charge-deletion-guard",
+      "head_sha": "a86e051801fbe94bb5ec9f35c5d83fcb70e5fb1b",
+      "base": "main",
+      "draft": false,
+      "title": "Fix PWA HTML drift and prevent deleted charges from returning"
+    },
+    {
+      "number": 209,
+      "state": "closed",
+      "merged_at": "2026-11-15T06:03:33Z",
+      "head": "fix/restore-production-home-design",
+      "head_sha": "f3b14241269e64b19af4b6d9592fdd81cfe17a6f",
+      "base": "main",
+      "draft": false,
+      "title": "Fix: restaurer le design de production de la page d’accueil"
+    },
+    {
+      "number": 208,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:57:07Z",
+      "head": "fix/mobile-pwa-cache-refresh-v18",
+      "head_sha": "dbda5622ad06f651fe3711186a50c1fd3a2b91cf",
+      "base": "main",
+      "draft": false,
+      "title": "Fix: actualisation automatique du cache PWA mobile"
+    },
+    {
+      "number": 207,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:52:39Z",
+      "head": "fix/savings-ring-counter-replay-v18",
+      "head_sha": "d6a79c551241b7d14b32ea282965ff93199532cf",
+      "base": "main",
+      "draft": false,
+      "title": "Fix: animer le compteur et l’anneau de progression Épargne"
+    },
+    {
+      "number": 206,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:48:06Z",
+      "head": "feat/home-statistics-open-animation",
+      "head_sha": "f7d1d6119ffa744a524ab8713f9fe3048295d3eb",
+      "base": "main",
+      "draft": false,
+      "title": "Animer les graphiques de la page d’accueil à leur ouverture"
+    },
+    {
+      "number": 205,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:39:50Z",
+      "head": "feat/replay-module-chart-animations",
+      "head_sha": "26ef8b8655e1de6855854088196c4b263b1900ca",
+      "base": "main",
+      "draft": false,
+      "title": "Rejouer les animations graphiques à chaque ouverture de module"
+    },
+    {
+      "number": 204,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:19:50Z",
+      "head": "fix/savings-capacity-consistency",
+      "head_sha": "f3e334571fb827c086a234b6163371f7573e5c64",
+      "base": "main",
+      "draft": false,
+      "title": "Harmoniser la capacité d’épargne avec le module Épargne"
+    },
+    {
+      "number": 203,
+      "state": "closed",
+      "merged_at": "2026-11-15T05:14:29Z",
+      "head": "fix/home-savings-capital",
+      "head_sha": "75f5f7e6c865b1be2dc65feb94cc9f78d0300009",
+      "base": "main",
+      "draft": false,
+      "title": "Afficher le capital d’épargne réel sur l’accueil BEP"
+    },
+    {
+      "number": 202,
+      "state": "closed",
+      "merged_at": "2026-11-15T04:49:07Z",
+      "head": "fix/bep-multidevice-sync-reconciliation-20261115",
+      "head_sha": "b5c6eb92346813c360e231f609bd644f6031c1c1",
+      "base": "main",
+      "draft": false,
+      "title": "Fix multi-device offline synchronization and safe reconciliation"
+    },
+    {
+      "number": 201,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/bep-receipt-deduplication-hardening-20261115",
+      "head_sha": "f7085a43369cbc27e9b661df4bb8608ed46c9913",
+      "base": "main",
+      "draft": false,
+      "title": "Prevent duplicate receipt imports across OCR variations and API sync"
+    },
+    {
+      "number": 200,
+      "state": "closed",
+      "merged_at": "2026-11-15T04:23:23Z",
+      "head": "fix/bep-savings-date-and-receipt-feedback-20261115",
+      "head_sha": "c46b756de5e5ac255cb7df0a33b1a2796a1620c8",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — feedback explicite pour dates d’épargne et import de ticket"
+    },
+    {
+      "number": 199,
+      "state": "open",
+      "merged_at": null,
+      "head": "qa/certification-preflight-20261115",
+      "head_sha": "3b8cee34b8262a717e9f9e345aff942e2a07ce21",
+      "base": "main",
+      "draft": true,
+      "title": "QA: sécuriser et fiabiliser le préflight de certification BEP"
+    },
+    {
+      "number": 198,
+      "state": "closed",
+      "merged_at": "2026-11-14T23:25:59Z",
+      "head": "hotfix/mobile-mutation-observer-20261115",
+      "head_sha": "82a13e9c6457cca57d380061a833aff59b974898",
+      "base": "main",
+      "draft": false,
+      "title": "Hotfix mobile freeze from purchase history observer"
+    },
+    {
+      "number": 197,
+      "state": "closed",
+      "merged_at": "2026-11-14T23:08:14Z",
+      "head": "fix/mobile-footer-and-advice-touch-feedback-20261115",
+      "head_sha": "05ff0d939f5247667fce1af7ce3387f257471a8d",
+      "base": "main",
+      "draft": false,
+      "title": "Center mobile connection status and improve advice button feedback"
+    },
+    {
+      "number": 196,
+      "state": "closed",
+      "merged_at": "2026-11-14T23:03:43Z",
+      "head": "fix/advice-robot-hit-area-20261115",
+      "head_sha": "0eaa981c897ec63c1e90d735d81c31c96ea0cf62",
+      "base": "main",
+      "draft": false,
+      "title": "Increase floating Conseil BEP robot touch target"
+    },
+    {
+      "number": 195,
+      "state": "closed",
+      "merged_at": "2026-11-14T23:01:03Z",
+      "head": "feat/budget-action-and-receipt-feedback-20261114",
+      "head_sha": "cc79c840ac0358846419e10d6cc8ab487fb9188c",
+      "base": "main",
+      "draft": false,
+      "title": "Animate budget actions and show receipt OCR progress"
+    },
+    {
+      "number": 194,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:54:50Z",
+      "head": "feat/spending-actions-visual-order-20261114",
+      "head_sha": "957dc436e93d6124b624bc34269262d12fccd775",
+      "base": "main",
+      "draft": false,
+      "title": "Place purchase history below actions and animate add-expense tile"
+    },
+    {
+      "number": 193,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:50:39Z",
+      "head": "fix/spending-page-ui-final-20261114",
+      "head_sha": "77efafaffdcb8d8d4a8c926b5e626d87163550e4",
+      "base": "main",
+      "draft": false,
+      "title": "Fix spending page UI and history interactions"
+    },
+    {
+      "number": 192,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:40:50Z",
+      "head": "fix/spend-clean-ui-cache-bust-20261114",
+      "head_sha": "903d8d4bcc55502f6763f2e1b84f7b22fbfbb252",
+      "base": "main",
+      "draft": false,
+      "title": "Forcer le rechargement du constructeur de la page Dépenses"
+    },
+    {
+      "number": 191,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:37:46Z",
+      "head": "feat/spending-page-interactive-layout-20261114",
+      "head_sha": "0522fb92954a9675421fab1ee80552c350c0bad9",
+      "base": "main",
+      "draft": false,
+      "title": "Repenser la page Dépenses et rendre l’historique interactif"
+    },
+    {
+      "number": 190,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:31:32Z",
+      "head": "feat/purchase-history-accordion-20261114",
+      "head_sha": "2eee3f450a6bc8c524d30e262e4336e9f072e761",
+      "base": "main",
+      "draft": false,
+      "title": "Ajouter un accordéon à l’historique des achats"
+    },
+    {
+      "number": 189,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:25:50Z",
+      "head": "fix/spending-actions-survive-clean-ui-20261114",
+      "head_sha": "f2ee3469e33b64aa33f932ce8128a6c71774021e",
+      "base": "main",
+      "draft": false,
+      "title": "Fix final spending action layout and document DOM ownership"
+    },
+    {
+      "number": 188,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:17:43Z",
+      "head": "fix/mobile-budget-tiles-two-columns-20261114",
+      "head_sha": "b6f323ad87e4472247e6ec43fa23e733e04891cd",
+      "base": "main",
+      "draft": false,
+      "title": "Keep budget action cards side by side on mobile"
+    },
+    {
+      "number": 187,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:14:16Z",
+      "head": "feat/compact-budget-action-tiles-20261114",
+      "head_sha": "b1657043b7a06b3541d8773a6d7c2eab73f88384",
+      "base": "main",
+      "draft": false,
+      "title": "Compact paired action tiles across budget sections"
+    },
+    {
+      "number": 186,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:05:54Z",
+      "head": "fix/publish-spend-highlight-dist-css-20261114",
+      "head_sha": "59c19cbe5dc85a749b74f692f7a59d1b293def98",
+      "base": "main",
+      "draft": false,
+      "title": "Publish spending highlight CSS to production dist"
+    },
+    {
+      "number": 185,
+      "state": "closed",
+      "merged_at": "2026-11-14T22:01:29Z",
+      "head": "feat/budget-action-cards-income-charges-20261114",
+      "head_sha": "9072a20ddebaba3e834a345e945bddf6b4682d68",
+      "base": "main",
+      "draft": false,
+      "title": "Refresh income and charges action cards"
+    },
+    {
+      "number": 184,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:52:15Z",
+      "head": "feat/impulse-purchase-history-highlighting-20261114",
+      "head_sha": "6bf2c339881bd5a784660871df1de03fcf040e0b",
+      "base": "main",
+      "draft": false,
+      "title": "Highlight impulsive purchases in spending history"
+    },
+    {
+      "number": 183,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:43:49Z",
+      "head": "fix/auth-rate-limit-designed-page-20261114",
+      "head_sha": "c67d06864134b37485eef11a13f0c20665ab3374",
+      "base": "main",
+      "draft": false,
+      "title": "Serve designed BEP rate-limit page for Google OAuth"
+    },
+    {
+      "number": 182,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:39:37Z",
+      "head": "fix/null-profile-email-dom-20261114",
+      "head_sha": "e45560a19606eb679f5f4fd9d227238e528697bf",
+      "base": "main",
+      "draft": false,
+      "title": "Fix null profile email DOM access"
+    },
+    {
+      "number": 181,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:37:35Z",
+      "head": "fix/local-data-clear-robustness-20261114",
+      "head_sha": "1bdf59c0c3687011ef432b2ffe83d71f335bc7bb",
+      "base": "main",
+      "draft": false,
+      "title": "Fix local data clearing and logout sequencing"
+    },
+    {
+      "number": 180,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:31:07Z",
+      "head": "fix/local-clear-render-error-20261114",
+      "head_sha": "386f071a1ded2f1f02ce7862982a5866a485d40d",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — prevent false local-clear failure after successful cleanup"
+    },
+    {
+      "number": 179,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:27:27Z",
+      "head": "fix/final-spend-assets-cache-bust-20261114",
+      "head_sha": "c6aeb6030c052f6388d20ddb79be4395e692f437",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — final cache-bust for published purchase fix"
+    },
+    {
+      "number": 178,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:26:25Z",
+      "head": "fix/publish-spend-history-fix-20261114",
+      "head_sha": "f476927c8e87d271a798cafa5a44df5e560acdff",
+      "base": "main",
+      "draft": false,
+      "title": "Publish BEP purchase history fix to production assets"
+    },
+    {
+      "number": 177,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:24:59Z",
+      "head": "fix/purchases-history-interactions-20261114",
+      "head_sha": "e0fe2105a7ebc3620fe0d635b7614cfdd313fede",
+      "base": "main",
+      "draft": false,
+      "title": "Fix dépenses: historique repliable et indicateurs cliquables"
+    },
+    {
+      "number": 176,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:20:46Z",
+      "head": "fix/bep-local-cache-clear-render-20261114",
+      "head_sha": "070c220e566e84a08567413c548066ce649b0a53",
+      "base": "main",
+      "draft": false,
+      "title": "Fix local cache clear success flow"
+    },
+    {
+      "number": 175,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:16:35Z",
+      "head": "feat/bep-rate-limit-explainer-20261114",
+      "head_sha": "ff81b57fb9b4245f0f0b489f737ae49b9d1f25b8",
+      "base": "main",
+      "draft": false,
+      "title": "Add designed RATE_LIMITED and contextual 404 pages"
+    },
+    {
+      "number": 174,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:09:43Z",
+      "head": "fix/bep-device-scoped-rate-limits-20261114",
+      "head_sha": "430d2cd59c9a5ac60dcd82236ed3ebeb86e1fffd",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — isoler les limites API par appareil"
+    },
+    {
+      "number": 173,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/per-device-rate-limits-20261114",
+      "head_sha": "a4a6fae46c3d5679f3b8edf617bf17c580d00a5f",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — limiter API isolé par appareil"
+    },
+    {
+      "number": 172,
+      "state": "closed",
+      "merged_at": "2026-11-14T21:00:42Z",
+      "head": "fix/bep-purchases-accordion-shortcuts-20261114",
+      "head_sha": "0df33c4506862927a03f9d145e5affb79ce4344d",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — accordéon historique et raccourcis des indicateurs achats"
+    },
+    {
+      "number": 171,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/bep-purchases-scroll-advice-dock-20261114",
+      "head_sha": "706ab343a5571e78116d325caee00e4e4ee457a1",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — liste des achats défilante et bouton Conseil accessible"
+    },
+    {
+      "number": 170,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:44:56Z",
+      "head": "fix/bep-local-cache-label-20261114",
+      "head_sha": "18ce87e30ba51e89a07c5a67b9330efb420c056d",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — préciser l’intitulé de l’effacement local"
+    },
+    {
+      "number": 169,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:40:35Z",
+      "head": "fix/bep-danger-action-confirmations-20261114",
+      "head_sha": "9a621eafadd83a245c97f36b3b857e9adc3c8902",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — confirmations avant les actions destructrices"
+    },
+    {
+      "number": 168,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:34:46Z",
+      "head": "feat/bep-encrypted-backup-restore-20261114",
+      "head_sha": "24a2e0bd0cb1cb7b139f54ab361eae707ff044b7",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — sauvegarde chiffrée et restauration sécurisée"
+    },
+    {
+      "number": 167,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:25:10Z",
+      "head": "fix/profile-settings-direct-action-20261114",
+      "head_sha": "4d18b44dffbf0fb793a61f25b5a300a011b70e39",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — placer l’action Modifier mon profil dans Paramètres"
+    },
+    {
+      "number": 166,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:21:18Z",
+      "head": "fix/profile-pwa-stale-shell-20261114",
+      "head_sha": "9e31e92aa31d39ce6005667bc2cf71eb571d4b9b",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — invalider l’ancien shell PWA des paramètres profil"
+    },
+    {
+      "number": 165,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:15:05Z",
+      "head": "fix/profile-modal-center-20261114",
+      "head_sha": "128420e3b5486dcedd68daa952131b0c1e8646b0",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — centrer le bouton d’enregistrement du profil"
+    },
+    {
+      "number": 164,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:09:40Z",
+      "head": "fix/bep-native-alert-modal-20261114",
+      "head_sha": "d6ab92727a49acc87d923a56226ed0d2b1186ead",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — remplacer l’alerte native par une modale intégrée"
+    },
+    {
+      "number": 163,
+      "state": "closed",
+      "merged_at": "2026-11-14T20:04:30Z",
+      "head": "fix/financial-persistence-recette-20261114",
+      "head_sha": "56ad32ea07654f0424acc87ee2c2e17e229df484",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — correctifs dépenses, version et statut mobile"
+    },
+    {
+      "number": 162,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/gemini-shared-learning-readonly-20261114",
+      "head_sha": "0c43892604a069a588217c320141d28b24752e46",
+      "base": "integration/v1.3-baseline-20261114",
+      "draft": true,
+      "title": "[Draft] Connect Gemini to approved shared BEP learning"
+    },
+    {
+      "number": 161,
+      "state": "open",
+      "merged_at": null,
+      "head": "simulation/coach-corpus-3mo-20261114",
+      "head_sha": "a2106bb81807ec3217c46f42af57664f4d92cd97",
+      "base": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "draft": true,
+      "title": "BEP V1.6 — corpus Coach synthétique JSON sur trois mois"
+    },
+    {
+      "number": 160,
+      "state": "closed",
+      "merged_at": null,
+      "head": "implementation/gemini-supervisor-v2-20261114",
+      "head_sha": "e7f8102c2033be15c67cb6e4b170a72c2db28852",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — intégrer le socle d’isolation Gemini Superviseur V2"
+    },
+    {
+      "number": 159,
+      "state": "closed",
+      "merged_at": "2026-11-14T01:32:06Z",
+      "head": "integration/v1.3-baseline-20261114",
+      "head_sha": "8a56d25607681002f82dd7b86765ac251a663080",
+      "base": "main",
+      "draft": false,
+      "title": "BEP V1.3 — intégration contrôlée des 6 lots Gemini Agent et fiabilisation Coach"
+    },
+    {
+      "number": 158,
+      "state": "closed",
+      "merged_at": null,
+      "head": "perf/module-isolation-20261114",
+      "head_sha": "5b6beacd2dbfb4b3861553493dacb72e85f3b810",
+      "base": "main",
+      "draft": true,
+      "title": "[DRAFT] Isoler les modules et dépendances BEP"
+    },
+    {
+      "number": 157,
+      "state": "closed",
+      "merged_at": "2026-11-13T23:30:38Z",
+      "head": "fix/conseil-bep-remove-minimize",
+      "head_sha": "e86376ec0d9ba5919e0a7e31094f7f8a3e37ec2e",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Supprimer le bouton réduire du pop-up Conseil"
+    },
+    {
+      "number": 156,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/bep-gemini-agent-v1-20261114",
+      "head_sha": "2199d51f639cb122f8e6fbd770418827b75325bd",
+      "base": "main",
+      "draft": true,
+      "title": "BEP — Agent Gemini isolé : enrichissement documentaire et contrôle du protocole"
+    },
+    {
+      "number": 155,
+      "state": "closed",
+      "merged_at": "2026-11-13T23:12:10Z",
+      "head": "feat/single-session-connection-status",
+      "head_sha": "0bd413b4983959bc477c149750f62e8ef59d7974",
+      "base": "main",
+      "draft": false,
+      "title": "Enforce single session and add connection diagnostics"
+    },
+    {
+      "number": 154,
+      "state": "closed",
+      "merged_at": "2026-11-13T22:53:02Z",
+      "head": "fix/production-purchases-panel-isolation",
+      "head_sha": "e0871b1ce03c26adc3ead99ae0c515c6aaaf09dc",
+      "base": "main",
+      "draft": false,
+      "title": "Fix production expenses panel navigation state"
+    },
+    {
+      "number": 153,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/budget-longpress-hints",
+      "head_sha": "90a1e4fc084ba7fe07783d02f266aef9368604bb",
+      "base": "main",
+      "draft": false,
+      "title": "Correct long-press guidance in budget lists"
+    },
+    {
+      "number": 152,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/bep-inherited-regression-checks-v2-20261113",
+      "head_sha": "280424e6d4a4e4af00658acfc54da971588c2010",
+      "base": "fix/coach-external-ai-consent-gate-20261113",
+      "draft": true,
+      "title": "Fix — écarts hérités de validation BEP"
+    },
+    {
+      "number": 151,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/bep-inherited-regression-checks-20261113",
+      "head_sha": "29b61a25f4ed85aa2370cbc67a001193c9e00c73",
+      "base": "fix/coach-external-ai-consent-gate-20261113",
+      "draft": true,
+      "title": "Fix — trois écarts hérités de validation BEP"
+    },
+    {
+      "number": 150,
+      "state": "closed",
+      "merged_at": "2026-11-13T22:20:33Z",
+      "head": "fix/preserve-treasury-offline-sync",
+      "head_sha": "da4bc89e71e9789d9dea0e8ee25dc9004d4a1dbb",
+      "base": "main",
+      "draft": false,
+      "title": "Preserve treasury data in secure offline sync"
+    },
+    {
+      "number": 149,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/coach-external-ai-consent-gate-20261113",
+      "head_sha": "da6704a58739f2f228258ddf53edea91060c5af6",
+      "base": "main",
+      "draft": true,
+      "title": "Fix — consentement explicite pour le Coach IA externe"
+    },
+    {
+      "number": 148,
+      "state": "closed",
+      "merged_at": "2026-11-13T21:23:24Z",
+      "head": "fix/trusted-offline-client-release-20261113",
+      "head_sha": "e5af8c5e64457cd9626650fc1d965266868b003f",
+      "base": "main",
+      "draft": false,
+      "title": "Protect trusted offline snapshots and monthly budget selection"
+    },
+    {
+      "number": 147,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/trusted-offline-snapshot-20261113",
+      "head_sha": "8c05bc549256e1136239dfe99a8e30686e329c59",
+      "base": "main",
+      "draft": true,
+      "title": "[Draft] Protect offline snapshots and monthly budget selection"
+    },
+    {
+      "number": 146,
+      "state": "closed",
+      "merged_at": "2026-11-13T21:05:38Z",
+      "head": "fix/atomic-multisession-api-20261113",
+      "head_sha": "3dc5a35a1c3ae0795d4c55365630012921556afc",
+      "base": "main",
+      "draft": false,
+      "title": "[WIP] Protéger l'API BEP contre les sauvegardes obsolètes"
+    },
+    {
+      "number": 145,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/atomic-multisession-sync-20261113",
+      "head_sha": "b5377e7eae97b64d06c5865c2f9c90fabc1a0f0c",
+      "base": "main",
+      "draft": true,
+      "title": "[WIP] Empêcher les écrasements financiers entre sessions BEP"
+    },
+    {
+      "number": 144,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:24:18Z",
+      "head": "feat/login-methods-verification-design",
+      "head_sha": "ebede38cd17dab38f00cb269b69730a40009753e",
+      "base": "main",
+      "draft": false,
+      "title": "Improve login methods design and connection status"
+    },
+    {
+      "number": 143,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:17:59Z",
+      "head": "fix/remove-profile-cancel-button",
+      "head_sha": "3ad78533b4c073b1e719998d175b543bd88ed91b",
+      "base": "main",
+      "draft": false,
+      "title": "Remove unused cancel button from profile form"
+    },
+    {
+      "number": 142,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:14:24Z",
+      "head": "fix/profile-direct-form-sw-regex-20261113",
+      "head_sha": "8a8925bbb721c561d658ec438b7cb20ad969dca4",
+      "base": "main",
+      "draft": false,
+      "title": "Fix service worker JavaScript and CSS refresh"
+    },
+    {
+      "number": 141,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:08:13Z",
+      "head": "fix/profile-direct-form-cache-v10-20261113",
+      "head_sha": "05ebcd8fd071b7a80f633b3ef9de2e5b87a22747",
+      "base": "main",
+      "draft": false,
+      "title": "Force direct profile form assets to refresh"
+    },
+    {
+      "number": 140,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:03:51Z",
+      "head": "fix/profile-cache-and-save-20261113",
+      "head_sha": "9b50fc2da03e78057d3df75fe305e004e80e5932",
+      "base": "main",
+      "draft": false,
+      "title": "Fix profile modal cache and save flow"
+    },
+    {
+      "number": 139,
+      "state": "closed",
+      "merged_at": "2026-11-13T20:00:00Z",
+      "head": "fix/profile-direct-edit-modal-20261113",
+      "head_sha": "90054b3cea5b1f7fb6df622eb9d5b969886b71e3",
+      "base": "main",
+      "draft": false,
+      "title": "Open profile editing form directly"
+    },
+    {
+      "number": 138,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:54:35Z",
+      "head": "fix/profile-single-view-edit-modal-20261113",
+      "head_sha": "b598a543d39e7c0c0a8b010e4bf66459884f6748",
+      "base": "main",
+      "draft": false,
+      "title": "Refine profile and login modal UX"
+    },
+    {
+      "number": 137,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:50:13Z",
+      "head": "fix/profile-modals-open-directly-20261113",
+      "head_sha": "ab3846738071907097c967710d579c906065923a",
+      "base": "main",
+      "draft": false,
+      "title": "Fix profile dialogs opening on click"
+    },
+    {
+      "number": 136,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:43:55Z",
+      "head": "fix/local-data-clear-button-20261113",
+      "head_sha": "bb4db55e89ffad25dc655c2ef1aed67a4245c17b",
+      "base": "main",
+      "draft": false,
+      "title": "Activate local data deletion button"
+    },
+    {
+      "number": 135,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:42:58Z",
+      "head": "fix/settings-profile-dialog-handlers-dist-20261113",
+      "head_sha": "30cda899191cf07d9da4cffb79e6d6e0d5bc9759",
+      "base": "main",
+      "draft": false,
+      "title": "Restore profile and login settings popups in production"
+    },
+    {
+      "number": 134,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:36:57Z",
+      "head": "fix/settings-navigation-state-refresh-20261113",
+      "head_sha": "a071dda7c78fcf88d7176156b51c40e75cd9bd7b",
+      "base": "main",
+      "draft": false,
+      "title": "Fix settings navigation state and refresh conflicts"
+    },
+    {
+      "number": 133,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:27:17Z",
+      "head": "fix/settings-exclusive-panel-close-20261113",
+      "head_sha": "d8cdab24fe026084356bf75aea646a0a3729dd9a",
+      "base": "main",
+      "draft": false,
+      "title": "Fix exclusive settings view and close control"
+    },
+    {
+      "number": 132,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:20:32Z",
+      "head": "fix/settings-panel-modal-navigation-20261113",
+      "head_sha": "54075acea933fc692a5c4c964577e77f52ba0cab",
+      "base": "main",
+      "draft": false,
+      "title": "Fix settings panel visibility and modal interactions"
+    },
+    {
+      "number": 131,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:14:21Z",
+      "head": "feature/settings-toggle-panel-20261113",
+      "head_sha": "e61963249f9aff6fad7d7e56a7ab26b3973ec26f",
+      "base": "main",
+      "draft": false,
+      "title": "Make settings panel collapsible and restore profile icon"
+    },
+    {
+      "number": 130,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/offline-logout-auth-state-main",
+      "head_sha": "c83062063f50e578587baa3079eb80ca13372321",
+      "base": "main",
+      "draft": true,
+      "title": "[WIP] Séparer déconnexion, authentification et mode hors ligne"
+    },
+    {
+      "number": 129,
+      "state": "closed",
+      "merged_at": "2026-11-13T19:04:39Z",
+      "head": "fix/settings-dist-production-20261113",
+      "head_sha": "9a8de017eb9abbd108e48a8ed425df81bfbdcd04",
+      "base": "main",
+      "draft": false,
+      "title": "Fix publication of the redesigned settings page"
+    },
+    {
+      "number": 128,
+      "state": "closed",
+      "merged_at": "2026-11-13T18:59:15Z",
+      "head": "feature/settings-buttons-layout-20261113",
+      "head_sha": "3685c4b7ac538079b2f4c09cfd1b396cfeb38955",
+      "base": "main",
+      "draft": false,
+      "title": "Paramètres BEP — présentation en cartes et boutons"
+    },
+    {
+      "number": 127,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/offline-logout-auth-state",
+      "head_sha": "5dde8aceb7a82902fa74bb66fd4f85050e11ef1e",
+      "base": "main",
+      "draft": true,
+      "title": "[WIP] Séparer déconnexion, authentification et mode hors ligne"
+    },
+    {
+      "number": 126,
+      "state": "closed",
+      "merged_at": "2026-11-13T18:38:40Z",
+      "head": "feature/settings-cleanup-test-20261113",
+      "head_sha": "566e02ddcc935eecc27e48ce133ba3b1bd8f9cf4",
+      "base": "main",
+      "draft": false,
+      "title": "Déployer la refonte des paramètres BEP"
+    },
+    {
+      "number": 125,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/single-active-session",
+      "head_sha": "debf490ff74828a579139f216c526d4c7b17256e",
+      "base": "main",
+      "draft": false,
+      "title": "[WIP] Verrouiller une connexion BEP avec expiration après 15 min d’inactivité"
+    },
+    {
+      "number": 124,
+      "state": "closed",
+      "merged_at": "2026-11-13T17:08:09Z",
+      "head": "feature/overdraft-settings-popup-v2",
+      "head_sha": "e5f9884fef40c577d3f57adc07eabcb3cb1fc80b",
+      "base": "main",
+      "draft": false,
+      "title": "Ouvrir les réglages du découvert autorisé dans une fenêtre"
+    },
+    {
+      "number": 123,
+      "state": "closed",
+      "merged_at": "2026-11-13T16:28:05Z",
+      "head": "feature/treasury-overdraft-management",
+      "head_sha": "8b60222c92fd1a8d6955abde7ba6acf8ffe1d62a",
+      "base": "main",
+      "draft": false,
+      "title": "Add overdraft permission for budget operations"
+    },
+    {
+      "number": 122,
+      "state": "closed",
+      "merged_at": "2026-11-13T15:43:46Z",
+      "head": "fix/monthly-budget-offline-prod",
+      "head_sha": "c1c20b21fbdda3b0777685d413fd846589fb9355",
+      "base": "main",
+      "draft": false,
+      "title": "Add offline snapshots for monthly budgets"
+    },
+    {
+      "number": 121,
+      "state": "closed",
+      "merged_at": "2026-11-13T15:04:48Z",
+      "head": "fix/monthly-budget-create-reload-latency",
+      "head_sha": "34aeb16fb00a5574e05c3cbd596bdb67f9ea0eeb",
+      "base": "main",
+      "draft": false,
+      "title": "Reduce monthly budget reload latency after creation"
+    },
+    {
+      "number": 120,
+      "state": "closed",
+      "merged_at": "2026-11-13T15:01:23Z",
+      "head": "fix/monthly-budget-row-icon-actions",
+      "head_sha": "77038be4889edf44b6c2e994fc260045af5505ce",
+      "base": "main",
+      "draft": false,
+      "title": "Harmoniser les actions des lignes de budgets mensuels"
+    },
+    {
+      "number": 119,
+      "state": "closed",
+      "merged_at": "2026-11-13T14:58:08Z",
+      "head": "fix/hide-advice-dock-in-expenses",
+      "head_sha": "2a23165a4366861dc60a55c87a827053718a5500",
+      "base": "main",
+      "draft": false,
+      "title": "Retirer l’icône robot de l’accordéon Dépenses réelles"
+    },
+    {
+      "number": 118,
+      "state": "closed",
+      "merged_at": "2026-11-13T13:20:35Z",
+      "head": "fix/budget-expenses-panel-isolation-20261113",
+      "head_sha": "745461bfeff09da36c5fb8b59e46b05f2d2ef4ef",
+      "base": "main",
+      "draft": false,
+      "title": "Fix isolation between Budget and Expenses panels"
+    },
+    {
+      "number": 117,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/auth-buttons-and-cache-20261113",
+      "head_sha": "6ca914b7d282f439d42ea710312843842102790c",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Réactiver et fiabiliser les contrôles d’authentification"
+    },
+    {
+      "number": 116,
+      "state": "closed",
+      "merged_at": "2026-11-13T10:38:46Z",
+      "head": "refactor/auth-module-contract",
+      "head_sha": "aaa877dd8fb219e3795b48668435bffd4f49508c",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Isoler le cycle d’authentification et fiabiliser le retour Google"
+    },
+    {
+      "number": 115,
+      "state": "closed",
+      "merged_at": "2026-11-13T10:26:23Z",
+      "head": "fix/auth-gate-hidden-css",
+      "head_sha": "98c68c9650a1a75d28cc273389cfd879ea70b573",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Masquer le module de connexion après authentification"
+    },
+    {
+      "number": 114,
+      "state": "closed",
+      "merged_at": "2026-11-13T10:22:39Z",
+      "head": "fix/auth-hide-floating-coach-before-login",
+      "head_sha": "b2730e5c94263a2afb6bc31b943d85d9a85e2562",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Masquer le Coach flottant avant authentification"
+    },
+    {
+      "number": 113,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:45:22Z",
+      "head": "fix/auth-login-banner-polish-2026-11-13",
+      "head_sha": "66060c67be99fa27211d37fe24c3d1cc654b9594",
+      "base": "main",
+      "draft": false,
+      "title": "Polish BEP login banner"
+    },
+    {
+      "number": 112,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:40:52Z",
+      "head": "fix/auth-root-hard-isolation",
+      "head_sha": "047a5dc133be438f95847a8b53906acb1594e749",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Isolation stricte de l'application derrière la connexion"
+    },
+    {
+      "number": 111,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:36:53Z",
+      "head": "fix/google-oauth-wake-api",
+      "head_sha": "9430ab3c36b1797835ca0727e29768c7699f401d",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Réveiller l'API avant OAuth Google"
+    },
+    {
+      "number": 110,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:30:23Z",
+      "head": "fix/google-login-session-transition",
+      "head_sha": "6309212e2bce31850fc89bef7820fdbb9d1a78a7",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Fiabiliser le retour de connexion Google"
+    },
+    {
+      "number": 109,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:26:42Z",
+      "head": "feature/auth-app-isolation-step1",
+      "head_sha": "81218a18334d40e165fb3ec80052924d94913ad4",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Isoler le module de connexion"
+    },
+    {
+      "number": 108,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:20:43Z",
+      "head": "revert/auth-banner-full-width",
+      "head_sha": "65afc65920bf7e99cf9687c403ae2bfc55dbf5f2",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Rétablir la bannière dans la carte de connexion"
+    },
+    {
+      "number": 107,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:18:23Z",
+      "head": "feature/auth-banner-full-width",
+      "head_sha": "9447ae5d3d5108d6652d58fc5cfc8da7252db96e",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Bannière de connexion pleine largeur"
+    },
+    {
+      "number": 106,
+      "state": "open",
+      "merged_at": null,
+      "head": "perf/bep-startup-optimization-2026-11-13",
+      "head_sha": "6a601d142f10d7e2245724af77ee2726602043d0",
+      "base": "main",
+      "draft": true,
+      "title": "Intégrer les optimisations de chargement BEP à main"
+    },
+    {
+      "number": 105,
+      "state": "closed",
+      "merged_at": "2026-11-13T09:13:35Z",
+      "head": "feature/account-login-methods",
+      "head_sha": "d4b56ec1c1ddbaab0f3f48e080931c1ffaacbb2d",
+      "base": "main",
+      "draft": false,
+      "title": "BEP — Gestion des méthodes de connexion"
+    },
+    {
+      "number": 104,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/robot-ia-coach-qa-isolated-20261113",
+      "head_sha": "ae119af5e1a101ee291f9c96fc0ca31931d18a54",
+      "base": "main",
+      "draft": true,
+      "title": "[QA isolée] Tests de régression du Coach IA"
+    },
+    {
+      "number": 103,
+      "state": "closed",
+      "merged_at": "2026-11-12T22:46:40Z",
+      "head": "release/expenses-proof-import-20261112",
+      "head_sha": "b47afd62e830bff2bb756892b66e1ac9bf81e89c",
+      "base": "main",
+      "draft": false,
+      "title": "Release: Mes dépenses — ajout achat et import de justificatif"
+    },
+    {
+      "number": 102,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/monthly-budget-ux-test-proposal",
+      "head_sha": "badba1a0154134a9e85bc578abf851d82cafd4fd",
+      "base": "test/budget-revenus-charges-liste",
+      "draft": true,
+      "title": "Améliorer la lisibilité de l’historique des budgets mensuels"
+    },
+    {
+      "number": 101,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/spend-clean-redesign",
+      "head_sha": "9a93be7690a360a6627d6c59c7ae106941f86728",
+      "base": "test/budget-revenus-charges-liste",
+      "draft": false,
+      "title": "Prévisualisation du nouvel écran Dépenses sur budget-test"
+    },
+    {
+      "number": 100,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:30:44Z",
+      "head": "release/budget-list-layout",
+      "head_sha": "5ef4117c310c69735adb559e8c72e5444e673f8e",
+      "base": "main",
+      "draft": false,
+      "title": "Préserver l’affichage validé des listes Budget"
+    },
+    {
+      "number": 99,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/spend-clean-redesign",
+      "head_sha": "9a93be7690a360a6627d6c59c7ae106941f86728",
+      "base": "main",
+      "draft": true,
+      "title": "Refondre proprement l’affichage du module Dépenses"
+    },
+    {
+      "number": 98,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:15:30Z",
+      "head": "ci/fix-monthly-budget-asset-checks",
+      "head_sha": "fd79fbe684c5a5034a2b19757e0204c08fe0f1c4",
+      "base": "main",
+      "draft": false,
+      "title": "Fiabiliser le contrôle CI des versions d’assets"
+    },
+    {
+      "number": 97,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:14:01Z",
+      "head": "fix/budget-two-column-layout",
+      "head_sha": "a605ef4aee70e2b2a0f497a0a35b5482f3367055",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger la grille des listes Budget avec deux colonnes"
+    },
+    {
+      "number": 96,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:13:18Z",
+      "head": "fix/monthly-actuals-refresh-production",
+      "head_sha": "73d8a12878439abd739b717144b08b9b72f52363",
+      "base": "main",
+      "draft": false,
+      "title": "Actualiser les dépenses mensuelles après les changements d’achats"
+    },
+    {
+      "number": 95,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:10:28Z",
+      "head": "fix/saved-budget-row-layout-final",
+      "head_sha": "2610b2b0c288ca84b995ad13ddd3e4d36addf843",
+      "base": "main",
+      "draft": false,
+      "title": "Unifier les lignes revenus et charges et ancrer le montant à droite"
+    },
+    {
+      "number": 94,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/monthly-actuals-refresh-js-audit",
+      "head_sha": "19b6ef0e14e167979fd6db06b23eade7928a813b",
+      "base": "main",
+      "draft": false,
+      "title": "Actualiser les dépenses mensuelles et fiabiliser les contrôles JS"
+    },
+    {
+      "number": 93,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:06:58Z",
+      "head": "fix/bump-spend-css-cache-v21",
+      "head_sha": "24c6c31bf33454c9446f2bd10e12469565a444ab",
+      "base": "main",
+      "draft": false,
+      "title": "Forcer le rechargement du CSS des listes Budget"
+    },
+    {
+      "number": 92,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:04:29Z",
+      "head": "fix/budget-saved-row-css-specificity",
+      "head_sha": "077180ef8b74fd89a342d56587df7aae2a900a75",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger la priorité CSS des prix dans les listes Budget"
+    },
+    {
+      "number": 91,
+      "state": "closed",
+      "merged_at": "2026-11-12T21:01:30Z",
+      "head": "fix/saved-row-price-right-align-v2",
+      "head_sha": "0e3e53c29f6c9e7b0010957d5c4e85421a179bb2",
+      "base": "main",
+      "draft": false,
+      "title": "Aligner les prix des revenus et charges comme dans Dépenses"
+    },
+    {
+      "number": 90,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/saved-rows-match-expense-grid-exactly",
+      "head_sha": "c37b6d308b98cbb81c2665692d946cd056de7906",
+      "base": "main",
+      "draft": false,
+      "title": "Aligner les prix des revenus et charges comme dans Dépenses"
+    },
+    {
+      "number": 89,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:55:38Z",
+      "head": "fix/spend-monthly-header-stats",
+      "head_sha": "343ca85c1432bb0db0304fb5ee5b469ef97f88c8",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger les indicateurs mensuels de la page Dépenses"
+    },
+    {
+      "number": 88,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:52:47Z",
+      "head": "fix/selection-checkbox-inside-purchase-main-v2",
+      "head_sha": "dd04171482fa20ae379690e9d3eba1224404233c",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger l’emplacement de la case de sélection des revenus et charges"
+    },
+    {
+      "number": 87,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/selection-checkbox-inside-purchase-main",
+      "head_sha": "b8943439cc10784ca0723b2389e9e3e64ba19cbb",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger l’emplacement de la case de sélection des revenus et charges"
+    },
+    {
+      "number": 86,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:49:38Z",
+      "head": "fix/saved-lists-reuse-purchase-row-design",
+      "head_sha": "252ec9e48d378d057b181e348ea999f3c21d510f",
+      "base": "main",
+      "draft": false,
+      "title": "Appliquer aux revenus et charges le design exact des lignes Dépenses"
+    },
+    {
+      "number": 85,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:46:55Z",
+      "head": "fix/saved-list-row-explicit-grid-v3",
+      "head_sha": "96d99094d5ab0ea4b30a703d8ca382449ead5b38",
+      "base": "main",
+      "draft": false,
+      "title": "Recaler les lignes de revenus et charges enregistrées"
+    },
+    {
+      "number": 84,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/saved-list-row-explicit-grid-v2",
+      "head_sha": "481fdaf7f5a563938e13eb665ccb41353e5e0868",
+      "base": "main",
+      "draft": false,
+      "title": "Recaler les lignes de revenus et charges enregistrées"
+    },
+    {
+      "number": 83,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:43:39Z",
+      "head": "fix/saved-list-selection-grid-v2",
+      "head_sha": "7df082eecb759a79a98440ecb1564eb83fa92059",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger l’alignement des listes revenus et charges en sélection multiple"
+    },
+    {
+      "number": 82,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/saved-income-charge-selection-layout",
+      "head_sha": "9eda54f6bd1f5da8158cf9a3b7e3a479a0b33db9",
+      "base": "main",
+      "draft": false,
+      "title": "Corriger l’alignement des listes revenus et charges en sélection multiple"
+    },
+    {
+      "number": 81,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:37:51Z",
+      "head": "fix/budget-longpress-hints-alignment",
+      "head_sha": "a35982db327df7ec0cc4c64312edb3e31c398bd9",
+      "base": "main",
+      "draft": false,
+      "title": "Afficher l’aide de sélection multiple et aligner les listes Budget"
+    },
+    {
+      "number": 80,
+      "state": "closed",
+      "merged_at": "2026-11-12T20:29:33Z",
+      "head": "fix/budget-multiselect-and-month-expenses",
+      "head_sha": "a000e0e6123912a151a47155846fa1be1ac78458",
+      "base": "main",
+      "draft": false,
+      "title": "Fix long-press bulk selection and monthly expenses list"
+    },
+    {
+      "number": 79,
+      "state": "open",
+      "merged_at": null,
+      "head": "fix/budget-expenses-savings-reconciliation",
+      "head_sha": "3be98449dfe5b0dc4ef76aa3a873fdb3ad10bd57",
+      "base": "main",
+      "draft": false,
+      "title": "Reconcile Budget, Expenses and Savings data"
+    },
+    {
+      "number": 78,
+      "state": "closed",
+      "merged_at": "2026-11-12T18:37:51Z",
+      "head": "fix/income-assistant-layout",
+      "head_sha": "cb0c3b7af9ddb3e6eccc62168d83c626c7463bc9",
+      "base": "main",
+      "draft": false,
+      "title": "Refine Budget income assistant layout"
+    },
+    {
+      "number": 77,
+      "state": "closed",
+      "merged_at": "2026-11-12T18:12:15Z",
+      "head": "fix/income-dialogs-and-ux",
+      "head_sha": "fae2701093cb84129c1297dde8eb228c2a66a82d",
+      "base": "main",
+      "draft": false,
+      "title": "Fix Budget income dialogs and compact income UI"
+    },
+    {
+      "number": 76,
+      "state": "closed",
+      "merged_at": "2026-11-12T18:03:58Z",
+      "head": "fix/budget-income-entry-dialogs",
+      "head_sha": "3710dbc9bec4db9c7f5459375cad28ea518a75cc",
+      "base": "main",
+      "draft": false,
+      "title": "Fix — ouvrir les deux parcours de revenus en fenêtres modales"
+    },
+    {
+      "number": 75,
+      "state": "closed",
+      "merged_at": "2026-11-12T17:49:22Z",
+      "head": "fix/remove-budget-expense-shortcut",
+      "head_sha": "2cee33f675e19aa1089fe4de93b51aaf194ba828",
+      "base": "main",
+      "draft": false,
+      "title": "Fix — retirer le raccourci Dépenses du Budget"
+    },
+    {
+      "number": 74,
+      "state": "closed",
+      "merged_at": "2026-11-12T17:39:04Z",
+      "head": "fix/budget-income-modal-action",
+      "head_sha": "735f572eae1ecb0d9d247f3726f84f7a5d365524",
+      "base": "main",
+      "draft": false,
+      "title": "Fix — action de saisie depuis Mes revenus"
+    },
+    {
+      "number": 73,
+      "state": "closed",
+      "merged_at": "2026-11-12T17:31:39Z",
+      "head": "release/financial-modals-prod",
+      "head_sha": "778bf18be39f383ec95874cefd4ce0b07f1a5bec",
+      "base": "main",
+      "draft": false,
+      "title": "Release — unification des modales financières"
+    },
+    {
+      "number": 72,
+      "state": "open",
+      "merged_at": null,
+      "head": "feat/unified-financial-modals",
+      "head_sha": "881fca21fe201744aaf058511d7bc969ee8f3785",
+      "base": "main",
+      "draft": true,
+      "title": "Unifier les parcours financiers en fenêtres modales"
+    },
+    {
+      "number": 71,
+      "state": "closed",
+      "merged_at": "2026-11-12T17:03:11Z",
+      "head": "chore/ci-production-sha-validation",
+      "head_sha": "4c893d92ef574c41ebed2b102c613901173e79c8",
+      "base": "main",
+      "draft": false,
+      "title": "CI — valider un SHA précis sans déploiement"
+    },
+    {
+      "number": 70,
+      "state": "closed",
+      "merged_at": "2026-11-12T15:23:15Z",
+      "head": "feature/bep-offline-first-sync",
+      "head_sha": "1def4f9ccfb8d74e5db944f1ae1336ea535a0ef4",
+      "base": "main",
+      "draft": false,
+      "title": "Add offline-first BEP data capture and guarded synchronization"
+    },
+    {
+      "number": 69,
+      "state": "closed",
+      "merged_at": "2026-11-12T14:27:50Z",
+      "head": "feature/madame-michu-ux-accessibility",
+      "head_sha": "f031286904aa19bfb787e9348f358223d54669e0",
+      "base": "main",
+      "draft": false,
+      "title": "Improve BEP mobile readability and wayfinding"
+    },
+    {
+      "number": 68,
+      "state": "closed",
+      "merged_at": null,
+      "head": "preprod/coach-mainline-20261112",
+      "head_sha": "743591cde95887d5792c72aa1ea0a0e8a7c6d8e9",
+      "base": "main",
+      "draft": false,
+      "title": "Préproduction Coach — aligner la base mainline et fiabiliser les calculs"
+    },
+    {
+      "number": 67,
+      "state": "closed",
+      "merged_at": "2026-11-12T12:24:21Z",
+      "head": "fix/coach-local-intent-and-calculations",
+      "head_sha": "1740232824f4d33fc1ae7728187db3e5c9d9ed11",
+      "base": "feature/financial-intelligence-engine",
+      "draft": false,
+      "title": "Fix Coach local calculations and scenario intent"
+    },
+    {
+      "number": 66,
+      "state": "closed",
+      "merged_at": "2026-11-12T12:11:23Z",
+      "head": "fix/coach-financial-context-validation",
+      "head_sha": "762e9b21ea1a82ae717d4acb49d93b1124e34217",
+      "base": "feature/financial-intelligence-engine",
+      "draft": false,
+      "title": "Fix Coach financial context loading and available balance validation"
+    },
+    {
+      "number": 65,
+      "state": "closed",
+      "merged_at": "2026-11-12T11:52:52Z",
+      "head": "security/gemini-zero-billing-guard-staging",
+      "head_sha": "348c6be36e048595f0a8343aa58d48a33329a7b9",
+      "base": "feature/financial-intelligence-engine",
+      "draft": false,
+      "title": "Sécuriser Gemini sans facturation sur le Coach staging"
+    },
+    {
+      "number": 64,
+      "state": "closed",
+      "merged_at": "2026-11-12T04:26:52Z",
+      "head": "feature/financial-engine-unification-v2-2026-11-12",
+      "head_sha": "7d1a16c9aa7393128040b4713a38777073023f5b",
+      "base": "main",
+      "draft": false,
+      "title": "Unifier les calculs financiers BEP"
+    },
+    {
+      "number": 63,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/financial-engine-unification-2026-11-12",
+      "head_sha": "8b0f3bbdddd5353f56b429b61d2e08f315c37843",
+      "base": "main",
+      "draft": true,
+      "title": "Unifier les calculs financiers BEP"
+    },
+    {
+      "number": 62,
+      "state": "closed",
+      "merged_at": "2026-11-12T04:16:22Z",
+      "head": "feat/bep-hybrid-ai-router",
+      "head_sha": "1ed539214bf33edac7d747be8f7960ddd2c73d74",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP hybride : moteur structuré prioritaire et quotas gratuits"
+    },
+    {
+      "number": 61,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:57:21Z",
+      "head": "feat/coach-personalization-profile-v2",
+      "head_sha": "87f87f7171169fb88bc15fa4e6433181612e437f",
+      "base": "main",
+      "draft": false,
+      "title": "Personnaliser le profil du Coach BEP"
+    },
+    {
+      "number": 60,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/coach-personalization-profile",
+      "head_sha": "864275611e85dd73d403386ae2f394be9688e738",
+      "base": "main",
+      "draft": false,
+      "title": "Personnaliser le profil du Coach BEP"
+    },
+    {
+      "number": 59,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:54:36Z",
+      "head": "hotfix/api-init-sql-and-purchase-advice-2026-11-12",
+      "head_sha": "2dde5eb75db5f1d312706a22e2d974d124677748",
+      "base": "main",
+      "draft": false,
+      "title": "Hotfix API : réparer l'initialisation PostgreSQL et le conseiller achats"
+    },
+    {
+      "number": 58,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:49:17Z",
+      "head": "fix/coach-single-dropdown",
+      "head_sha": "7fa897e9d9dc9269a9f7eb567b5ef8506da2e72c",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP : tout regrouper dans un seul menu déroulant"
+    },
+    {
+      "number": 57,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:50:21Z",
+      "head": "release/spend-challenges-available-advisor-2026-11-12",
+      "head_sha": "18662c90f1208d2f0e38937de761872804c83f66",
+      "base": "main",
+      "draft": false,
+      "title": "Dépenses : 20 défis personnalisables et garde-fou sur le disponible"
+    },
+    {
+      "number": 56,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:46:08Z",
+      "head": "ui/coach-gemini-info-panel",
+      "head_sha": "d9cc19b72a4f9acbec4d23a683e69f4335964cc8",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP : regrouper les informations Gemini sous Envoyer"
+    },
+    {
+      "number": 55,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:42:08Z",
+      "head": "copy/coach-gemini-explanation",
+      "head_sha": "036109f8de306348f6bdcb0e702470c6d7a26eca",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP : expliquer le fonctionnement Google Gemini"
+    },
+    {
+      "number": 54,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:38:38Z",
+      "head": "ui/coach-ai-settings-production",
+      "head_sha": "a1de4c8d2d79e85a07aad971bab550b3f06adaff",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP : réglages IA repliables et design compact"
+    },
+    {
+      "number": 53,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feat/budget-segmented-menu-preprod",
+      "head_sha": "54b8045c9e5655353c223095b7f0c06618230f10",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": false,
+      "title": "Budget — menu segmenté arrondi comme Dépenses"
+    },
+    {
+      "number": 52,
+      "state": "closed",
+      "merged_at": null,
+      "head": "ui/coach-ai-settings-bottom",
+      "head_sha": "e172d76427b633544e8a3e15644be2145b5292b9",
+      "base": "main",
+      "draft": false,
+      "title": "Coach BEP : déplacer le bloc Intelligence artificielle en bas"
+    },
+    {
+      "number": 51,
+      "state": "closed",
+      "merged_at": "2026-11-12T02:49:57Z",
+      "head": "feat/budget-advisor-above-modules-v2",
+      "head_sha": "47a8f89607419c0ad2ae03ccbb8e9fdbcf993c52",
+      "base": "main",
+      "draft": false,
+      "title": "Place budget modules below shared Conseil BEP"
+    },
+    {
+      "number": 50,
+      "state": "open",
+      "merged_at": null,
+      "head": "feat/budget-advisor-above-modules",
+      "head_sha": "23cc5f220548e494199193f8c44f5ffc0c9de4ee",
+      "base": "main",
+      "draft": false,
+      "title": "Place budget modules below shared Conseil BEP"
+    },
+    {
+      "number": 49,
+      "state": "closed",
+      "merged_at": "2026-11-12T03:00:36Z",
+      "head": "feature/financial-intelligence-mainline",
+      "head_sha": "78e25588ba7c95f82801c4ce83a0de9140bd0417",
+      "base": "main",
+      "draft": false,
+      "title": "Integrate financial intelligence on current BEP baseline"
+    },
+    {
+      "number": 48,
+      "state": "closed",
+      "merged_at": "2026-11-12T02:33:45Z",
+      "head": "feat/monthly-budget-navigation-tab",
+      "head_sha": "47b604e0b27c12558470b5fb0b26441f3a61cb7d",
+      "base": "main",
+      "draft": false,
+      "title": "Move monthly budgets into the budget module navigation"
+    },
+    {
+      "number": 47,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/savings-redesign-v1-pr",
+      "head_sha": "7e4a073ce9728a8d8e17b0746d00f1b6a951b8fc",
+      "base": "integration/savings-budget-reconciliation-2026-11-12",
+      "draft": true,
+      "title": "[DRAFT] Réconcilier Épargne préproduction et historique budgétaire production"
+    },
+    {
+      "number": 46,
+      "state": "closed",
+      "merged_at": "2026-11-12T02:25:24Z",
+      "head": "fix/month-key-date-normalization",
+      "head_sha": "51406e51ab7dbcc600ef620c6ba092c51a3460fa",
+      "base": "main",
+      "draft": false,
+      "title": "Fix monthly budget month key normalization"
+    },
+    {
+      "number": 45,
+      "state": "closed",
+      "merged_at": "2026-11-12T01:08:43Z",
+      "head": "security/savings-module-guard-2026-11-12",
+      "head_sha": "06cd9d5bedb05e46a3da54ba10bcebfaa0597e94",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": false,
+      "title": "security: sécuriser les transactions du module Épargne"
+    },
+    {
+      "number": 44,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/financial-intelligence-engine",
+      "head_sha": "d88ec4d81345c0059d688574e64397e14b3d08df",
+      "base": "feature/monthly-budget-history",
+      "draft": true,
+      "title": "feat(ai): BEP Financial Intelligence Engine (RAG)"
+    },
+    {
+      "number": 43,
+      "state": "closed",
+      "merged_at": "2026-11-12T00:22:30Z",
+      "head": "feature/savings-objective-first-ux",
+      "head_sha": "3145af3a9e1e22f8b4a407ae878b3d89736d1512",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": false,
+      "title": "Pré-prod : page Épargne centrée sur les objectifs"
+    },
+    {
+      "number": 42,
+      "state": "closed",
+      "merged_at": "2026-11-12T00:13:35Z",
+      "head": "fix/staging-savings-goals-shared-collapse",
+      "head_sha": "7d7ece69bcc2d68073955cf5d40dee6366bf2e94",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": false,
+      "title": "Pré-prod: synchroniser création et coffres d'épargne"
+    },
+    {
+      "number": 41,
+      "state": "closed",
+      "merged_at": null,
+      "head": "fix/savings-goals-shared-collapse",
+      "head_sha": "94f92148e409c45230ffe86152feec316cb71998",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": false,
+      "title": "Fix: synchroniser l’ouverture création et coffres d’épargne"
+    },
+    {
+      "number": 40,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/monthly-budget-history",
+      "head_sha": "ebb444e09b059cd4071e40d8fe4d8dbdfe8f0598",
+      "base": "feature/savings-redesign-v1-pr",
+      "draft": true,
+      "title": "staging: integrate monthly budget history with savings redesign"
+    },
+    {
+      "number": 39,
+      "state": "closed",
+      "merged_at": "2026-11-12T02:10:04Z",
+      "head": "feature/monthly-budget-history",
+      "head_sha": "295f9786225498d87170745c188031f19641e817",
+      "base": "main",
+      "draft": false,
+      "title": "feat: integrate monthly budget history and savings experience"
+    },
+    {
+      "number": 38,
+      "state": "closed",
+      "merged_at": null,
+      "head": "feature/savings-redesign-v1-pr",
+      "head_sha": "ce41cd90416d452088720d775b0f54536243ee2a",
+      "base": "main",
+      "draft": true,
+      "title": "Épargne BEP — dashboard premium, coffres et suivi des mouvements"
+    },
+    {
+      "number": 37,
+      "state": "closed",
+      "merged_at": "2026-11-11T22:26:14Z",
+      "head": "fix/income-checkup-editable-types",
+      "head_sha": "3fbe2c24b9677df5df8c931c40a344cec2ab44e0",
+      "base": "main",
+      "draft": false,
+      "title": "Support editing guided income source types"
+    },
+    {
+      "number": 36,
+      "state": "closed",
+      "merged_at": "2026-11-11T22:23:40Z",
+      "head": "feature/income-sources-checkup",
+      "head_sha": "35a2d39ceaa22974c5d57e1151b4fb9b38c5b268",
+      "base": "main",
+      "draft": false,
+      "title": "Add guided checklist for additional income sources"
+    },
+    {
+      "number": 35,
+      "state": "closed",
+      "merged_at": "2026-11-11T22:21:19Z",
+      "head": "fix/budget-advisor-card-spacing",
+      "head_sha": "659d91fa4df0292d25602a73a2ad5cd1dad5757a",
+      "base": "main",
+      "draft": false,
+      "title": "Match budget advisor cards to savings presentation"
+    },
+    {
+      "number": 34,
+      "state": "closed",
+      "merged_at": "2026-11-11T22:16:54Z",
+      "head": "feature/bep-income-charges-advisors",
+      "head_sha": "df069e13b223a3e1b6844ecbd4c99315418e930a",
+      "base": "main",
+      "draft": false,
+      "title": "Add dedicated BEP advisors for income and charges"
+    },
+    {
+      "number": 33,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:57:21Z",
+      "head": "deploy/budget-completeness-checkup-mainline-20261111",
+      "head_sha": "e37b246454332c316a230a75e8430d3cdf8183f2",
+      "base": "main",
+      "draft": false,
+      "title": "Port budget completeness checkup onto current production baseline"
+    },
+    {
+      "number": 32,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:52:38Z",
+      "head": "feature/bep-basic-spinner-loader",
+      "head_sha": "193b8f590438bf1e38f4d1560c5a09b0831ddff5",
+      "base": "main",
+      "draft": false,
+      "title": "Add a basic BEP startup spinner"
+    },
+    {
+      "number": 31,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:51:27Z",
+      "head": "revert/bep-startup-loader",
+      "head_sha": "9f22d34710894e8d526be7c6c0eb3d4838872a56",
+      "base": "main",
+      "draft": false,
+      "title": "Remove the BEP startup loader feature"
+    },
+    {
+      "number": 30,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:48:54Z",
+      "head": "fix/bep-inline-startup-loader",
+      "head_sha": "1ccc821c443ee155a7520a52b5dfeec52abb81af",
+      "base": "main",
+      "draft": false,
+      "title": "Make startup loader visible before external stylesheets"
+    },
+    {
+      "number": 29,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:45:40Z",
+      "head": "fix/bep-hide-login-during-startup",
+      "head_sha": "4c63dadbfeac362e3496a5d3d783a54a1b53aded",
+      "base": "main",
+      "draft": false,
+      "title": "Prevent login screen flash during startup"
+    },
+    {
+      "number": 28,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:43:14Z",
+      "head": "fix/bep-loader-minimum-display",
+      "head_sha": "2901cd990702de10edf2305740da2838eed67768",
+      "base": "main",
+      "draft": false,
+      "title": "Keep BEP startup loader visible long enough"
+    },
+    {
+      "number": 27,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/budget-completeness-checkup",
+      "head_sha": "32b3362630b1615fad9325fa5c0cdd92ef839442",
+      "base": "main",
+      "draft": false,
+      "title": "Add guided budget completeness checkup"
+    },
+    {
+      "number": 26,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:41:36Z",
+      "head": "feature/bep-startup-loader",
+      "head_sha": "f469fded9ab867e68465a3913f57ffd46fb035bf",
+      "base": "main",
+      "draft": false,
+      "title": "Add BEP startup loading screen"
+    },
+    {
+      "number": 25,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:30:37Z",
+      "head": "feature/charges-total-banner-safe",
+      "head_sha": "575a85893ebce12ca94f0a41b4a4e785dc875c96",
+      "base": "main",
+      "draft": false,
+      "title": "Retry charges total banner with safe rendering"
+    },
+    {
+      "number": 24,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:15:10Z",
+      "head": "feature/charges-total-banner",
+      "head_sha": "ab46eee896a000a2bab40600fde06d626ce35603",
+      "base": "main",
+      "draft": false,
+      "title": "Add net charges total banner"
+    },
+    {
+      "number": 23,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:05:57Z",
+      "head": "feat/budget-totals-ai-adviser",
+      "head_sha": "89333d17f98de83aad4752b7c80f7807f6b8a1bf",
+      "base": "main",
+      "draft": false,
+      "title": "Add net charges total and AI advisers to budget"
+    },
+    {
+      "number": 22,
+      "state": "closed",
+      "merged_at": "2026-11-11T21:01:13Z",
+      "head": "fix/budget-module-event-delegation",
+      "head_sha": "ac19cf7a06a1a19a8114179d1885313954d1aa59",
+      "base": "main",
+      "draft": false,
+      "title": "Fix budget module tab event delegation"
+    },
+    {
+      "number": 21,
+      "state": "closed",
+      "merged_at": "2026-11-11T20:52:28Z",
+      "head": "feature/budget-ux-and-coach-restoration",
+      "head_sha": "b665127764df62d21a54467524eee198fc641cb2",
+      "base": "main",
+      "draft": false,
+      "title": "Improve budget UX and restore the BEP AI coach"
+    },
+    {
+      "number": 20,
+      "state": "closed",
+      "merged_at": "2026-11-11T20:35:29Z",
+      "head": "fix/home-dashboard-financial-totals",
+      "head_sha": "3c72e25fdd7e3687e0d8d200d61ac5e22cd18a2f",
+      "base": "main",
+      "draft": false,
+      "title": "Fix dashboard financial totals rendering"
+    },
+    {
+      "number": 19,
+      "state": "closed",
+      "merged_at": "2026-11-11T20:23:08Z",
+      "head": "fix/auth-duplicate-email-guard",
+      "head_sha": "faf7b5be7622ee4b310fd3bb5ca6a033c3914898",
+      "base": "main",
+      "draft": false,
+      "title": "Prevent ambiguous BEP accounts with duplicate email identities"
+    },
+    {
+      "number": 18,
+      "state": "closed",
+      "merged_at": "2026-11-11T19:59:48Z",
+      "head": "fix/published-bundle-income",
+      "head_sha": "7338a9a2d969facf0e64b1d24118fa57ed29e26e",
+      "base": "main",
+      "draft": false,
+      "title": "Fix income recovery in deployed frontend bundle"
+    },
+    {
+      "number": 17,
+      "state": "closed",
+      "merged_at": "2026-11-11T19:56:49Z",
+      "head": "fix/persist-income-array",
+      "head_sha": "447dd15e7706a8f32317db5ad29c95f84789a8a9",
+      "base": "main",
+      "draft": false,
+      "title": "Fix legacy income migration and persistence"
+    },
+    {
+      "number": 16,
+      "state": "closed",
+      "merged_at": "2026-11-11T18:40:39Z",
+      "head": "feature/auth-password-reset-login-branding",
+      "head_sha": "65ca0c4238630a0f78ef58376d9547a4b3ebcc92",
+      "base": "main",
+      "draft": false,
+      "title": "Auth: mot de passe oublié et harmonisation de la page de connexion"
+    },
+    {
+      "number": 15,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/bep-design-ergonomics-refresh",
+      "head_sha": "55919ea6e580801dd7cea7772e8ec396100fb9f2",
+      "base": "main",
+      "draft": true,
+      "title": "Design: harmoniser le design et améliorer l'ergonomie BEP"
+    },
+    {
+      "number": 14,
+      "state": "open",
+      "merged_at": null,
+      "head": "ui/header-solid-brand-2026-11",
+      "head_sha": "002d9b049a91f7d4c98f84d2397e8b20a634e77f",
+      "base": "main",
+      "draft": false,
+      "title": "Harmoniser l’en-tête BEP sur un fond vert uni"
+    },
+    {
+      "number": 13,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/email-code-resend-cooldown",
+      "head_sha": "5c753660f04525f62f323559e9ed32a941a28e61",
+      "base": "main",
+      "draft": false,
+      "title": "Auth: sécuriser le renvoi du code e-mail"
+    },
+    {
+      "number": 12,
+      "state": "closed",
+      "merged_at": "2026-11-11T18:08:05Z",
+      "head": "security/shared-rate-limit-2026-11",
+      "head_sha": "a54e8003669f449699ad70e2fcc91280eab6301d",
+      "base": "main",
+      "draft": false,
+      "title": "Security: partager le rate limiting via PostgreSQL"
+    },
+    {
+      "number": 11,
+      "state": "closed",
+      "merged_at": "2026-11-11T16:48:12Z",
+      "head": "security/hardening-2026-11",
+      "head_sha": "e7d3a70fbd70bb19464e8f885afbc75a404aa12f",
+      "base": "main",
+      "draft": false,
+      "title": "Security hardening: isolate frontend and protect API"
+    },
+    {
+      "number": 10,
+      "state": "closed",
+      "merged_at": "2026-11-11T01:38:48Z",
+      "head": "fix/settings-icon-only",
+      "head_sha": "f149e233b88c53d4fa605a72a310cf83e4d47d72",
+      "base": "main",
+      "draft": false,
+      "title": "Retirer le libellé ajouté au bouton Paramètres"
+    },
+    {
+      "number": 9,
+      "state": "closed",
+      "merged_at": "2026-11-11T01:37:22Z",
+      "head": "ui/settings-navigation-labels",
+      "head_sha": "14f220a358957a0df0cb1dd2ede4bef4789cb184",
+      "base": "main",
+      "draft": false,
+      "title": "Afficher les libellés sous les icônes de navigation"
+    },
+    {
+      "number": 8,
+      "state": "closed",
+      "merged_at": "2026-11-11T01:21:23Z",
+      "head": "fix/embed-expert-prompt-in-json",
+      "head_sha": "09b1a7724bb390bfd2ee24f3665ff593e417e4c1",
+      "base": "main",
+      "draft": false,
+      "title": "Simplify BEP external AI exchange to one JSON file"
+    },
+    {
+      "number": 7,
+      "state": "closed",
+      "merged_at": "2026-11-11T01:17:53Z",
+      "head": "feature/coach-exchange-one-shot-prompt",
+      "head_sha": "ff53ccd3cb0471ac2048197a0fa0ec3498e19474",
+      "base": "main",
+      "draft": false,
+      "title": "Renforcer l’échange IA avec un prompt conseiller financier en une passe"
+    },
+    {
+      "number": 6,
+      "state": "closed",
+      "merged_at": "2026-11-11T01:06:27Z",
+      "head": "feature/coach-external-ai-exchange",
+      "head_sha": "86c0a650f46a2f63f8bba9cda8e29ced15f5f5ef",
+      "base": "main",
+      "draft": false,
+      "title": "Ajouter l’échange sécurisé de coaching avec les IA externes"
+    },
+    {
+      "number": 5,
+      "state": "closed",
+      "merged_at": "2026-11-11T00:57:14Z",
+      "head": "fix/budget-purchases-separation-bulk-delete",
+      "head_sha": "8ae1e3fc145bb1fbfdaade3227690113c8609f04",
+      "base": "main",
+      "draft": false,
+      "title": "Séparer les imports Budget des Achats et ajouter la suppression groupée"
+    },
+    {
+      "number": 4,
+      "state": "closed",
+      "merged_at": "2026-11-11T00:47:14Z",
+      "head": "feature/local-financial-coach-engine",
+      "head_sha": "a8e456c3845191153988b3c991bf6c803f4a410e",
+      "base": "main",
+      "draft": false,
+      "title": "Publish BEP local financial coach and remove obsolete AI toggle"
+    },
+    {
+      "number": 3,
+      "state": "open",
+      "merged_at": null,
+      "head": "feature/bep-knowledge-engine",
+      "head_sha": "2c4b348dfd63c01b9b2244ec2479c492889ad0a9",
+      "base": "main",
+      "draft": false,
+      "title": "feat(bep): build controlled AI knowledge engine"
+    },
+    {
+      "number": 2,
+      "state": "closed",
+      "merged_at": "2026-11-10T22:58:38Z",
+      "head": "feature/budget-image-onboarding",
+      "head_sha": "27990e5f4773fbdf5b26f7161d1dd7fc0b9a772d",
+      "base": "main",
+      "draft": false,
+      "title": "Add multi-photo bank onboarding with local OCR"
+    },
+    {
+      "number": 1,
+      "state": "closed",
+      "merged_at": "2026-11-10T22:36:22Z",
+      "head": "feature/budget-pdf-import-main",
+      "head_sha": "38b577d040d0a05da26f548fa354a66a247eb8ca",
+      "base": "main",
+      "draft": false,
+      "title": "Add optional PDF bank statement import to budget"
+    }
+  ],
+  "render_services": [
+    {
+      "name": "bep-v1-6-preprod-v2-frontend-test",
+      "id": "srv-dbs5eqmi0phs73c5tr7g",
+      "type": "static_site",
+      "branch": "deployment-test/BEP-v1.6-pre-prod-v2-20261114",
+      "autoDeploy": "no",
+      "url": "https://bep-v1-6-preprod-v2-frontend-test.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-v1-6-preprod-v2-api-test",
+      "id": "srv-dbs5eomc6qcc7387jcu0",
+      "type": "web_service",
+      "branch": "feature/bep-document-ingestion-no-ai",
+      "autoDeploy": "no",
+      "url": "https://bep-v1-6-preprod-v2-api-test.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-v13-qa-4d522c94",
+      "id": "srv-dbrrfq8n74is7381lro0",
+      "type": "web_service",
+      "branch": "qa/bep-v1.3-4d522c94",
+      "autoDeploy": "no",
+      "url": "https://bep-v13-qa-4d522c94.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-coach-functional-test-api-vouu",
+      "id": "srv-dbrqpa3rjlhs73c8ts70",
+      "type": "web_service",
+      "branch": "test/bep-coach-functional-20261114",
+      "autoDeploy": "no",
+      "url": "https://bep-coach-functional-test-api-vouu.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-coach-functional-test",
+      "id": "srv-dbrqoj5bedkc738ih4p0",
+      "type": "static_site",
+      "branch": "test/bep-coach-functional-20261114",
+      "autoDeploy": "no",
+      "url": "https://bep-coach-functional-test.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-gemini-agent-test-api-j65o",
+      "id": "srv-dbrqifl6e07s73ftgni0",
+      "type": "web_service",
+      "branch": "feature/gemini-shared-learning-readonly-20261114",
+      "autoDeploy": "no",
+      "url": "https://bep-gemini-agent-test-api-j65o.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-v1-1-test",
+      "id": "srv-dbret3tbedkc73ddihvg",
+      "type": "static_site",
+      "branch": "test-v1.1",
+      "autoDeploy": "yes",
+      "url": "https://bep-v1-1-test.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-savings-demo-local",
+      "id": "srv-dbrel0ou01pc73b1668g",
+      "type": "static_site",
+      "branch": "demo-local-no-auth",
+      "autoDeploy": "yes",
+      "url": "https://bep-savings-demo-local.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-coach-qa-lab",
+      "id": "srv-dbr50qt9fdbs73d9t37g",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-coach-qa-lab.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-budget-test",
+      "id": "srv-dbr2rkuc6qcc73aghgpg",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-budget-test.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-depenses-preview",
+      "id": "srv-dbr2r3bl550s73c40hq0",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "no",
+      "url": "https://bep-depenses-preview.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-financial-modals-pr72-preview",
+      "id": "srv-dbqvb4h5efls73du0vgg",
+      "type": "static_site",
+      "branch": "feat/unified-financial-modals",
+      "autoDeploy": "yes",
+      "url": "https://bep-financial-modals-pr72-preview.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-coach-staging-api",
+      "id": "srv-dbqggrgae00c738bbe00",
+      "type": "web_service",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-coach-staging-api.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-coach-staging",
+      "id": "srv-dbqggq2jnfac738kgmtg",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-coach-staging.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-savings-staging",
+      "id": "srv-dbqfa7egekts73ebc980",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-savings-staging.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-savings-staging-api",
+      "id": "srv-dbqf7mqfngtc73fdsk5g",
+      "type": "web_service",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-savings-staging-api.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-loadtest-api",
+      "id": "srv-dbqb5it9fdbs73c55oig",
+      "type": "web_service",
+      "branch": "main",
+      "autoDeploy": "yes",
+      "url": "https://bep-loadtest-api.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "makemeglow-api",
+      "id": "srv-dbpk0j3ncjis73945k80",
+      "type": "web_service",
+      "branch": "app-v1",
+      "autoDeploy": "yes",
+      "url": "https://makemeglow-api-k9d0.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/makemeglow-api"
+    },
+    {
+      "name": "bep-v2-api",
+      "id": "srv-dbpbcb5bedkc73893520",
+      "type": "web_service",
+      "branch": "main",
+      "autoDeploy": "no",
+      "url": "https://bep-v2-api.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    },
+    {
+      "name": "bep-mobile",
+      "id": "srv-dbpb7ubbc2fs739nec5g",
+      "type": "static_site",
+      "branch": "main",
+      "autoDeploy": "no",
+      "url": "https://bep-mobile.onrender.com",
+      "repo": "https://github.com/MMG2025-creator/bep-mobile."
+    }
+  ],
+  "notes": [
+    "Read-only inventory captured before cleanup; no branch or Render service changed.",
+    "Render services may be configured on branches other than main; see render_services."
+  ]
+}
