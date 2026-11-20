@@ -807,6 +807,13 @@
     syncLegacyCharges(event.detail?.budgets);
   });
 
+  async function syncStoredLegacyCharges() {
+    if (!window.bepSignedIn || !navigator.onLine) return;
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(DB) || "{}"); } catch {}
+    await syncLegacyCharges(Array.isArray(state.budgets) ? state.budgets : []);
+  }
+
   async function refreshMonthListOnly() {
     const [data, deletedData] = await Promise.all([api("/api/budgets/months"), api("/api/budgets/months/deleted")]);
     months = data.months || [];
@@ -908,10 +915,11 @@
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
-    if (window.bepSignedIn || !navigator.onLine) refresh();
-    else { months = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    if (window.bepSignedIn || !navigator.onLine) {
+      refresh().then(() => syncStoredLegacyCharges());
+    } else { months = []; deletedMonths = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   window.addEventListener("offline", () => { authEpoch++; refresh(); });
   window.addEventListener("online", () => { authEpoch++; if (window.bepSignedIn) refresh(); else applyOfflineReadOnly(); });
-  if (window.bepSignedIn || !navigator.onLine) refresh();
+  if (window.bepSignedIn || !navigator.onLine) refresh().then(() => syncStoredLegacyCharges());
 })();
