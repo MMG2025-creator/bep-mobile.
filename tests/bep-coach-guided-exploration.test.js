@@ -24,7 +24,7 @@ test("Coach exposes two accessible journeys and preserves the open question form
  assert.match(html,/id="coachChooseObjectives"/);
  assert.ok(html.includes("Écris ta question ici…"));
  assert.ok(html.includes("coachPanelOpen")&&html.includes("id=\"coachPromptForm\""));
- assert.match(html,/id="coachPanelOpen"[\\s\\S]*?<section class="coach-conversation"[\\s\\S]*?id="coachPromptForm"/);
+ assert.ok(html.indexOf("class=\"coach-conversation\"")<html.indexOf("id=\"coachPromptForm\""));
  assert.match(html,/id="coachChatLog"[^>]*hidden/);
 });
 test("Coach keeps the eight profile preferences and their existing persistence model",()=>{
@@ -60,6 +60,6 @@ test("Free-question conversation stays grouped inside the active tab and hidden 
  const panel=html.slice(html.indexOf('id="coachPanelOpen"'),html.indexOf('id="coachAnswerDialog"'));
  assert.ok(panel.indexOf('class="coach-objectives"')<panel.indexOf('class="coach-conversation"'));
  assert.ok(panel.indexOf('class="coach-conversation"')<panel.indexOf('id="coachPromptForm"'));
- assert.match(css,/#coachPanelOpen\\.coach-tab-panel\\.active\\{display:grid/);
- assert.match(css,/#coachChatLog\\[hidden\\]\\{display:none!important\\}/);
+ assert.ok(css.includes("#coachPanelOpen.coach-tab-panel.active{display:grid"));
+ assert.ok(css.includes("#coachChatLog[hidden]{display:none!important}"));
 });
