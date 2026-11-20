@@ -77,7 +77,7 @@ test("mobile connection status is centered below the BEP footer and stays clear 
  }
  for(const file of ["index.html","dist/index.html"]){
   const html=read(file);
-  assert.match(html,/styles\.css\?v=113&bep=coach-conversation-first-20261119/);
+  assert.match(html,/styles\.css\?v=114&bep=coach-tab-form-contained-20261120/);
   assert.match(html,/connection-status\.css\?v=4&bep=force-sync-action-20261119/);
  }
 });
@@ -460,7 +460,7 @@ test("Coach question form always stacks the textarea above the send button on ev
   assert.match(css,/#coachPromptForm\.coach-prompt-form textarea\{[\s\S]*?width:100%!important/);
   assert.match(css,/#coachPromptForm\.coach-prompt-form button[\s\S]*?width:100%!important/);
  }
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=113&bep=coach-conversation-first-20261119/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/styles\.css\?v=114&bep=coach-tab-form-contained-20261120/);
 });
 
 
@@ -476,8 +476,9 @@ test("Coach free conversation shows objectives first, then chat, then the questi
   const chat=panel.indexOf('id="coachChatLog"');
   const form=panel.indexOf('id="coachPromptForm"');
   assert.ok(objectives>=0&&form>objectives,"question form follows objectives");
-  assert.equal(conversation,-1,"bottom conversation container is removed");
-  assert.ok(chat>=0&&form>chat,"hidden technical message log precedes the question form");
+  assert.ok(conversation>objectives,"conversation container is inside the free-question tab after objectives");
+  assert.ok(chat>conversation&&form>chat,"chat log and form are grouped in the in-tab conversation container");
+  assert.ok(panel.indexOf("</section>",conversation)>form,"conversation container closes after the question form");
   assert.match(panel,/id="coachChatLog"[^>]*hidden/);
   assert.match(html,/coach-info-panel[\s\S]*?<\/details>\s*<div class="coach-privacy"/);
  }
