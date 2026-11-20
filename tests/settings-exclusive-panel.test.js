@@ -13,3 +13,10 @@ test("opening settings hides every other main panel and keeps settings visible",
   }
   assert.equal(read("settings.css"), read("dist/settings.css"));
 });
+
+test("published HTML loads the cache-busted settings stylesheet identically", () => {
+  for (const file of ["index.html", "dist/index.html"]) {
+    assert.match(read(file), /settings\\.css\\?v=6&bep=exclusive-settings-view-20261120/);
+  }
+  assert.equal(read("index.html"), read("dist/index.html"));
+});
