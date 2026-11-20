@@ -707,7 +707,7 @@
       plannedAmount: amount,
       clientId: editingItemId,
       sourceItemId: editingItemId === null ? crypto.randomUUID() : (items.find(x => x.clientId === editingItemId)?.sourceItemId || crypto.randomUUID()),
-      metadata: editingItemId === null ? { source: "monthly-history" } : (items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" })
+      metadata: editingItemId === null ? { source: "monthly-history" } : { ...(items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" }), ...($("monthlyBudgetItemType").value === "charge" ? { source: "monthly-manual" } : {}) }
     };
     if (editingItemId === null) {
       item.clientId = crypto.randomUUID();
@@ -756,6 +756,50 @@
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
+  let chargeSyncRunning = false;
+  let queuedLegacyCharges = null;
+  async function syncLegacyCharges(charges) {
+    if (!navigator.onLine || !window.bepSignedIn || !Array.isArray(charges)) return;
+    queuedLegacyCharges = charges;
+    if (chargeSyncRunning) return;
+    chargeSyncRunning = true;
+    try {
+      while (queuedLegacyCharges) {
+        const source = queuedLegacyCharges;
+        queuedLegacyCharges = null;
+        const syncItems = source.filter(x => x && typeof x === "object" && x.id != null).map(x => ({
+          itemType: "charge",
+          sourceItemId: String(x.id),
+          label: String(x.label || x.category || "Charge").slice(0, 160),
+          category: typeof x.category === "string" ? x.category : null,
+          nature: typeof x.nature === "string" ? x.nature : null,
+          plannedAmount: Number(x.amount),
+          metadata: { source: "legacy-budget" }
+        }));
+        const result = await api("/api/budgets/charges/sync", {
+          method: "POST",
+          body: JSON.stringify({ monthKey: monthNow(), items: syncItems })
+        });
+        if (!result.updatedMonths?.length) continue;
+        await refreshMonthListOnly();
+        const selectedMonth = current?.monthKey;
+        if (selectedMonth && result.updatedMonths.some(x => x.monthKey === selectedMonth)) {
+          await loadMonth(selectedMonth);
+          status("Charges enregistrées synchronisées avec le budget de " +
+            new Date(selectedMonth + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + ".");
+        }
+      }
+    } catch (error) {
+      status("Les charges sont enregistrées, mais la mise à jour des budgets mensuels a échoué : " + error.message, true);
+    } finally {
+      chargeSyncRunning = false;
+      if (queuedLegacyCharges) syncLegacyCharges(queuedLegacyCharges);
+    }
+  }
+  window.addEventListener("bep:legacy-budget-changed", event => {
+    syncLegacyCharges(event.detail?.budgets);
+  });
+
   async function refreshMonthListOnly() {
     const [data, deletedData] = await Promise.all([api("/api/budgets/months"), api("/api/budgets/months/deleted")]);
     months = data.months || [];
