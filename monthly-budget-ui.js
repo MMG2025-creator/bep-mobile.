@@ -28,7 +28,7 @@
       row.classList.toggle("is-selected", monthSelectionMode && monthSelection.has(index));
       let check = row.querySelector("[data-month-check]");
       if (monthSelectionMode) {
-        if (!check) { check = document.createElement("input"); check.type = "checkbox"; check.dataset.monthCheck = ""; check.className = "multi-select-check"; check.setAttribute("aria-label", "Sélectionner cette ligne"); row.prepend(check); }
+        if (!check) { check = document.createElement("input"); check.type = "checkbox"; check.dataset.monthCheck = ""; check.className = "multi-select-check"; check.id = "monthly-budget-select-" + index; check.name = "monthlyBudgetSelection"; check.setAttribute("aria-label", "Sélectionner cette ligne"); row.prepend(check); }
         check.checked = monthSelection.has(index);
         check.onchange = () => { if (check.checked) monthSelection.add(index); else monthSelection.delete(index); attachMonthLongPress(); };
       } else check?.remove();
