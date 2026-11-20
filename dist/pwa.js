@@ -44,13 +44,19 @@ if("serviceWorker" in navigator){
     window.location.reload();
   };
   navigator.serviceWorker.addEventListener("controllerchange",reloadAfterControllerChange);
+  let updateInFlight=null;
+  let lastUpdateAttempt=0;
   const checkForUpdate=registration=>{
-    if(document.visibilityState==="visible"&&navigator.onLine){
-      registration.update().catch(error=>console.warn("BEP PWA: vérification de mise à jour impossible",error));
-    }
+    if(document.visibilityState!=="visible"||!navigator.onLine||updateInFlight)return;
+    const now=Date.now();
+    if(now-lastUpdateAttempt<60000)return;
+    lastUpdateAttempt=now;
+    updateInFlight=registration.update()
+      .catch(error=>console.warn("BEP PWA: vérification de mise à jour impossible",error))
+      .finally(()=>{updateInFlight=null;});
   };
   window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js?v=28",{scope:"./",updateViaCache:"none"})
+    navigator.serviceWorker.register("./sw.js?v=29",{scope:"./",updateViaCache:"none"})
       .then(registration=>{
         checkForUpdate(registration);
         window.addEventListener("focus",()=>checkForUpdate(registration));
