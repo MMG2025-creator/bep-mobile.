@@ -120,7 +120,7 @@
 
 /* Interactive monthly budget donuts */
 .monthly-budget-donut,.monthly-budget-category-donut{isolation:isolate;overflow:visible}
-.monthly-budget-donut-svg{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;transform:rotate(-90deg);pointer-events:none}
+.monthly-budget-donut-svg{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;pointer-events:none}
 .monthly-budget-donut-segment{pointer-events:all;cursor:pointer;transform-box:fill-box;transform-origin:center;stroke:#fff;stroke-width:.8;transition:filter .18s ease,transform .18s ease,opacity .18s ease;animation:monthlyBudgetSegmentIn .55s cubic-bezier(.2,.8,.2,1) both}
 .monthly-budget-donut-segment:hover,.monthly-budget-donut-segment:focus-visible{filter:brightness(1.08);outline:none;stroke:#b58a2d;stroke-width:2.2}
 .monthly-budget-donut-segment.is-selected{filter:brightness(1.06);transform:scale(1.045);stroke:#fff;stroke-width:1.5}
