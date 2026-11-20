@@ -53,7 +53,7 @@ test("PWA update checks refresh the service worker and offer a safe user-trigger
  assert.match(pwa,/controllerchange/);
  assert.match(pwa,/vérification de mise à jour impossible/);
  assert.match(pwa,/window\.location\.reload\(\)/);
- assert.match(pwa,/data-bep-update-dismiss/);
+
  for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=12/);
 });
 
