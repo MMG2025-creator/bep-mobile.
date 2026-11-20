@@ -31,7 +31,7 @@ test("offline startup restores the local session and sets the remote baseline",(
 test("source and published service workers use the same cache and include offline dependencies",()=>{
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
- assert.match(source,/bep-shell-v27/);
+ assert.match(source,/bep-shell-v29/);
  assert.match(source,/await cache.addAll\(APP_SHELL\);[\s\S]*await self.skipWaiting\(\)/);
  assert.match(source,/key.startsWith\("bep-"\)/);
  assert.match(source,/\.\/settings\.css/);
@@ -44,17 +44,21 @@ test("source and published service workers use the same cache and include offlin
  assert.match(source,/caches\.open\(RUNTIME_CACHE\)/);
 });
 
-test("PWA update checks refresh the service worker and offer a safe user-triggered reload",()=>{
+test("PWA update checks refresh the service worker with serialized, throttled checks and a safe reload",()=>{
  const pwa=read("pwa.js");
  assert.equal(pwa,read("dist/pwa.js"));
  assert.match(pwa,/updateViaCache:"none"/);
  assert.match(pwa,/registration\.update\(\)/);
  assert.match(pwa,/5\*60\*1000/);
+ assert.match(pwa,/let updateInFlight=null/);
+ assert.match(pwa,/let lastUpdateAttempt=0/);
+ assert.match(pwa,/now-lastUpdateAttempt<60000/);
+ assert.match(pwa,/sw\.js\?v=29/);
+ assert.match(pwa,/addEventListener\("focus"/);
+ assert.match(pwa,/addEventListener\("visibilitychange"/);
  assert.match(pwa,/controllerchange/);
- assert.match(pwa,/Une nouvelle version de BEP est disponible/);
  assert.match(pwa,/window\.location\.reload\(\)/);
- assert.match(pwa,/data-bep-update-dismiss/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=12/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=15/);
 });
 
 test("receipt OCR runs locally and does not upload the image file",()=>{
