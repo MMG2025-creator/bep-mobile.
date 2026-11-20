@@ -48,17 +48,17 @@ test("PWA update checks refresh the service worker with serialized, throttled ch
  const pwa=read("pwa.js");
  assert.equal(pwa,read("dist/pwa.js"));
  assert.match(pwa,/updateViaCache:"none"/);
- assert.match(pwa,/registration\\.update\\(\\)/);
- assert.match(pwa,/5\\*60\\*1000/);
+ assert.match(pwa,/registration\.update\(\)/);
+ assert.match(pwa,/5\*60\*1000/);
  assert.match(pwa,/let updateInFlight=null/);
  assert.match(pwa,/let lastUpdateAttempt=0/);
  assert.match(pwa,/now-lastUpdateAttempt<60000/);
- assert.match(pwa,/sw\\.js\\?v=29/);
- assert.match(pwa,/addEventListener\\("focus"/);
- assert.match(pwa,/addEventListener\\("visibilitychange"/);
+ assert.match(pwa,/sw\.js\?v=29/);
+ assert.match(pwa,/addEventListener\("focus"/);
+ assert.match(pwa,/addEventListener\("visibilitychange"/);
  assert.match(pwa,/controllerchange/);
- assert.match(pwa,/window\\.location\\.reload\\(\\)/);
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\\.js\\?v=15/);
+ assert.match(pwa,/window\.location\.reload\(\)/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=15/);
 });
 
 test("receipt OCR runs locally and does not upload the image file",()=>{
