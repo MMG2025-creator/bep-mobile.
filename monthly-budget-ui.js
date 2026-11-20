@@ -707,7 +707,7 @@
       plannedAmount: amount,
       clientId: editingItemId,
       sourceItemId: editingItemId === null ? crypto.randomUUID() : (items.find(x => x.clientId === editingItemId)?.sourceItemId || crypto.randomUUID()),
-      metadata: editingItemId === null ? { source: "monthly-history" } : (items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" })
+      metadata: editingItemId === null ? { source: "monthly-history" } : { ...(items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" }), ...($( "monthlyBudgetItemType" ).value === "charge" ? { source: "monthly-manual" } : {}) }
     };
     if (editingItemId === null) {
       item.clientId = crypto.randomUUID();
