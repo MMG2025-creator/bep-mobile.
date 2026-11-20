@@ -2,7 +2,7 @@ name: BEP full regression suite
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/global-audit-pwa-regression-20261120]
   push:
     branches: [integration/v1.3-baseline-20261114]
 

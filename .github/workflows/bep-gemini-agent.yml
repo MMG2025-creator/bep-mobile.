@@ -2,7 +2,7 @@ name: BEP Gemini Agent isolated checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/global-audit-pwa-regression-20261120]
     paths:
       - "lib/bep-agent/**"
       - "database/migrations/20261114_bep_gemini_agent.sql"

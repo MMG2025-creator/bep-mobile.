@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="bep-shell-v28";
+const CACHE_NAME="bep-shell-v29";
 const RUNTIME_CACHE="bep-runtime-v3";
 const OFFLINE_CDN_HOSTS=new Set(["cdn.jsdelivr.net","cdnjs.cloudflare.com","tessdata.projectnaptha.com"]);
 const APP_SHELL=[
@@ -34,12 +34,14 @@ self.addEventListener("install",event=>{
     try{
       const cache=await caches.open(CACHE_NAME);
       await cache.addAll(APP_SHELL);
-      await self.skipWaiting();
     }catch(error){
       await caches.delete(CACHE_NAME);
       throw error;
     }
   })());
+});
+self.addEventListener("message",event=>{
+  if(event.data?.type==="BEP_SKIP_WAITING")self.skipWaiting();
 });
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
