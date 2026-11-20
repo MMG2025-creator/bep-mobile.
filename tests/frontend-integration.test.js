@@ -307,7 +307,7 @@ test("source and published homepage are one canonical HTML artifact with the pro
  const source=read("index.html"),published=read("dist/index.html");
  assert.equal(source,published,"dist/index.html must be generated from the canonical source without design drift");
  assert.match(source,/ui-polish\.css\?v=4/);
- assert.match(source,/settings\.css\?v=6/);
+ assert.match(source,/settings\.css\?v=7&bep=panel-visibility-regression-20261120/);
  assert.match(source,/pwa\.js\?v=15/);
  assert.match(source,/home-financial-snapshot/);
 });
