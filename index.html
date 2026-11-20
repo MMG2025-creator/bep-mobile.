@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102e29"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="BEP — Construire, faire fructifier, préserver.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icons/bep-icon.svg?v=2">
-<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=113&bep=coach-conversation-first-20261119"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=5&bep=layout-cache-refresh-20261119">
+<link rel="apple-touch-icon" href="./icons/bep-icon.svg?v=2"><link rel="stylesheet" href="./styles.css?v=114&bep=coach-tab-form-contained-20261120"><link rel="stylesheet" href="./monthly-budget-ui.css?v=4&bep=calendar-day-context-dialog-20261115"><link rel="stylesheet" href="./ui-polish.css?v=4"><link rel="stylesheet" href="./settings.css?v=5&bep=layout-cache-refresh-20261119">
 <title>BEP — Build, Earn & Preserve</title>
 
 <link rel="stylesheet" href="./auth-recovery.css?v=6">
@@ -430,12 +430,14 @@
         </div>
       </dialog>
     </section>
-    <div id="coachChatLog" class="coach-chat-log" hidden aria-hidden="true"></div>
-    <form id="coachPromptForm" class="coach-prompt-form">
-      <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
-      <textarea id="coachPromptInput" rows="3" maxlength="1200" placeholder="Écris ta question ici…" required name="coachPromptInput"></textarea>
-      <button class="primary" type="submit" aria-label="Envoyer au Coach BEP">Envoyer ma question</button>
-    </form>
+    <section class="coach-conversation" aria-label="Conversation avec le Coach BEP">
+      <div id="coachChatLog" class="coach-chat-log" hidden aria-hidden="true"></div>
+      <form id="coachPromptForm" class="coach-prompt-form">
+        <label class="sr-only" for="coachPromptInput">Ta question au Coach BEP</label>
+        <textarea id="coachPromptInput" rows="3" maxlength="1200" placeholder="Écris ta question ici…" required name="coachPromptInput"></textarea>
+        <button class="primary" type="submit" aria-label="Envoyer au Coach BEP">Envoyer ma question</button>
+      </form>
+    </section>
   </section>
   <dialog class="coach-answer-dialog" id="coachAnswerDialog" aria-labelledby="coachAnswerTitle" aria-describedby="coachAnswerBody">
     <div class="coach-answer-window">
