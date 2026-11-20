@@ -144,10 +144,6 @@ function createMonthlyBudgetRouter({ pool, auth }) {
           changed = true;
         }
         if (!changed) continue;
-        const sum = await client.query(
-          "SELECT COALESCE(SUM(planned_amount),0)::numeric(14,2) AS total FROM bep_monthly_budget_items WHERE budget_id=$1 AND item_type='charge'",
-          [budget.id]
-        );
         const totalsResult = await client.query(
           "SELECT item_type,COALESCE(SUM(planned_amount),0)::numeric(14,2) AS total FROM bep_monthly_budget_items WHERE budget_id=$1 GROUP BY item_type",
           [budget.id]
