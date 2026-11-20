@@ -205,6 +205,11 @@
       <button id="monthlyBudgetClose" class="secondary full" type="button">Clôturer le mois</button>
       <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500" name="monthlyBudgetReasonInput"></div>
       <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
+      <button id="monthlyBudgetDeleteMonth" class="secondary full" type="button">Supprimer ce mois</button>
+      <section id="monthlyBudgetDeletedWrap" class="monthly-budget-deleted" hidden>
+        <div class="field"><label for="monthlyBudgetDeletedSelect">Mois supprimés</label><select id="monthlyBudgetDeletedSelect" name="monthlyBudgetDeletedSelect"></select></div>
+        <button id="monthlyBudgetRestore" class="secondary full" type="button">Restaurer le mois sélectionné</button>
+      </section>
     </div>
   </div>
 </article>
