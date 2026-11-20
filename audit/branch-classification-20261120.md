@@ -24,7 +24,7 @@ Date : 20 novembre 2026
 | sans préfixe | 3 | Examiner individuellement |
 | integration | 2 | Conserver jusqu'à vérification des intégrations |
 | revert | 2 | Conserver comme références de retour arrière |
-| autres préfixes (chore, ci, copy, deploy, deployment-test, docs, governance, hotfix, implementation, improve, qa, refactor, research, rollback, simulation, test, ui) | 23 | Examiner individuellement selon leur rôle et leur utilisation |
+| autres préfixes (chore, ci, copy, deploy, deployment-test, docs, governance, hotfix, implementation, improve, qa, refactor, research, rollback, simulation, test, ui) | 28 | Examiner individuellement selon leur rôle et leur utilisation |
 | **Total** | **363** | |
 
 ## Références de sécurité et de production
