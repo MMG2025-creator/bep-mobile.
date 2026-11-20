@@ -171,6 +171,43 @@ if (!databaseUrl) {
       assert.equal(november.data.budget.plannedChargesTotal, "1000.00");
     });
 
+    await t.test("synchronizes source charges to current and future open months without overwriting manual overrides", async () => {
+      const sourceItems = [
+        { itemType: "charge", sourceItemId: "source-rent", label: "Loyer", category: "Logement", nature: "fixed", plannedAmount: 1000, metadata: { source: "legacy-budget" } },
+        { itemType: "charge", sourceItemId: "source-old", label: "Ancienne facture", category: "Factures", nature: "fixed", plannedAmount: 200, metadata: { source: "legacy-budget" } }
+      ];
+      const january = await call(userA, "/months", "POST", { monthKey: "2027-01", source: "current", items: sourceItems });
+      assert.equal(january.status, 201);
+      const february = await call(userA, "/months", "POST", { monthKey: "2027-02", source: "previous" });
+      assert.equal(february.status, 201);
+      const manual = await call(userA, "/months/2027-02", "PUT", {
+        expectedVersion: 1,
+        items: [
+          { ...sourceItems[0], label: "Loyer ajusté manuellement", plannedAmount: 950, metadata: { source: "monthly-manual" } },
+          sourceItems[1]
+        ]
+      });
+      assert.equal(manual.status, 200);
+      const synced = await call(userA, "/charges/sync", "POST", {
+        monthKey: "2027-01",
+        items: [
+          { itemType: "charge", sourceItemId: "source-rent", label: "Loyer actualisé", category: "Logement", nature: "fixed", plannedAmount: 800, metadata: { source: "legacy-budget" } },
+          { itemType: "charge", sourceItemId: "source-new", label: "Nouvelle facture", category: "Factures", nature: "fixed", plannedAmount: 100, metadata: { source: "legacy-budget" } }
+        ]
+      });
+      assert.equal(synced.status, 200);
+      assert.deepEqual(synced.data.updatedMonths.map(x => x.monthKey), ["2027-01", "2027-02"]);
+      const januaryAfter = await call(userA, "/months/2027-01");
+      assert.equal(januaryAfter.data.budget.plannedChargesTotal, "900.00");
+      assert.equal(januaryAfter.data.budget.items.some(x => x.sourceItemId === "source-old"), false);
+      assert.equal(januaryAfter.data.budget.items.find(x => x.sourceItemId === "source-rent").plannedAmount, "800.00");
+      const februaryAfter = await call(userA, "/months/2027-02");
+      assert.equal(februaryAfter.data.budget.plannedChargesTotal, "1050.00");
+      assert.equal(februaryAfter.data.budget.items.find(x => x.sourceItemId === "source-rent").plannedAmount, "950.00");
+      assert.equal(februaryAfter.data.budget.items.find(x => x.sourceItemId === "source-rent").label, "Loyer ajusté manuellement");
+      assert.equal(februaryAfter.data.budget.items.some(x => x.sourceItemId === "source-old"), false);
+    });
+
     await t.test("rejects stale writes and closed-month edits", async () => {
       const stale = await call(userA, "/months/2026-12", "PUT", {
         expectedVersion: 1, items: []
