@@ -2112,6 +2112,16 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 }
 
 
+
+/* Coach BEP — keep the free-question conversation inside its selected tab. */
+#coachPanelOpen.coach-tab-panel.active{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+#coachPanelOpen[hidden],.coach-tab-panel[hidden],#coachChatLog[hidden]{display:none!important}
+#coachPanelOpen>.coach-objectives,#coachPanelOpen>.coach-conversation{width:100%;min-width:0;box-sizing:border-box}
+#coachPanelOpen>.coach-conversation{display:grid;gap:10px;margin:0;padding:12px;border:1px solid #dcebe2;border-radius:15px;background:#f7fbf8}
+#coachPanelOpen>.coach-conversation #coachChatLog{min-height:0;max-height:360px;padding:0 2px}
+#coachPanelOpen>.coach-conversation #coachPromptForm{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+@media(max-width:600px){#coachPanelOpen.coach-tab-panel.active{gap:10px}#coachPanelOpen>.coach-conversation{padding:10px}}
+
 /* Stable Coach form selectors retained for the tab-contained conversation. */
 #coachPromptForm.coach-prompt-form{display:grid!important;grid-template-columns:minmax(0,1fr);gap:10px;width:100%;min-width:0;margin:4px 0 14px}
 #coachPromptForm.coach-prompt-form textarea{display:block!important;width:100%!important;min-width:0}
