@@ -91,10 +91,28 @@ function snapshot(budget, items) {
 function createMonthlyBudgetRouter({ pool, auth }) {
   const router = express.Router();
 
+  router.get("/months/deleted", auth, async (req, res) => {
+    try {
+      const result = await pool.query(
+        "SELECT month_key,status,version,deleted_at,planned_income_total,planned_charges_total,planned_savings_total FROM bep_monthly_budgets WHERE user_id=$1 AND deleted_at IS NOT NULL ORDER BY month_key DESC",
+        [req.session.user.id]
+      );
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ months: result.rows.map(x => ({
+        monthKey: monthKeyFromDate(x.month_key), status: x.status, version: Number(x.version),
+        deletedAt: x.deleted_at, plannedIncomeTotal: x.planned_income_total,
+        plannedChargesTotal: x.planned_charges_total, plannedSavingsTotal: x.planned_savings_total
+      })) });
+    } catch (error) {
+      console.error("Deleted monthly budget list failed", error.message);
+      res.status(503).json({ error: "MONTHLY_BUDGET_UNAVAILABLE" });
+    }
+  });
+
   router.get("/months", auth, async (req, res) => {
     try {
       const result = await pool.query(
-        "SELECT month_key,status,version,planned_income_total,planned_charges_total,planned_savings_total FROM bep_monthly_budgets WHERE user_id=$1 ORDER BY month_key DESC",
+        "SELECT month_key,status,version,planned_income_total,planned_charges_total,planned_savings_total FROM bep_monthly_budgets WHERE user_id=$1 AND deleted_at IS NULL ORDER BY month_key DESC",
         [req.session.user.id]
       );
       res.setHeader("Cache-Control", "no-store");
@@ -194,7 +212,7 @@ function createMonthlyBudgetRouter({ pool, auth }) {
     try {
       await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
       const result = await client.query(
-        "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date",
+        "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date AND deleted_at IS NULL",
         [req.session.user.id, monthKey + "-01"]
       );
       if (!result.rowCount) {
@@ -307,6 +325,65 @@ function createMonthlyBudgetRouter({ pool, auth }) {
       client.release();
     }
   });
+
+  async function changeDeletedState(req, res, restore) {
+    const monthKey = req.params.monthKey;
+    const expectedVersion = req.body?.expectedVersion;
+    const reason = req.body?.reason == null ? null : (typeof req.body.reason === "string" ? req.body.reason.trim() : "__INVALID__");
+    if (!validMonth(monthKey) || !Number.isInteger(expectedVersion) || expectedVersion < 1 ||
+        reason === "__INVALID__" || (reason && reason.length > 500))
+      return res.status(400).json({ error: "MONTHLY_BUDGET_DELETE_INVALID" });
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const before = await client.query(
+        "SELECT * FROM bep_monthly_budgets WHERE user_id=$1 AND month_key=$2::date FOR UPDATE",
+        [req.session.user.id, monthKey + "-01"]
+      );
+      if (!before.rowCount) { await client.query("ROLLBACK"); return res.status(404).json({ error: "MONTH_NOT_FOUND" }); }
+      const wasDeleted = Boolean(before.rows[0].deleted_at);
+      if (restore ? !wasDeleted : wasDeleted) {
+        await client.query("COMMIT");
+        return res.json({ ok: true, changed: false, deleted: wasDeleted, version: Number(before.rows[0].version) });
+      }
+      if (Number(before.rows[0].version) !== expectedVersion) {
+        await client.query("ROLLBACK");
+        return res.status(409).json({ error: "VERSION_CONFLICT" });
+      }
+      const items = await client.query(
+        "SELECT * FROM bep_monthly_budget_items WHERE budget_id=$1 ORDER BY created_at,id",
+        [before.rows[0].id]
+      );
+      const beforeState = snapshot(before.rows[0], items.rows);
+      const updated = restore
+        ? await client.query(
+          "UPDATE bep_monthly_budgets SET deleted_at=NULL,deleted_reason=NULL,version=version+1,updated_at=NOW() WHERE id=$1 RETURNING *",
+          [before.rows[0].id]
+        )
+        : await client.query(
+          "UPDATE bep_monthly_budgets SET deleted_at=NOW(),deleted_reason=$2,version=version+1,updated_at=NOW() WHERE id=$1 RETURNING *",
+          [before.rows[0].id, reason || "Suppression demandée depuis l’interface"]
+        );
+      const afterState = snapshot(updated.rows[0], items.rows);
+      await client.query(
+        "INSERT INTO bep_budget_audit_log(user_id,budget_id,action,before_state,after_state,reason) VALUES($1,$2,$3,$4::jsonb,$5::jsonb,$6)",
+        [req.session.user.id, before.rows[0].id, restore ? "restored" : "deleted",
+          JSON.stringify(beforeState), JSON.stringify(afterState),
+          reason || (restore ? "Restauration depuis l’interface" : "Suppression logique")]
+      );
+      await client.query("COMMIT");
+      res.json({ ok: true, changed: true, deleted: !restore, budget: afterState });
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
+      console.error("Monthly budget delete/restore failed", error.message);
+      res.status(503).json({ error: "MONTHLY_BUDGET_DELETE_FAILED" });
+    } finally {
+      client.release();
+    }
+  }
+
+  router.delete("/months/:monthKey", auth, (req, res) => changeDeletedState(req, res, false));
+  router.post("/months/:monthKey/restore", auth, (req, res) => changeDeletedState(req, res, true));
 
   async function changeStatus(req, res, status) {
     const monthKey = req.params.monthKey;
