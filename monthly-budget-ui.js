@@ -624,6 +624,7 @@
       const cached = await readHistoryCache();
       if (cached && Array.isArray(cached.months) && cached.months.length) {
         months = cached.months;
+        deletedMonths = Array.isArray(cached.deletedMonths) ? cached.deletedMonths : [];
         renderMonths();
         await loadMonth(months[0].monthKey);
         status("Serveur indisponible : dernière photographie du budget mensuel affichée en lecture seule.", true);
