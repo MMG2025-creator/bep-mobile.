@@ -618,4 +618,28 @@ document.addEventListener('click', (event) => {
   checkbox.dispatchEvent(new Event('change', { bubbles: true }));
 });
 </script>
+
+<script id="bep-coach-free-form-dom-guard">
+(function(){
+  function attachCoachConversation(){
+    const panel=document.getElementById("coachPanelOpen");
+    const form=document.getElementById("coachPromptForm");
+    const chat=document.getElementById("coachChatLog");
+    if(!panel||!form)return;
+    let conversation=form.closest(".coach-conversation");
+    if(!conversation){
+      conversation=document.createElement("section");
+      conversation.className="coach-conversation";
+      conversation.setAttribute("aria-label","Conversation avec le Coach BEP");
+      form.parentNode.insertBefore(conversation,form);
+    }
+    if(!panel.contains(conversation))panel.appendChild(conversation);
+    if(chat&&!conversation.contains(chat))conversation.prepend(chat);
+    if(!conversation.contains(form))conversation.appendChild(form);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",attachCoachConversation,{once:true});
+  else attachCoachConversation();
+})();
+</script>
+
 </body></html>
