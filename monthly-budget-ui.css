@@ -116,3 +116,21 @@
 .monthly-budget-day-expense>strong{flex:0 0 auto;color:#174f3c;font-size:13px;font-variant-numeric:tabular-nums}
 @media(max-width:480px){.monthly-budget-day-dialog{width:calc(100vw - 24px);max-height:calc(86dvh - env(safe-area-inset-bottom))}.monthly-budget-day-dialog-window{max-height:calc(86dvh - env(safe-area-inset-bottom))}.monthly-budget-day-dialog-header{padding:17px 16px 12px}.monthly-budget-day-expenses{padding-right:16px;padding-left:16px}}
 @media(prefers-reduced-motion:reduce){.monthly-budget-calendar-day-button{transition:none}}
+
+
+/* Interactive monthly budget donuts */
+.monthly-budget-donut,.monthly-budget-category-donut{isolation:isolate;overflow:visible}
+.monthly-budget-donut-svg{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;transform:rotate(-90deg);pointer-events:none}
+.monthly-budget-donut-segment{pointer-events:all;cursor:pointer;transform-box:fill-box;transform-origin:center;stroke:#fff;stroke-width:.8;transition:filter .18s ease,transform .18s ease,opacity .18s ease;animation:monthlyBudgetSegmentIn .55s cubic-bezier(.2,.8,.2,1) both}
+.monthly-budget-donut-segment:hover,.monthly-budget-donut-segment:focus-visible{filter:brightness(1.08);outline:none;stroke:#b58a2d;stroke-width:2.2}
+.monthly-budget-donut-segment.is-selected{filter:brightness(1.06);transform:scale(1.045);stroke:#fff;stroke-width:1.5}
+.monthly-budget-donut-center{position:absolute!important;inset:0;z-index:2;display:flex!important;max-width:none!important;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.monthly-budget-donut-center span{max-width:82%;overflow-wrap:anywhere;color:#84958c;font-size:9px}
+.monthly-budget-donut-center strong{max-width:84%;overflow-wrap:anywhere;margin-top:3px;color:#174f3c;font:800 12px/1.25 Manrope,sans-serif}
+.monthly-budget-category-donut .monthly-budget-donut-center strong{font-size:9px}
+.monthly-budget-donut-legend-item{display:grid;grid-template-columns:9px minmax(0,1fr) auto;align-items:center;gap:6px;width:100%;padding:2px 3px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6f8278;font:inherit;font-size:9px;text-align:left;cursor:pointer;transition:background .18s ease,border-color .18s ease}
+.monthly-budget-donut-legend-item i{width:8px;height:8px;border-radius:3px;background:var(--legend-color)}
+.monthly-budget-donut-legend-item b{color:#315c49;font-size:9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.monthly-budget-donut-legend-item:hover,.monthly-budget-donut-legend-item:focus-visible,.monthly-budget-donut-legend-item.is-selected{border-color:#dce9e1;background:#edf5ef;outline:none}
+@keyframes monthlyBudgetSegmentIn{from{opacity:.25;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.monthly-budget-donut-segment,.monthly-budget-donut-legend-item{animation:none!important;transition:none!important}}
