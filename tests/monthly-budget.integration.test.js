@@ -36,7 +36,7 @@ if (!databaseUrl) {
     await pool.query("INSERT INTO bep_users(id) VALUES($1),($2)", [userA, userB]);
     const migration = await fs.readFile(path.join(__dirname, "../database/migrations/20261111_monthly_budget_history.sql"), "utf8");
     await pool.query(migration);
-    await pool.query(migration); // idempotent re-application must be safe
+    await pool.query(migration); // idempotent re-application must be safe\n    const softDeleteMigration = await fs.readFile(path.join(__dirname, "../database/migrations/20261120_monthly_budget_soft_delete.sql"), "utf8");\n    await pool.query(softDeleteMigration);\n    await pool.query(softDeleteMigration); // additive migration is idempotent
 
     const app = express();
     app.use(express.json({ limit: "1mb" }));
@@ -192,6 +192,27 @@ if (!databaseUrl) {
       assert.equal(invalidReason.status, 400);
     });
 
+    await t.test("soft-deletes a month reversibly, keeps its snapshot and audit, and isolates users", async () => {
+      const foreignDelete = await call(userB, "/months/2026-12", "DELETE", { expectedVersion: 4, reason: "Accès interdit" });
+      assert.equal(foreignDelete.status, 404);
+      const deleted = await call(userA, "/months/2026-12", "DELETE", { expectedVersion: 4, reason: "Mois créé par erreur" });
+      assert.equal(deleted.status, 200);
+      assert.equal(deleted.data.deleted, true);
+      assert.equal(deleted.data.budget.monthKey, "2026-12");
+      const hidden = await call(userA, "/months/2026-12");
+      assert.equal(hidden.status, 404);
+      const activeList = await call(userA, "/months");
+      assert.ok(!activeList.data.months.some(x => x.monthKey === "2026-12"));
+      const deletedList = await call(userA, "/months/deleted");
+      assert.ok(deletedList.data.months.some(x => x.monthKey === "2026-12"));
+      const restore = await call(userA, "/months/2026-12/restore", "POST", { expectedVersion: 5, reason: "Restauration après vérification" });
+      assert.equal(restore.status, 200);
+      assert.equal(restore.data.deleted, false);
+      const restored = await call(userA, "/months/2026-12");
+      assert.equal(restored.status, 200);
+      assert.equal(restored.data.budget.items[0].label, "Nouveau loyer");
+    });
+
     await t.test("is idempotent and validates inputs", async () => {
       const duplicate = await call(userA, "/months", "POST", { monthKey: "2026-11", source: "empty" });
       assert.equal(duplicate.status, 200);
@@ -203,7 +224,7 @@ if (!databaseUrl) {
       assert.ok(audit.rows.some(x => x.action === "created"));
       assert.ok(audit.rows.some(x => x.action === "updated"));
       assert.ok(audit.rows.some(x => x.action === "closed"));
-      assert.ok(audit.rows.some(x => x.action === "reopened"));
+      assert.ok(audit.rows.some(x => x.action === "reopened"));\n      assert.ok(audit.rows.some(x => x.action === "deleted"));\n      assert.ok(audit.rows.some(x => x.action === "restored"));
     });
   });
 
