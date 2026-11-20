@@ -29,6 +29,8 @@ test('cliquer sur le texte d’une ligne active sa case à cocher', async ({ pag
 });
 
 test('le formulaire Questions libres reste dans le panneau Coach sur mobile et desktop', async ({ page }) => {
+  // The Coach requires authentication; remove only the test login overlay so its static layout can be inspected.
+  await page.locator('#authGate').evaluate((element) => element.remove());
   for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     await page.locator('.tab[data-tab="coach"]').click();
