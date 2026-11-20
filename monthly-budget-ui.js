@@ -783,6 +783,12 @@
         });
         if (!result.updatedMonths?.length) continue;
         await refreshMonthListOnly();
+        for (const changedMonth of result.updatedMonths) {
+          try {
+            const detail = await api("/api/budgets/months/" + encodeURIComponent(changedMonth.monthKey));
+            await cacheMonthBudget(detail.budget);
+          } catch { /* preserve the last available offline snapshot */ }
+        }
         const selectedMonth = current?.monthKey;
         if (selectedMonth && result.updatedMonths.some(x => x.monthKey === selectedMonth)) {
           await loadMonth(selectedMonth);
