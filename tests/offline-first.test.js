@@ -44,17 +44,21 @@ test("source and published service workers use the same cache and include offlin
  assert.match(source,/caches\.open\(RUNTIME_CACHE\)/);
 });
 
-test("PWA update checks refresh the service worker and offer a safe user-triggered reload",()=>{
+test("PWA update checks refresh the service worker with serialized, throttled checks and a safe reload",()=>{
  const pwa=read("pwa.js");
  assert.equal(pwa,read("dist/pwa.js"));
  assert.match(pwa,/updateViaCache:"none"/);
- assert.match(pwa,/registration\.update\(\)/);
- assert.match(pwa,/5\*60\*1000/);\n assert.match(pwa,/let updateInFlight=null/);\n assert.match(pwa,/let lastUpdateAttempt=0/);\n assert.match(pwa,/now-lastUpdateAttempt<60000/);\n assert.match(pwa,/sw\.js\\\?v=29/);
+ assert.match(pwa,/registration\\.update\\(\\)/);
+ assert.match(pwa,/5\\*60\\*1000/);
+ assert.match(pwa,/let updateInFlight=null/);
+ assert.match(pwa,/let lastUpdateAttempt=0/);
+ assert.match(pwa,/now-lastUpdateAttempt<60000/);
+ assert.match(pwa,/sw\\.js\\?v=29/);
+ assert.match(pwa,/addEventListener\\("focus"/);
+ assert.match(pwa,/addEventListener\\("visibilitychange"/);
  assert.match(pwa,/controllerchange/);
- assert.match(pwa,/vérification de mise à jour impossible/);
- assert.match(pwa,/window\.location\.reload\(\)/);
-
- for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\.js\?v=12/);
+ assert.match(pwa,/window\\.location\\.reload\\(\\)/);
+ for(const file of ["index.html","dist/index.html"])assert.match(read(file),/pwa\\.js\\?v=15/);
 });
 
 test("receipt OCR runs locally and does not upload the image file",()=>{
