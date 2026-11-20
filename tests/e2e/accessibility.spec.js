@@ -150,10 +150,10 @@ test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile
   await page.reload({ waitUntil: 'load' });
   await expect.poll(() => page.evaluate(() => window.bepSignedIn)).toBe(true);
   await page.locator('#authGate').evaluate((element) => element.remove());
-  await expect(page.locator('#monthlyBudgetWorkspace')).toBeVisible({ timeout: 10000 });
   await page.locator('.tab[data-tab="budget"]').click();
   await page.locator('[data-budget-module="monthly"]').click();
   await expect(page.locator('#budgetModuleMonthly')).toBeVisible();
+  await expect(page.locator('#monthlyBudgetWorkspace')).toBeVisible({ timeout: 10000 });
 
   for (const viewport of [{ width: 390, height: 844, name: 'mobile' }, { width: 1440, height: 900, name: 'desktop' }]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
