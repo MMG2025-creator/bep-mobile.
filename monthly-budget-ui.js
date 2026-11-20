@@ -7,6 +7,7 @@
   if (!card) return;
 
   let months = [];
+  let deletedMonths = [];
   let current = null;
   let items = [];
   let actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 };
@@ -123,9 +124,9 @@
       try { localStorage.setItem("bep-monthly-history-cache:" + user, JSON.stringify(value)); return true; } catch { return false; }
     }
   }
-  async function cacheMonthList(nextMonths) {
+  async function cacheMonthList(nextMonths, nextDeletedMonths = deletedMonths) {
     const previous = await readHistoryCache();
-    return writeHistoryCache({ months: nextMonths, budgets: previous?.budgets || {} });
+    return writeHistoryCache({ months: nextMonths, deletedMonths: nextDeletedMonths, budgets: previous?.budgets || {} });
   }
   async function cacheMonthBudget(budget) {
     if (!budget?.monthKey || !Array.isArray(budget.items)) return;
@@ -140,11 +141,15 @@
     const save = $("monthlyBudgetSave");
     const close = $("monthlyBudgetClose");
     const reopen = $("monthlyBudgetReopen");
+    const deleteMonth = $("monthlyBudgetDeleteMonth");
+    const restoreMonth = $("monthlyBudgetRestore");
     if (create) create.hidden = offline || !window.bepSignedIn;
     if (itemForm) itemForm.hidden = offline || !current || current.status === "closed";
     if (save) save.hidden = offline || !current || current.status === "closed";
     if (close) close.hidden = offline || !current || current.status === "closed";
     if (reopen) reopen.hidden = offline || !current || current.status !== "closed";
+    if (deleteMonth) deleteMonth.hidden = offline || !current;
+    if (restoreMonth) restoreMonth.disabled = offline || loading || !deletedMonths.length;
     const trigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (trigger) trigger.hidden = offline || !current || current.status === "closed";
     card.querySelectorAll("[data-edit-month-item],[data-remove-month-item]").forEach(el => {
@@ -434,6 +439,16 @@
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
+    const deletedWrap = $("monthlyBudgetDeletedWrap");
+    const deletedSelect = $("monthlyBudgetDeletedSelect");
+    if (deletedWrap) deletedWrap.hidden = !deletedMonths.length;
+    if (deletedSelect) {
+      const selectedDeleted = deletedSelect.value;
+      deletedSelect.innerHTML = deletedMonths.map(x => '<option value="' + escapeHtml(x.monthKey) + '">' +
+        new Date(x.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) +
+        (x.status === "closed" ? " · clôturé" : "") + "</option>").join("");
+      if (deletedMonths.some(x => x.monthKey === selectedDeleted)) deletedSelect.value = selectedDeleted;
+    }
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !navigator.onLine || cacheOnlyMode;
     applyOfflineReadOnly();
@@ -574,7 +589,9 @@
         const data = await api("/api/budgets/months");
         if (epoch !== authEpoch) return;
         months = data.months || [];
-        await cacheMonthList(months);
+        const deletedData = await api("/api/budgets/months/deleted");
+        deletedMonths = deletedData.months || [];
+        await cacheMonthList(months, deletedMonths);
         renderMonths();
         if (months.length) {
           await loadMonth(months[0].monthKey);
@@ -595,6 +612,7 @@
         const cached = await readHistoryCache();
         if (!cached || !Array.isArray(cached.months)) throw new Error("Aucun historique mensuel n’a encore été téléchargé sur cet appareil. Connecte-toi une fois pour le rendre disponible hors ligne.");
         months = cached.months;
+        deletedMonths = Array.isArray(cached.deletedMonths) ? cached.deletedMonths : [];
         renderMonths();
         if (months.length) await loadMonth(months[0].monthKey);
         else {
@@ -739,8 +757,10 @@
     finally { setBusy(false); }
   };
   async function refreshMonthListOnly() {
-    const data = await api("/api/budgets/months");
+    const [data, deletedData] = await Promise.all([api("/api/budgets/months"), api("/api/budgets/months/deleted")]);
     months = data.months || [];
+    deletedMonths = deletedData.months || [];
+    await cacheMonthList(months, deletedMonths);
     renderMonths();
   }
   $("monthlyBudgetClose").onclick = async () => {
@@ -758,6 +778,61 @@
       await refreshMonthListOnly();
     } catch (error) { status("Clôture impossible : " + error.message, true); }
     finally { setBusy(false); }
+  };
+  $("monthlyBudgetDeleteMonth").onclick = async () => {
+    if (!navigator.onLine || cacheOnlyMode) return status("La suppression d’un mois nécessite une connexion.", true);
+    if (!current || loading) return;
+    const monthKey = current.monthKey;
+    const label = new Date(monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    const accepted = window.BEP_CONFIRM_ACTION
+      ? await window.BEP_CONFIRM_ACTION("Le mois " + label + " sera masqué de l’historique actif. Ses données et son journal seront conservés et le mois pourra être restauré.", "Supprimer ce mois", "Supprimer", true)
+      : window.confirm("Supprimer " + label + " ? Le mois sera archivé et pourra être restauré.");
+    if (!accepted) return;
+    const epoch = authEpoch;
+    setBusy(true);
+    try {
+      const result = await api("/api/budgets/months/" + encodeURIComponent(monthKey), {
+        method: "DELETE",
+        body: JSON.stringify({ expectedVersion: current.version, reason: "Suppression confirmée depuis l’interface BEP" })
+      });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
+      current = null; items = []; editingItemId = null;
+      await refreshMonthListOnly();
+      if (months.length) await loadMonth(months[0].monthKey);
+      else {
+        actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 };
+        actualsError = "";
+        renderMonths();
+        status(result.changed ? "Mois supprimé. Tu peux le restaurer depuis la section des mois supprimés." : "Ce mois était déjà supprimé.");
+      }
+    } catch (error) {
+      status(error.message === "VERSION_CONFLICT" ? "Ce mois a été modifié ailleurs. Recharge-le avant de le supprimer." : "Suppression impossible : " + error.message, true);
+    } finally { setBusy(false); }
+  };
+  $("monthlyBudgetRestore").onclick = async () => {
+    if (!navigator.onLine || cacheOnlyMode) return status("La restauration d’un mois nécessite une connexion.", true);
+    if (loading) return;
+    const monthKey = $("monthlyBudgetDeletedSelect").value;
+    const deleted = deletedMonths.find(x => x.monthKey === monthKey);
+    if (!deleted) return status("Sélectionne un mois à restaurer.", true);
+    const accepted = window.BEP_CONFIRM_ACTION
+      ? await window.BEP_CONFIRM_ACTION("Restaurer le budget de " + new Date(monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + " avec ses lignes et son historique ?", "Restaurer ce mois", "Restaurer", false)
+      : window.confirm("Restaurer ce mois ?");
+    if (!accepted) return;
+    const epoch = authEpoch;
+    setBusy(true);
+    try {
+      await api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/restore", {
+        method: "POST",
+        body: JSON.stringify({ expectedVersion: deleted.version, reason: "Restauration confirmée depuis l’interface BEP" })
+      });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
+      await refreshMonthListOnly();
+      await loadMonth(monthKey);
+      status("Mois restauré. Son historique et ses lignes ont été conservés.");
+    } catch (error) {
+      status(error.message === "VERSION_CONFLICT" ? "Ce mois supprimé a changé. Actualise la liste avant de le restaurer." : "Restauration impossible : " + error.message, true);
+    } finally { setBusy(false); }
   };
   $("monthlyBudgetReopen").onclick = async () => {
     if (!navigator.onLine || cacheOnlyMode) return status("La réouverture d’un budget mensuel nécessite une connexion.", true);
