@@ -31,7 +31,7 @@ test("offline startup restores the local session and sets the remote baseline",(
 test("source and published service workers use the same cache and include offline dependencies",()=>{
  const source=read("sw.js"),published=read("dist/sw.js");
  assert.equal(source,published);
- assert.match(source,/bep-shell-v29/);
+ assert.match(source,/bep-shell-v30/);
  assert.match(source,/await cache.addAll\(APP_SHELL\);[\s\S]*await self.skipWaiting\(\)/);
  assert.match(source,/key.startsWith\("bep-"\)/);
  assert.match(source,/\.\/settings\.css/);
