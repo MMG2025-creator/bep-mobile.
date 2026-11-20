@@ -27,3 +27,41 @@ test('cliquer sur le texte d’une ligne active sa case à cocher', async ({ pag
   await row.locator('span').evaluate((element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
   await expect(checkbox).not.toBeChecked();
 });
+
+test('le formulaire Questions libres reste dans le panneau Coach sur mobile et desktop', async ({ page }) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.locator('.tab[data-tab="coach"]').click();
+    const freeTab = page.locator('#coachTabOpen');
+    await expect(freeTab).toBeVisible();
+    await expect(page.locator('#coachPanelOpen')).toBeVisible();
+    const form = page.locator('#coachPromptForm');
+    await expect(form).toBeVisible();
+    await expect(page.locator('#coachPanelOpen #coachPromptForm')).toHaveCount(1);
+    await expect(page.locator('#coachPanelOpen > .coach-conversation #coachPromptForm')).toHaveCount(1);
+    const layout = await page.evaluate(() => {
+      const panel = document.querySelector('#coachPanelOpen');
+      const tabs = document.querySelector('.coach-tabs');
+      const form = document.querySelector('#coachPromptForm');
+      const conversation = form.closest('.coach-conversation');
+      const p = panel.getBoundingClientRect();
+      const t = tabs.getBoundingClientRect();
+      const f = form.getBoundingClientRect();
+      const c = conversation.getBoundingClientRect();
+      return {
+        panel: { left: p.left, right: p.right, top: p.top, bottom: p.bottom },
+        tabsBottom: t.bottom,
+        form: { left: f.left, right: f.right, top: f.top, bottom: f.bottom },
+        conversation: { left: c.left, right: c.right, top: c.top, bottom: c.bottom },
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth
+      };
+    });
+    expect(layout.form.top).toBeGreaterThan(layout.tabsBottom);
+    expect(layout.conversation.top).toBeLessThan(layout.form.top);
+    expect(layout.conversation.bottom).toBeGreaterThan(layout.form.bottom);
+    expect(layout.form.left).toBeGreaterThanOrEqual(layout.panel.left);
+    expect(layout.form.right).toBeLessThanOrEqual(layout.panel.right);
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
+  }
+});
