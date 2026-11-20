@@ -149,6 +149,10 @@
     <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required name="monthlyBudgetNewMonth"></div>
     <button class="secondary full" type="submit">Créer le mois</button>
   </form>
+      <section id="monthlyBudgetDeletedWrap" class="monthly-budget-deleted" hidden>
+        <div class="field"><label for="monthlyBudgetDeletedSelect">Mois supprimés</label><select id="monthlyBudgetDeletedSelect" name="monthlyBudgetDeletedSelect"></select></div>
+        <button id="monthlyBudgetRestore" class="secondary full" type="button">Restaurer le mois sélectionné</button>
+      </section>
   <div id="monthlyBudgetWorkspace" hidden>
     <div class="field monthly-budget-month-select"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth" name="monthlyBudgetMonth"></select></div>
     <div class="monthly-budget-month-navigation" aria-label="Navigation des mois">
@@ -206,10 +210,7 @@
       <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500" name="monthlyBudgetReasonInput"></div>
       <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
       <button id="monthlyBudgetDeleteMonth" class="secondary full" type="button">Supprimer ce mois</button>
-      <section id="monthlyBudgetDeletedWrap" class="monthly-budget-deleted" hidden>
-        <div class="field"><label for="monthlyBudgetDeletedSelect">Mois supprimés</label><select id="monthlyBudgetDeletedSelect" name="monthlyBudgetDeletedSelect"></select></div>
-        <button id="monthlyBudgetRestore" class="secondary full" type="button">Restaurer le mois sélectionné</button>
-      </section>
+
     </div>
   </div>
 </article>
