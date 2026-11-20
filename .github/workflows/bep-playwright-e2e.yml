@@ -29,11 +29,11 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run browser acceptance tests
         run: npm run test:e2e
-      - name: Upload browser evidence on failure
-        if: failure()
+      - name: Upload browser screenshots and reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bep-playwright-failure-evidence
+          name: bep-playwright-evidence
           path: |
             test-results/
             playwright-report/

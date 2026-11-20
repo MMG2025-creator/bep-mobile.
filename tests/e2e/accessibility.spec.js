@@ -104,3 +104,100 @@ test('Paramètres remplace le panneau courant et affiche son contenu', async ({ 
   await expect(page.locator('#home')).toBeVisible();
   await expect(page.locator('#settingsBtn')).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('le robot du Coach reste visible et cadré sur mobile et desktop', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  for (const viewport of [{ width: 390, height: 844, name: 'mobile' }, { width: 1440, height: 900, name: 'desktop' }]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.locator('.tab[data-tab="coach"]').click();
+    const hero = page.locator('#coach .coach-hero');
+    const visual = page.locator('#coach .coach-hero-visual');
+    const robot = page.locator('#coach .coach-hero-bot');
+    await expect(hero).toBeVisible();
+    await expect(visual).toBeVisible();
+    await expect(robot).toBeVisible();
+    const bounds = await robot.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds.width).toBeGreaterThan(40);
+    expect(bounds.height).toBeGreaterThan(40);
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+    await page.screenshot({ path: `test-results/evidence/coach-${viewport.name}.png`, fullPage: true });
+  }
+});
+
+test('un seul bandeau est affiché sur le Coach, sans masquer le bandeau d’accueil ailleurs', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    const welcome = page.locator('.welcome-playful');
+    await page.locator('.tab[data-tab="home"]').click();
+    await expect(welcome).toBeVisible();
+
+    await page.locator('.tab[data-tab="coach"]').click();
+    await expect(page.locator('.tab[data-tab="coach"]')).toHaveClass(/active/);
+    await expect(welcome).toBeHidden();
+    await expect(page.locator('#coach .coach-hero')).toBeVisible();
+    await expect(page.locator('#coach .coach-hero h2')).toContainText('Bonjour');
+
+    await page.locator('.tab[data-tab="home"]').click();
+    await expect(welcome).toBeVisible();
+  }
+});
+
+test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile et desktop', async ({ page }) => {
+  await page.route('**/api/auth/status', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'playwright-budget-user', email: 'budget-test@example.invalid' } }) }));
+  await page.route('**/api/data', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ payload: {} }) }));
+  await page.route('**/api/budgets/months', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ months: [{ monthKey: '2026-11', status: 'open', version: 1 }] })
+  }));
+  await page.route('**/api/budgets/months/2026-11', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ budget: { monthKey: '2026-11', status: 'open', version: 1, items: [
+      { itemType: 'income', label: 'Salaire', plannedAmount: 3000 },
+      { itemType: 'charge', label: 'Loyer', category: 'Logement', plannedAmount: 900 },
+      { itemType: 'charge', label: 'Courses', category: 'Alimentation', plannedAmount: 350 },
+      { itemType: 'savings', label: 'Épargne', plannedAmount: 300 }
+    ] } })
+  }));
+  await page.route('**/api/budgets/months/2026-11/actuals**', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ expenses: [], actualExpenseTotal: '0.00', count: 0 })
+  }));
+  // Reload after installing all routes so the real startup auth flow is deterministic.
+  await page.reload({ waitUntil: 'load' });
+  await expect.poll(() => page.evaluate(() => window.bepSignedIn)).toBe(true);
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  await page.locator('.tab[data-tab="budget"]').click();
+  await page.locator('[data-budget-module="monthly"]').click();
+  await expect(page.locator('#budgetModuleMonthly')).toBeVisible();
+  await expect(page.locator('#monthlyBudgetWorkspace')).toBeVisible({ timeout: 10000 });
+
+  for (const viewport of [{ width: 390, height: 844, name: 'mobile' }, { width: 1440, height: 900, name: 'desktop' }]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    const allocation = page.locator('#monthlyBudgetAllocationDonut');
+    const allocationLegend = page.locator('#monthlyBudgetAllocationLegend');
+    const category = page.locator('#monthlyBudgetCategoryDonut');
+    const categoryLegend = page.locator('#monthlyBudgetCategoryLegend');
+    await expect(allocation.locator('.monthly-budget-donut-segment')).toHaveCount(3);
+    await expect(allocationLegend.locator('.monthly-budget-donut-legend-item')).toHaveCount(4);
+    await expect(category.locator('.monthly-budget-donut-segment')).toHaveCount(2);
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item')).toHaveCount(2);
+
+    const categorySegments = category.locator('.monthly-budget-donut-segment');
+    await categorySegments.nth(1).click();
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item').nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await expect(category.locator('.monthly-budget-donut-center span')).toHaveText('Alimentation');
+    await categorySegments.nth(0).focus();
+    await page.keyboard.press('Enter');
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item').nth(0)).toHaveAttribute('aria-pressed', 'true');
+    await expect(category.locator('.monthly-budget-donut-center span')).toHaveText('Logement');
+
+    await allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1).click();
+    await expect(allocation.locator(':scope > div span')).toHaveText('Épargne prévue');
+    await expect(allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await page.screenshot({ path: `test-results/evidence/budget-${viewport.name}.png`, fullPage: true });
+  }
+});
+

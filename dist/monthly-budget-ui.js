@@ -244,6 +244,89 @@
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
   }
+
+  function renderInteractiveDonut(container, parts, total, legend, chartLabel, initialLabel, initialValue) {
+    if (!container) return;
+    const ns = "http://www.w3.org/2000/svg";
+    const polar = (radius, angle) => {
+      const radians = (angle - 90) * Math.PI / 180;
+      return [50 + radius * Math.cos(radians), 50 + radius * Math.sin(radians)];
+    };
+    const arcPath = (start, end) => {
+      const outerStart = polar(49, start), outerEnd = polar(49, end);
+      const innerEnd = polar(31, end), innerStart = polar(31, start);
+      const large = end - start > 180 ? 1 : 0;
+      return "M " + outerStart.join(" ") + " A 49 49 0 " + large + " 1 " + outerEnd.join(" ") +
+        " L " + innerEnd.join(" ") + " A 31 31 0 " + large + " 0 " + innerStart.join(" ") + " Z";
+    };
+    let center = container.querySelector(".monthly-budget-donut-center") || container.querySelector(":scope > div");
+    if (!center) {
+      center = document.createElement("div");
+      center.className = "monthly-budget-donut-center";
+      center.innerHTML = "<span></span><strong></strong>";
+      container.append(center);
+    }
+    const centerLabel = center.querySelector("span"), centerValue = center.querySelector("strong");
+    let selected = 0;
+    const setSelected = index => {
+      selected = index;
+      const part = parts[index];
+      if (!part) return;
+      centerLabel.textContent = part.label;
+      centerValue.textContent = money(part.value);
+      container.querySelectorAll("[data-donut-index]").forEach((node, i) => {
+        const active = i === index;
+        node.classList.toggle("is-selected", active);
+        node.setAttribute("aria-pressed", String(active));
+      });
+      legend?.querySelectorAll("[data-donut-index]").forEach((node, i) => {
+        const active = i === index;
+        node.classList.toggle("is-selected", active);
+        node.setAttribute("aria-pressed", String(active));
+      });
+    };
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("class", "monthly-budget-donut-svg");
+    svg.setAttribute("role", "group");
+    svg.setAttribute("aria-label", chartLabel);
+    let cursor = 0;
+    parts.forEach((part, index) => {
+      const share = total > 0 ? Math.max(0, part.value) / total * 360 : 0;
+      if (share <= 0) return;
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", arcPath(cursor, cursor + share));
+      path.setAttribute("fill", part.color);
+      path.setAttribute("class", "monthly-budget-donut-segment");
+      path.setAttribute("tabindex", "0");
+      path.setAttribute("role", "button");
+      path.setAttribute("data-donut-index", String(index));
+      path.setAttribute("aria-label", part.label + " : " + money(part.value));
+      path.setAttribute("aria-pressed", "false");
+      path.addEventListener("click", () => setSelected(index));
+      path.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(index); }
+      });
+      svg.append(path);
+      cursor += share;
+    });
+    container.querySelector(".monthly-budget-donut-svg")?.remove();
+    container.prepend(svg);
+    if (legend) {
+      legend.innerHTML = parts.map((part, index) =>
+        '<button type="button" class="monthly-budget-donut-legend-item" data-donut-index="' + index +
+        '" aria-pressed="false"><i style="--legend-color:' + part.color + '"></i><span>' +
+        escapeHtml(part.label) + '</span><b>' + money(part.value) + '</b></button>'
+      ).join("");
+      legend.querySelectorAll("[data-donut-index]").forEach(button => {
+        button.addEventListener("click", () => setSelected(Number(button.dataset.donutIndex)));
+      });
+    }
+    centerLabel.textContent = initialLabel;
+    centerValue.textContent = initialValue;
+    if (parts.length) setSelected(Math.max(0, parts.findIndex(part => part.label === initialLabel)));
+  }
+
   function renderMonthlyVisuals() {
     const strip = $("monthlyBudgetMonthStrip"), calendar = $("monthlyBudgetCalendar");
     const calendarCard = card.querySelector(".monthly-budget-calendar-card");
@@ -314,18 +397,11 @@
       { label: "Dépassement réel", value: actualImpact, color: "#c47a45" },
       { label: "Disponible", value: Math.max(0, available), color: "#dce9e1" }
     ];
-    let cursor = 0;
-    const stops = parts.map(part => {
-      const share = denominator > 0 ? part.value / denominator * 100 : 0;
-      const start = cursor; cursor += share;
-      return part.color + " " + start.toFixed(2) + "% " + cursor.toFixed(2) + "%";
-    });
     const donut = $("monthlyBudgetAllocationDonut");
-    if (donut) donut.style.background = denominator > 0 ? "conic-gradient(" + stops.join(",") + ")" : "conic-gradient(#e8efea 0 100%)";
     const availableLabel = $("monthlyBudgetDonutAvailable");
     if (availableLabel) availableLabel.textContent = money(available);
     const legend = $("monthlyBudgetAllocationLegend");
-    if (legend) legend.innerHTML = parts.map(part => '<div><i style="--legend-color:' + part.color + '"></i><span>' + part.label + '</span><b>' + money(part.value) + '</b></div>').join("");
+    renderInteractiveDonut(donut, parts, denominator, legend, "Répartition prévisionnelle du budget", "Disponible", money(available));
 
     const categories = new Map();
     items.filter(x => x.itemType === "charge").forEach(x => {
@@ -333,24 +409,20 @@
       categories.set(label, (categories.get(label) || 0) + Math.max(0, Number(x.plannedAmount) || 0));
     });
     const ranked = [...categories.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const total = ranked.reduce((n, x) => n + x[1], 0);
     const palette = ["#176b50", "#d4ae55", "#6e9c88", "#91b9a6", "#a7b6ad"];
+    const categoryParts = ranked.map(([label, value], index) => ({ label, value, color: palette[index] }));
+    const total = categoryParts.reduce((n, part) => n + part.value, 0);
     const categoryDonut = $("monthlyBudgetCategoryDonut");
-    if (categoryDonut) {
-      let point = 0;
-      const categoryStops = ranked.map(([label, value], index) => {
-        const share = total > 0 ? value / total * 100 : 0, start = point; point += share;
-        return palette[index] + " " + start.toFixed(2) + "% " + point.toFixed(2) + "%";
-      });
-      categoryDonut.style.background = total > 0 ? "conic-gradient(" + categoryStops.join(",") + ")" : "conic-gradient(#e8efea 0 100%)";
-      categoryDonut.classList.toggle("is-empty", total <= 0);
-    }
+    if (categoryDonut) categoryDonut.classList.toggle("is-empty", total <= 0);
     const categoryTotal = $("monthlyBudgetCategoryTotal");
     if (categoryTotal) categoryTotal.textContent = money(total);
     const categoryLegend = $("monthlyBudgetCategoryLegend");
-    if (categoryLegend) categoryLegend.innerHTML = ranked.length ? ranked.map(([label, value], index) =>
-      '<div><i style="--legend-color:' + palette[index] + '"></i><span>' + escapeHtml(label) + '</span><b>' + money(value) + '</b></div>'
-    ).join("") : '<p class="empty">Ajoute des charges pour voir leur répartition.</p>';
+    if (categoryParts.length) {
+      renderInteractiveDonut(categoryDonut, categoryParts, total, categoryLegend, "Répartition des charges par catégorie", categoryParts[0].label, money(categoryParts[0].value));
+    } else {
+      if (categoryDonut) categoryDonut.innerHTML = '<div class="monthly-budget-donut-center"><span>Charges</span><strong>0,00 €</strong></div>';
+      if (categoryLegend) categoryLegend.innerHTML = '<p class="empty">Ajoute des charges pour voir leur répartition.</p>';
+    }
   }
   function renderMonths() {
     const select = $("monthlyBudgetMonth");
