@@ -176,7 +176,7 @@ test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile
     await expect(category.locator('.monthly-budget-donut-center span')).toHaveText('Logement');
 
     await allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1).click();
-    await expect(allocation.locator('.monthly-budget-donut-center span')).toHaveText('Épargne prévue');
+    await expect(allocation.locator(':scope > div span')).toHaveText('Épargne prévue');
     await expect(allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1)).toHaveAttribute('aria-pressed', 'true');
     await page.screenshot({ path: `test-results/evidence/budget-${viewport.name}.png`, fullPage: true });
   }
