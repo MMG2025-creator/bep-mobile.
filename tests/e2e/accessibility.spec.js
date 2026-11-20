@@ -104,3 +104,80 @@ test('Paramètres remplace le panneau courant et affiche son contenu', async ({ 
   await expect(page.locator('#home')).toBeVisible();
   await expect(page.locator('#settingsBtn')).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('le robot du Coach reste visible et cadré sur mobile et desktop', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  for (const viewport of [{ width: 390, height: 844, name: 'mobile' }, { width: 1440, height: 900, name: 'desktop' }]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.locator('.tab[data-tab="coach"]').click();
+    const hero = page.locator('#coach .coach-hero');
+    const visual = page.locator('#coach .coach-hero-visual');
+    const robot = page.locator('#coach .coach-hero-bot');
+    await expect(hero).toBeVisible();
+    await expect(visual).toBeVisible();
+    await expect(robot).toBeVisible();
+    const bounds = await robot.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds.width).toBeGreaterThan(40);
+    expect(bounds.height).toBeGreaterThan(40);
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+    await page.screenshot({ path: `test-results/evidence/coach-${viewport.name}.png`, fullPage: true });
+  }
+});
+
+test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile et desktop', async ({ page }) => {
+  await page.route('https://bep-v2-api.onrender.com/api/budgets/months', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ months: [{ monthKey: '2026-11', status: 'open', version: 1 }] })
+  }));
+  await page.route('https://bep-v2-api.onrender.com/api/budgets/months/2026-11?**', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ budget: { monthKey: '2026-11', status: 'open', version: 1, items: [
+      { itemType: 'income', label: 'Salaire', plannedAmount: 3000 },
+      { itemType: 'charge', label: 'Loyer', category: 'Logement', plannedAmount: 900 },
+      { itemType: 'charge', label: 'Courses', category: 'Alimentation', plannedAmount: 350 },
+      { itemType: 'savings', label: 'Épargne', plannedAmount: 300 }
+    ] } })
+  }));
+  await page.route('https://bep-v2-api.onrender.com/api/budgets/months/2026-11/actuals?**', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ expenses: [], actualExpenseTotal: '0.00', count: 0 })
+  }));
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  await page.evaluate(() => {
+    window.bepSignedIn = true;
+    window.dispatchEvent(new Event('bep:auth-ready'));
+  });
+  await expect(page.locator('#monthlyBudgetWorkspace')).toBeVisible({ timeout: 10000 });
+  await page.locator('.tab[data-tab="budget"]').click();
+  await page.locator('[data-budget-module="monthly"]').click();
+  await expect(page.locator('#budgetModuleMonthly')).toBeVisible();
+
+  for (const viewport of [{ width: 390, height: 844, name: 'mobile' }, { width: 1440, height: 900, name: 'desktop' }]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    const allocation = page.locator('#monthlyBudgetAllocationDonut');
+    const allocationLegend = page.locator('#monthlyBudgetAllocationLegend');
+    const category = page.locator('#monthlyBudgetCategoryDonut');
+    const categoryLegend = page.locator('#monthlyBudgetCategoryLegend');
+    await expect(allocation.locator('.monthly-budget-donut-segment')).toHaveCount(3);
+    await expect(allocationLegend.locator('.monthly-budget-donut-legend-item')).toHaveCount(4);
+    await expect(category.locator('.monthly-budget-donut-segment')).toHaveCount(2);
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item')).toHaveCount(2);
+
+    const categorySegments = category.locator('.monthly-budget-donut-segment');
+    await categorySegments.nth(1).click();
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item').nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await expect(category.locator('.monthly-budget-donut-center span')).toHaveText('Alimentation');
+    await categorySegments.nth(0).focus();
+    await page.keyboard.press('Enter');
+    await expect(categoryLegend.locator('.monthly-budget-donut-legend-item').nth(0)).toHaveAttribute('aria-pressed', 'true');
+    await expect(category.locator('.monthly-budget-donut-center span')).toHaveText('Logement');
+
+    await allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1).click();
+    await expect(allocation.locator('.monthly-budget-donut-center span')).toHaveText('Épargne prévue');
+    await expect(allocationLegend.locator('.monthly-budget-donut-legend-item').nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await page.screenshot({ path: `test-results/evidence/budget-${viewport.name}.png`, fullPage: true });
+  }
+});
+
