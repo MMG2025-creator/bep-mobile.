@@ -126,3 +126,12 @@
 .settings-account-status strong{display:block;color:#173c32;font:800 13px Manrope,sans-serif}
 .settings-account-status .hint{margin:4px 0 0;overflow-wrap:anywhere}
 @media(max-width:480px){.settings-modal-header-green{margin:-18px -18px 16px;padding:18px}}
+
+
+/* Panel visibility is controlled by the tab router. Never let a component's
+   display rule override the native hidden state of an inactive panel. */
+.app main>.panel[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+.app main>.panel.active:not([hidden]){visibility:visible!important;pointer-events:auto!important}
+.app.settings-open main>#settings:not([hidden]){display:grid!important;visibility:visible!important;pointer-events:auto!important}
+.app.settings-open main>#settings:not([hidden])>.settings-page-heading,
+.app.settings-open main>#settings:not([hidden])>.settings-card{visibility:visible!important}

@@ -68,3 +68,39 @@ test('le formulaire Questions libres reste dans le panneau Coach sur mobile et d
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
   }
 });
+
+
+test('les éléments de pied de page du Coach sont invisibles hors du panneau Coach', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  await page.locator('.tab[data-tab="home"]').click();
+  await expect(page.locator('#coach')).toBeHidden();
+  await expect(page.locator('#coach .coach-info-panel')).toBeHidden();
+  await expect(page.locator('#coach .coach-privacy')).toBeHidden();
+
+  await page.locator('.tab[data-tab="coach"]').click();
+  await expect(page.locator('#coach')).toBeVisible();
+  await expect(page.locator('#coach .coach-info-panel')).toBeVisible();
+  await expect(page.locator('#coach .coach-privacy')).toBeVisible();
+
+  await page.locator('.tab[data-tab="home"]').click();
+  await expect(page.locator('#coach .coach-info-panel')).toBeHidden();
+  await expect(page.locator('#coach .coach-privacy')).toBeHidden();
+});
+
+test('Paramètres remplace le panneau courant et affiche son contenu', async ({ page }) => {
+  await page.locator('#authGate').evaluate((element) => element.remove());
+  await page.locator('.tab[data-tab="home"]').click();
+  await page.locator('#settingsBtn').click();
+  await expect(page.locator('.app')).toHaveClass(/settings-open/);
+  await expect(page.locator('#settings')).toBeVisible();
+  await expect(page.locator('#settings .settings-page-heading h1')).toHaveText('Paramètres');
+  await expect(page.locator('#settingsProfileCard')).toBeVisible();
+  await expect(page.locator('#home')).toBeHidden();
+  await expect(page.locator('#coach')).toBeHidden();
+  await expect(page.locator('#settingsBtn')).toHaveAttribute('aria-expanded', 'true');
+
+  await page.locator('#settingsBtn').click();
+  await expect(page.locator('#settings')).toBeHidden();
+  await expect(page.locator('#home')).toBeVisible();
+  await expect(page.locator('#settingsBtn')).toHaveAttribute('aria-expanded', 'false');
+});
