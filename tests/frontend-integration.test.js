@@ -307,13 +307,13 @@ test("source and published homepage are one canonical HTML artifact with the pro
  const source=read("index.html"),published=read("dist/index.html");
  assert.equal(source,published,"dist/index.html must be generated from the canonical source without design drift");
  assert.match(source,/ui-polish\.css\?v=4/);
- assert.match(source,/settings\.css\?v=4/);
+ assert.match(source,/settings\.css\?v=5/);
  assert.match(source,/pwa\.js\?v=12/);
  assert.match(source,/home-financial-snapshot/);
 });
 
 
-test("homepage BEP mascot is an accessible Coach shortcut with dynamic states",()=>{
+test("homepage BEP mascot is an accessible Coach shortcut with supported status states",()=>{
  const html=read("index.html");
  assert.match(html,/class="welcome-mascot" data-goto="coach" data-state="idle"/);
  assert.match(html,/id="homeMascotStatus" aria-live="polite"/);
