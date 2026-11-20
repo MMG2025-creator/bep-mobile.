@@ -74,16 +74,16 @@ test('les éléments de pied de page du Coach sont invisibles hors du panneau Co
   await page.locator('#authGate').evaluate((element) => element.remove());
   await page.locator('.tab[data-tab="home"]').click();
   await expect(page.locator('#coach')).toBeHidden();
-  await expect(page.locator('#coach .coach-info-panel')).toBeHidden();
+  await expect(page.locator('#coach .coach-info-summary')).toBeHidden();
   await expect(page.locator('#coach .coach-privacy')).toBeHidden();
 
   await page.locator('.tab[data-tab="coach"]').click();
   await expect(page.locator('#coach')).toBeVisible();
-  await expect(page.locator('#coach .coach-info-panel')).toBeVisible();
+  await expect(page.locator('#coach .coach-info-summary')).toBeVisible();
   await expect(page.locator('#coach .coach-privacy')).toBeVisible();
 
   await page.locator('.tab[data-tab="home"]').click();
-  await expect(page.locator('#coach .coach-info-panel')).toBeHidden();
+  await expect(page.locator('#coach .coach-info-summary')).toBeHidden();
   await expect(page.locator('#coach .coach-privacy')).toBeHidden();
 });
 
