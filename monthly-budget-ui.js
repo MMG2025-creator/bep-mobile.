@@ -259,7 +259,7 @@
       return "M " + outerStart.join(" ") + " A 49 49 0 " + large + " 1 " + outerEnd.join(" ") +
         " L " + innerEnd.join(" ") + " A 31 31 0 " + large + " 0 " + innerStart.join(" ") + " Z";
     };
-    let center = container.querySelector(".monthly-budget-donut-center");
+    let center = container.querySelector(".monthly-budget-donut-center") || container.querySelector(":scope > div");
     if (!center) {
       center = document.createElement("div");
       center.className = "monthly-budget-donut-center";
