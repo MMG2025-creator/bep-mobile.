@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  await page.goto('/index.html', { waitUntil: 'load' });
 });
 
 test('les champs de formulaire possèdent un id ou un name', async ({ page }) => {
@@ -32,6 +32,7 @@ test('le formulaire Questions libres reste dans le panneau Coach sur mobile et d
   for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     await page.locator('.tab[data-tab="coach"]').click();
+    await expect(page.locator('#coach')).toHaveClass(/active/);
     const freeTab = page.locator('#coachTabOpen');
     await expect(freeTab).toBeVisible();
     await expect(page.locator('#coachPanelOpen')).toBeVisible();
