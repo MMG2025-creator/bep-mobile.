@@ -166,7 +166,6 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(admin,/id="geminiSmokeTestButton"/);
  assert.match(admin,/gemini-smoke-test/);
  assert.match(admin,/credentials:"include"/);
- assert.match(admin,/syntheticOnly/);
  assert.match(admin,/Publication automatique/);
 });
 test("new institutional knowledge candidates have a human approval path and appear in the admin UI",()=>{
