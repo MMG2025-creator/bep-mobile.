@@ -36,7 +36,10 @@ if (!databaseUrl) {
     await pool.query("INSERT INTO bep_users(id) VALUES($1),($2)", [userA, userB]);
     const migration = await fs.readFile(path.join(__dirname, "../database/migrations/20261111_monthly_budget_history.sql"), "utf8");
     await pool.query(migration);
-    await pool.query(migration); // idempotent re-application must be safe\n    const softDeleteMigration = await fs.readFile(path.join(__dirname, "../database/migrations/20261120_monthly_budget_soft_delete.sql"), "utf8");\n    await pool.query(softDeleteMigration);\n    await pool.query(softDeleteMigration); // additive migration is idempotent
+    await pool.query(migration); // idempotent re-application must be safe
+    const softDeleteMigration = await fs.readFile(path.join(__dirname, "../database/migrations/20261120_monthly_budget_soft_delete.sql"), "utf8");
+    await pool.query(softDeleteMigration);
+    await pool.query(softDeleteMigration); // additive migration is idempotent
 
     const app = express();
     app.use(express.json({ limit: "1mb" }));
