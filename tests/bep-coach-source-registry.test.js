@@ -66,7 +66,7 @@ test("refresh records safe error state and does not overwrite the previous diges
  const row=state[0];row.content_digest="b".repeat(64);
  pool.query=async(sql,params=[])=>{if(/^CREATE TABLE|^ALTER TABLE|^CREATE INDEX/.test(sql))return{rows:[]};if(/^SELECT source_id/.test(sql))return{rows:[row]};if(/^UPDATE bep_coach_source_registry/.test(sql)){Object.assign(row,{last_checked_at:params[1],freshness_status:"error",last_error_code:params[2]});return{rows:[row]}};throw new Error("Unexpected SQL "+sql)};
  const result=await refreshCoachSource({pool,sourceId:"mqa-01",fetchPage:async()=>{throw new Error("SOURCE_TIMEOUT")},now:new Date()});
- assert.equal(result.ok,false);assert.equal(result.freshness_status,"error");assert.equal(result.errorCode,"SOURCETIMEOUT");assert.equal(row.content_digest,"b".repeat(64));
+ assert.equal(result.ok,false);assert.equal(result.freshness_status,"error");assert.equal(result.errorCode,"SOURCE_TIMEOUT");assert.equal(row.content_digest,"b".repeat(64));
 });
 test("source listing computes unchecked and stale states from check timestamps",async()=>{
  const {pool}=mockPool();
