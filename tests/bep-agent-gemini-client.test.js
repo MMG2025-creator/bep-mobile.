@@ -29,3 +29,28 @@ test("Gemini client rejects empty and invalid JSON responses",async()=>{
   await assert.rejects(()=>new GeminiClient({apiKey:"x",model:"gemini-3.8-flash"}).generateJson({prompt:"test"}),error=>error.diagnosticCode==="GEMINI_INVALID_RESPONSE");
  }finally{global.fetch=original}
 });
+
+test("Gemini client preserves safe Google error details and classifies INVALID_ARGUMENT",async()=>{
+ const original=global.fetch;
+ global.fetch=async()=>({ok:false,status:400,json:async()=>({error:{code:400,status:"INVALID_ARGUMENT",message:"Invalid request using secret-test-key; contact admin@example.com"}})});
+ try{
+  const client=new GeminiClient({apiKey:"secret-test-key",model:"gemini-3.8-flash"});
+  await assert.rejects(()=>client.generateJson({prompt:"synthetic",system:"test"}),error=>{
+   assert.equal(error.diagnosticCode,"GEMINI_INVALID_ARGUMENT");
+   assert.equal(error.httpStatus,400);
+   assert.equal(error.providerCode,400);
+   assert.equal(error.providerStatus,"INVALID_ARGUMENT");
+   assert.match(error.providerMessage,/Invalid request using \[REDACTED\]/);
+   assert.match(error.providerMessage,/\[REDACTED_EMAIL\]/);
+   assert.doesNotMatch(error.providerMessage,/secret-test-key|admin@example.com/);
+   return true;
+  });
+ }finally{global.fetch=original}
+});
+test("Gemini provider error messages are bounded and control characters are removed",async()=>{
+ const {sanitizeProviderMessage}=require("../lib/bep-agent/gemini-client");
+ const value=sanitizeProviderMessage("A\nB\u0000"+"x".repeat(700));
+ assert.equal(value.length,500);
+ assert.doesNotMatch(value,/[\u0000-\u001f\u007f]/);
+ assert.ok(value.startsWith("A B"));
+});
