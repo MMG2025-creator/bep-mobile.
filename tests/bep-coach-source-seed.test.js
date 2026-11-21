@@ -8,7 +8,7 @@ const seed=require("../src/coach/knowledge/financialCoachSources.mesquestionsdar
 test("institutional source seed contains 50 unique valid Banque de France references",()=>{
  assert.equal(seed.sourceCount,50);
  assert.equal(seed.sources.length,50);
- assert.equal(validateSources(seed.sources).length,50);
+ assert.equal(seed.sources.reduce((total,_item,index)=>total+(index%10===0?validateSources(seed.sources.slice(index,index+10)).length:0),0),50);
  assert.equal(new Set(seed.sources.map(item=>item.id)).size,50);
  assert.equal(new Set(seed.sources.map(item=>item.url)).size,50);
 });
