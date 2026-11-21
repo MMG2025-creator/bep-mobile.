@@ -43,6 +43,10 @@ test("Cross-theme questions require at least two themes and separate facts from 
  assert.match(app,/if\(selected\.length<2\)return ""/);
  assert.match(app,/Distingue les faits établis, les hypothèses et les informations qui me manquent/);
  assert.match(html,/Une corrélation observée ne suffit pas à établir une causalité/);
+ assert.match(app,/coachCrossSubmit.*await openCoachAnswer\(question\)/);
+ assert.match(app,/async function openCoachAnswer\(question\)/);
+ assert.match(html,/id="coachAnswerDialog"/);
+ assert.match(html,/id="coachAnswerContinue"/);
 });
 test("Coach welcome is ensured on navigation and local documentary flow remains intact",()=>{
  assert.match(app,/function ensureCoachWelcome\(\)/);

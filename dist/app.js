@@ -272,7 +272,7 @@ $("coachExplorerSearch")?.addEventListener("input",()=>{if(String($("coachExplor
 $("coachAnswerClose")?.addEventListener("click",()=> $("coachAnswerDialog")?.close());
 $("coachAnswerContinue")?.addEventListener("click",()=>{ $("coachAnswerDialog")?.close();setCoachTab("open");requestAnimationFrame(()=>$("coachPromptInput")?.focus({preventScroll:true}))});
 $("coachAnswerDialog")?.addEventListener("click",event=>{if(event.target===$("coachAnswerDialog"))$("coachAnswerDialog").close()});
-$("coachCrossSubmit")?.addEventListener("click",()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Question transversale envoyée au Coach.";submitCoachQuestion(question)});
+$("coachCrossSubmit")?.addEventListener("click",async()=>{const question=buildCoachCrossQuestion();if(!question)return;const status=$("coachCrossStatus");if(status)status.textContent="Le Coach prépare l’analyse croisée…";await openCoachAnswer(question);if(status)status.textContent="Analyse croisée terminée. La réponse et ses sources sont affichées dans la fenêtre du Coach."});
 renderCoachExplorer();updateCoachCrossState();setCoachTab("open");
 
 function renderAIUsage(){const count=$("aiRequestCount");if(!count)return;count.textContent=Number(aiUsage.requests)||0;$("aiTokenCount").textContent=(Number(aiUsage.estimatedTokens)||0).toLocaleString("fr-FR");$("aiLatency").textContent=(aiUsage.requests?Math.round((Number(aiUsage.totalMs)||0)/aiUsage.requests):0)+" ms";$("aiCost").textContent="0,00 €"}
