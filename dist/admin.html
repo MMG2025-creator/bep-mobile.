@@ -34,6 +34,9 @@ body.auth-pending main{visibility:hidden}#adminAuthLoader{position:fixed;inset:0
 <dt>Latence</dt><dd id="geminiSmokeLatency">—</dd>
 <dt>Usage retourné</dt><dd id="geminiSmokeUsage">—</dd>
 <dt>Code d’erreur</dt><dd id="geminiSmokeError">—</dd>
+<dt>Détail technique</dt><dd id="geminiSmokeErrorDetail">—</dd>
+<dt>Identifiant incident</dt><dd id="geminiSmokeRequestId">—</dd>
+<dt>HTTP Google</dt><dd id="geminiSmokeHttpStatus">—</dd>
 <dt>Appel API effectué</dt><dd id="geminiSmokeApiCall">—</dd>
 <dt>Publication automatique</dt><dd id="geminiSmokePublication">Non</dd>
 </dl>
@@ -84,21 +87,27 @@ const button=$("geminiSmokeTestButton"),state=$("geminiSmokeTestState");
 const set=(id,value)=>{const el=$(id);if(el)el.textContent=value==null||value===""?"—":String(value)};
 button.addEventListener("click",async()=>{
 button.disabled=true;state.textContent="Test de connexion en cours…";
-set("geminiSmokeConfigured","Vérification…");set("geminiSmokeError","—");set("geminiSmokeRaw","");
+set("geminiSmokeConfigured","Vérification…");set("geminiSmokeError","—");set("geminiSmokeErrorDetail","—");set("geminiSmokeRequestId","—");set("geminiSmokeHttpStatus","—");set("geminiSmokeRaw","");
 try{
-const response=await fetch(base+"/api/admin/bep-agent/gemini-smoke-test",{method:"POST",credentials:"include",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({})});
+const response=await fetch(base+"/api/admin/bep-agent/gemini-smoke-test",{method:"POST",credentials:"include",cache:"no-store",signal:AbortSignal.timeout(25000),headers:{"Content-Type":"application/json"},body:JSON.stringify({})});
 const data=await response.json().catch(()=>({}));
 set("geminiSmokeConfigured",data.configured===true?"Configuration active":data.configured===false?"Configuration absente":"Non déterminé");
 set("geminiSmokeModel",data.model||"—");set("geminiSmokeKeySource",data.keySource||"—");
 set("geminiSmokeLatency",Number.isFinite(Number(data.latencyMs))?Number(data.latencyMs)+" ms":"—");
 const usage=data.usage||null;set("geminiSmokeUsage",usage?JSON.stringify(usage):"Aucune donnée");
 set("geminiSmokeError",data.errorCode||data.reason||(!response.ok?"HTTP "+response.status:"Aucun"));
+set("geminiSmokeErrorDetail",data.errorDetail||"—");set("geminiSmokeRequestId",data.requestId||"—");set("geminiSmokeHttpStatus",data.httpStatus||"—");
 set("geminiSmokeApiCall",data.apiCallMade===true?"Oui":data.apiCallMade===false?"Non":"—");
 set("geminiSmokePublication",data.automaticPublication===false?"Désactivée":"Non confirmée");
 const ok=response.ok&&data.ok===true;
-state.textContent=ok?"Connexion Gemini confirmée":data.apiCallMade===false?"Test non exécuté : configuration inactive":"Échec du test Gemini";
+state.textContent=ok?"Connexion Gemini confirmée":data.apiCallMade===false?"Test non exécuté : configuration inactive":"Échec du test Gemini — "+(data.errorCode||"erreur non classifiée");
 state.style.color=ok?"#176b50":"#9a3412";
-}catch(error){state.textContent="Erreur réseau : "+String(error.message||error);state.style.color="#9a3412";set("geminiSmokeError","GEMINI_CONNECTION_OR_RESPONSE_ERROR")}
+}catch(error){
+const timedOut=error?.name==="TimeoutError"||error?.name==="AbortError";
+state.textContent=timedOut?"Délai d’attente dépassé côté console":"Connexion à l’API BEP impossible";
+state.style.color="#9a3412";set("geminiSmokeError",timedOut?"GEMINI_ADMIN_TIMEOUT":"GEMINI_ADMIN_NETWORK_ERROR");
+set("geminiSmokeErrorDetail",timedOut?"Le délai d’attente de la console est dépassé.":"La console n’a pas pu joindre l’API BEP.");
+}
 finally{button.disabled=false}
 });
 }
