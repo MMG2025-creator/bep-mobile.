@@ -462,9 +462,9 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   const latencyMs=Date.now()-startedAt,requestId=require("node:crypto").randomUUID();
   const errorCode=error?.diagnosticCode||"GEMINI_UNEXPECTED_ERROR",httpStatus=Number.isInteger(error?.httpStatus)?error.httpStatus:null;
   const detail=error?.diagnosticDetail||"Le diagnostic Gemini a échoué.";
-  console.error("BEP Gemini connectivity diagnostic failed",JSON.stringify({requestId,errorCode,httpStatus,latencyMs,model:config.model,retryable:error?.retryable===true}));
+  console.error("BEP Gemini connectivity diagnostic failed",JSON.stringify({requestId,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
   const status=errorCode==="GEMINI_TIMEOUT"?504:errorCode==="GEMINI_QUOTA_EXCEEDED"?429:502;
-  res.status(status).json({ok:false,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
+  res.status(status).json({ok:false,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
