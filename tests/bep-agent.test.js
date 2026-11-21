@@ -162,6 +162,11 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
  assert.match(server,/BEP_GEMINI_CONNECTIVITY/);
+ assert.match(server,/BEP Gemini connectivity diagnostic failed/);
+ assert.match(server,/requestId,errorCode,httpStatus,latencyMs/);
+ assert.match(server,/errorDetail,retryable/);
+ assert.match(admin,/id="geminiSmokeErrorDetail"/);
+ assert.match(admin,/id="geminiSmokeRequestId"/);
  assert.match(admin,/id="geminiDiagnosticPanel"/);
  assert.match(admin,/id="geminiSmokeTestButton"/);
  assert.match(admin,/gemini-smoke-test/);
