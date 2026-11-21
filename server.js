@@ -12,7 +12,8 @@ const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERS
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require("./lib/bep-coach-knowledge-admin");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
-const {registerCoachSources}=require("./lib/bep-coach-source-registry");
+const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
+const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -360,6 +361,16 @@ app.post("/api/admin/bep-coach/source-registry",auth,requireBepAgentAdmin,async(
   const clientError=["INVALID_BATCH_SIZE","INVALID_SOURCE","DUPLICATE_SOURCE_ID","DUPLICATE_SOURCE_URL","SOURCE_ID_CONFLICT","SOURCE_URL_CONFLICT"].includes(code);
   res.status(clientError?400:503).json({error:clientError?code:"SOURCE_REGISTRY_UNAVAILABLE"});
  }});
+app.get("/api/admin/bep-coach/source-registry",auth,requireBepAgentAdmin,async(req,res)=>{try{
+ const result=await listCoachSources({pool,staleAfterDays:req.query.staleAfterDays});
+ res.setHeader("Cache-Control","no-store");res.json(result);
+ }catch(e){console.error("Coach source registry read failed",String(e?.message||e).slice(0,120));res.status(503).json({error:"SOURCE_REGISTRY_UNAVAILABLE"})}});
+app.post("/api/admin/bep-coach/source-registry/refresh",auth,requireBepAgentAdmin,async(req,res)=>{try{
+ const sourceIds=req.body?.sourceIds;
+ if(!Array.isArray(sourceIds)||sourceIds.length<1||sourceIds.length>10)return res.status(400).json({error:"INVALID_BATCH_SIZE"});
+ const result=await refreshCoachSources({pool,sourceIds,fetchPage:fetchHttpsPage});
+ res.setHeader("Cache-Control","no-store");res.status(result.ok?200:207).json(result);
+ }catch(e){const code=String(e?.message||"SOURCE_REFRESH_FAILED");const clientError=["INVALID_BATCH_SIZE","DUPLICATE_SOURCE_ID","SOURCE_NOT_FOUND","INVALID_SOURCE"].includes(code);res.status(clientError?400:503).json({error:clientError?code:"SOURCE_REFRESH_UNAVAILABLE"})}});
 app.post("/api/admin/bep-coach/ingest",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const url=String(req.body?.url||"").trim(),mode=String(req.body?.mode||"page"),category=String(req.body?.category||"general");
  if(!url||url.length>2048||!["page","deep"].includes(mode)||!RESEARCH_CONFIG.research_policy.categories.includes(category))return res.status(400).json({error:"INVALID_INGESTION_INPUT"});
@@ -615,7 +626,7 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}try{
  const agentConfig=adminAgentStatus();
  if(agentConfig.enabled){
   if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
