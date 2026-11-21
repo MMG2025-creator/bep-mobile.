@@ -12,7 +12,7 @@ const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERS
 const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require("./lib/bep-coach-knowledge-admin");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
-const {registerCoachSources,listCoachSources,refreshCoachSources}=require("./lib/bep-coach-source-registry");
+const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
@@ -626,7 +626,7 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");try{
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}try{
  const agentConfig=adminAgentStatus();
  if(agentConfig.enabled){
   if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
