@@ -7,6 +7,7 @@
   if (!card) return;
 
   let months = [];
+  let deletedMonths = [];
   let current = null;
   let items = [];
   let actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 };
@@ -123,9 +124,9 @@
       try { localStorage.setItem("bep-monthly-history-cache:" + user, JSON.stringify(value)); return true; } catch { return false; }
     }
   }
-  async function cacheMonthList(nextMonths) {
+  async function cacheMonthList(nextMonths, nextDeletedMonths = deletedMonths) {
     const previous = await readHistoryCache();
-    return writeHistoryCache({ months: nextMonths, budgets: previous?.budgets || {} });
+    return writeHistoryCache({ months: nextMonths, deletedMonths: nextDeletedMonths, budgets: previous?.budgets || {} });
   }
   async function cacheMonthBudget(budget) {
     if (!budget?.monthKey || !Array.isArray(budget.items)) return;
@@ -140,11 +141,15 @@
     const save = $("monthlyBudgetSave");
     const close = $("monthlyBudgetClose");
     const reopen = $("monthlyBudgetReopen");
+    const deleteMonth = $("monthlyBudgetDeleteMonth");
+    const restoreMonth = $("monthlyBudgetRestore");
     if (create) create.hidden = offline || !window.bepSignedIn;
     if (itemForm) itemForm.hidden = offline || !current || current.status === "closed";
     if (save) save.hidden = offline || !current || current.status === "closed";
     if (close) close.hidden = offline || !current || current.status === "closed";
     if (reopen) reopen.hidden = offline || !current || current.status !== "closed";
+    if (deleteMonth) deleteMonth.hidden = offline || !current;
+    if (restoreMonth) restoreMonth.disabled = offline || loading || !deletedMonths.length;
     const trigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (trigger) trigger.hidden = offline || !current || current.status === "closed";
     card.querySelectorAll("[data-edit-month-item],[data-remove-month-item]").forEach(el => {
@@ -434,6 +439,16 @@
     $("monthlyBudgetNoMonth").hidden = months.length > 0;
     $("monthlyBudgetWorkspace").hidden = !current;
     $("monthlyBudgetCreateForm").hidden = !window.bepSignedIn;
+    const deletedWrap = $("monthlyBudgetDeletedWrap");
+    const deletedSelect = $("monthlyBudgetDeletedSelect");
+    if (deletedWrap) deletedWrap.hidden = !deletedMonths.length;
+    if (deletedSelect) {
+      const selectedDeleted = deletedSelect.value;
+      deletedSelect.innerHTML = deletedMonths.map(x => '<option value="' + escapeHtml(x.monthKey) + '">' +
+        new Date(x.monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) +
+        (x.status === "closed" ? " · clôturé" : "") + "</option>").join("");
+      if (deletedMonths.some(x => x.monthKey === selectedDeleted)) deletedSelect.value = selectedDeleted;
+    }
     const itemTrigger = document.querySelector('[data-entry-dialog="monthly-item"]');
     if (itemTrigger) itemTrigger.hidden = !current || current.status === "closed" || !navigator.onLine || cacheOnlyMode;
     applyOfflineReadOnly();
@@ -574,7 +589,11 @@
         const data = await api("/api/budgets/months");
         if (epoch !== authEpoch) return;
         months = data.months || [];
-        await cacheMonthList(months);
+        // The active history must remain usable even if the optional archive
+        // endpoint is temporarily unavailable.
+        const deletedData = await api("/api/budgets/months/deleted").catch(() => ({ months: [] }));
+        deletedMonths = deletedData.months || [];
+        await cacheMonthList(months, deletedMonths);
         renderMonths();
         if (months.length) {
           await loadMonth(months[0].monthKey);
@@ -595,6 +614,7 @@
         const cached = await readHistoryCache();
         if (!cached || !Array.isArray(cached.months)) throw new Error("Aucun historique mensuel n’a encore été téléchargé sur cet appareil. Connecte-toi une fois pour le rendre disponible hors ligne.");
         months = cached.months;
+        deletedMonths = Array.isArray(cached.deletedMonths) ? cached.deletedMonths : [];
         renderMonths();
         if (months.length) await loadMonth(months[0].monthKey);
         else {
@@ -606,6 +626,7 @@
       const cached = await readHistoryCache();
       if (cached && Array.isArray(cached.months) && cached.months.length) {
         months = cached.months;
+        deletedMonths = Array.isArray(cached.deletedMonths) ? cached.deletedMonths : [];
         renderMonths();
         await loadMonth(months[0].monthKey);
         status("Serveur indisponible : dernière photographie du budget mensuel affichée en lecture seule.", true);
@@ -689,7 +710,7 @@
       plannedAmount: amount,
       clientId: editingItemId,
       sourceItemId: editingItemId === null ? crypto.randomUUID() : (items.find(x => x.clientId === editingItemId)?.sourceItemId || crypto.randomUUID()),
-      metadata: editingItemId === null ? { source: "monthly-history" } : (items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" })
+      metadata: editingItemId === null ? { source: "monthly-history" } : { ...(items.find(x => x.clientId === editingItemId)?.metadata || { source: "monthly-history" }), ...($("monthlyBudgetItemType").value === "charge" ? { source: "monthly-manual" } : {}) }
     };
     if (editingItemId === null) {
       item.clientId = crypto.randomUUID();
@@ -738,9 +759,69 @@
     } catch (error) { status(error.message === "VERSION_CONFLICT" ? "Ce budget a été modifié ailleurs. Recharge le mois avant de réessayer." : "Enregistrement impossible : " + error.message, true); }
     finally { setBusy(false); }
   };
+  let chargeSyncRunning = false;
+  let queuedLegacyCharges = null;
+  async function syncLegacyCharges(charges) {
+    if (!navigator.onLine || !window.bepSignedIn || !Array.isArray(charges)) return;
+    queuedLegacyCharges = charges;
+    if (chargeSyncRunning) return;
+    chargeSyncRunning = true;
+    try {
+      while (queuedLegacyCharges) {
+        const source = queuedLegacyCharges;
+        queuedLegacyCharges = null;
+        const syncItems = source.filter(x => x && typeof x === "object" && x.id != null).map(x => ({
+          itemType: "charge",
+          sourceItemId: String(x.id),
+          label: String(x.label || x.category || "Charge").slice(0, 160),
+          category: typeof x.category === "string" ? x.category : null,
+          nature: typeof x.nature === "string" ? x.nature : null,
+          plannedAmount: Number(x.amount),
+          metadata: { source: "legacy-budget" }
+        }));
+        const result = await api("/api/budgets/charges/sync", {
+          method: "POST",
+          body: JSON.stringify({ monthKey: monthNow(), items: syncItems })
+        });
+        if (!result.updatedMonths?.length) continue;
+        await refreshMonthListOnly();
+        for (const changedMonth of result.updatedMonths) {
+          try {
+            const detail = await api("/api/budgets/months/" + encodeURIComponent(changedMonth.monthKey));
+            await cacheMonthBudget(detail.budget);
+          } catch { /* preserve the last available offline snapshot */ }
+        }
+        const selectedMonth = current?.monthKey;
+        if (selectedMonth && result.updatedMonths.some(x => x.monthKey === selectedMonth)) {
+          await loadMonth(selectedMonth);
+          status("Charges enregistrées synchronisées avec le budget de " +
+            new Date(selectedMonth + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + ".");
+        }
+      }
+    } catch (error) {
+      status("Les charges sont enregistrées, mais la mise à jour des budgets mensuels a échoué : " + error.message, true);
+    } finally {
+      chargeSyncRunning = false;
+      if (queuedLegacyCharges) syncLegacyCharges(queuedLegacyCharges);
+    }
+  }
+  window.addEventListener("bep:legacy-budget-changed", event => {
+    syncLegacyCharges(event.detail?.budgets);
+  });
+
+  async function syncStoredLegacyCharges() {
+    if (!window.bepSignedIn || !navigator.onLine) return;
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(DB) || "{}"); } catch {}
+    await syncLegacyCharges(Array.isArray(state.budgets) ? state.budgets : []);
+  }
+
   async function refreshMonthListOnly() {
     const data = await api("/api/budgets/months");
+    const deletedData = await api("/api/budgets/months/deleted").catch(() => ({ months: [] }));
     months = data.months || [];
+    deletedMonths = deletedData.months || [];
+    await cacheMonthList(months, deletedMonths);
     renderMonths();
   }
   $("monthlyBudgetClose").onclick = async () => {
@@ -758,6 +839,61 @@
       await refreshMonthListOnly();
     } catch (error) { status("Clôture impossible : " + error.message, true); }
     finally { setBusy(false); }
+  };
+  $("monthlyBudgetDeleteMonth").onclick = async () => {
+    if (!navigator.onLine || cacheOnlyMode) return status("La suppression d’un mois nécessite une connexion.", true);
+    if (!current || loading) return;
+    const monthKey = current.monthKey;
+    const label = new Date(monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    const accepted = window.BEP_CONFIRM_ACTION
+      ? await window.BEP_CONFIRM_ACTION("Le mois " + label + " sera masqué de l’historique actif. Ses données et son journal seront conservés et le mois pourra être restauré.", "Supprimer ce mois", "Supprimer", true)
+      : window.confirm("Supprimer " + label + " ? Le mois sera archivé et pourra être restauré.");
+    if (!accepted) return;
+    const epoch = authEpoch;
+    setBusy(true);
+    try {
+      const result = await api("/api/budgets/months/" + encodeURIComponent(monthKey), {
+        method: "DELETE",
+        body: JSON.stringify({ expectedVersion: current.version, reason: "Suppression confirmée depuis l’interface BEP" })
+      });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
+      current = null; items = []; editingItemId = null;
+      await refreshMonthListOnly();
+      if (months.length) await loadMonth(months[0].monthKey);
+      else {
+        actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 };
+        actualsError = "";
+        renderMonths();
+        status(result.changed ? "Mois supprimé. Tu peux le restaurer depuis la section des mois supprimés." : "Ce mois était déjà supprimé.");
+      }
+    } catch (error) {
+      status(error.message === "VERSION_CONFLICT" ? "Ce mois a été modifié ailleurs. Recharge-le avant de le supprimer." : "Suppression impossible : " + error.message, true);
+    } finally { setBusy(false); }
+  };
+  $("monthlyBudgetRestore").onclick = async () => {
+    if (!navigator.onLine || cacheOnlyMode) return status("La restauration d’un mois nécessite une connexion.", true);
+    if (loading) return;
+    const monthKey = $("monthlyBudgetDeletedSelect").value;
+    const deleted = deletedMonths.find(x => x.monthKey === monthKey);
+    if (!deleted) return status("Sélectionne un mois à restaurer.", true);
+    const accepted = window.BEP_CONFIRM_ACTION
+      ? await window.BEP_CONFIRM_ACTION("Restaurer le budget de " + new Date(monthKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + " avec ses lignes et son historique ?", "Restaurer ce mois", "Restaurer", false)
+      : window.confirm("Restaurer ce mois ?");
+    if (!accepted) return;
+    const epoch = authEpoch;
+    setBusy(true);
+    try {
+      await api("/api/budgets/months/" + encodeURIComponent(monthKey) + "/restore", {
+        method: "POST",
+        body: JSON.stringify({ expectedVersion: deleted.version, reason: "Restauration confirmée depuis l’interface BEP" })
+      });
+      if (epoch !== authEpoch || !window.bepSignedIn) return;
+      await refreshMonthListOnly();
+      await loadMonth(monthKey);
+      status("Mois restauré. Son historique et ses lignes ont été conservés.");
+    } catch (error) {
+      status(error.message === "VERSION_CONFLICT" ? "Ce mois supprimé a changé. Actualise la liste avant de le restaurer." : "Restauration impossible : " + error.message, true);
+    } finally { setBusy(false); }
   };
   $("monthlyBudgetReopen").onclick = async () => {
     if (!navigator.onLine || cacheOnlyMode) return status("La réouverture d’un budget mensuel nécessite une connexion.", true);
@@ -782,10 +918,11 @@
   $("monthlyBudgetNewMonth").value = monthNow();
   window.addEventListener("bep:auth-ready", () => {
     authEpoch++;
-    if (window.bepSignedIn || !navigator.onLine) refresh();
-    else { months = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
+    if (window.bepSignedIn || !navigator.onLine) {
+      refresh().then(() => syncStoredLegacyCharges());
+    } else { months = []; deletedMonths = []; current = null; items = []; actuals = { expenses: [], actualExpenseTotal: "0.00", count: 0 }; actualsError = ""; renderMonths(); setBusy(false); status("Connecte-toi pour consulter ton historique mensuel."); }
   });
   window.addEventListener("offline", () => { authEpoch++; refresh(); });
   window.addEventListener("online", () => { authEpoch++; if (window.bepSignedIn) refresh(); else applyOfflineReadOnly(); });
-  if (window.bepSignedIn || !navigator.onLine) refresh();
+  if (window.bepSignedIn || !navigator.onLine) refresh().then(() => syncStoredLegacyCharges());
 })();

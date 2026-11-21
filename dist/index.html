@@ -149,6 +149,10 @@
     <div class="field"><label for="monthlyBudgetNewMonth">Créer un mois</label><input id="monthlyBudgetNewMonth" type="month" required name="monthlyBudgetNewMonth"></div>
     <button class="secondary full" type="submit">Créer le mois</button>
   </form>
+      <section id="monthlyBudgetDeletedWrap" class="monthly-budget-deleted" hidden>
+        <div class="field"><label for="monthlyBudgetDeletedSelect">Mois supprimés</label><select id="monthlyBudgetDeletedSelect" name="monthlyBudgetDeletedSelect"></select></div>
+        <button id="monthlyBudgetRestore" class="secondary full" type="button">Restaurer le mois sélectionné</button>
+      </section>
   <div id="monthlyBudgetWorkspace" hidden>
     <div class="field monthly-budget-month-select"><label for="monthlyBudgetMonth">Consulter un mois</label><select id="monthlyBudgetMonth" name="monthlyBudgetMonth"></select></div>
     <div class="monthly-budget-month-navigation" aria-label="Navigation des mois">
@@ -205,6 +209,8 @@
       <button id="monthlyBudgetClose" class="secondary full" type="button">Clôturer le mois</button>
       <div class="field" id="monthlyBudgetReason" hidden><label for="monthlyBudgetReasonInput">Motif de correction</label><input id="monthlyBudgetReasonInput" maxlength="500" name="monthlyBudgetReasonInput"></div>
       <button id="monthlyBudgetReopen" class="secondary full" type="button" hidden>Rouvrir pour correction</button>
+      <button id="monthlyBudgetDeleteMonth" class="secondary full" type="button">Supprimer ce mois</button>
+
     </div>
   </div>
 </article>
@@ -578,7 +584,7 @@
 <script src="./receipt-ocr.js?v=2&bep=multi-source-ocr-20261112"></script>
 <script src="./app.js?v=130&bep=coach-chat-first-faq-modal-objectives-20261119"></script>
 <script src="./auth-recovery.js?v=2"></script>
-<script src="./monthly-budget-ui.js?v=17&bep=calendar-day-context-dialog-20261115"></script>
+<script src="./monthly-budget-ui.js?v=18&bep=monthly-budget-sync-delete-20261120"></script>
 <script src="./pwa.js?v=15"></script>
 <script src="./connection-status.js?v=2&bep=force-sync-action-20261119"></script>
 <script src="./spend-experience.js?v=24&bep=short-month-label-20261114"></script>
