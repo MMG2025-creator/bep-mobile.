@@ -20,7 +20,7 @@ Les contrôles réseau utilisent le collecteur HTTPS existant, qui bloque les de
 
 ## Migration
 La migration additive et idempotente est `database/migrations/20261121_coach_source_registry_freshness.sql`.
-Pour l'appliquer au démarrage Render, définir temporairement `BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE=true` sur le service API, déployer, vérifier les logs de migration, puis remettre le flag à `false`. L'API effectue également une vérification de schéma idempotente lors des opérations du registre.
+Pour l'appliquer au démarrage Render, définir temporairement `BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE=true` sur le service API, déployer, vérifier les logs de migration, puis remettre le flag à `false`. Le registre initial de 50 références institutionnelles, décrit dans `src/coach/knowledge/financialCoachSources.mesquestionsdargent.fr.json`, peut être chargé avec `BEP_COACH_SOURCE_REGISTRY_SEED=true`. Le chargement est idempotent, par lots de dix, et conserve le statut `pending_validation` ; il ne télécharge aucune page et ne publie aucune connaissance. Désactiver ensuite le flag. L'API effectue également une vérification de schéma idempotente lors des opérations du registre.
 
 ## Limites
 - Le contrôle compare le texte extrait et son empreinte ; il ne certifie pas la qualité éditoriale ni la validité juridique de la page.
