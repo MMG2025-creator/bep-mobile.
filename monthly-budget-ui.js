@@ -589,7 +589,9 @@
         const data = await api("/api/budgets/months");
         if (epoch !== authEpoch) return;
         months = data.months || [];
-        const deletedData = await api("/api/budgets/months/deleted");
+        // The active history must remain usable even if the optional archive
+        // endpoint is temporarily unavailable.
+        const deletedData = await api("/api/budgets/months/deleted").catch(() => ({ months: [] }));
         deletedMonths = deletedData.months || [];
         await cacheMonthList(months, deletedMonths);
         renderMonths();
@@ -815,7 +817,8 @@
   }
 
   async function refreshMonthListOnly() {
-    const [data, deletedData] = await Promise.all([api("/api/budgets/months"), api("/api/budgets/months/deleted")]);
+    const data = await api("/api/budgets/months");
+    const deletedData = await api("/api/budgets/months/deleted").catch(() => ({ months: [] }));
     months = data.months || [];
     deletedMonths = deletedData.months || [];
     await cacheMonthList(months, deletedMonths);
