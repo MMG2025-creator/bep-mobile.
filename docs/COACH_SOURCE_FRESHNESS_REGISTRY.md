@@ -34,3 +34,11 @@ Les trois routes sont protégées par l'authentification et le contrôle adminis
 ## Limites
 
 Le rafraîchissement est déclenché manuellement par un administrateur. Il n'y a pas encore de planification automatique. Les références déjà enregistrées doivent être contrôlées après déploiement ; leur présence ne prouve pas leur fraîcheur. La liste des domaines autorisés est volontairement restrictive et doit être revue avant d'ajouter un nouveau fournisseur documentaire.
+
+## Test de connectivité Gemini (administrateur)
+
+- `POST /api/admin/bep-agent/gemini-smoke-test` : réalise un appel réel unique au modèle configuré avec un prompt de diagnostic fixe et synthétique.
+- La route exige la session et les droits administrateur BEP, ainsi que la configuration `BEP_AGENT_ENABLED=true`, `BEP_AGENT_RUN_MODE=admin_on_demand`, `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true` et une clé API disponible.
+- Réponse : `ok`, modèle, source de clé (jamais la clé), latence, usage de tokens et code d'erreur normalisé.
+- Aucun contenu utilisateur n'est lu, aucune tâche n'est mise en file, aucune connaissance n'est publiée.
+- Codes utiles : `GEMINI_AUTH_OR_PERMISSION` (401/403), `GEMINI_MODEL_NOT_FOUND` (404), `GEMINI_QUOTA_OR_RATE_LIMIT` (429), `GEMINI_CONNECTION_OR_RESPONSE_ERROR` (réseau/format).
