@@ -36,6 +36,9 @@ body.auth-pending main{visibility:hidden}#adminAuthLoader{position:fixed;inset:0
 <dt>Code d’erreur</dt><dd id="geminiSmokeError">—</dd>
 <dt>Détail technique</dt><dd id="geminiSmokeErrorDetail">—</dd>
 <dt>Identifiant incident</dt><dd id="geminiSmokeRequestId">—</dd>
+<dt>Code Google</dt><dd id="geminiSmokeProviderCode">—</dd>
+<dt>Statut Google</dt><dd id="geminiSmokeProviderStatus">—</dd>
+<dt>Message Google</dt><dd id="geminiSmokeProviderMessage">—</dd>
 <dt>HTTP Google</dt><dd id="geminiSmokeHttpStatus">—</dd>
 <dt>Appel API effectué</dt><dd id="geminiSmokeApiCall">—</dd>
 <dt>Publication automatique</dt><dd id="geminiSmokePublication">Non</dd>
@@ -87,7 +90,7 @@ const button=$("geminiSmokeTestButton"),state=$("geminiSmokeTestState");
 const set=(id,value)=>{const el=$(id);if(el)el.textContent=value==null||value===""?"—":String(value)};
 button.addEventListener("click",async()=>{
 button.disabled=true;state.textContent="Test de connexion en cours…";
-set("geminiSmokeConfigured","Vérification…");set("geminiSmokeError","—");set("geminiSmokeErrorDetail","—");set("geminiSmokeRequestId","—");set("geminiSmokeHttpStatus","—");set("geminiSmokeRaw","");
+set("geminiSmokeConfigured","Vérification…");set("geminiSmokeError","—");set("geminiSmokeErrorDetail","—");set("geminiSmokeRequestId","—");set("geminiSmokeProviderCode","—");set("geminiSmokeProviderStatus","—");set("geminiSmokeProviderMessage","—");set("geminiSmokeHttpStatus","—");set("geminiSmokeRaw","");
 try{
 const response=await fetch(base+"/api/admin/bep-agent/gemini-smoke-test",{method:"POST",credentials:"include",cache:"no-store",signal:AbortSignal.timeout(25000),headers:{"Content-Type":"application/json"},body:JSON.stringify({})});
 const data=await response.json().catch(()=>({}));
@@ -96,7 +99,7 @@ set("geminiSmokeModel",data.model||"—");set("geminiSmokeKeySource",data.keySou
 set("geminiSmokeLatency",Number.isFinite(Number(data.latencyMs))?Number(data.latencyMs)+" ms":"—");
 const usage=data.usage||null;set("geminiSmokeUsage",usage?JSON.stringify(usage):"Aucune donnée");
 set("geminiSmokeError",data.errorCode||data.reason||(!response.ok?"HTTP "+response.status:"Aucun"));
-set("geminiSmokeErrorDetail",data.errorDetail||"—");set("geminiSmokeRequestId",data.requestId||"—");set("geminiSmokeHttpStatus",data.httpStatus||"—");
+set("geminiSmokeErrorDetail",data.errorDetail||"—");set("geminiSmokeRequestId",data.requestId||"—");set("geminiSmokeProviderCode",data.providerCode??"—");set("geminiSmokeProviderStatus",data.providerStatus||"—");set("geminiSmokeProviderMessage",data.providerMessage||"—");set("geminiSmokeHttpStatus",data.httpStatus||"—");
 set("geminiSmokeApiCall",data.apiCallMade===true?"Oui":data.apiCallMade===false?"Non":"—");
 set("geminiSmokePublication",data.automaticPublication===false?"Désactivée":"Non confirmée");
 const ok=response.ok&&data.ok===true;
