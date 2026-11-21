@@ -459,9 +459,12 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   const valid=result.value?.ok===true&&result.value?.probe==="BEP_GEMINI_CONNECTIVITY";
   res.status(valid?200:502).json({ok:valid,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,usage:result.usage||null,probe:valid?"BEP_GEMINI_CONNECTIVITY":"UNEXPECTED_MODEL_RESPONSE",automaticPublication:false,syntheticOnly:true});
  }catch(error){
-  const message=String(error?.message||"GEMINI_REQUEST_FAILED").slice(0,100);
-  const match=message.match(/Gemini HTTP (\d{3})/),httpStatus=match?Number(match[1]):null;
-  res.status(httpStatus===429?429:502).json({ok:false,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,httpStatus,errorCode:httpStatus===401||httpStatus===403?"GEMINI_AUTH_OR_PERMISSION":httpStatus===404?"GEMINI_MODEL_NOT_FOUND":httpStatus===429?"GEMINI_QUOTA_OR_RATE_LIMIT":httpStatus?"GEMINI_HTTP_ERROR":"GEMINI_CONNECTION_OR_RESPONSE_ERROR",automaticPublication:false,syntheticOnly:true});
+  const latencyMs=Date.now()-startedAt,requestId=require("node:crypto").randomUUID();
+  const errorCode=error?.diagnosticCode||"GEMINI_UNEXPECTED_ERROR",httpStatus=Number.isInteger(error?.httpStatus)?error.httpStatus:null;
+  const detail=error?.diagnosticDetail||"Le diagnostic Gemini a échoué.";
+  console.error("BEP Gemini connectivity diagnostic failed",JSON.stringify({requestId,errorCode,httpStatus,latencyMs,model:config.model,retryable:error?.retryable===true}));
+  const status=errorCode==="GEMINI_TIMEOUT"?504:errorCode==="GEMINI_QUOTA_EXCEEDED"?429:502;
+  res.status(status).json({ok:false,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
