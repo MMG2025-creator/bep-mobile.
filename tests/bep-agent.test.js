@@ -164,7 +164,7 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(server,/BEP_GEMINI_CONNECTIVITY/);
  assert.match(server,/BEP Gemini connectivity diagnostic failed/);
  assert.match(server,/requestId,errorCode,httpStatus,latencyMs/);
- assert.match(server,/errorDetail,retryable/);
+ assert.match(server,/errorDetail:detail,requestId,retryable:/);
  assert.match(admin,/id="geminiSmokeErrorDetail"/);
  assert.match(admin,/id="geminiSmokeRequestId"/);
  assert.match(admin,/id="geminiDiagnosticPanel"/);
