@@ -646,6 +646,13 @@ app.put("/api/data",auth,async(req,res)=>{
   res.status(500).json({error:"DATA_SAVE_FAILED"});
  }finally{client.release()}
 });
+// Serve the independent admin console shell; authorization is enforced by its protected admin API/session flow.
+app.get("/admin.html",(req,res)=>{
+ res.setHeader("Cache-Control","no-store");
+ res.sendFile(path.join(__dirname,"admin.html"),error=>{
+  if(error&&!res.headersSent)res.status(error.statusCode||500).json({error:"ADMIN_PAGE_UNAVAILABLE"});
+ });
+});
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
 app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}if(process.env.BEP_COACH_SOURCE_REGISTRY_SEED==="true"){const seed=require("./src/coach/knowledge/financialCoachSources.mesquestionsdargent.fr.json");let inserted=0;for(let offset=0;offset<seed.sources.length;offset+=10){const batch=await registerCoachSources({pool,sources:seed.sources.slice(offset,offset+10)});inserted+=batch.inserted}console.info("BEP Coach institutional source registry seed completed",JSON.stringify({sourceCount:seed.sources.length,inserted,provider:seed.provider}))}try{
  const agentConfig=adminAgentStatus();
