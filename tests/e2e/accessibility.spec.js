@@ -148,6 +148,12 @@ test('un seul bandeau est affiché sur le Coach, sans masquer le bandeau d’acc
 test('les donuts budgétaires sont visibles, interactifs et capturés sur mobile et desktop', async ({ page }) => {
   await page.route('**/api/auth/status', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'playwright-budget-user', email: 'budget-test@example.invalid' } }) }));
   await page.route('**/api/data', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ payload: {} }) }));
+  await page.route('**/api/budgets/months/deleted', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ months: [] })
+  }));
+  await page.route('**/api/budgets/charges/sync', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ updatedMonths: [] })
+  }));
   await page.route('**/api/budgets/months', route => route.fulfill({
     status: 200, contentType: 'application/json',
     body: JSON.stringify({ months: [{ monthKey: '2026-11', status: 'open', version: 1 }] })
