@@ -156,6 +156,19 @@ test("agent prompts are isolated from personal Coach context and contain explici
  assert.doesNotMatch(worker,/bep_user_data|req\.session|financialPosition|email/);
 });
 
+test("Gemini connectivity diagnostic is exposed only in the independent admin console and remains synthetic",()=>{
+ const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
+ const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
+ assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
+ assert.match(server,/automaticPublication:false,syntheticOnly:true/);
+ assert.match(server,/BEP_GEMINI_CONNECTIVITY/);
+ assert.match(admin,/id="geminiDiagnosticPanel"/);
+ assert.match(admin,/id="geminiSmokeTestButton"/);
+ assert.match(admin,/gemini-smoke-test/);
+ assert.match(admin,/credentials:"include"/);
+ assert.match(admin,/syntheticOnly/);
+ assert.match(admin,/Publication automatique/);
+});
 test("new institutional knowledge candidates have a human approval path and appear in the admin UI",()=>{
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
  const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
