@@ -72,6 +72,18 @@ test("Groq client requires a dedicated key and pins the official API endpoint",(
  assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);
 });
 
+test("Groq client uses Bearer auth, JSON mode and parses structured output",async()=>{
+ const original=global.fetch;let captured;
+ global.fetch=async(url,options)=>{captured={url,options};return{ok:true,status:200,text:async()=>JSON.stringify({choices:[{message:{content:'{"ok":true,"probe":"BEP_GROQ_CONNECTIVITY"}'}}],usage:{total_tokens:9}})}};
+ try{
+  const result=await new GroqClient({apiKey:"test-groq-key"}).generateJson({system:"system",prompt:"probe",maxOutputTokens:128});
+  assert.equal(captured.url,"https://api.groq.com/openai/v1/chat/completions");
+  assert.equal(captured.options.headers.authorization,"Bearer test-groq-key");
+  const body=JSON.parse(captured.options.body);
+  assert.equal(body.response_format.type,"json_object");assert.equal(body.max_tokens,128);
+  assert.deepEqual(result.value,{ok:true,probe:"BEP_GROQ_CONNECTIVITY"});assert.equal(result.usage.total_tokens,9);
+ }finally{global.fetch=original}
+});
 test("Gemini client requires a key and does not accept a custom endpoint",()=>{
  assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-3.8-flash"}),/API key/);
  const client=new GeminiClient({apiKey:"x",model:"gemini-3.8-flash"});
