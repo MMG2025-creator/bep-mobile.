@@ -14,7 +14,7 @@ const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
-const {adminAgentStatus,scheduleAdminAgentRun}=require("./lib/bep-agent/admin-runner");
+const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -447,24 +447,25 @@ app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(
 app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
  res.setHeader("Cache-Control","no-store");
- if(!config.enabled)return res.status(409).json({ok:false,configured:false,model:config.model,keySource:config.keySource,reason:config.disabledReason,apiCallMade:false});
+ if(!config.enabled)return res.status(409).json({ok:false,configured:false,provider:config.provider,model:config.model,keySource:config.keySource,reason:config.disabledReason,apiCallMade:false});
  const startedAt=Date.now();
  try{
-  const client=new GeminiClient({apiKey:config.apiKey,model:config.model,timeoutMs:20000});
+  const client=createAdminClient({...config,timeoutMs:20000});
+  const probe="BEP_"+config.provider.toUpperCase()+"_CONNECTIVITY";
   const result=await client.generateJson({
    system:"You are a connectivity diagnostic. Return only valid JSON with exactly two keys: ok (boolean) and probe (string). Never request or infer personal data.",
-   prompt:'Connectivity test BEP. Return exactly {"ok":true,"probe":"BEP_GEMINI_CONNECTIVITY"} and nothing else.',
+   prompt:"Connectivity test BEP. Return exactly "+JSON.stringify({ok:true,probe})+" and nothing else.",
    maxOutputTokens:128
   });
-  const valid=result.value?.ok===true&&result.value?.probe==="BEP_GEMINI_CONNECTIVITY";
-  res.status(valid?200:502).json({ok:valid,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,usage:result.usage||null,probe:valid?"BEP_GEMINI_CONNECTIVITY":"UNEXPECTED_MODEL_RESPONSE",automaticPublication:false,syntheticOnly:true});
+  const valid=result.value?.ok===true&&result.value?.probe===probe;
+  res.status(valid?200:502).json({ok:valid,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,usage:result.usage||null,probe:valid?probe:"UNEXPECTED_MODEL_RESPONSE",automaticPublication:false,syntheticOnly:true});
  }catch(error){
   const latencyMs=Date.now()-startedAt,requestId=require("node:crypto").randomUUID();
-  const errorCode=error?.diagnosticCode||"GEMINI_UNEXPECTED_ERROR",httpStatus=Number.isInteger(error?.httpStatus)?error.httpStatus:null;
-  const detail=error?.diagnosticDetail||"Le diagnostic Gemini a échoué.";
-  console.error("BEP Gemini connectivity diagnostic failed",JSON.stringify({requestId,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
-  const status=errorCode==="GEMINI_TIMEOUT"?504:errorCode==="GEMINI_QUOTA_EXCEEDED"?429:502;
-  res.status(status).json({ok:false,configured:true,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
+  const errorCode=error?.diagnosticCode||config.provider.toUpperCase()+"_UNEXPECTED_ERROR",httpStatus=Number.isInteger(error?.httpStatus)?error.httpStatus:null;
+  const detail=error?.diagnosticDetail||"Le diagnostic "+config.provider+" a échoué.";
+  console.error("BEP AI connectivity diagnostic failed",JSON.stringify({requestId,provider:config.provider,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
+  const status=errorCode.endsWith("_TIMEOUT")?504:errorCode.endsWith("_QUOTA_EXCEEDED")?429:502;
+  res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
@@ -492,7 +493,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
 });
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
- const status={ready:agentEnabled,configured:config.enabled,mode:config.onDemandMode?"admin_on_demand":"disabled",model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ const status={ready:agentEnabled,configured:config.enabled,mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
  res.setHeader("Cache-Control","no-store");
  if(!agentEnabled)return res.json(status);
  try{

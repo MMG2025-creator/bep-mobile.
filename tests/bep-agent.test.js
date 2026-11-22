@@ -3,6 +3,7 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {readConfig,readAdminConfig}=require("../lib/bep-agent/config");
 const {GeminiClient}=require("../lib/bep-agent/gemini-client");
+const {GroqClient}=require("../lib/bep-agent/groq-client");
 const {startBepAgent}=require("../lib/bep-agent");
 const {validateKnowledgeProposal,sourceDigest,runQualityReview,runKnowledgeReview,loadDocumentaryJson,DOCUMENTARY_JSON_FILES}=require("../lib/bep-agent/worker");
 const cases=require("../lib/bep-agent/quality-cases");
@@ -40,9 +41,9 @@ test("agent requires a dedicated worker, key, explicit billing approval and mont
  assert.equal(readConfig({...base,BEP_AGENT_MONTHLY_BUDGET_USD:"0"}).enabled,false);
 });
 test("free-tier admin mode is on-demand, bounded to eight calls and independent of worker billing config",()=>{
- const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
+ const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_AI_PROVIDER:"gemini",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
  const c=readAdminConfig(base);
- assert.equal(c.enabled,true);assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
+ assert.equal(c.enabled,true);assert.equal(c.provider,"gemini");assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
  assert.equal(readAdminConfig({...base,BEP_AGENT_RUN_MODE:"worker"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_API_KEY:""}).enabled,false);
@@ -54,6 +55,34 @@ test("legacy shared Gemini key and legacy zero-billing flag never activate the s
 test("daily Gemini call quota is bounded",()=>{
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"500"}).maxCallsPerDay,50);
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"0"}).maxCallsPerDay,8);
+});
+
+test("Groq is the default free-tier admin provider and requires its dedicated key",()=>{
+ const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true"};
+ const missing=readAdminConfig(base);
+ assert.equal(missing.provider,"groq");assert.equal(missing.enabled,false);
+ const configured=readAdminConfig({...base,BEP_AGENT_GROQ_API_KEY:"groq-secret"});
+ assert.equal(configured.enabled,true);assert.equal(configured.keySource,"dedicated_groq");assert.equal(configured.model,"openai/gpt-oss-20b");
+ assert.equal(readAdminConfig({...base,BEP_AGENT_GROQ_API_KEY:"groq-secret",BEP_AGENT_AI_PROVIDER:"gemini",BEP_AGENT_GEMINI_API_KEY:"gemini-secret"}).provider,"gemini");
+ assert.equal(readAdminConfig({...base,BEP_AGENT_AI_PROVIDER:"unknown",BEP_AGENT_GROQ_API_KEY:"groq-secret"}).enabled,false);
+});
+test("Groq client requires a dedicated key and pins the official API endpoint",()=>{
+ assert.throws(()=>new GroqClient({apiKey:""}),/API key/);
+ const client=new GroqClient({apiKey:"secret"});
+ assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);
+});
+
+test("Groq client uses Bearer auth, JSON mode and parses structured output",async()=>{
+ const original=global.fetch;let captured;
+ global.fetch=async(url,options)=>{captured={url,options};return{ok:true,status:200,text:async()=>JSON.stringify({choices:[{message:{content:'{"ok":true,"probe":"BEP_GROQ_CONNECTIVITY"}'}}],usage:{total_tokens:9}})}};
+ try{
+  const result=await new GroqClient({apiKey:"test-groq-key"}).generateJson({system:"system",prompt:"probe",maxOutputTokens:128});
+  assert.equal(captured.url,"https://api.groq.com/openai/v1/chat/completions");
+  assert.equal(captured.options.headers.authorization,"Bearer test-groq-key");
+  const body=JSON.parse(captured.options.body);
+  assert.equal(body.response_format.type,"json_object");assert.equal(body.max_tokens,128);
+  assert.deepEqual(result.value,{ok:true,probe:"BEP_GROQ_CONNECTIVITY"});assert.equal(result.usage.total_tokens,9);
+ }finally{global.fetch=original}
 });
 test("Gemini client requires a key and does not accept a custom endpoint",()=>{
  assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-3.8-flash"}),/API key/);
@@ -161,9 +190,9 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
  assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
- assert.match(server,/BEP_GEMINI_CONNECTIVITY/);
- assert.match(server,/BEP Gemini connectivity diagnostic failed/);
- assert.match(server,/requestId,errorCode,httpStatus,latencyMs/);
+ assert.match(server,/const probe="BEP_"/);
+ assert.match(server,/BEP AI connectivity diagnostic failed/);
+ assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
  assert.match(server,/providerCode:error\?\.providerCode/);
  assert.match(server,/providerStatus:error\?\.providerStatus/);
  assert.match(server,/providerMessage:error\?\.providerMessage/);

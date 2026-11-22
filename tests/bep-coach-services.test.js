@@ -320,8 +320,9 @@ test("admin Coach ingestion reuses the existing Gemini BEP key only with explici
  const ingestion=require("../lib/bep-coach-ingestion");
  const env={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AI_PROVIDER:"gemini",BEP_AI_API_KEY:"existing-gemini-key",BEP_AI_ZERO_BILLING_CONFIRMED:"true"};
  assert.deepEqual(resolveAdminGeminiKey(env),{apiKey:"existing-gemini-key",keySource:"existing_bep_ai"});
- assert.equal(readAdminConfig(env).enabled,true);
- assert.equal(readAdminConfig(env).keySource,"existing_bep_ai");
+ assert.equal(readAdminConfig(env).provider,"groq");
+ assert.equal(readAdminConfig(env).enabled,false);
+ assert.equal(readAdminConfig(env).keySource,"missing");
  assert.equal(ingestion.ingestionEnabled(env),true);
  const unconfirmed={...env,BEP_AI_ZERO_BILLING_CONFIRMED:"false"};
  assert.equal(resolveAdminGeminiKey(unconfirmed).apiKey,"");
