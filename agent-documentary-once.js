@@ -19,7 +19,7 @@ async function main(){
   await pool.query("SELECT 1");
   const schema=await pool.query("SELECT to_regclass('public.bep_agent_jobs') AS jobs,to_regclass('public.bep_agent_runs') AS runs,to_regclass('public.bep_knowledge_candidates') AS candidates");
   if(!schema.rows[0]?.jobs||!schema.rows[0]?.runs||!schema.rows[0]?.candidates)throw new Error("BEP documentary schema is not migrated");
-  const processed=await processOne({pool,client,model:config.model,workerId:"bep-gha-"+jobId,maxCallsPerDay:config.maxCallsPerDay,maxOutputTokens:config.maxOutputTokens,env:process.env,jobTypes:["documentary_research"],jobId,deferOnQuotaExhausted:false});
+  const processed=await processOne({pool,client,model:config.model,workerId:"bep-gha-"+jobId,maxCallsPerDay:config.maxCallsPerDay,maxOutputTokens:config.maxOutputTokens,env:process.env,jobTypes:["documentary_research"],jobId,deferOnQuotaExhausted:false,retryOnFailure:false});
   if(!processed)throw new Error("DOCUMENTARY_JOB_NOT_CLAIMED");
   const status=await pool.query("SELECT status FROM bep_agent_jobs WHERE id::text=$1",[jobId]);
   const jobStatus=status.rows[0]?.status;
