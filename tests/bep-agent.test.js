@@ -192,7 +192,7 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
  assert.match(server,/const probe="BEP_"/);
  assert.match(server,/BEP AI connectivity diagnostic failed/);
- assert.match(server,/requestId,errorCode,httpStatus,latencyMs/);
+ assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
  assert.match(server,/providerCode:error\?\.providerCode/);
  assert.match(server,/providerStatus:error\?\.providerStatus/);
  assert.match(server,/providerMessage:error\?\.providerMessage/);
