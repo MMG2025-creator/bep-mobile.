@@ -15,7 +15,8 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(server.includes('app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin'));
  assert.ok(server.includes("dispatchDocumentaryWorkflow({jobId})"));
  assert.ok(server.includes('execution:"render_workflows_on_demand"'));
- assert.ok(dispatch.includes("https://api.render.com/v1/task-runs"));
+ assert.ok(dispatch.includes('const API_ROOT="https://api.render.com/v1"'));
+ assert.ok(dispatch.includes('API_ROOT+"/task-runs"'));
  assert.ok(dispatch.includes('idempotencyKey:"bep-documentary-"'));
  assert.ok(workflow.includes("process.env.BEP_AGENT_DATABASE_URL"));
  assert.doesNotMatch(workflow,/process\\.env\\.DATABASE_URL/);
