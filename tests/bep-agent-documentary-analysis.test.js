@@ -32,9 +32,9 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
  assert.equal(result.proposals[0].status,"pending_review");
  assert.equal(inserts.filter(x=>x.sql.includes("INSERT INTO bep_knowledge_candidates")).length,1);
  const candidate=inserts.find(x=>x.sql.includes("INSERT INTO bep_knowledge_candidates"));
- assert.match(candidate.sql,/"create"/);
+ assert.match(candidate.sql,/'create'/);
  assert.equal(candidate.params[5],"https://mesquestionsdargent.fr/epargne");
- assert.match(candidate.sql,/"pending"/);
+ assert.match(candidate.sql,/'pending'/);
  assert.equal(result.automaticPublication,false);
 });
 
