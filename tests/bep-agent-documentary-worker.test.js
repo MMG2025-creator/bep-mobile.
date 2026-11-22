@@ -41,6 +41,16 @@ test("documentary worker claims only documentary jobs and drains active work on 
  assert.equal(stopped,true);
 });
 
+test("one-shot claim is constrained to the requested documentary job id",async()=>{
+ const calls=[];
+ const client={query:async(sql,params)=>{calls.push({sql,params});if(sql.includes("SELECT id,job_type,payload,attempts,max_attempts"))return{rowCount:0,rows:[]};return{rowCount:0,rows:[]}},release(){}};
+ const pool={connect:async()=>client};
+ await claim(pool,"test-one-shot",["documentary_research"],"123e4567-e89b-12d3-a456-426614174000");
+ const select=calls.find(x=>x.sql.includes("SELECT id,job_type,payload,attempts,max_attempts"));
+ assert.match(select.sql,/AND id::text=\$2/);
+ assert.deepEqual(select.params,[["documentary_research"],"123e4567-e89b-12d3-a456-426614174000"]);
+});
+
 test("PostgreSQL claim applies the explicit worker job-type allowlist",async()=>{
  const calls=[];
  const client={query:async(sql,params)=>{calls.push({sql,params});if(sql==="SELECT id,job_type,payload,attempts,max_attempts FROM bep_agent_jobs WHERE status='queued' AND run_after<=NOW() AND job_type=ANY($1::text[]) ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED")return{rowCount:0,rows:[]};return{rowCount:0,rows:[]}},release(){}};
