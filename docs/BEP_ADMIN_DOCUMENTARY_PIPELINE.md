@@ -131,8 +131,8 @@ Aucun appel Coach -> Groq
 - Le prompt Groq reçoit uniquement les sources recherchées et les fiches publiées pertinentes, sans données de compte.
 - Les sorties strictes sont vérifiées contre les URL récupérées et les fiches existantes.
 - Les créations et corrections sont enregistrées comme candidats en attente.
-- Job : `documentary_research`, traité par `agent-documentary-worker.js`.
-- Route de mise en file : `POST /api/admin/bep-agent/documentary-analyze`.
+- Job : `documentary_research`, traité ponctuellement par `agent-documentary-once.js` dans GitHub Actions après déclenchement administratif.
+- Route de mise en file et de déclenchement : `POST /api/admin/bep-agent/documentary-analyze`, protégée par l'authentification administrateur indépendante.
 - La file PostgreSQL et l'historique de run sont réutilisés ; la migration additive est `20261122_bep_documentary_pipeline.sql`.
 
 ### P3 — Doublons et contradictions
@@ -154,27 +154,38 @@ Aucun appel Coach -> Groq
 - Route : `POST /api/admin/bep-agent/library-benchmark`, avec identifiants de candidats en attente.
 - Limite explicite : ce premier banc mesure la couverture et le classement documentaire du retriever. Il ne prétend pas mesurer toute la qualité sémantique des réponses finales du Coach.
 
-### Configuration Render à prévoir — sans secret dans Git
-Service API :
-- `BEP_AGENT_SOURCE_SEARCH_ENABLED=true`
-- `BEP_AGENT_DOCUMENTARY_WORKER_ENABLED=true`
-- `BEP_AGENT_EXA_API_KEY` (secret dédié)
+### Exécution ponctuelle GitHub Actions — sans Worker Render permanent
 
-Service Worker documentaire séparé :
-- commande : `npm run agent:documentary-worker`
-- `BEP_AGENT_ENABLED=true`
-- `BEP_AGENT_RUN_AS_WORKER=true`
-- `BEP_AGENT_RUN_MODE=admin_on_demand`
-- `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true`
-- `BEP_AGENT_AI_PROVIDER=groq`
-- `BEP_AGENT_GROQ_API_KEY` (secret administratif existant, sans duplication inutile)
-- `BEP_AGENT_GROQ_MODEL`
-- `BEP_AGENT_EXA_API_KEY`
-- `BEP_AGENT_SOURCE_SEARCH_ENABLED=true`
-- `BEP_AGENT_DATABASE_URL` (connexion Worker dédiée ; jamais remplacée par `DATABASE_URL`)
+- Workflow : `.github/workflows/bep-documentary-on-demand.yml`.
+- Entrée : `workflow_dispatch` avec un identifiant de tâche PostgreSQL précis.
+- Déclencheur : l'endpoint administratif authentifié insère le job puis appelle l'API GitHub Actions avec un jeton dédié. Aucun déclenchement depuis le parcours Coach.
+- Traitement : `agent-documentary-once.js` réclame exclusivement le job demandé, avec le type `documentary_research`, puis termine le processus.
+- Le processus refuse tout fallback vers `DATABASE_URL` et utilise uniquement `BEP_AGENT_DATABASE_URL`.
+- Le workflow possède une durée maximale de 15 minutes et une concurrence isolée par identifiant de tâche. Aucun polling permanent et aucun service Background Worker Render.
+- La file PostgreSQL reste la source de vérité ; un échec de dispatch est enregistré sans laisser la tâche en attente silencieuse.
 
-Le flag API `BEP_AGENT_DOCUMENTARY_WORKER_ENABLED` ne doit être activé qu'après création et vérification du service Worker, de sa connexion PostgreSQL et de ses permissions. Les clés et URLs ne sont jamais copiées dans GitHub. Aucune variable Render n'est modifiée par cette PR.
+Variables/secrets requis côté API Render (staging uniquement) :
+- `BEP_AGENT_GITHUB_DISPATCH_TOKEN` : credential GitHub dédié, limité au dépôt et à l'autorisation Actions: write ; préférer un GitHub App installation token de courte durée si l'infrastructure le permet.
+- `BEP_AGENT_GITHUB_REPOSITORY=MMG2025-creator/bep-mobile.`
+- `BEP_AGENT_GITHUB_WORKFLOW_ID=bep-documentary-on-demand.yml`
+- `BEP_AGENT_GITHUB_REF=feat/admin-documentary-optimization-20261122` pour le staging de cette PR. Après fusion, la valeur devra être explicitement remplacée par la branche de production retenue.
 
+Secrets/variables GitHub Actions à configurer dans le dépôt :
+- Secret `BEP_AGENT_DATABASE_URL` : connexion PostgreSQL dédiée au runner, rôle restreint aux tables et opérations documentaires nécessaires ; ne jamais réutiliser `DATABASE_URL`.
+- Secret `BEP_AGENT_GROQ_API_KEY`.
+- Secret `BEP_AGENT_EXA_API_KEY`.
+- Variable `BEP_AGENT_GROQ_MODEL` (facultative ; valeur par défaut définie dans le code).
+- Les variables de mode sont définies dans le workflow ; aucune clé n'est inscrite dans le dépôt.
+
+Prérequis de sécurité avant toute exécution réelle :
+- Migration `20261122_bep_documentary_pipeline.sql` appliquée explicitement sur le staging.
+- Rôle PostgreSQL dédié et permissions minimales vérifiés ; pas de probe de rôle sans autorisation explicite.
+- Accès réseau du runner GitHub vers PostgreSQL vérifié sans exposer l'URL ni les identifiants.
+- Secrets GitHub et credential de dispatch configurés hors dépôt.
+- Exécution initiale limitée à une tâche de test non sensible.
+- GitHub Actions peut consommer des minutes au-delà des quotas gratuits du dépôt/forfait ; contrôler les quotas et la facturation. Cette architecture évite le coût d'un Worker Render permanent, mais ne garantit pas une exécution gratuite illimitée.
+
+Le flag Render `BEP_AGENT_DOCUMENTARY_WORKER_ENABLED` et le service Background Worker ne sont plus requis par cette architecture. Aucune variable Render, aucun secret, aucune migration de base et aucun déploiement ne sont modifiés par cette PR.
 ## 6. Sécurité et confidentialité
 
 - Le pipeline documentaire ne lit aucune donnée de compte, transaction, revenu, dépense, dette ou conversation utilisateur.
