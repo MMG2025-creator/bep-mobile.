@@ -18,6 +18,8 @@ const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
 const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
 const {analyzeDocumentaryLibrary}=require("./lib/bep-agent/documentary-analysis");
+const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
+const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -511,6 +513,44 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
   const code=String(error?.code||error?.message||"DOCUMENTARY_ANALYSIS_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
   console.error("BEP documentary analysis failed",code);
   return res.status(502).json({error:code||"DOCUMENTARY_ANALYSIS_FAILED",automaticPublication:false});
+ }
+});
+app.get("/api/admin/bep-agent/library-benchmark/cases",auth,requireBepAgentAdmin,async(req,res)=>{
+ res.setHeader("Cache-Control","no-store");
+ res.json({cases:REFERENCE_CASES,metricScope:"retrieval_coverage_only",answerQualityMeasured:false});
+});
+app.post("/api/admin/bep-agent/library-benchmark",auth,requireBepAgentAdmin,async(req,res)=>{
+ const raw=req.body?.candidateIds;
+ if(!Array.isArray(raw)||raw.length<1||raw.length>20)return res.status(400).json({error:"INVALID_BENCHMARK_CANDIDATES"});
+ const ids=[...new Set(raw.map(Number))];
+ if(ids.some(id=>!Number.isSafeInteger(id)||id<1))return res.status(400).json({error:"INVALID_BENCHMARK_CANDIDATES"});
+ try{
+  const [baseline,candidates]=await Promise.all([
+   loadPublishedLibrary(pool),
+   pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale FROM bep_knowledge_candidates WHERE id=ANY($1::bigint[]) AND review_status='pending' ORDER BY id",[ids])
+  ]);
+  if(candidates.rowCount!==ids.length)return res.status(409).json({error:"BENCHMARK_CANDIDATE_SET_CHANGED"});
+  const candidateDocs=baseline.map(x=>({...x}));
+  for(const candidate of candidates.rows){
+   if(candidate.proposal_type==="create"){
+    let metadata;try{metadata=JSON.parse(candidate.rationale||"{}")}catch{return res.status(409).json({error:"BENCHMARK_CANDIDATE_METADATA_INVALID"})}
+    if(!["income","budget","savings","planning","spending","debt","behavior"].includes(metadata.category))return res.status(409).json({error:"BENCHMARK_CANDIDATE_METADATA_INVALID"});
+    candidateDocs.push({slug:candidate.source_slug,category:metadata.category,title:candidate.title,content:candidate.content,keywords:Array.isArray(metadata.keywords)?metadata.keywords:[],source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1});
+   }else{
+    const target=candidateDocs.find(x=>x.slug===candidate.source_slug);
+    if(!target)return res.status(409).json({error:"BENCHMARK_TARGET_DOCUMENT_MISSING"});
+    target.title=candidate.title;target.content=candidate.content;
+   }
+  }
+  const result=runLibraryBenchmark({baselineDocuments:baseline,candidateDocuments:candidateDocs});
+  const inputDigest=crypto.createHash("sha256").update(JSON.stringify({candidateIds:ids,baseline:baseline.map(x=>[x.slug,x.version]),candidate:candidates.rows.map(x=>[x.id,x.source_slug,x.proposal_type,x.title,x.content])})).digest("hex");
+  const outputDigest=crypto.createHash("sha256").update(JSON.stringify(result)).digest("hex");
+  await pool.query("INSERT INTO bep_agent_runs(job_id,job_type,status,model,input_digest,output_digest,output_summary,usage,error_code,started_at,finished_at) VALUES(NULL,'library_benchmark','completed','bep-deterministic-retrieval-benchmark',$1,$2,$3::jsonb,NULL,NULL,NOW(),NOW())",[inputDigest,outputDigest,JSON.stringify({candidateIds:ids,baseline:{hitAt3Rate:result.baseline.hitAt3Rate,meanReciprocalRank:result.baseline.meanReciprocalRank},candidate:{hitAt3Rate:result.candidate.hitAt3Rate,meanReciprocalRank:result.candidate.meanReciprocalRank},regressions:result.regressions,improvements:result.improvements,gatePassed:result.gatePassed,metricScope:result.metricScope,answerQualityMeasured:result.answerQualityMeasured})]);
+  res.setHeader("Cache-Control","no-store");
+  return res.json({...result,candidateIds:ids,automaticPublication:false});
+ }catch(error){
+  console.error("BEP documentary benchmark failed",String(error?.message||error).slice(0,120));
+  return res.status(503).json({error:"LIBRARY_BENCHMARK_UNAVAILABLE"});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
