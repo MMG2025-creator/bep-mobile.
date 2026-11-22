@@ -13,7 +13,7 @@ async function main(){
  let agent;
  try{
   if(process.env.BEP_DB_ROLE_PROBE==="true")await reportPostgresRole({pool,component:"worker",variable:"BEP_AGENT_DATABASE_URL"});
-  else await pool.query("SELECT 1");
+  await pool.query("SELECT 1");
   agent=await startBepAgent({pool,env:process.env});
  }catch(error){await pool.end();throw error}
  if(!agent.enabled){await pool.end();throw new Error("Supervisor did not start")}
