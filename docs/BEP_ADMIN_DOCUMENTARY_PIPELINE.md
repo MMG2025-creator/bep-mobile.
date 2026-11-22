@@ -116,6 +116,65 @@ Aucun appel Coach -> Groq
 - Une version candidate n'est publiable que si elle ne régresse pas sur les cas critiques et si les seuils définis sont atteints.
 - Conserver corpus, versions, résultats et empreintes pour répétabilité.
 
+## 5 bis. Implémentation initiale ajoutée dans la branche
+
+### P1 — Retrieval indépendant
+- Module : `lib/bep-agent/source-search.js`.
+- Fournisseur de recherche : Exa Search API, indépendant de Groq.
+- Routes admin : `GET /api/admin/bep-agent/source-search/status` et `POST /api/admin/bep-agent/source-search`.
+- Liste initiale de domaines institutionnels autorisés, alignée sur les domaines acceptés par l'import documentaire structuré.
+- Extraits limités ; aucune écriture dans la bibliothèque à la seule suite d'une recherche.
+- Activation explicite requise : `BEP_AGENT_SOURCE_SEARCH_ENABLED=true` et clé dédiée `BEP_AGENT_EXA_API_KEY`.
+
+### P2 — Analyse Groq asynchrone
+- Module : `lib/bep-agent/documentary-analysis.js`.
+- Le prompt Groq reçoit uniquement les sources recherchées et les fiches publiées pertinentes, sans données de compte.
+- Les sorties strictes sont vérifiées contre les URL récupérées et les fiches existantes.
+- Les créations et corrections sont enregistrées comme candidats en attente.
+- Job : `documentary_research`, traité par `agent-documentary-worker.js`.
+- Route de mise en file : `POST /api/admin/bep-agent/documentary-analyze`.
+- La file PostgreSQL et l'historique de run sont réutilisés ; la migration additive est `20261122_bep_documentary_pipeline.sql`.
+
+### P3 — Doublons et contradictions
+- Les quasi-doublons sont détectés de façon déterministe par similarité de titres/contenus avant insertion d'une nouvelle fiche.
+- Les contradictions, informations potentiellement obsolètes, lacunes et clarifications sont remontées comme findings Groq, avec URL de preuve vérifiée.
+- Les findings sont conservés dans le résumé du run ; ils ne sont pas résolus automatiquement.
+- Limite actuelle : la similarité est un filtre heuristique et les contradictions nécessitent toujours une revue humaine.
+
+### P4 — Validation, publication et historique
+- Les candidats utilisent le workflow administratif existant : approbation ou rejet par un administrateur indépendant.
+- Les mises à jour vérifient toujours la version et l'empreinte de la source.
+- Les créations approuvées reçoivent désormais une première entrée d'historique `created`.
+- Les éditions, archivages et restaurations restent versionnés ; une restauration crée une nouvelle version.
+
+### P5 — Banc de référence
+- Module : `lib/bep-agent/library-benchmark.js`.
+- Sept questions de référence couvrent budget, provisions annuelles, épargne, dettes, revenus variables et achats impulsifs.
+- Mesures : Hit@3, Hit@6 et MRR, comparaison baseline/candidate et détection des régressions critiques.
+- Route : `POST /api/admin/bep-agent/library-benchmark`, avec identifiants de candidats en attente.
+- Limite explicite : ce premier banc mesure la couverture et le classement documentaire du retriever. Il ne prétend pas mesurer toute la qualité sémantique des réponses finales du Coach.
+
+### Configuration Render à prévoir — sans secret dans Git
+Service API :
+- `BEP_AGENT_SOURCE_SEARCH_ENABLED=true`
+- `BEP_AGENT_DOCUMENTARY_WORKER_ENABLED=true`
+- `BEP_AGENT_EXA_API_KEY` (secret dédié)
+
+Service Worker documentaire séparé :
+- commande : `npm run agent:documentary-worker`
+- `BEP_AGENT_ENABLED=true`
+- `BEP_AGENT_RUN_AS_WORKER=true`
+- `BEP_AGENT_RUN_MODE=admin_on_demand`
+- `BEP_AGENT_FREE_TIER_ACKNOWLEDGED=true`
+- `BEP_AGENT_AI_PROVIDER=groq`
+- `BEP_AGENT_GROQ_API_KEY` (secret administratif existant, sans duplication inutile)
+- `BEP_AGENT_GROQ_MODEL`
+- `BEP_AGENT_EXA_API_KEY`
+- `BEP_AGENT_SOURCE_SEARCH_ENABLED=true`
+- `BEP_AGENT_DATABASE_URL` (connexion Worker dédiée ; jamais remplacée par `DATABASE_URL`)
+
+Le flag API `BEP_AGENT_DOCUMENTARY_WORKER_ENABLED` ne doit être activé qu'après création et vérification du service Worker, de sa connexion PostgreSQL et de ses permissions. Les clés et URLs ne sont jamais copiées dans GitHub. Aucune variable Render n'est modifiée par cette PR.
+
 ## 6. Sécurité et confidentialité
 
 - Le pipeline documentaire ne lit aucune donnée de compte, transaction, revenu, dépense, dette ou conversation utilisateur.
