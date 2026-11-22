@@ -1,4 +1,5 @@
 "use strict";
+const {reportPostgresRole}=require("./lib/bep-db-role-probe");
 const express=require("express"),session=require("express-session"),PgSession=require("connect-pg-simple")(session),{Pool}=require("pg"),helmet=require("helmet"),crypto=require("crypto"),path=require("path"),fs=require("fs/promises"),bcrypt=require("bcryptjs");
 const {createMonthlyBudgetRouter}=require("./monthly-budget-routes");
 const {ensureBepAdminSchema,createBepAdminRouter}=require("./admin/bep-admin");
@@ -655,7 +656,7 @@ app.put("/api/data",auth,async(req,res)=>{
  }finally{client.release()}
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
-app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}if(process.env.BEP_COACH_SOURCE_REGISTRY_SEED==="true"){const seed=require("./src/coach/knowledge/financialCoachSources.mesquestionsdargent.fr.json");let inserted=0;for(let offset=0;offset<seed.sources.length;offset+=10){const batch=await registerCoachSources({pool,sources:seed.sources.slice(offset,offset+10)});inserted+=batch.inserted}console.info("BEP Coach institutional source registry seed completed",JSON.stringify({sourceCount:seed.sources.length,inserted,provider:seed.provider}))}try{
+app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{if(process.env.BEP_DB_ROLE_PROBE==="true")await reportPostgresRole({pool,component:"api",variable:"DATABASE_URL",sharedWith:["integrated-agent"]});for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}if(process.env.BEP_COACH_SOURCE_REGISTRY_SEED==="true"){const seed=require("./src/coach/knowledge/financialCoachSources.mesquestionsdargent.fr.json");let inserted=0;for(let offset=0;offset<seed.sources.length;offset+=10){const batch=await registerCoachSources({pool,sources:seed.sources.slice(offset,offset+10)});inserted+=batch.inserted}console.info("BEP Coach institutional source registry seed completed",JSON.stringify({sourceCount:seed.sources.length,inserted,provider:seed.provider}))}try{
  const agentConfig=adminAgentStatus();
  if(agentConfig.enabled){
   if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
