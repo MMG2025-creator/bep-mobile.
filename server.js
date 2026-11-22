@@ -17,7 +17,6 @@ const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSour
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
 const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
-const {analyzeDocumentaryLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
