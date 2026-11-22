@@ -452,8 +452,9 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
  res.setHeader("Cache-Control","no-store");
  if(!config.enabled)return res.status(409).json({ok:false,configured:false,provider:config.provider,model:config.model,keySource:config.keySource,reason:config.disabledReason,apiCallMade:false});
  const startedAt=Date.now();
+ let networkProbe=null;
  try{
-  const networkProbe=await probeGeminiTransport({timeoutMs:5000});
+  networkProbe=await probeGeminiTransport({timeoutMs:5000});
   const client=new GeminiClient({apiKey:config.apiKey,model:config.model,timeoutMs:20000});
   const probe="BEP_GEMINI_CONNECTIVITY";
   const result=await client.generateJson({
@@ -471,7 +472,7 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   const detail=error?.diagnosticDetail||"Le diagnostic "+config.provider+" a échoué.";
   console.error("BEP AI connectivity diagnostic failed",JSON.stringify({requestId,provider:config.provider,errorCode,httpStatus,latencyMs,networkPhase,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
   const status=errorCode.endsWith("_TIMEOUT")?504:errorCode.endsWith("_QUOTA_EXCEEDED")?429:502;
-  res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:!["dns","tls"].includes(networkPhase),latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,networkPhase,networkDiagnostic:error?.networkDiagnostic||null,automaticPublication:false,syntheticOnly:true});
+  res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:!["dns","tls"].includes(networkPhase),latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,networkPhase,networkDiagnostic:error?.networkDiagnostic||networkProbe,automaticPublication:false,syntheticOnly:true});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
