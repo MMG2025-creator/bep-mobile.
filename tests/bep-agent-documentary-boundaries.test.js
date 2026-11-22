@@ -34,7 +34,7 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(role.includes("bep_agent_runner_documentary_only"));
  assert.ok(role.includes("USING (job_type='documentary_research')"));
  assert.doesNotMatch(role,/GRANT SELECT, UPDATE ON TABLE bep_agent_jobs/);
- assert.ok(role.includes("GRANT INSERT ON TABLE bep_knowledge_candidates"));
+ assert.ok(role.includes("GRANT INSERT (source_slug,source_version,source_digest,proposal_type"));
  assert.doesNotMatch(role,/GRANT .* ON ALL TABLES/);
 });
 
