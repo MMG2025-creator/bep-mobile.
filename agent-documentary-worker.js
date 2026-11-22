@@ -22,7 +22,7 @@ async function main(){
  async function shutdown(signal){
   if(stopping)return;stopping=true;
   console.info("BEP documentary worker stopping",signal);
-  worker.stop();
+  await worker.stop();
   await pool.end();
   process.exit(0);
  }
