@@ -10,7 +10,6 @@
     "agent:worker": "node agent-worker.js",
     "agent:documentary-worker": "node agent-documentary-worker.js",
     "test:e2e": "playwright test",
-    "agent:documentary-once": "node agent-documentary-once.js",
     "workflows:start": "node render-workflows/main.mjs"
   },
   "engines": {
