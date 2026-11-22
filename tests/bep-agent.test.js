@@ -69,7 +69,7 @@ test("Groq is the default free-tier admin provider and requires its dedicated ke
 test("Groq client requires a dedicated key and pins the official API endpoint",()=>{
  assert.throws(()=>new GroqClient({apiKey:""}),/API key/);
  const client=new GroqClient({apiKey:"secret"});
- assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);assert.throws(()=>client.generateJson({system:"s",prompt:"p"}),/schema is required/);
+ assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);await assert.rejects(()=>client.generateJson({system:"s",prompt:"p"}),/schema is required/);
 });
 
 test("Groq client uses Bearer auth, JSON mode and parses structured output",async()=>{
