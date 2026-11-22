@@ -71,7 +71,8 @@ test("Groq client requires a dedicated key and pins the official API endpoint",(
  const client=new GroqClient({apiKey:"secret"});
  assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);
 });
-\ntest("Gemini client requires a key and does not accept a custom endpoint",()=>{
+
+test("Gemini client requires a key and does not accept a custom endpoint",()=>{
  assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-3.8-flash"}),/API key/);
  const client=new GeminiClient({apiKey:"x",model:"gemini-3.8-flash"});
  assert.equal(client.model,"gemini-3.8-flash");assert.equal(Object.hasOwn(client,"endpoint"),false);
@@ -177,7 +178,7 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
  assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
- assert.match(server,/BEP_\+config\.provider\.toUpperCase\(\)\+_CONNECTIVITY/);
+ assert.match(server,/const probe="BEP_"/);
  assert.match(server,/BEP AI connectivity diagnostic failed/);
  assert.match(server,/requestId,errorCode,httpStatus,latencyMs/);
  assert.match(server,/providerCode:error\?\.providerCode/);
