@@ -33,5 +33,5 @@ GRANT USAGE, SELECT ON SEQUENCE bep_agent_runs_id_seq TO bep_agent_runner;
 GRANT USAGE, SELECT ON SEQUENCE bep_knowledge_candidates_id_seq TO bep_agent_runner;
 
 -- Set the password interactively in psql after running this file:
---   \\password bep_agent_runner
+--   psql command: \password bep_agent_runner
 -- Never place the password in this file, Git, logs, or chat.
