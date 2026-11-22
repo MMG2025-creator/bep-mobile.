@@ -3,6 +3,7 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {readConfig,readAdminConfig}=require("../lib/bep-agent/config");
 const {GeminiClient}=require("../lib/bep-agent/gemini-client");
+const {probeGeminiTransport}=require("../lib/bep-agent/gemini-network-diagnostic");
 const {GroqClient}=require("../lib/bep-agent/groq-client");
 const {startBepAgent}=require("../lib/bep-agent");
 const {validateKnowledgeProposal,sourceDigest,runQualityReview,runKnowledgeReview,loadDocumentaryJson,DOCUMENTARY_JSON_FILES}=require("../lib/bep-agent/worker");
@@ -83,6 +84,31 @@ test("Groq client uses Bearer auth, JSON mode and parses structured output",asyn
   assert.equal(body.response_format.type,"json_schema");assert.equal(body.response_format.json_schema.strict,true);assert.equal(body.response_format.json_schema.name,"probe");assert.deepEqual(body.response_format.json_schema.schema.required,["ok","probe"]);assert.equal(body.max_tokens,128);
   assert.deepEqual(result.value,{ok:true,probe:"BEP_GROQ_CONNECTIVITY"});assert.equal(result.usage.total_tokens,9);
  }finally{global.fetch=original}
+});
+test("Gemini network diagnostic separates DNS and TLS reachability without exposing credentials",async()=>{
+ const result=await probeGeminiTransport({
+  lookup:async()=>[{address:"192.0.2.10",family:4}],
+  connectTls:async()=>({authorized:true})
+ });
+ assert.equal(result.host,"generativelanguage.googleapis.com");
+ assert.equal(result.dns.ok,true);assert.equal(result.dns.addressCount,1);
+ assert.equal(result.tls.ok,true);assert.equal(result.tls.authorized,true);
+ assert.ok(result.dns.durationMs>=0);assert.ok(result.tls.durationMs>=0);
+ assert.doesNotMatch(JSON.stringify(result),/secret|api.?key|token/i);
+});
+test("Gemini network diagnostic identifies DNS failure before attempting TLS",async()=>{
+ let tlsCalls=0;
+ await assert.rejects(()=>probeGeminiTransport({
+  lookup:async()=>{throw new Error("private resolver detail")},
+  connectTls:async()=>{tlsCalls++;return{authorized:true}}
+ }),error=>error.networkPhase==="dns"&&error.networkDiagnostic.phase==="dns");
+ assert.equal(tlsCalls,0);
+});
+test("Gemini network diagnostic identifies TLS failure after successful DNS",async()=>{
+ await assert.rejects(()=>probeGeminiTransport({
+  lookup:async()=>[{address:"192.0.2.10",family:4}],
+  connectTls:async()=>{throw new Error("private TLS detail")}
+ }),error=>error.networkPhase==="tls"&&error.networkDiagnostic.phase==="tls");
 });
 test("Gemini client requires a key and does not accept a custom endpoint",()=>{
  assert.throws(()=>new GeminiClient({apiKey:"",model:"gemini-3.8-flash"}),/API key/);
