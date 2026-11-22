@@ -7,24 +7,27 @@ const root=path.join(__dirname,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const {processOne}=require("../lib/bep-agent/worker");
 
-test("documentary pipeline stays behind admin auth and runs one requested job through GitHub Actions",()=>{
- const server=read("server.js"),entry=read("agent-documentary-once.js"),worker=read("lib/bep-agent/worker.js"),repository=read("lib/bep-agent/repository.js"),workflow=read(".github/workflows/bep-documentary-on-demand.yml");
- assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/source-search",auth,requireBepAgentAdmin/);
- assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/documentary-analyze",auth,requireBepAgentAdmin/);
- assert.match(server,/dispatchDocumentaryWorkflow\(\{jobId\}\)/);
- assert.doesNotMatch(server,/BEP_AGENT_DOCUMENTARY_WORKER_ENABLED/);
- assert.match(entry,/BEP_AGENT_DATABASE_URL is required/);
- assert.match(entry,/DATABASE_URL is deliberately not accepted/);
- assert.match(entry,/new GroqClient\(\{apiKey:config\.apiKey,model:config\.model/);
- assert.match(entry,/processOne\(\{pool,client,model:config\.model/);
- assert.match(entry,/deferOnQuotaExhausted:false/);
- assert.match(entry,/retryOnFailure:false/);
- assert.match(entry,/jobTypes:\["documentary_research"\],jobId/);
- assert.match(worker,/jobTypes=\["knowledge_review","coach_quality_review"\],jobId=null/);
- assert.match(repository,/AND id::text=\$2/);
- assert.match(workflow,/workflow_dispatch:/);
- assert.match(workflow,/BEP_AGENT_DOCUMENTARY_JOB_ID/);
- assert.doesNotMatch(server,/app\.post\("\/api\/ai\/chat"[^]*?new GroqClient/);
+test("documentary pipeline stays behind admin auth and dispatches an isolated Render Workflow task",()=>{
+ const server=read("server.js"),workflow=read("render-workflows/main.mjs"),dispatch=read("lib/bep-agent/render-dispatch.js"),worker=read("lib/bep-agent/worker.js"),repository=read("lib/bep-agent/repository.js"),role=read("database/operations/bep_agent_runner_role.sql");
+ assert.match(server,/app\\.post\\("\\/api\\/admin\\/bep-agent\\/source-search",auth,requireBepAgentAdmin/);
+ assert.match(server,/app\\.post\\("\\/api\\/admin\\/bep-agent\\/documentary-analyze",auth,requireBepAgentAdmin/);
+ assert.match(server,/dispatchDocumentaryWorkflow\\(\\{jobId\\}\\)/);
+ assert.match(server,/render_workflows_on_demand/);
+ assert.match(dispatch,/https:\\/\\/api\\.render\\.com\\/v1\\/task-runs/);
+ assert.match(dispatch,/idempotencyKey:"bep-documentary-"/);
+ assert.match(workflow,/BEP_AGENT_DATABASE_URL/);
+ assert.match(workflow,/current_user AS role_name/);
+ assert.match(workflow,/role_name!=="bep_agent_runner"/);
+ assert.match(workflow,/database_name!=="bep_v2_db"/);
+ assert.match(workflow,/jobTypes:\\["documentary_research"\\],jobId:id/);
+ assert.match(workflow,/retry:\\{maxRetries:0\\}/);
+ assert.match(worker,/jobTypes=\\["knowledge_review","coach_quality_review"\\],jobId=null/);
+ assert.match(repository,/AND id::text=\\$2/);
+ assert.match(role,/GRANT SELECT, UPDATE ON TABLE bep_agent_jobs/);
+ assert.match(role,/GRANT INSERT ON TABLE bep_knowledge_candidates/);
+ assert.doesNotMatch(role,/GRANT .* ON ALL TABLES/);
+ assert.doesNotMatch(server,/github_actions_on_demand|BEP_AGENT_GITHUB_DISPATCH_TOKEN/);
+ assert.doesNotMatch(server,/app\\.post\\("\\/api\\/ai\\/chat"[^]*?new GroqClient/);
 });
 
 test("documentary migration permits create candidates and the dedicated job type",()=>{
