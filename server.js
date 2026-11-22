@@ -16,6 +16,7 @@ const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
+const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -471,6 +472,25 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   console.error("BEP AI connectivity diagnostic failed",JSON.stringify({requestId,provider:config.provider,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
   const status=errorCode.endsWith("_TIMEOUT")?504:errorCode.endsWith("_QUOTA_EXCEEDED")?429:502;
   res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
+ }
+});
+app.get("/api/admin/bep-agent/source-search/status",auth,requireBepAgentAdmin,async(req,res)=>{
+ const config=readSourceSearchConfig();
+ res.setHeader("Cache-Control","no-store");
+ res.json({enabled:config.enabled,provider:config.provider,keySource:config.keySource,allowedDomains:config.allowedDomains,reason:config.reason});
+});
+app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(req,res)=>{
+ const query=String(req.body?.query||"").trim();
+ if(!query||query.length>1000)return res.status(400).json({error:"INVALID_SOURCE_SEARCH_QUERY"});
+ try{
+  const result=await searchDocumentarySources({query,numResults:Math.min(5,Math.max(1,Number(req.body?.limit)||5))});
+  res.setHeader("Cache-Control","no-store");
+  if(!result.enabled)return res.status(409).json(result);
+  return res.json({...result,publication:"none",stored:false,groqAnalysis:"not_requested"});
+ }catch(error){
+  const code=String(error?.code||"SOURCE_SEARCH_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
+  console.error("BEP documentary source search failed",code);
+  return res.status(error?.httpStatus===429?429:502).json({error:code});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
