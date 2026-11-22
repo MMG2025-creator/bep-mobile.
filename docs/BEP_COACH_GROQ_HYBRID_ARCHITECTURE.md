@@ -32,7 +32,8 @@ L'audit du code sur `main` a identifié :
 | `POST /api/ai/chat` | Parcours Coach local, construit autour de `buildIntelligence()` et `routeStructuredQuestion()` | Son évolution vers un appel Groq doit être explicite et testée |
 | `lib/bep-financial-intelligence.js` | Assemble bibliothèque BEP active, connaissances administratives approuvées et connaissances personnelles acceptées/non expirées | Réutiliser les règles de sélection et conserver les filtres d'accès |
 | Recherche documentaire | Lexicale/contextuelle : mots normalisés, mots-clés, titre, contenu, catégorie et contexte financier | Pas de recherche vectorielle/sémantique identifiée dans l'audit |
-| `lib/bep-document-ingestion.js` | Collecte HTTP native de pages web et création de candidats administratifs en attente | Ce n'est pas un système de dépôt de fichiers personnels |
+| `lib/bep-document-ingestion.js` | Collecte HTTP native de pages web et création de candidats administratifs en attente | Composant du circuit Admin ; ne pas le réutiliser directement dans le runtime Coach | 
+| `lib/bep-coach-ingestion.js` | Module existant audité : dépend de `resolveAdminGeminiKey` dans `lib/bep-agent/config.js`, des paramètres `BEP_AGENT_*` et du workflow de candidats Admin ; son analyse appelle Gemini | Dépendance Admin à isoler ; non réutilisable par le Coach en l'état |
 | `lib/bep-agent/groq-client.js` | Client Groq administratif, sorties JSON Schema strictes | Référence d'implémentation seulement ; ne pas partager le runtime |
 | `lib/bep-agent/config.js` | Configuration administrative et clé dédiée `BEP_AGENT_GROQ_API_KEY` | Conserver cette configuration indépendante |
 | `tests/bep-agent.test.js` | Tests d'isolation et de comportement administratif | Étendre les tests sans affaiblir les garanties existantes |
@@ -144,6 +145,14 @@ Avant de retenir pgvector, vérifier l'extension sur la base cible, les droits d
 
 ## 7. Intelligence documentaire et documents personnels
 
+### Frontière stricte avec l'ingestion administrative existante
+
+Le module existant `lib/bep-coach-ingestion.js` est rattaché au circuit administratif : il importe `resolveAdminGeminiKey` depuis `lib/bep-agent/config.js`, dépend notamment de `BEP_AGENT_ENABLED`, `BEP_AGENT_RUN_MODE` et `BEP_AGENT_FREE_TIER_ACKNOWLEDGED`, et son analyse utilise Gemini ainsi que le workflow de candidats administratifs. **Il est interdit de l'importer ou de l'appeler depuis le runtime Coach**, même pour une fonction apparemment générique.
+
+Même interdiction de réutilisation directe pour `lib/bep-document-ingestion.js` lorsqu'elle entraîne la création ou la consultation de candidats Admin. Le Coach dispose de son propre service d'ingestion et de ses propres interfaces.
+
+Une mutualisation future est possible uniquement après extraction et audit de primitives réellement neutres (par exemple validation HTTPS/URL, résolution DNS publique et extraction HTTP native), dans un module sans import Admin, sans clé fournisseur, sans variable `BEP_AGENT_*`, sans accès aux jobs/candidats et sans effet de bord métier. Ces primitives doivent être couvertes par des tests SSRF et de non-régression. À défaut, implémenter une version Coach indépendante plutôt que créer un couplage. Les clés, clients LLM, prompts, files de travail, quotas, journaux et permissions restent séparés.
+
 Modules proposés :
 
 ```text
@@ -175,15 +184,15 @@ Les documents peuvent contenir des instructions malveillantes ou trompeuses. Leu
 
 ## 8. Collecte documentaire externe
 
-La collecte externe doit rester distincte de l'import personnel.
+La collecte externe accessible depuis le Coach est **déclenchée explicitement par l'utilisateur**, dans le cadre de sa demande ou après confirmation claire de l'action proposée. Aucun crawl autonome, aucune veille en arrière-plan et aucune collecte planifiée ne sont inclus dans ce périmètre initial.
 
-- Réutiliser, après audit de sécurité, les protections URL/SSRF et l'extraction native existantes.
-- Définir une allowlist ou une politique de sources et de domaines autorisés.
-- Conserver URL canonique, date de collecte, titre, hash, contenu extrait et provenance.
-- Séparer les résultats de collecte des documents validés.
-- Les documents externes destinés à la bibliothèque commune passent par le circuit administratif de proposition et d'approbation humaine.
-- Ne pas donner au Coach un accès direct à la file des candidats Admin.
-- Respecter les droits d'accès, conditions d'utilisation et droits de reproduction des sources.
+- Le Coach peut rechercher et collecter des pages publiques utiles à la demande de l'utilisateur, uniquement sur des domaines autorisés par une politique serveur explicite (allowlist initiale configurable et contrôlée). Une URL fournie par l'utilisateur ne contourne jamais cette politique.
+- Avant toute requête, appliquer validation HTTPS, résolution DNS publique, blocage des IP privées/réservées, contrôle de chaque redirection, limites de taille, durée, profondeur et nombre de pages. Ne jamais accepter de credentials, de schéma non HTTP(S), ni d'accès à des ressources internes.
+- Conserver URL canonique, date de collecte, titre, hash, contenu extrait, domaine et provenance. Présenter les sources à l'utilisateur et signaler les pages inaccessibles ou non extractibles.
+- Les contenus collectés sont des données non fiables et restent privés dans l'espace de l'utilisateur demandeur par défaut. Ils ne deviennent pas automatiquement des connaissances personnelles acceptées, ni des éléments de la bibliothèque commune.
+- L'utilisateur peut demander l'analyse d'une source ou d'un ensemble de sources ; l'indexation dans son espace privé doit respecter les mêmes règles de consentement, rétention et suppression que les documents déposés.
+- Tout contenu proposé pour la bibliothèque commune suit exclusivement le circuit Admin existant, avec candidat distinct, revue et approbation humaine. Le Coach ne lit ni n'écrit directement dans la file Admin.
+- Respecter les droits d'accès, conditions d'utilisation et droits de reproduction des sources ; ne pas contourner paywalls, authentifications ou protections techniques.
 
 ## 9. Routes envisagées
 
@@ -213,16 +222,35 @@ Les noms définitifs, contraintes, index, clés étrangères et politiques de r�
 
 ## 11. Sécurité, confidentialité et coûts
 
+### Données transmises au fournisseur Groq
+
+L'appel à Groq constitue une transmission à un fournisseur externe. Il ne doit pas être activé implicitement par le simple fait d'utiliser le Coach.
+
+- Avant le premier traitement externe, présenter une information compréhensible indiquant les catégories de données susceptibles d'être transmises, la finalité, le fournisseur, les durées/règles de conservation applicables connues, les éventuels transferts et les choix disponibles. Recueillir un consentement/opt-in explicite, distinct et révocable, selon les exigences juridiques applicables.
+- Le statut de consentement est vérifié côté serveur à chaque appel externe. Sans consentement valide, aucun prompt, document, extrait, embedding ou contexte personnel n'est envoyé à Groq.
+- Prévoir un mode **local uniquement** en cas de refus ou de retrait : réponses déterministes BEP, recherche locale et documents traités localement si l'infrastructure le permet. Si la réponse nécessite réellement le LLM distant, expliquer la limite et ne pas contourner le choix.
+- Appliquer la minimisation avant construction du prompt : n'envoyer que les champs strictement nécessaires à la question, privilégier des agrégats ou valeurs dérivées, limiter le nombre d'opérations et d'extraits, tronquer les historiques et exclure les données sans rapport avec la demande.
+- Ne jamais transmettre les mots de passe, tokens de session, clés API, coordonnées bancaires complètes, données de carte, secrets d'authentification ou identifiants techniques. Les identifiants directs (nom, adresse, email, téléphone, numéros de compte) sont exclus par défaut et ne peuvent être inclus que si une nécessité démontrée et une base/autorisation appropriée le justifient.
+- Les données financières (revenus, dépenses, transactions, dettes, soldes, objectifs et historique) sont considérées comme sensibles dans le modèle de menace BEP : elles ne sont transmises que si elles sont indispensables à la question et couvertes par l'opt-in. Préférer les totaux, catégories et plages aux lignes détaillées.
+- Les documents personnels ne sont jamais envoyés en intégralité par défaut. Afficher les catégories/extraits destinés à l'analyse, permettre une sélection ou une occultation lorsque c'est pertinent, puis n'envoyer que les passages nécessaires. Les documents contenant des données particulièrement sensibles ou sans rapport sont exclus du traitement distant par défaut.
+- Ne pas générer d'embeddings via un service tiers sans appliquer le même contrôle de consentement et de minimisation : un embedding dérivé reste une donnée issue du contenu personnel.
+- Ne pas journaliser prompts, réponses, documents ou extraits personnels en clair. Les traces techniques se limitent aux identifiants techniques pseudonymisés, fournisseur/modèle, horodatage, compteurs de tokens/coûts et codes d'erreur nécessaires.
+
+### Vérifications fournisseur obligatoires avant activation
+
+Les conditions réelles de traitement, de rétention, d'utilisation pour l'entraînement, de localisation et de sous-traitance de Groq ne sont pas établies par cette spécification. Elles doivent être vérifiées dans les documents contractuels et paramètres applicables au compte BEP avant toute activation en production. Ne pas promettre « zéro rétention » ou « aucune utilisation pour l'entraînement » sans preuve contractuelle applicable. Si ces garanties et l'analyse juridique requise ne sont pas satisfaisantes, conserver le mode local uniquement.
+
+### Contrôles techniques complémentaires
+
 - Contrôle d'accès par propriétaire au niveau de chaque requête SQL, pas seulement dans l'interface.
 - Protection CSRF et validation de session selon les conventions BEP existantes.
 - Limites de taille, débit, durée d'extraction, nombre de pages et nombre de documents.
 - Protection SSRF pour toute collecte URL, validation des redirections et blocage des réseaux privés.
-- Pas de contenu sensible dans les logs ou télémétries.
 - Quotas et budgets Coach indépendants des quotas Admin.
 - Timeout, gestion des erreurs, limitation des retries et circuit breaker.
-- Pas de fallback silencieux vers Gemini.
-- Rétention et suppression documentées.
-- Information claire de l'utilisateur lorsqu'un document est envoyé au fournisseur Groq pour analyse.
+- Pas de fallback silencieux vers Gemini ou vers le runtime Admin.
+- Rétention et suppression documentées, y compris fichiers, extraits, index, embeddings, caches et sauvegardes selon la politique définie.
+- Traçabilité du consentement (version de notice, date, portée, retrait) sans stocker le contenu personnel dans cette trace.
 
 ## 12. Tests d'acceptation obligatoires
 
@@ -279,7 +307,7 @@ Chaque phase doit être livrée sur une branche isolée et faire l'objet d'une r
 | `server.js` | Routes Coach/Admin, middleware, authentification et orchestration |
 | `lib/bep-financial-intelligence.js` | Contexte financier, récupération documentaire et isolation |
 | `lib/bep-document-ingestion.js` | Collecte web existante, SSRF, provenance et candidats |
-| `lib/bep-coach-ingestion.js` | Extraction HTTP, normalisation URL et protections |
+| `lib/bep-coach-ingestion.js` | Module existant rattaché au circuit Admin/Gemini ; analyser ses dépendances et le maintenir hors du runtime Coach |
 | `lib/bep-coach-services.js` | Politique de recherche et catégories autorisées |
 | `lib/bep-agent/groq-client.js` | Référence de client Groq JSON Schema, sans partage runtime |
 | `lib/bep-agent/config.js` | Référence de configuration Admin, à préserver |
