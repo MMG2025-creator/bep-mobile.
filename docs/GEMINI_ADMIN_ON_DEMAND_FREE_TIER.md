@@ -51,3 +51,6 @@ La migration est additive et idempotente ; elle ne modifie pas les tables métie
 - Contrôle que le compteur PostgreSQL n'excède jamais huit appels par jour.
 
 Aucune clé API ne doit être placée dans le dépôt ou dans les échanges de chat. Aucune variable Render n'est modifiée par cette PR.
+
+## Validation CI
+La suite de tests doit être exécutée sur le dernier commit de la branche avant toute décision de fusion.
