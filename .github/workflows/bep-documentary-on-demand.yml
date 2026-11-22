@@ -1,0 +1,50 @@
+name: BEP documentary on-demand
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: PostgreSQL documentary job identifier
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bep-documentary-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+jobs:
+  documentary-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BEP_AGENT_ENABLED: "true"
+      BEP_AGENT_RUN_AS_WORKER: "true"
+      BEP_AGENT_RUN_MODE: admin_on_demand
+      BEP_AGENT_FREE_TIER_ACKNOWLEDGED: "true"
+      BEP_AGENT_AI_PROVIDER: groq
+      BEP_AGENT_GROQ_API_KEY: ${{ secrets.BEP_AGENT_GROQ_API_KEY }}
+      BEP_AGENT_GROQ_MODEL: ${{ vars.BEP_AGENT_GROQ_MODEL }}
+      BEP_AGENT_EXA_API_KEY: ${{ secrets.BEP_AGENT_EXA_API_KEY }}
+      BEP_AGENT_SOURCE_SEARCH_ENABLED: "true"
+      BEP_AGENT_DATABASE_URL: ${{ secrets.BEP_AGENT_DATABASE_URL }}
+      BEP_AGENT_DOCUMENTARY_JOB_ID: ${{ inputs.job_id }}
+    steps:
+      - name: Checkout selected BEP revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate one-shot entry point
+        run: node --check agent-documentary-once.js
+      - name: Process the requested documentary job
+        run: node agent-documentary-once.js
