@@ -217,7 +217,7 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
  const geminiRoute=server.slice(server.indexOf('app.post("/api/admin/bep-agent/gemini-smoke-test"'),server.indexOf('app.get("/api/admin/bep-agent/candidates"'));
  assert.match(geminiRoute,/BEP_AGENT_AI_PROVIDER:"gemini"/);
- assert.match(geminiRoute,/new GeminiClient\(\{apiKey:config\.apiKey,model:config\.model,timeoutMs:20000\}\)/);
+ assert.match(geminiRoute,/probeGeminiTransport\(\{timeoutMs:5000\}\)/);\n assert.match(geminiRoute,/new GeminiClient\(\{apiKey:config\.apiKey,model:config\.model,timeoutMs:20000\}\)/);
  assert.match(geminiRoute,/BEP_GEMINI_CONNECTIVITY/);
  assert.doesNotMatch(geminiRoute,/createAdminClient/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
@@ -226,7 +226,7 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.ok(geminiRoute.includes("!Array.isArray(value)"));
  assert.doesNotMatch(geminiRoute,/jsonSchema:/);
  assert.match(server,/BEP AI connectivity diagnostic failed/);
- assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
+ assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs,networkPhase/);\n assert.match(geminiRoute,/apiCallMade:!\["dns","tls"\]\.includes\(networkPhase\)/);\n assert.match(geminiRoute,/networkDiagnostic:error\?\.networkDiagnostic/);
  assert.match(server,/providerCode:error\?\.providerCode/);
  assert.match(server,/providerStatus:error\?\.providerStatus/);
  assert.match(server,/providerMessage:error\?\.providerMessage/);
