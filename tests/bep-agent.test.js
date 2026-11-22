@@ -196,8 +196,8 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.doesNotMatch(geminiRoute,/createAdminClient/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
  assert.match(geminiRoute,/const probe="BEP_GEMINI_CONNECTIVITY"/);
- assert.match(geminiRoute,/Object\\.keys\\(value\\)\\.length===2/);
- assert.match(geminiRoute,/!Array\\.isArray\\(value\\)/);
+ assert.ok(geminiRoute.includes("Object.keys(value).length===2"));
+ assert.ok(geminiRoute.includes("!Array.isArray(value)"));
  assert.doesNotMatch(geminiRoute,/jsonSchema:/);
  assert.match(server,/BEP AI connectivity diagnostic failed/);
  assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
