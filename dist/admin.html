@@ -103,12 +103,12 @@ set("geminiSmokeErrorDetail",data.errorDetail||"—");set("geminiSmokeRequestId"
 set("geminiSmokeApiCall",data.apiCallMade===true?"Oui":data.apiCallMade===false?"Non":"—");
 set("geminiSmokePublication",data.automaticPublication===false?"Désactivée":"Non confirmée");
 const ok=response.ok&&data.ok===true;
-state.textContent=ok?"Connexion Gemini confirmée":data.apiCallMade===false?"Test non exécuté : configuration inactive":"Échec du test Gemini — "+(data.errorCode||"erreur non classifiée");
+state.textContent=ok?"Connexion fournisseur IA confirmée":data.apiCallMade===false?"Test non exécuté : configuration inactive":"Échec du test fournisseur IA — "+(data.errorCode||"erreur non classifiée");
 state.style.color=ok?"#176b50":"#9a3412";
 }catch(error){
 const timedOut=error?.name==="TimeoutError"||error?.name==="AbortError";
 state.textContent=timedOut?"Délai d’attente dépassé côté console":"Connexion à l’API BEP impossible";
-state.style.color="#9a3412";set("geminiSmokeError",timedOut?"GEMINI_ADMIN_TIMEOUT":"GEMINI_ADMIN_NETWORK_ERROR");
+state.style.color="#9a3412";set("geminiSmokeError",timedOut?"AI_PROVIDER_ADMIN_TIMEOUT":"AI_PROVIDER_ADMIN_NETWORK_ERROR");
 set("geminiSmokeErrorDetail",timedOut?"Le délai d’attente de la console est dépassé.":"La console n’a pas pu joindre l’API BEP.");
 }
 finally{button.disabled=false}
