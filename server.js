@@ -22,12 +22,13 @@ const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
+const {readDocumentaryDispatchConfig,inspectDocumentarySchema}=require("./lib/bep-agent/documentary-schema");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
 const FINANCIAL_INTELLIGENCE_ENABLED=process.env.BEP_FINANCIAL_INTELLIGENCE_ENABLED==="true";
 const normalizeFrontendOrigin=(value,fallback)=>{try{const parsed=new URL(String(value||fallback));if(!["http:","https:"].includes(parsed.protocol)||parsed.username||parsed.password)return fallback;return parsed.origin}catch{return fallback}};
 const app=express(),port=process.env.PORT||3000,FRONTEND_ORIGIN=normalizeFrontendOrigin(process.env.FRONTEND_ORIGIN,"https://bep-mobile.onrender.com"),FRONTEND_ORIGINS=new Set([FRONTEND_ORIGIN,...String(process.env.FRONTEND_ORIGINS||"").split(",").map(value=>normalizeFrontendOrigin(value,null)).filter(Boolean)]),pool=process.env.DATABASE_URL?new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:5}):null;
-let dbReady=false,dbInitError=null,agentEnabled=false,agentTelemetryReady=false;
+let dbReady=false,dbInitError=null,agentEnabled=false,agentTelemetryReady=false,documentarySchemaReady=false;
 const configured=()=>!!(pool&&process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.GOOGLE_REDIRECT_URI&&process.env.SESSION_SECRET);
 app.set("trust proxy",1);
 app.use((req,res,next)=>{
@@ -499,9 +500,9 @@ app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(re
 app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,async(req,res)=>{
  const query=String(req.body?.query||"").trim();
  if(!query||query.length>1000)return res.status(400).json({error:"INVALID_DOCUMENTARY_QUERY"});
- const config=adminAgentStatus(),searchConfig=readSourceSearchConfig();
- if(!agentEnabled||!config.enabled||config.provider!=="groq")return res.status(409).json({error:"GROQ_DOCUMENTARY_AGENT_UNAVAILABLE",reason:config.provider!=="groq"?"The documentary pipeline requires the dedicated Groq admin provider.":config.disabledReason||"Administrative agent is not ready."});
- if(!searchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:searchConfig.reason});
+ const pipelineConfig=readDocumentaryDispatchConfig();
+ if(!pipelineConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_PIPELINE_DISABLED",reason:pipelineConfig.reason});
+ if(!documentarySchemaReady)return res.status(409).json({error:"BEP_DOCUMENTARY_SCHEMA_NOT_READY"});
  const dispatchConfig=readRenderDispatchConfig();
  if(!dispatchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_RUNNER_NOT_CONFIGURED",reason:dispatchConfig.reason});
  try{
@@ -585,7 +586,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
 });
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
- const status={ready:agentEnabled,configured:config.enabled,documentaryRunnerEnabled:readRenderDispatchConfig().enabled,documentaryExecution:"render_workflows_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ const status={ready:agentEnabled,configured:config.enabled,documentarySchemaReady,documentaryRunnerEnabled:readRenderDispatchConfig().enabled,documentaryExecution:"render_workflows_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
  res.setHeader("Cache-Control","no-store");
  if(!agentEnabled)return res.json(status);
  try{
@@ -750,6 +751,12 @@ app.put("/api/data",auth,async(req,res)=>{
 });
 app.use((req,res)=>res.status(404).json({error:"NOT_FOUND"}));
 app.listen(port,"0.0.0.0",()=>{console.log("BEP V2 server listening",port);(async()=>{if(process.env.BEP_DB_ROLE_PROBE==="true")await reportPostgresRole({pool,component:"api",variable:"DATABASE_URL",sharedWith:["integrated-agent"]});for(let attempt=1;attempt<=5;attempt++){try{await init();dbReady=true;dbInitError=null;console.log("BEP database initialization complete");if(process.env.BEP_COACH_SOURCE_REGISTRY_SCHEMA_MIGRATE==="true"){await ensureCoachSourceRegistrySchema(pool);console.info("BEP Coach source freshness schema migration completed by explicit startup flag")}if(process.env.BEP_COACH_SOURCE_REGISTRY_SEED==="true"){const seed=require("./src/coach/knowledge/financialCoachSources.mesquestionsdargent.fr.json");let inserted=0;for(let offset=0;offset<seed.sources.length;offset+=10){const batch=await registerCoachSources({pool,sources:seed.sources.slice(offset,offset+10)});inserted+=batch.inserted}console.info("BEP Coach institutional source registry seed completed",JSON.stringify({sourceCount:seed.sources.length,inserted,provider:seed.provider}))}try{
+ const documentaryConfig=readDocumentaryDispatchConfig();
+ if(documentaryConfig.enabled){
+  const documentarySchema=await inspectDocumentarySchema(pool);
+  documentarySchemaReady=documentarySchema.ready;
+  if(!documentarySchemaReady)console.warn("BEP documentary pipeline disabled: required schema constraints are not migrated",JSON.stringify(documentarySchema));
+ }
  const agentConfig=adminAgentStatus();
  if(agentConfig.enabled){
   if(process.env.BEP_AGENT_SCHEMA_MIGRATE==="true"){
