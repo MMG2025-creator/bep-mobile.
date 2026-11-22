@@ -3,9 +3,11 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
+const {execFileSync}=require("node:child_process");
 const root=path.join(__dirname,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const {processOne}=require("../lib/bep-agent/worker");
+const {readDocumentaryWorkerConfig}=require("../lib/bep-agent/config");
 
 test("documentary pipeline stays behind admin auth and dispatches an isolated Render Workflow task",()=>{
  const server=read("server.js"),workflow=read("render-workflows/main.mjs"),dispatch=read("lib/bep-agent/render-dispatch.js"),worker=read("lib/bep-agent/worker.js"),repository=read("lib/bep-agent/repository.js"),role=read("database/operations/bep_agent_runner_role.sql");
@@ -16,6 +18,8 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(dispatch.includes("https://api.render.com/v1/task-runs"));
  assert.ok(dispatch.includes('idempotencyKey:"bep-documentary-"'));
  assert.ok(workflow.includes("process.env.BEP_AGENT_DATABASE_URL"));
+ assert.doesNotMatch(workflow,/process\\.env\\.DATABASE_URL/);
+ execFileSync(process.execPath,["--check",path.join(root,"render-workflows/main.mjs")]);
  assert.ok(workflow.includes('role_name!=="bep_agent_runner"'));
  assert.ok(workflow.includes('database_name!=="bep_v2_db"'));
  assert.ok(workflow.includes('jobTypes:["documentary_research"],jobId:id'));
@@ -27,6 +31,23 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.doesNotMatch(role,/GRANT .* ON ALL TABLES/);
  assert.doesNotMatch(server,/github_actions_on_demand|BEP_AGENT_GITHUB_DISPATCH_TOKEN/);
  assert.doesNotMatch(server,/app\\.post\\("\\/api\\/ai\\/chat"[^]*?new GroqClient/);
+});
+
+
+test("documentary workflow config requires its dedicated worker and provider credentials",()=>{
+ const config=readDocumentaryWorkerConfig({
+  BEP_AGENT_ENABLED:"true",
+  BEP_AGENT_RUN_AS_WORKER:"true",
+  BEP_AGENT_RUN_MODE:"admin_on_demand",
+  BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",
+  BEP_AGENT_AI_PROVIDER:"groq",
+  BEP_AGENT_GROQ_API_KEY:"test-key",
+  BEP_AGENT_SOURCE_SEARCH_ENABLED:"true",
+  BEP_AGENT_EXA_API_KEY:"exa-test"
+ });
+ assert.equal(config.enabled,true);
+ assert.equal(config.provider,"groq");
+ assert.equal(readDocumentaryWorkerConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_AI_PROVIDER:"groq",BEP_AGENT_GROQ_API_KEY:"x"}).enabled,false);
 });
 
 test("documentary migration permits create candidates and the dedicated job type",()=>{
