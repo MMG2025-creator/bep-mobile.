@@ -37,7 +37,7 @@ Le plafond BEP limite les appels à huit par jour côté application. Groq publi
 
 ## Migration PostgreSQL
 Les tables additives doivent exister avant activation. La migration reste explicitement opt-in :
-- ajouter `BEP_AGENT_SCHEMA_MIGRATE=true) au service API, avec la configuration admin-on-demand complète ci-dessus ;
+- ajouter `BEP_AGENT_SCHEMA_MIGRATE=true au service API, avec la configuration admin-on-demand complète ci-dessus ;
 - au démarrage suivant, le serveur exécute uniquement la migration SQL additive et idempotente, puis vérifie la présence des sept tables ;
 - remettre ensuite `BEP_AGENT_SCHEMA_MIGRATE=false` ou retirer la variable pour les redémarrages suivants.
 
