@@ -18,6 +18,7 @@ test("documentary pipeline stays behind admin auth and runs one requested job th
  assert.match(entry,/new GroqClient\(\{apiKey:config\.apiKey,model:config\.model/);
  assert.match(entry,/processOne\(\{pool,client,model:config\.model/);
  assert.match(entry,/deferOnQuotaExhausted:false/);
+ assert.match(entry,/retryOnFailure:false/);
  assert.match(entry,/jobTypes:\["documentary_research"\],jobId/);
  assert.match(worker,/jobTypes=\["knowledge_review","coach_quality_review"\],jobId=null/);
  assert.match(repository,/AND id::text=\$2/);
@@ -37,6 +38,7 @@ test("approved new knowledge gets an immutable initial version and corrections a
 
 test("one-shot quota exhaustion marks the task failed instead of leaving it queued",async()=>{
  let taskStatus="running";
+ const poolQueries=[];
  const client={query:async(sql)=>{
   if(sql==="BEGIN"||sql==="COMMIT"||sql==="ROLLBACK")return{rowCount:0,rows:[]};
   if(sql.startsWith("UPDATE bep_agent_jobs SET status=CASE"))return{rowCount:0,rows:[]};
@@ -45,10 +47,12 @@ test("one-shot quota exhaustion marks the task failed instead of leaving it queu
   return{rowCount:0,rows:[]};
  },release(){}};
  const pool={connect:async()=>client,query:async(sql)=>{
+  poolQueries.push(sql);
   if(sql.startsWith("INSERT INTO bep_agent_daily_usage"))return{rowCount:0,rows:[]};
   if(sql.startsWith("UPDATE bep_agent_jobs SET status='failed'")){taskStatus="failed";return{rowCount:1,rows:[]}}
   return{rowCount:1,rows:[]};
  }};
- await processOne({pool,client:{generateJson:async()=>{throw new Error("must not call Groq")}},model:"test-model",workerId:"test",maxCallsPerDay:1,jobTypes:["documentary_research"],jobId:"481",deferOnQuotaExhausted:false});
+ await processOne({pool,client:{generateJson:async()=>{throw new Error("must not call Groq")}},model:"test-model",workerId:"test",maxCallsPerDay:1,jobTypes:["documentary_research"],jobId:"481",deferOnQuotaExhausted:false,retryOnFailure:false});
  assert.equal(taskStatus,"failed");
+ assert.equal(poolQueries.some(sql=>sql.includes("run_after=CASE WHEN")),false,"one-shot failure must not enqueue a retry without a resident worker");
 });
