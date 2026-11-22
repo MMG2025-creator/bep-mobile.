@@ -16,6 +16,10 @@ const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
+const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
+const {readDocumentaryDispatchConfig,dispatchDocumentaryWorkflow}=require("./lib/bep-agent/github-dispatch");
+const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
+const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -473,6 +477,89 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
  }
 });
+app.get("/api/admin/bep-agent/source-search/status",auth,requireBepAgentAdmin,async(req,res)=>{
+ const config=readSourceSearchConfig();
+ res.setHeader("Cache-Control","no-store");
+ res.json({enabled:config.enabled,provider:config.provider,keySource:config.keySource,allowedDomains:config.allowedDomains,reason:config.reason});
+});
+app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(req,res)=>{
+ const query=String(req.body?.query||"").trim();
+ if(!query||query.length>1000)return res.status(400).json({error:"INVALID_SOURCE_SEARCH_QUERY"});
+ try{
+  const result=await searchDocumentarySources({query,numResults:Math.min(5,Math.max(1,Number(req.body?.limit)||5))});
+  res.setHeader("Cache-Control","no-store");
+  if(!result.enabled)return res.status(409).json(result);
+  return res.json({...result,publication:"none",stored:false,groqAnalysis:"not_requested"});
+ }catch(error){
+  const code=String(error?.code||"SOURCE_SEARCH_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
+  console.error("BEP documentary source search failed",code);
+  return res.status(error?.httpStatus===429?429:502).json({error:code});
+ }
+});
+app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,async(req,res)=>{
+ const query=String(req.body?.query||"").trim();
+ if(!query||query.length>1000)return res.status(400).json({error:"INVALID_DOCUMENTARY_QUERY"});
+ const config=adminAgentStatus(),searchConfig=readSourceSearchConfig();
+ if(!agentEnabled||!config.enabled||config.provider!=="groq")return res.status(409).json({error:"GROQ_DOCUMENTARY_AGENT_UNAVAILABLE",reason:config.provider!=="groq"?"The documentary pipeline requires the dedicated Groq admin provider.":config.disabledReason||"Administrative agent is not ready."});
+ if(!searchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:searchConfig.reason});
+ const dispatchConfig=readDocumentaryDispatchConfig();
+ if(!dispatchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_RUNNER_NOT_CONFIGURED",reason:dispatchConfig.reason});
+ try{
+  const queued=await pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('documentary_research',$1::jsonb) ON CONFLICT DO NOTHING RETURNING id",[JSON.stringify({query})]);
+  if(!queued.rowCount)return res.status(409).json({error:"DOCUMENTARY_JOB_ALREADY_QUEUED"});
+  const jobId=String(queued.rows[0].id);
+  let dispatch;
+  try{dispatch=await dispatchDocumentaryWorkflow({jobId});}
+  catch(dispatchError){
+   await pool.query("UPDATE bep_agent_jobs SET status='failed',locked_at=NULL,locked_by=NULL,last_error='GitHub Actions dispatch failed',updated_at=NOW() WHERE id=$1 AND status='queued'",[jobId]).catch(()=>{});
+   console.error("BEP documentary workflow dispatch failed",String(dispatchError?.code||"DISPATCH_FAILED").slice(0,80));
+   return res.status(503).json({error:"DOCUMENTARY_RUNNER_DISPATCH_FAILED"});
+  }
+  res.setHeader("Cache-Control","no-store");
+  return res.status(202).json({queued:true,jobId,jobType:"documentary_research",provider:"groq",searchProvider:"exa",execution:"github_actions_on_demand",workflowDispatched:dispatch.dispatched,automaticPublication:false});
+ }catch(error){
+  console.error("BEP documentary job enqueue failed",String(error?.message||error).slice(0,120));
+  return res.status(503).json({error:"DOCUMENTARY_JOB_QUEUE_UNAVAILABLE"});
+ }
+});
+app.get("/api/admin/bep-agent/library-benchmark/cases",auth,requireBepAgentAdmin,async(req,res)=>{
+ res.setHeader("Cache-Control","no-store");
+ res.json({cases:REFERENCE_CASES,metricScope:"retrieval_coverage_only",answerQualityMeasured:false});
+});
+app.post("/api/admin/bep-agent/library-benchmark",auth,requireBepAgentAdmin,async(req,res)=>{
+ const raw=req.body?.candidateIds;
+ if(!Array.isArray(raw)||raw.length<1||raw.length>20)return res.status(400).json({error:"INVALID_BENCHMARK_CANDIDATES"});
+ const ids=[...new Set(raw.map(Number))];
+ if(ids.some(id=>!Number.isSafeInteger(id)||id<1))return res.status(400).json({error:"INVALID_BENCHMARK_CANDIDATES"});
+ try{
+  const [baseline,candidates]=await Promise.all([
+   loadPublishedLibrary(pool),
+   pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale FROM bep_knowledge_candidates WHERE id=ANY($1::bigint[]) AND review_status='pending' ORDER BY id",[ids])
+  ]);
+  if(candidates.rowCount!==ids.length)return res.status(409).json({error:"BENCHMARK_CANDIDATE_SET_CHANGED"});
+  const candidateDocs=baseline.map(x=>({...x}));
+  for(const candidate of candidates.rows){
+   if(candidate.proposal_type==="create"){
+    let metadata;try{metadata=JSON.parse(candidate.rationale||"{}")}catch{return res.status(409).json({error:"BENCHMARK_CANDIDATE_METADATA_INVALID"})}
+    if(!["income","budget","savings","planning","spending","debt","behavior"].includes(metadata.category))return res.status(409).json({error:"BENCHMARK_CANDIDATE_METADATA_INVALID"});
+    candidateDocs.push({slug:candidate.source_slug,category:metadata.category,title:candidate.title,content:candidate.content,keywords:Array.isArray(metadata.keywords)?metadata.keywords:[],source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1});
+   }else{
+    const target=candidateDocs.find(x=>x.slug===candidate.source_slug);
+    if(!target)return res.status(409).json({error:"BENCHMARK_TARGET_DOCUMENT_MISSING"});
+    target.title=candidate.title;target.content=candidate.content;
+   }
+  }
+  const result=runLibraryBenchmark({baselineDocuments:baseline,candidateDocuments:candidateDocs});
+  const inputDigest=crypto.createHash("sha256").update(JSON.stringify({candidateIds:ids,baseline:baseline.map(x=>[x.slug,x.version]),candidate:candidates.rows.map(x=>[x.id,x.source_slug,x.proposal_type,x.title,x.content])})).digest("hex");
+  const outputDigest=crypto.createHash("sha256").update(JSON.stringify(result)).digest("hex");
+  await pool.query("INSERT INTO bep_agent_runs(job_id,job_type,status,model,input_digest,output_digest,output_summary,usage,error_code,started_at,finished_at) VALUES(NULL,'library_benchmark','completed','bep-deterministic-retrieval-benchmark',$1,$2,$3::jsonb,NULL,NULL,NOW(),NOW())",[inputDigest,outputDigest,JSON.stringify({candidateIds:ids,baseline:{hitAt3Rate:result.baseline.hitAt3Rate,meanReciprocalRank:result.baseline.meanReciprocalRank},candidate:{hitAt3Rate:result.candidate.hitAt3Rate,meanReciprocalRank:result.candidate.meanReciprocalRank},regressions:result.regressions,improvements:result.improvements,gatePassed:result.gatePassed,metricScope:result.metricScope,answerQualityMeasured:result.answerQualityMeasured})]);
+  res.setHeader("Cache-Control","no-store");
+  return res.json({...result,candidateIds:ids,automaticPublication:false});
+ }catch(error){
+  console.error("BEP documentary benchmark failed",String(error?.message||error).slice(0,120));
+  return res.status(503).json({error:"LIBRARY_BENCHMARK_UNAVAILABLE"});
+ }
+});
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
  const status=["pending","accepted","rejected"].includes(String(req.query.status||"pending"))?String(req.query.status||"pending"):"pending";
  try{
@@ -498,7 +585,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
 });
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
- const status={ready:agentEnabled,configured:config.enabled,mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ const status={ready:agentEnabled,configured:config.enabled,documentaryRunnerEnabled:readDocumentaryDispatchConfig().enabled,documentaryExecution:"github_actions_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
  res.setHeader("Cache-Control","no-store");
  if(!agentEnabled)return res.json(status);
  try{
@@ -545,6 +632,8 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
     if(exists.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SLUG_ALREADY_EXISTS"})}
     const keywords=Array.isArray(rationale.keywords)?rationale.keywords.slice(0,40):[];
     await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,1,TRUE,$10)",[candidate.source_slug,doc.category,candidate.title,candidate.content,JSON.stringify(keywords),candidate.source_name,candidate.source_url,candidate.evidence_level,candidate.source_digest,String(req.session.user.id)]);
+    const createdDocument={slug:candidate.source_slug,category:doc.category,title:candidate.title,content:candidate.content,keywords,tags:[],source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1,active:true};
+    await client.query("INSERT INTO bep_financial_knowledge_versions(slug,version,document,change_type,actor_ref) VALUES($1,1,$2::jsonb,'created',$3)",[candidate.source_slug,JSON.stringify(createdDocument),String(req.session.user.id)]);
    }else if(String(candidate.source_slug).startsWith("web-")){
     const match=/^web-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
     if(!match||candidate.proposal_type!=="update"||candidate.evidence_level!=="web_research_pending"||!/^https:\/\//.test(String(candidate.source_url||""))){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_INVALID"})}
@@ -560,7 +649,11 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
     if(original.source_name!==candidate.source_name||original.source_url!==candidate.source_url||original.evidence_level!==candidate.evidence_level){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_PROVENANCE_CHANGED"})}
     if(Number(original.version)!==Number(candidate.source_version)||currentSourceDigest!==candidate.source_digest){await client.query("ROLLBACK");return res.status(409).json({error:"SOURCE_DOCUMENT_CHANGED"})}
     const deactivate=candidate.proposal_type==="deactivate";
-    await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10,1,$11,$12) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,Number(original.version),candidate.source_digest,!deactivate,String(req.session.user.id)]);
+    const existingOverlay=await client.query("SELECT * FROM bep_agent_approved_knowledge WHERE slug=$1 FOR UPDATE",[original.slug]);
+    const currentDocument=existingOverlay.rowCount?{...existingOverlay.rows[0],version:Number(existingOverlay.rows[0].version)||1}:{...original,tags:[],version:Number(original.version)||1};
+    const currentVersion=Number(currentDocument.version)||1,nextVersion=currentVersion+1;
+    await client.query("INSERT INTO bep_financial_knowledge_versions(slug,version,document,change_type,actor_ref) VALUES($1,$2,$3::jsonb,$4,$5) ON CONFLICT(slug,version) DO NOTHING",[original.slug,currentVersion,JSON.stringify(currentDocument),deactivate?"archived":"edited",String(req.session.user.id)]);
+    await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT(slug) DO UPDATE SET category=EXCLUDED.category,title=EXCLUDED.title,content=EXCLUDED.content,keywords=EXCLUDED.keywords,source_name=EXCLUDED.source_name,source_url=EXCLUDED.source_url,evidence_level=EXCLUDED.evidence_level,source_version=EXCLUDED.source_version,source_digest=EXCLUDED.source_digest,version=bep_agent_approved_knowledge.version+1,active=EXCLUDED.active,approved_by=EXCLUDED.approved_by,updated_at=NOW()",[original.slug,original.category,deactivate?original.title:candidate.title,deactivate?original.content:candidate.content,JSON.stringify(original.keywords||[]),original.source_name,original.source_url,original.evidence_level,Number(original.version),candidate.source_digest,nextVersion,!deactivate,String(req.session.user.id)]);
    }
   }
   await client.query("UPDATE bep_knowledge_candidates SET review_status=$2,reviewed_at=NOW() WHERE id=$1",[id,decision==="approve"?"accepted":"rejected"]);
