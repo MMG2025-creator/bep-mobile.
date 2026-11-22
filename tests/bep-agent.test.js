@@ -69,18 +69,18 @@ test("Groq is the default free-tier admin provider and requires its dedicated ke
 test("Groq client requires a dedicated key and pins the official API endpoint",()=>{
  assert.throws(()=>new GroqClient({apiKey:""}),/API key/);
  const client=new GroqClient({apiKey:"secret"});
- assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);
+ assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);assert.throws(()=>client.generateJson({system:"s",prompt:"p"}),/schema is required/);
 });
 
 test("Groq client uses Bearer auth, JSON mode and parses structured output",async()=>{
  const original=global.fetch;let captured;
  global.fetch=async(url,options)=>{captured={url,options};return{ok:true,status:200,text:async()=>JSON.stringify({choices:[{message:{content:'{"ok":true,"probe":"BEP_GROQ_CONNECTIVITY"}'}}],usage:{total_tokens:9}})}};
  try{
-  const result=await new GroqClient({apiKey:"test-groq-key"}).generateJson({system:"system",prompt:"probe",maxOutputTokens:128});
+  const result=await new GroqClient({apiKey:"test-groq-key"}).generateJson({system:"system",prompt:"probe",maxOutputTokens:128,jsonSchema:{name:"probe",schema:{type:"object",properties:{ok:{type:"boolean"},probe:{type:"string"}},required:["ok","probe"],additionalProperties:false}}});
   assert.equal(captured.url,"https://api.groq.com/openai/v1/chat/completions");
   assert.equal(captured.options.headers.authorization,"Bearer test-groq-key");
   const body=JSON.parse(captured.options.body);
-  assert.equal(body.response_format.type,"json_object");assert.equal(body.max_tokens,128);
+  assert.equal(body.response_format.type,"json_schema");assert.equal(body.response_format.json_schema.strict,true);assert.equal(body.response_format.json_schema.name,"probe");assert.deepEqual(body.response_format.json_schema.schema.required,["ok","probe"]);assert.equal(body.max_tokens,128);
   assert.deepEqual(result.value,{ok:true,probe:"BEP_GROQ_CONNECTIVITY"});assert.equal(result.usage.total_tokens,9);
  }finally{global.fetch=original}
 });
