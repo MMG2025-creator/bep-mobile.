@@ -8,7 +8,7 @@ async function main(){
  const config=readDocumentaryWorkerConfig();
  if(!config.enabled)throw new Error("BEP documentary one-shot refused to start: "+config.disabledReason);
  const jobId=String(process.env.BEP_AGENT_DOCUMENTARY_JOB_ID||"").trim();
- if(!/^[1-9]\\d{0,18}$/.test(jobId))throw new Error("BEP_AGENT_DOCUMENTARY_JOB_ID is required and must be a valid job identifier");
+ if(!/^[1-9]\d{0,18}$/.test(jobId))throw new Error("BEP_AGENT_DOCUMENTARY_JOB_ID is required and must be a valid job identifier");
  if(!readSourceSearchConfig().enabled)throw new Error("Dedicated Exa source retrieval is not configured");
  const connectionString=String(process.env.BEP_AGENT_DATABASE_URL||"").trim();
  if(!connectionString)throw new Error("BEP_AGENT_DATABASE_URL is required; DATABASE_URL is deliberately not accepted");
