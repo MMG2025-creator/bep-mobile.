@@ -157,6 +157,7 @@ Aucun appel Coach -> Groq
 ### Exécution ponctuelle GitHub Actions — sans Worker Render permanent
 
 - Workflow : `.github/workflows/bep-documentary-on-demand.yml`.
+- Prérequis GitHub : un workflow `workflow_dispatch` ne peut être déclenché que lorsque son fichier existe sur la branche par défaut. Le fichier sera donc utilisable depuis l'administration après fusion de cette PR dans `main` ; la cible `ref` pourra ensuite être `main` ou une branche de staging déjà publiée.
 - Entrée : `workflow_dispatch` avec un identifiant de tâche PostgreSQL précis.
 - Déclencheur : l'endpoint administratif authentifié insère le job puis appelle l'API GitHub Actions avec un jeton dédié. Aucun déclenchement depuis le parcours Coach.
 - Traitement : `agent-documentary-once.js` réclame exclusivement le job demandé, avec le type `documentary_research`, puis termine le processus.
