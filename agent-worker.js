@@ -2,6 +2,7 @@
 const {Pool}=require("pg");
 const {readConfig}=require("./lib/bep-agent/config");
 const {startBepAgent}=require("./lib/bep-agent");
+const {reportPostgresRole}=require("./lib/bep-db-role-probe");
 
 async function main(){
  const config=readConfig();
@@ -11,7 +12,8 @@ async function main(){
  const pool=new Pool({connectionString,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:30000,max:2});
  let agent;
  try{
-  await pool.query("SELECT 1");
+  if(process.env.BEP_DB_ROLE_PROBE==="true")await reportPostgresRole({pool,component:"worker",variable:"BEP_AGENT_DATABASE_URL"});
+  else await pool.query("SELECT 1");
   agent=await startBepAgent({pool,env:process.env});
  }catch(error){await pool.end();throw error}
  if(!agent.enabled){await pool.end();throw new Error("Supervisor did not start")}
