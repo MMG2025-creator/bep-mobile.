@@ -23,5 +23,5 @@ test("approved new knowledge gets an immutable initial version and corrections a
  assert.match(server,/ON CONFLICT\(slug,version\) DO NOTHING/);
  assert.match(server,/currentVersion=Number\(currentDocument\.version\)/);
  assert.match(admin,/change_type IN \('created','edited','restored','archived'\)/);
- assert.match(server,/restore\/\:version/);
+ assert.match(admin,/r\.post\("\/:slug\/restore\/:version"/);
 });
