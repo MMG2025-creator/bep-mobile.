@@ -575,7 +575,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
 });
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
- const status={ready:agentEnabled,configured:config.enabled,mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ const status={ready:agentEnabled,configured:config.enabled,documentaryWorkerEnabled:process.env.BEP_AGENT_DOCUMENTARY_WORKER_ENABLED==="true",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
  res.setHeader("Cache-Control","no-store");
  if(!agentEnabled)return res.json(status);
  try{
