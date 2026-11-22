@@ -17,7 +17,7 @@ const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSour
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
 const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
-const {readDocumentaryDispatchConfig,dispatchDocumentaryWorkflow}=require("./lib/bep-agent/github-dispatch");
+const {readRenderDispatchConfig,dispatchDocumentaryWorkflow}=require("./lib/bep-agent/render-dispatch");
 const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
@@ -502,7 +502,7 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
  const config=adminAgentStatus(),searchConfig=readSourceSearchConfig();
  if(!agentEnabled||!config.enabled||config.provider!=="groq")return res.status(409).json({error:"GROQ_DOCUMENTARY_AGENT_UNAVAILABLE",reason:config.provider!=="groq"?"The documentary pipeline requires the dedicated Groq admin provider.":config.disabledReason||"Administrative agent is not ready."});
  if(!searchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:searchConfig.reason});
- const dispatchConfig=readDocumentaryDispatchConfig();
+ const dispatchConfig=readRenderDispatchConfig();
  if(!dispatchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_RUNNER_NOT_CONFIGURED",reason:dispatchConfig.reason});
  try{
   const queued=await pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('documentary_research',$1::jsonb) ON CONFLICT DO NOTHING RETURNING id",[JSON.stringify({query})]);
@@ -511,12 +511,12 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
   let dispatch;
   try{dispatch=await dispatchDocumentaryWorkflow({jobId});}
   catch(dispatchError){
-   await pool.query("UPDATE bep_agent_jobs SET status='failed',locked_at=NULL,locked_by=NULL,last_error='GitHub Actions dispatch failed',updated_at=NOW() WHERE id=$1 AND status='queued'",[jobId]).catch(()=>{});
-   console.error("BEP documentary workflow dispatch failed",String(dispatchError?.code||"DISPATCH_FAILED").slice(0,80));
+   await pool.query("UPDATE bep_agent_jobs SET status='failed',locked_at=NULL,locked_by=NULL,last_error='Render Workflow dispatch failed',updated_at=NOW() WHERE id=$1 AND status='queued'",[jobId]).catch(()=>{});
+   console.error("BEP documentary Render Workflow dispatch failed",String(dispatchError?.code||"DISPATCH_FAILED").slice(0,80));
    return res.status(503).json({error:"DOCUMENTARY_RUNNER_DISPATCH_FAILED"});
   }
   res.setHeader("Cache-Control","no-store");
-  return res.status(202).json({queued:true,jobId,jobType:"documentary_research",provider:"groq",searchProvider:"exa",execution:"github_actions_on_demand",workflowDispatched:dispatch.dispatched,automaticPublication:false});
+  return res.status(202).json({queued:true,jobId,jobType:"documentary_research",provider:"groq",searchProvider:"exa",execution:"render_workflows_on_demand",workflowDispatched:dispatch.dispatched,taskRunId:dispatch.taskRunId,taskRunStatus:dispatch.status,automaticPublication:false});
  }catch(error){
   console.error("BEP documentary job enqueue failed",String(error?.message||error).slice(0,120));
   return res.status(503).json({error:"DOCUMENTARY_JOB_QUEUE_UNAVAILABLE"});
@@ -585,7 +585,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
 });
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
- const status={ready:agentEnabled,configured:config.enabled,documentaryRunnerEnabled:readDocumentaryDispatchConfig().enabled,documentaryExecution:"github_actions_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
+ const status={ready:agentEnabled,configured:config.enabled,documentaryRunnerEnabled:readRenderDispatchConfig().enabled,documentaryExecution:"render_workflows_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
  res.setHeader("Cache-Control","no-store");
  if(!agentEnabled)return res.json(status);
  try{
