@@ -46,6 +46,10 @@ test("one-shot claim is constrained to the requested documentary job id",async()
  const client={query:async(sql,params)=>{calls.push({sql,params});if(sql.includes("SELECT id,job_type,payload,attempts,max_attempts"))return{rowCount:0,rows:[]};return{rowCount:0,rows:[]}},release(){}};
  const pool={connect:async()=>client};
  await claim(pool,"test-one-shot",["documentary_research"],"481");
+ const leaseRecovery=calls.find(x=>x.sql.startsWith("UPDATE bep_agent_jobs SET status=CASE"));
+ assert.match(leaseRecovery.sql,/job_type=ANY\(\$1::text\[\]\)/);
+ assert.match(leaseRecovery.sql,/AND id::text=\$2/);
+ assert.deepEqual(leaseRecovery.params,[["documentary_research"],"481"]);
  const select=calls.find(x=>x.sql.includes("SELECT id,job_type,payload,attempts,max_attempts"));
  assert.match(select.sql,/AND id::text=\$2/);
  assert.deepEqual(select.params,[["documentary_research"],"481"]);
