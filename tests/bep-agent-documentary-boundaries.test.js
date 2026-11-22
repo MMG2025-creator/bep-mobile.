@@ -27,6 +27,12 @@ test("documentary pipeline stays behind admin auth and runs one requested job th
  assert.doesNotMatch(server,/app\.post\("\/api\/ai\/chat"[^]*?new GroqClient/);
 });
 
+test("documentary migration permits create candidates and the dedicated job type",()=>{
+ const migration=read("database/migrations/20261122_bep_documentary_pipeline.sql");
+ assert.match(migration,/job_type IN \('knowledge_review','coach_quality_review','documentary_research'\)/);
+ assert.match(migration,/proposal_type IN \('clarify','update','deactivate','create'\)/);
+});
+
 test("approved new knowledge gets an immutable initial version and corrections are versioned",()=>{
  const server=read("server.js"),admin=read("lib/bep-coach-knowledge-admin.js");
  assert.match(server,/change_type,actor_ref\) VALUES\(\$1,1,\$2::jsonb,'created'/);
