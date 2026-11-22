@@ -45,10 +45,10 @@ test("one-shot claim is constrained to the requested documentary job id",async()
  const calls=[];
  const client={query:async(sql,params)=>{calls.push({sql,params});if(sql.includes("SELECT id,job_type,payload,attempts,max_attempts"))return{rowCount:0,rows:[]};return{rowCount:0,rows:[]}},release(){}};
  const pool={connect:async()=>client};
- await claim(pool,"test-one-shot",["documentary_research"],"123e4567-e89b-12d3-a456-426614174000");
+ await claim(pool,"test-one-shot",["documentary_research"],"481");
  const select=calls.find(x=>x.sql.includes("SELECT id,job_type,payload,attempts,max_attempts"));
  assert.match(select.sql,/AND id::text=\$2/);
- assert.deepEqual(select.params,[["documentary_research"],"123e4567-e89b-12d3-a456-426614174000"]);
+ assert.deepEqual(select.params,[["documentary_research"],"481"]);
 });
 
 test("PostgreSQL claim applies the explicit worker job-type allowlist",async()=>{
