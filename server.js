@@ -625,6 +625,8 @@ app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,
     if(exists.rowCount){await client.query("ROLLBACK");return res.status(409).json({error:"KNOWLEDGE_SLUG_ALREADY_EXISTS"})}
     const keywords=Array.isArray(rationale.keywords)?rationale.keywords.slice(0,40):[];
     await client.query("INSERT INTO bep_agent_approved_knowledge(slug,category,title,content,keywords,source_name,source_url,evidence_level,source_version,source_digest,version,active,approved_by) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,1,$9,1,TRUE,$10)",[candidate.source_slug,doc.category,candidate.title,candidate.content,JSON.stringify(keywords),candidate.source_name,candidate.source_url,candidate.evidence_level,candidate.source_digest,String(req.session.user.id)]);
+    const createdDocument={slug:candidate.source_slug,category:doc.category,title:candidate.title,content:candidate.content,keywords,tags:[],source_name:candidate.source_name,source_url:candidate.source_url,evidence_level:candidate.evidence_level,version:1,active:true};
+    await client.query("INSERT INTO bep_financial_knowledge_versions(slug,version,document,change_type,actor_ref) VALUES($1,1,$2::jsonb,'created',$3)",[candidate.source_slug,JSON.stringify(createdDocument),String(req.session.user.id)]);
    }else if(String(candidate.source_slug).startsWith("web-")){
     const match=/^web-(budget|spending|savings|debt|behavior|income|planning|general)-([a-f0-9]{24})$/.exec(String(candidate.source_slug));
     if(!match||candidate.proposal_type!=="update"||candidate.evidence_level!=="web_research_pending"||!/^https:\/\//.test(String(candidate.source_url||""))){await client.query("ROLLBACK");return res.status(409).json({error:"WEB_CANDIDATE_INVALID"})}
