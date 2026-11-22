@@ -604,3 +604,185 @@ L'architecture ne peut être déclarée prête pour développement que si :
 8. les décisions non résolues (stockage, formats, embeddings, pgvector, budget) ont un responsable et une décision documentée.
 
 Aucun appel externe en production ne doit être activé tant que les points 3 à 6 ne sont pas satisfaits. Aucun merge, déploiement ou publication de connaissances n'est autorisé par ce document.
+
+## 20. Décisions d'architecture verrouillées — contrat de référence
+
+Cette section tranche les points précédemment ouverts. En cas de divergence avec une formulation plus générale des sections 4, 5, 10 à 12 et 16 à 19, **la présente section prévaut**. Ces décisions définissent la cible ; elles ne décrivent pas une fonctionnalité déjà implémentée.
+
+### 20.1 Contrat HTTP du dialogue
+
+#### Requête cible — `POST /api/ai/chat`
+
+Le contrat public accepte uniquement :
+
+```json
+{
+  "question": "string, 1 à 4000 caractères",
+  "pageContext": {
+    "page": "home|budget|savings|spending|income|debt|goals|learning|profile|general",
+    "subPage": "string facultative, 40 caractères maximum"
+  }
+}
+```
+
+Règles :
+- La session authentifiée fournit l'identité ; le serveur déduit `user_id`. Aucun `user_id`, rôle, droit, consentement, solde, revenu ou autre fait financier envoyé par le navigateur n'est accepté comme vérité.
+- `financialContext` fourni par le client est ignoré et retiré du contrat cible. Il ne doit jamais être utilisé comme contexte de calcul ou de prompt. Les faits financiers proviennent exclusivement des tables BEP associées à `req.session.user.id`.
+- `pageContext.page` est une indication d'interface non sensible, validée contre l'énumération ci-dessus. `subPage` est tronqué à 40 caractères et ne peut modifier les droits ou le routage de sécurité.
+- Toute propriété inconnue est ignorée ; corps JSON supérieur à 16 Ko : HTTP 413 ; JSON invalide : HTTP 400 ; question vide ou supérieure à 4000 caractères : HTTP 400.
+- Le mode externe et le consentement ne sont pas pilotables par un champ de requête. Ils sont lus dans la configuration persistée côté serveur et contrôlés à chaque appel.
+
+#### Réponse cible
+
+Conserver les champs historiques afin de ne pas casser le frontend, et ajouter des champs stables :
+
+```json
+{
+  "answer": "string",
+  "provider": "bep-local|groq-coach",
+  "model": "string",
+  "mode": "structured|documentary|external_assist|local_fallback",
+  "usage": null,
+  "quota": null,
+  "sources": [
+    { "id": "string", "title": "string", "source": "string", "url": "string|null" }
+  ],
+  "limitations": ["string"]
+}
+```
+
+- `sources` ne contient que des identifiants de sources réellement récupérées et autorisées pour l'utilisateur.
+- Une citation inconnue, inventée ou appartenant à un autre utilisateur invalide la réponse assistée ; le système retourne une réponse locale si elle est suffisante, sinon une erreur contrôlée.
+- Les calculs et montants sont calculés par BEP. Le LLM ne renvoie jamais un montant calculé qui remplace un résultat serveur.
+- Aucun prompt, contenu personnel ou extrait documentaire ne figure dans la réponse technique ou les journaux.
+
+### 20.2 Contrat de données financières transmis à Groq
+
+Le serveur construit un DTO dédié, jamais l'objet complet de `buildIntelligence()`, de `loadUserFinancialContext()` ou de `req.body`.
+
+DTO de base autorisé :
+- `question` : question utilisateur, après contrôle des secrets et identifiants ;
+- `intent` : valeur issue du classifieur serveur ;
+- `page` : valeur d'interface validée ;
+- `knowledge` : au maximum 3 extraits de connaissances publiées/validées ou personnelles acceptées, 1200 caractères chacun, avec identifiant de source ;
+- `financialFacts` : absent par défaut ; ajouté uniquement selon la matrice ci-dessous.
+
+| Intention serveur | Données personnelles autorisées au fournisseur | Données interdites |
+|---|---|---|
+| `explain`, `steps`, `list`, `overview`, `general`, `contextual` | Aucune donnée financière ; question, page et extraits documentaires autorisés uniquement | Tous revenus, soldes, dépenses, opérations, dettes, objectifs nominatifs, historiques |
+| `amount` | Un seul agrégat calculé côté serveur, explicitement nécessaire à la question (ex. total mensuel des charges), avec période et devise | Lignes d'opérations, libellés, contreparties, identifiants, historique complet |
+| `recommendation` | Au plus 3 agrégats calculés côté serveur parmi revenu mensuel total, charges mensuelles totales, disponible mensuel, progression agrégée d'un objectif ; uniquement si la question l'exige | Détail de revenus/dépenses, transactions, psychologie, libellés libres, coordonnées, historique mensuel complet |
+| `compare` | Au plus 3 agrégats nécessaires à la comparaison, calculés côté serveur et étiquetés avec période/devise | Données transactionnelles, données d'un tiers, données hors sujet |
+| Toute intention documentaire | Extraits explicitement sélectionnés et confirmés pour cette analyse, après occultation ; 10 extraits maximum, 1200 caractères chacun, 8000 caractères cumulés | Fichier complet, pages non sélectionnées, métadonnées personnelles non nécessaires |
+
+Contrôles obligatoires :
+- Les agrégats sont produits par le backend et accompagnés de leur période, devise et statut de fraîcheur. Le modèle ne reçoit pas les objets source.
+- Aucun identifiant direct (nom, adresse, email, téléphone, identifiant de compte), secret, token, donnée bancaire complète, donnée de carte ou donnée de tiers n'est transmis.
+- Les lignes `transactions`, `expenses`, `savingsOperations`, `incomes`, `debts`, `budgets` et `monthlyHistory` ne sont jamais sérialisées directement dans un prompt.
+- Les données psychologiques/comportementales personnelles ne sont pas transmises en V1.
+- La question elle-même est filtrée pour retirer les secrets évidents ; si elle contient une donnée particulièrement sensible ou un identifiant direct non nécessaire, demander une reformulation ou rester local.
+- Le DTO est validé par schéma fermé (`additionalProperties: false`) avant sérialisation. Les tests inspectent le corps réseau réellement émis, pas uniquement l'objet avant filtrage.
+
+### 20.3 Décision credentials Groq
+
+**Choix V1 : clé de service dédiée au Coach, pas de BYOK utilisateur dans le runtime Coach.**
+
+- Coach : `BEP_COACH_GROQ_API_KEY`, secret exclusivement injecté dans le service d'inférence Coach.
+- Admin : `BEP_AGENT_GROQ_API_KEY`, conservé dans le service Admin existant.
+- Les deux clés sont différentes, créées séparément, non interchangeables, non copiées dans le dépôt, les builds frontend, les logs ou la base utilisateur.
+- Aucun fallback d'un runtime vers la clé de l'autre ; clé Coach absente = mode local uniquement et statut explicite ; clé Admin absente = comportement Admin existant, sans recours à la clé Coach.
+- Aucun champ de clé API fourni par un utilisateur n'est lu par le runtime Coach V1. Les éventuels réglages historiques `bep_user_ai`/BYOK restent hors de ce chemin et ne peuvent pas être utilisés implicitement par le Coach. Toute réintroduction de BYOK nécessite une décision et une revue séparées.
+- La configuration Coach comprend aussi `BEP_COACH_GROQ_MODEL`, `BEP_COACH_AI_ENABLED`, les limites et budgets ci-dessous. Le modèle est fixé côté serveur sur une référence explicitement validée ; aucun nom de modèle client n'est accepté.
+- Le secret est rotatif, avec procédure de rotation sans journalisation de sa valeur. Les tests utilisent des clés factices et vérifient qu'aucune valeur de secret ne se retrouve dans les réponses ou les logs.
+- Le mode local demeure le défaut. Le fait que la clé de service soit configurée ne constitue ni activation du mode externe, ni consentement.
+
+### 20.4 Isolation des processus et des déploiements
+
+La séparation par simples modules ou variables d'environnement dans un même processus Node.js n'est pas suffisante pour la cible.
+
+Décision :
+1. **Coach API / orchestration** : processus de service Coach dédié, responsable de l'authentification utilisateur, du contexte financier, du consentement, du DTO minimisé, des quotas Coach et de la réponse.
+2. **Coach inference worker** : processus/service Render distinct, responsable uniquement de l'appel Groq, de la validation du schéma de sortie et du comptage technique. Il ne possède ni accès direct à la base financière, ni accès aux sessions utilisateurs, ni accès aux tables Admin.
+3. **Admin API/runtime** : conserve son service, ses routes, sa clé `BEP_AGENT_GROQ_API_KEY`, ses prompts, ses quotas et son circuit de candidats/revue. Aucun import, client, cache, file de jobs ou secret partagé avec Coach.
+4. **Communication Coach API → Coach inference worker** : réseau HTTPS privé/authentifié par identité de service et secret dédié `BEP_COACH_WORKER_AUTH_SECRET` (secret distinct de la clé Groq). Le worker n'accepte que le DTO fermé de la section 20.2 ; taille maximale 32 Ko ; aucune URL arbitraire, aucun nom de table et aucun identifiant de compte.
+5. Le worker retourne uniquement la réponse structurée, les citations parmi les IDs fournis et les compteurs d'usage. Il ne peut appeler ni l'Admin, ni la base BEP, ni une URL fournie dans le prompt.
+6. Le worker ne charge aucun module du dépôt Admin et ne reçoit jamais `BEP_AGENT_*`. L'API Coach ne reçoit jamais `BEP_AGENT_GROQ_API_KEY`.
+
+Le partage de la bibliothèque publiée/validée est un accès de données explicitement autorisé, en lecture seule, avec compte DB limité ; il ne constitue pas un canal de communication entre agents.
+
+**Conséquence opérationnelle :** la cartographie Render et le routage de session doivent être audités en phase 0 avant de créer les services. Aucun service Render, secret, route ou configuration n'est créé/modifié par cette spécification. La mise en œuvre exige une PR de code distincte et une validation d'architecture avant tout déploiement.
+
+### 20.5 Valeurs V1 concrètes et seuils de tests
+
+Ces valeurs constituent les plafonds initiaux de sécurité et les seuils d'acceptation ; elles pourront être modifiées uniquement par décision documentée et nouvelle revue.
+
+| Contrôle | Valeur V1 | Résultat attendu au seuil dépassé |
+|---|---:|---|
+| Corps HTTP dialogue | 16 Ko | HTTP 413, aucun appel externe |
+| Question utilisateur | 1–4000 caractères | HTTP 400 si hors plage |
+| Timeout appel worker/Groq | 15 secondes | abandon, local si suffisant, aucun fallback fournisseur |
+| Tentatives automatiques | 1 (aucun retry automatique) | 429/5xx/timeout remonté au circuit local |
+| Sortie Groq | 1200 tokens maximum | troncature interdite ; réponse rejetée si limite non respectée |
+| Extraits documentaires dialogue | 3 × 1200 caractères | excédent exclu avant appel |
+| Extraits document personnel | 10 maximum, 1200 caractères chacun, 8000 caractères cumulés | analyse refusée ou sélection réduite avant appel |
+| Appels externes par utilisateur | 20 par jour UTC | blocage externe, réponse locale si suffisante |
+| Débit par utilisateur | 3 appels par minute | HTTP 429, aucun appel Groq |
+| Tokens d'entrée par utilisateur | 30 000 par jour UTC | blocage externe |
+| Tokens de sortie par utilisateur | 6 000 par jour UTC | blocage externe |
+| Budget par utilisateur | 0,50 USD par jour UTC | blocage dur avant appel |
+| Budget global Coach | 10 USD par jour UTC | coupe-circuit global, local-only |
+| Réservation de quota | atomique avant appel | une seule réservation gagnante en concurrence |
+| Upload document V1 | 20 Mo par fichier ; 5 documents actifs/utilisateur | HTTP 413 ou HTTP 429 |
+| Texte extrait par document | 100 000 caractères maximum | document rejeté ou contenu tronqué avec statut explicite |
+| Segmentation | 1200 tokens/chunk, recouvrement 150 tokens | test de bornes déterministe |
+| Collecte web | 5 URLs/requête, 10 pages/URL, 2 Mo/page, 8 Mo/requête, 10 s/page, 30 s/requête | arrêt contrôlé et provenance des pages déjà collectées |
+| Rétention document personnel V1 | 30 jours par défaut, renouvelable par action utilisateur | purge vérifiable de l'original et des dérivés |
+| Logs de contenu | 0 prompt/réponse/extrait en clair | toute sentinelle détectée = test bloquant |
+
+Le coût est calculé côté serveur avec une grille tarifaire versionnée correspondant au modèle autorisé. Si le tarif ou le coût d'une requête ne peut pas être estimé de façon fiable, l'appel est bloqué plutôt que considéré comme gratuit. Les réservations sont atomiques ; les tokens réellement retournés réconcilient la réservation ; un échec avant émission réseau libère la réservation, un résultat fournisseur ou timeout ambigu reste comptabilisé au plafond réservé jusqu'à réconciliation.
+
+### 20.6 Contrat de tests automatisables
+
+Chaque test de sécurité critique doit comporter : ID stable, fixture, action exacte, résultat HTTP, résultat DB, nombre d'appels réseau attendu, assertion anti-fuite et nettoyage. Les sentinelles doivent être uniques, par exemple `SENTINEL_USER_A_9f31`, `SENTINEL_TXN_SECRET_2c77`, `SENTINEL_ADMIN_PENDING_7a10`.
+
+| ID | Précondition / action | Assertions obligatoires |
+|---|---|---|
+| CHAT-DATA-001 | Envoyer `financialContext.income=999999` et une sentinelle dans `financialContext.transactions` | Valeurs ignorées ; réponse basée sur DB ; aucune sentinelle dans le prompt ou la réponse |
+| CHAT-DATA-002 | Modifier le `user_id` dans le body | Identité issue de la session ; aucune lecture du compte tiers |
+| CHAT-DATA-003 | Question structurée de montant avec fixture DB connue | Résultat strictement égal au moteur déterministe ; 0 appel worker |
+| CHAT-CONSENT-001 | Mode local, clé configurée | 0 appel réseau worker/Groq |
+| CHAT-CONSENT-002 | Consentement absent, retiré, expiré ou mauvaise finalité | 0 appel réseau ; réponse locale ou limitation explicite |
+| CHAT-MIN-001 | Ajouter les trois sentinelles interdites dans les transactions/coordonnées | 0 sentinelle dans le DTO réseau, les logs et la réponse |
+| CHAT-SCHEMA-001 | Worker retourne citation inconnue ou propriété supplémentaire | Réponse worker rejetée ; aucun fait/citation inventé |
+| CRED-001 | Clé Coach absente, clé Admin présente | 0 appel Groq Coach ; aucune tentative avec la clé Admin |
+| CRED-002 | Clé Admin absente, clé Coach présente | Le runtime Admin ne lit ni n'utilise la clé Coach |
+| PROC-001 | Inspection du graphe d'import du worker Coach | 0 import transitif `lib/bep-agent/**`, `bep-coach-ingestion.js`, Gemini Admin ou candidat Admin |
+| PROC-002 | Requête directe worker sans identité de service valide | HTTP 401/403 ; 0 appel Groq |
+| PROC-003 | Envoyer au worker un champ `user_id`, `financialContext` ou `callbackUrl` inattendu | Rejet HTTP 400 ; 0 appel Groq |
+| ISO-001 | Utilisateur A lit/analyse/supprime l'ID d'un document de B | HTTP 404 ; aucune modification DB ; 0 appel worker |
+| ISO-002 | Coach tente de récupérer un candidat Admin pending | 0 ligne retournée ; aucun accès à la table/circuit candidat |
+| QUOTA-001 | 21e appel dans la même journée UTC | Blocage avant réseau ; appels 1–20 au maximum |
+| QUOTA-002 | 4e appel dans une fenêtre glissante de 60 secondes | HTTP 429 ; 0 appel fournisseur pour le 4e |
+| QUOTA-003 | Deux requêtes simultanées pour la dernière unité de quota | Une réservation acceptée, l'autre refusée |
+| QUOTA-004 | Budget utilisateur à 0,50 USD ou budget global à 10 USD | Coupe-circuit avant réseau |
+| LIMIT-001 | Question de 4001 caractères ou body de 16 Ko + 1 octet | HTTP 400/413 ; 0 appel externe |
+| DOC-001 | Upload 20 Mo + 1 octet ou 6e document actif | HTTP 413/429 ; aucun stockage résiduel |
+| DOC-002 | Document avec 11e extrait ou 8001e caractère à transmettre | Aucun dépassement ; réduction/confirmation ou refus avant réseau |
+| DOC-003 | Retrait de consentement après mise en file et avant worker | Job annulé ; 0 appel Groq |
+| WEB-001 | 6e URL, 11e page ou dépassement 8 Mo | Arrêt contrôlé ; pas de page supplémentaire |
+| WEB-002 | URL localhost, IP privée, IPv6 link-local ou redirection vers IP privée | Rejet avant lecture de contenu ; 0 appel Groq |
+| LOG-001 | Injecter toutes les sentinelles dans question, document et erreur fournisseur | Aucune sentinelle dans logs, traces, métriques ou tables Admin |
+
+Les tests de quotas doivent utiliser une horloge figée en UTC et une base isolée. Les tests réseau doivent injecter un faux transport et compter les appels, puis être complétés par un test dynamique en staging sur le seul service Coach autorisé. Les tests d'isolation doivent s'exécuter en CI sans secret réel. Les valeurs de coût sont testées contre une grille tarifaire factice versionnée, jamais contre une facturation réelle.
+
+### 20.7 Conditions de passage en développement
+
+La phase de code ne peut démarrer qu'après :
+- validation du contrat API et de la matrice d'allowlist par revue ;
+- décision technique sur la validation de session entre API et services séparés ;
+- preuve que le compte DB du worker n'a aucun accès aux données utilisateur/Admin ;
+- confirmation des conditions contractuelles Groq et de l'information/consentement utilisateur ;
+- validation du modèle de coût, des limites et de la rétention ;
+- ajout des tests d'architecture et des tests de contrat ci-dessus à la stratégie CI.
+
+La présente décision ne vaut autorisation ni de modifier les services Render, ni de créer des secrets, ni de changer les routes, ni de développer, fusionner ou déployer.
