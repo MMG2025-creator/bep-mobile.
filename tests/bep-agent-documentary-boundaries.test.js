@@ -19,6 +19,9 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(dispatch.includes('API_ROOT+"/task-runs"'));
  assert.ok(dispatch.includes('idempotencyKey:"bep-documentary-"'));
  assert.ok(workflow.includes("process.env.BEP_AGENT_DATABASE_URL"));
+ assert.ok(workflow.includes("assertDocumentarySchema(pool)"));
+ assert.ok(server.includes("inspectDocumentarySchema(pool)"));
+ assert.ok(server.includes("documentarySchemaReady"));
  assert.doesNotMatch(workflow,/process\\.env\\.DATABASE_URL/);
  execFileSync(process.execPath,["--check",path.join(root,"render-workflows/main.mjs")]);
  assert.ok(workflow.includes('role_name!=="bep_agent_runner"'));
@@ -27,8 +30,11 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(workflow.includes("retry:{maxRetries:0}"));
  assert.ok(worker.includes('jobTypes=["knowledge_review","coach_quality_review"],jobId=null'));
  assert.ok(repository.includes("AND id::text=$2"));
- assert.ok(role.includes("GRANT SELECT, UPDATE ON TABLE bep_agent_jobs"));
- assert.ok(role.includes("GRANT INSERT ON TABLE bep_knowledge_candidates"));
+ assert.ok(role.includes("GRANT UPDATE (status,attempts,run_after,locked_at,locked_by,last_error,updated_at)"));
+ assert.ok(role.includes("bep_agent_runner_documentary_only"));
+ assert.ok(role.includes("USING (job_type='documentary_research')"));
+ assert.doesNotMatch(role,/GRANT SELECT, UPDATE ON TABLE bep_agent_jobs/);
+ assert.ok(role.includes("GRANT INSERT (source_slug,source_version,source_digest,proposal_type"));
  assert.doesNotMatch(role,/GRANT .* ON ALL TABLES/);
 });
 
@@ -83,4 +89,14 @@ test("one-shot quota exhaustion marks the task failed instead of leaving it queu
  await processOne({pool,client:{generateJson:async()=>{throw new Error("must not call Groq")}},model:"test-model",workerId:"test",maxCallsPerDay:1,jobTypes:["documentary_research"],jobId:"481",deferOnQuotaExhausted:false,retryOnFailure:false});
  assert.equal(taskStatus,"failed");
  assert.equal(poolQueries.some(sql=>sql.includes("run_after=CASE WHEN")),false,"one-shot failure must not enqueue a retry without a resident worker");
+});
+
+test("documentary dispatch API does not require Groq or Exa provider secrets",()=>{
+ const server=read("server.js");
+ const start=server.indexOf('app.post("/api/admin/bep-agent/documentary-analyze"');
+ const end=server.indexOf('app.get("/api/admin/bep-agent/library-benchmark/cases"',start);
+ const route=server.slice(start,end);
+ assert.ok(route.includes("readDocumentaryDispatchConfig()"));
+ assert.ok(route.includes("documentarySchemaReady"));
+ assert.doesNotMatch(route,/adminAgentStatus\(\)|readSourceSearchConfig\(\)/);
 });
