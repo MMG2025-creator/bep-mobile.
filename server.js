@@ -17,6 +17,7 @@ const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSour
 const {fetchHttpsPage}=require("./lib/bep-coach-ingestion");
 const {adminAgentStatus,scheduleAdminAgentRun,createAdminClient}=require("./lib/bep-agent/admin-runner");
 const {searchDocumentarySources,readSourceSearchConfig}=require("./lib/bep-agent/source-search");
+const {analyzeDocumentaryLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
 const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -491,6 +492,25 @@ app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(re
   const code=String(error?.code||"SOURCE_SEARCH_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
   console.error("BEP documentary source search failed",code);
   return res.status(error?.httpStatus===429?429:502).json({error:code});
+ }
+});
+app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,async(req,res)=>{
+ const query=String(req.body?.query||"").trim();
+ if(!query||query.length>1000)return res.status(400).json({error:"INVALID_DOCUMENTARY_QUERY"});
+ const config=adminAgentStatus();
+ if(!agentEnabled||!config.enabled||config.provider!=="groq")return res.status(409).json({error:"GROQ_DOCUMENTARY_AGENT_UNAVAILABLE",reason:config.provider!=="groq"?"The documentary pipeline requires the dedicated Groq admin provider.":config.disabledReason||"Administrative agent is not ready."});
+ try{
+  const retrieval=await searchDocumentarySources({query,numResults:5});
+  if(!retrieval.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:retrieval.reason});
+  if(!retrieval.results.length)return res.status(404).json({error:"DOCUMENTARY_SOURCES_NOT_FOUND"});
+  const client=createAdminClient(config);
+  const result=await analyzeDocumentaryLibrary({pool,client,query,searchResults:retrieval.results,model:config.model,maxOutputTokens:config.maxOutputTokens});
+  res.setHeader("Cache-Control","no-store");
+  return res.status(200).json({...result,sourceSearch:{provider:retrieval.provider,resultsCount:retrieval.resultsCount,requestId:retrieval.requestId},automaticPublication:false});
+ }catch(error){
+  const code=String(error?.code||error?.message||"DOCUMENTARY_ANALYSIS_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
+  console.error("BEP documentary analysis failed",code);
+  return res.status(502).json({error:code||"DOCUMENTARY_ANALYSIS_FAILED",automaticPublication:false});
  }
 });
 app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,res)=>{
