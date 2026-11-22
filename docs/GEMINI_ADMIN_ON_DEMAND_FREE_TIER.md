@@ -1,4 +1,4 @@
-# Gemini BEP — exécution administrative ponctuelle sur quota gratuit
+# BEP Agent — exécution administrative ponctuelle avec Groq
 
 ## Objectif
 Exécuter les revues Gemini uniquement à la demande depuis l'espace d'administration BEP, sans Worker Render permanent et sans exécution périodique en arrière-plan.
@@ -15,7 +15,7 @@ Variables nécessaires sur le service API BEP :
 Les paramètres de l'ancien Worker (`BEP_AGENT_RUN_AS_WORKER`, `BEP_AGENT_BILLING_APPROVED`, `BEP_AGENT_MONTHLY_BUDGET_USD`) ne sont pas utilisés par ce mode.
 
 ## Gratuité : limite de garantie
-Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le démarrage. Le code limite les appels à huit par jour et utilise exclusivement la clé dédiée et le modèle `gemini-3.8-flash` imposé par le code. Il ne peut toutefois pas vérifier l'état de facturation du projet Google ni empêcher un administrateur Google de rattacher ultérieurement une facturation. Pour rester sur le quota gratuit, le projet Google AI Studio doit rester sans facturation activée et dans les quotas gratuits publiés par Google. Un dépassement de quota fournisseur doit produire une erreur, sans bascule vers un fournisseur ou un modèle payant.
+Le mode admin limite les appels à huit par jour côté application. Groq publie des limites de débit et de volume qui dépendent du modèle et du compte ; le plafond BEP ne garantit donc pas à lui seul la gratuité ni l'absence de dépassement des limites fournisseur. Il faut vérifier les quotas affichés dans la console Groq avant activation. Une erreur ou un dépassement de quota Groq ne déclenche aucun basculement automatique vers Gemini ou un fournisseur payant.
 
 ## Exécution
 - Le démarrage du serveur n'appelle pas Gemini et ne lance aucun ordonnanceur.
@@ -27,7 +27,7 @@ Le mode admin supprime le budget mensuel fictif qui ne faisait que bloquer le d�
 
 ## Sécurité et périmètre
 - Les routes restent protégées par la session authentifiée et `BEP_AGENT_ADMIN_USER_IDS`.
-- Gemini reçoit les documents JSON autorisés, les fiches documentaires BEP et des métriques agrégées ; il ne reçoit pas les données personnelles du Coach.
+- Le fournisseur sélectionné reçoit les documents JSON autorisés, les fiches documentaires BEP et des métriques agrégées ; il ne reçoit pas les données personnelles du Coach.
 - Les propositions restent en attente de validation humaine.
 - Aucune publication automatique n'est autorisée.
 - Le serveur API utilise son pool PostgreSQL existant ; ce mode ne prétend pas fournir l'isolation réseau ou le rôle SQL dédié du Worker autonome. Les requêtes agent restent limitées aux fonctions et tables dédiées, mais l'identité PostgreSQL sous-jacente est celle de l'API.
@@ -46,5 +46,6 @@ La migration est additive et idempotente ; elle ne modifie pas les tables métie
 - Tests unitaires de configuration et de routage.
 - Migration additive validée sur une base de test.
 - Vérification des journaux de production après déploiement.
-- Premier appel réel Gemini déclenché manuellement par l'administrateur.
+- Premier appel réel Groq déclenché manuellement par l'administrateur.
 - Contrôle que le compteur PostgreSQL n'excède jamais huit appels par jour.
+\n## Secours Gemini\n\nGemini reste disponible comme fournisseur de secours sélectionnable explicitement en configurant `BEP_AGENT_AI_PROVIDER=gemini` et `BEP_AGENT_GEMINI_API_KEY`. Le modèle de secours est `gemini-3.8-flash`. Le changement de fournisseur nécessite une modification volontaire de configuration et un redémarrage du service ; aucun fallback automatique n'est activé, afin d'éviter une consommation ou une facturation inattendue.\n
