@@ -33,6 +33,7 @@ test("source search sends only a bounded query and the official-domain allowlist
 test("result validation rejects lookalike domains and credentials",()=>{
  const domains=["service-public.fr"];
  assert.equal(normalizeResult({title:"bad",url:"https://service-public.fr.attacker.tld/a",highlights:["x"]},domains),null);
+ assert.equal(normalizeResult({title:"bad",url:"https://sub.service-public.fr/a",highlights:["x"]},domains),null);
  assert.equal(normalizeResult({title:"bad",url:"https://user:pass@service-public.fr/a",highlights:["x"]},domains),null);
  assert.equal(normalizeResult({title:"bad",url:"http://service-public.fr/a",highlights:["x"]},domains),null);
 });
