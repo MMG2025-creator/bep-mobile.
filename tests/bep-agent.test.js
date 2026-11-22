@@ -66,7 +66,7 @@ test("Groq is the default free-tier admin provider and requires its dedicated ke
  assert.equal(readAdminConfig({...base,BEP_AGENT_GROQ_API_KEY:"groq-secret",BEP_AGENT_AI_PROVIDER:"gemini",BEP_AGENT_GEMINI_API_KEY:"gemini-secret"}).provider,"gemini");
  assert.equal(readAdminConfig({...base,BEP_AGENT_AI_PROVIDER:"unknown",BEP_AGENT_GROQ_API_KEY:"groq-secret"}).enabled,false);
 });
-test("Groq client requires a dedicated key and pins the official API endpoint",()=>{
+test("Groq client requires a dedicated key and pins the official API endpoint",async()=>{
  assert.throws(()=>new GroqClient({apiKey:""}),/API key/);
  const client=new GroqClient({apiKey:"secret"});
  assert.equal(client.model,"openai/gpt-oss-20b");assert.equal(client.timeoutMs,30000);await assert.rejects(()=>client.generateJson({system:"s",prompt:"p"}),/schema is required/);
