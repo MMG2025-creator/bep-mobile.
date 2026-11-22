@@ -499,20 +499,18 @@ app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(re
 app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,async(req,res)=>{
  const query=String(req.body?.query||"").trim();
  if(!query||query.length>1000)return res.status(400).json({error:"INVALID_DOCUMENTARY_QUERY"});
- const config=adminAgentStatus();
+ const config=adminAgentStatus(),searchConfig=readSourceSearchConfig();
  if(!agentEnabled||!config.enabled||config.provider!=="groq")return res.status(409).json({error:"GROQ_DOCUMENTARY_AGENT_UNAVAILABLE",reason:config.provider!=="groq"?"The documentary pipeline requires the dedicated Groq admin provider.":config.disabledReason||"Administrative agent is not ready."});
+ if(!searchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:searchConfig.reason});
+ if(process.env.BEP_AGENT_DOCUMENTARY_WORKER_ENABLED!=="true")return res.status(409).json({error:"DOCUMENTARY_WORKER_NOT_ENABLED",reason:"Dedicated documentary worker is not enabled on the API service."});
  try{
-  const retrieval=await searchDocumentarySources({query,numResults:5});
-  if(!retrieval.enabled)return res.status(409).json({error:"DOCUMENTARY_SOURCE_SEARCH_DISABLED",reason:retrieval.reason});
-  if(!retrieval.results.length)return res.status(404).json({error:"DOCUMENTARY_SOURCES_NOT_FOUND"});
-  const client=createAdminClient(config);
-  const result=await analyzeDocumentaryLibrary({pool,client,query,searchResults:retrieval.results,model:config.model,maxOutputTokens:config.maxOutputTokens});
+  const queued=await pool.query("INSERT INTO bep_agent_jobs(job_type,payload) VALUES('documentary_research',$1::jsonb) ON CONFLICT DO NOTHING RETURNING id",[JSON.stringify({query})]);
+  if(!queued.rowCount)return res.status(409).json({error:"DOCUMENTARY_JOB_ALREADY_QUEUED"});
   res.setHeader("Cache-Control","no-store");
-  return res.status(200).json({...result,sourceSearch:{provider:retrieval.provider,resultsCount:retrieval.resultsCount,requestId:retrieval.requestId},automaticPublication:false});
+  return res.status(202).json({queued:true,jobId:String(queued.rows[0].id),jobType:"documentary_research",provider:"groq",searchProvider:"exa",workerRequired:true,automaticPublication:false});
  }catch(error){
-  const code=String(error?.code||error?.message||"DOCUMENTARY_ANALYSIS_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
-  console.error("BEP documentary analysis failed",code);
-  return res.status(502).json({error:code||"DOCUMENTARY_ANALYSIS_FAILED",automaticPublication:false});
+  console.error("BEP documentary job enqueue failed",String(error?.message||error).slice(0,120));
+  return res.status(503).json({error:"DOCUMENTARY_JOB_QUEUE_UNAVAILABLE"});
  }
 });
 app.get("/api/admin/bep-agent/library-benchmark/cases",auth,requireBepAgentAdmin,async(req,res)=>{
