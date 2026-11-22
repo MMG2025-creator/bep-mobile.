@@ -455,7 +455,8 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   const result=await client.generateJson({
    system:"You are a connectivity diagnostic. Return only valid JSON with exactly two keys: ok (boolean) and probe (string). Never request or infer personal data.",
    prompt:"Connectivity test BEP. Return exactly "+JSON.stringify({ok:true,probe})+" and nothing else.",
-   maxOutputTokens:128
+   maxOutputTokens:128,
+   jsonSchema:{name:"bep_connectivity_probe",schema:{type:"object",properties:{ok:{type:"boolean"},probe:{type:"string"}},required:["ok","probe"],additionalProperties:false}}
   });
   const valid=result.value?.ok===true&&result.value?.probe===probe;
   res.status(valid?200:502).json({ok:valid,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,usage:result.usage||null,probe:valid?probe:"UNEXPECTED_MODEL_RESPONSE",automaticPublication:false,syntheticOnly:true});
