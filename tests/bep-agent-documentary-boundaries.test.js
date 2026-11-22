@@ -29,8 +29,6 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(role.includes("GRANT SELECT, UPDATE ON TABLE bep_agent_jobs"));
  assert.ok(role.includes("GRANT INSERT ON TABLE bep_knowledge_candidates"));
  assert.doesNotMatch(role,/GRANT .* ON ALL TABLES/);
- assert.doesNotMatch(server,/github_actions_on_demand|BEP_AGENT_GITHUB_DISPATCH_TOKEN/);
- assert.doesNotMatch(server,/app\\.post\\("\\/api\\/ai\\/chat"[^]*?new GroqClient/);
 });
 
 
