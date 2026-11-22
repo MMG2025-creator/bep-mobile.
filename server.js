@@ -445,20 +445,23 @@ app.delete("/api/admin/bep-coach/library/:slug",auth,requireBepAgentAdmin,async(
  }catch(e){await client.query("ROLLBACK").catch(()=>{});console.error("BEP knowledge removal failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"KNOWLEDGE_REMOVE_UNAVAILABLE"})}finally{client.release()}
 });
 app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,async(req,res)=>{
- const config=adminAgentStatus();
+ // This diagnostic is deliberately pinned to Gemini and its dedicated key.
+ // It must not inherit the primary admin provider (Groq) or touch Coach settings.
+ const config=adminAgentStatus({...process.env,BEP_AGENT_AI_PROVIDER:"gemini"});
  res.setHeader("Cache-Control","no-store");
  if(!config.enabled)return res.status(409).json({ok:false,configured:false,provider:config.provider,model:config.model,keySource:config.keySource,reason:config.disabledReason,apiCallMade:false});
  const startedAt=Date.now();
  try{
-  const client=createAdminClient({...config,timeoutMs:20000});
-  const probe="BEP_"+config.provider.toUpperCase()+"_CONNECTIVITY";
+  const client=new GeminiClient({apiKey:config.apiKey,model:config.model,timeoutMs:20000});
+  const probe="BEP_GEMINI_CONNECTIVITY";
   const result=await client.generateJson({
    system:"You are a connectivity diagnostic. Return only valid JSON with exactly two keys: ok (boolean) and probe (string). Never request or infer personal data.",
    prompt:"Connectivity test BEP. Return exactly "+JSON.stringify({ok:true,probe})+" and nothing else.",
-   maxOutputTokens:128,
-   jsonSchema:{name:"bep_connectivity_probe",schema:{type:"object",properties:{ok:{type:"boolean"},probe:{type:"string"}},required:["ok","probe"],additionalProperties:false}}
+   maxOutputTokens:128
   });
-  const valid=result.value?.ok===true&&result.value?.probe===probe;
+  // GeminiClient parses the JSON response; enforce the exact application-level shape here.
+  const value=result.value;
+  const valid=!!value&&typeof value==="object"&&!Array.isArray(value)&&Object.keys(value).length===2&&value.ok===true&&value.probe===probe;
   res.status(valid?200:502).json({ok:valid,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs:Date.now()-startedAt,usage:result.usage||null,probe:valid?probe:"UNEXPECTED_MODEL_RESPONSE",automaticPublication:false,syntheticOnly:true});
  }catch(error){
   const latencyMs=Date.now()-startedAt,requestId=require("node:crypto").randomUUID();

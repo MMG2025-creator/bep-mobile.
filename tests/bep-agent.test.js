@@ -189,8 +189,16 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
  const admin=fs.readFileSync(path.join(__dirname,"..","dist","admin.html"),"utf8");
  assert.match(server,/app\.post\("\/api\/admin\/bep-agent\/gemini-smoke-test",auth,requireBepAgentAdmin/);
+ const geminiRoute=server.slice(server.indexOf('app.post("/api/admin/bep-agent/gemini-smoke-test"'),server.indexOf('app.get("/api/admin/bep-agent/candidates"'));
+ assert.match(geminiRoute,/BEP_AGENT_AI_PROVIDER:"gemini"/);
+ assert.match(geminiRoute,/new GeminiClient\(\{apiKey:config\.apiKey,model:config\.model,timeoutMs:20000\}\)/);
+ assert.match(geminiRoute,/BEP_GEMINI_CONNECTIVITY/);
+ assert.doesNotMatch(geminiRoute,/createAdminClient/);
  assert.match(server,/automaticPublication:false,syntheticOnly:true/);
- assert.match(server,/const probe="BEP_"/);
+ assert.match(geminiRoute,/const probe="BEP_GEMINI_CONNECTIVITY"/);
+ assert.ok(geminiRoute.includes("Object.keys(value).length===2"));
+ assert.ok(geminiRoute.includes("!Array.isArray(value)"));
+ assert.doesNotMatch(geminiRoute,/jsonSchema:/);
  assert.match(server,/BEP AI connectivity diagnostic failed/);
  assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
  assert.match(server,/providerCode:error\?\.providerCode/);
