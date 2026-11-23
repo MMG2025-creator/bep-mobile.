@@ -214,3 +214,16 @@ test("admin API guard fails closed when the persisted session cannot be reloaded
  requireIndependentBepAdmin(req,res,()=>{passed=true});
  assert.equal(passed,false);assert.equal(status,401);assert.equal(body.error,"ADMIN_SESSION_UNAVAILABLE");
 });
+
+test("admin console page is served from the backend before the JSON 404 fallback",()=>{
+ const fs=require("node:fs"),path=require("node:path");
+ const server=fs.readFileSync(path.join(__dirname,"../server.js"),"utf8");
+ const source=fs.readFileSync(path.join(__dirname,"../admin.html"),"utf8");
+ const published=fs.readFileSync(path.join(__dirname,"../dist/admin.html"),"utf8");
+ assert.equal(source,published,"root and published admin pages must stay synchronized");
+ assert.match(server,/app\.get\("\/admin\.html",\(req,res\)=>/);
+ assert.match(server,/res\.sendFile\(path\.join\(__dirname,"admin\.html"\)/);
+ assert.ok(server.indexOf('app.get("/admin.html"')<server.indexOf('app.use((req,res)=>res.status(404)'));
+ assert.match(source,/id="geminiSmokeTestButton"/);
+ assert.match(source,/id="adminAuthLoader"/);
+});
