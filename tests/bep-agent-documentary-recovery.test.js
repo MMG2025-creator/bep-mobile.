@@ -74,6 +74,7 @@ test("recovery endpoint is admin-only, checks pipeline readiness, and dispatches
  const route=server.slice(start,end);
  assert.ok(start>=0&&end>start);
  assert.match(route,/auth,requireBepAgentAdmin/);
+ assert.match(route,/confirmOrphaned!==true/);
  assert.match(route,/recoverOrphanedQueuedJob\(pool,jobId\)/);
  assert.match(route,/dispatchDocumentaryWorkflow\(\{jobId:recovered\.jobId\}\)/);
  assert.match(route,/automaticPublication:false/);
