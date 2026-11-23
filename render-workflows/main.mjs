@@ -40,3 +40,32 @@ task(
   }
  }
 );
+
+
+// Read-only diagnostic task. It deliberately does not load worker configuration,
+// inspect job tables, or invoke Exa/Groq. Trigger manually from Render only.
+task(
+ {name:"diagnoseDatabaseIdentity",retry:{maxRetries:0},timeoutSeconds:60},
+ async ()=>{
+  const connectionString=String(process.env.BEP_AGENT_DATABASE_URL||"").trim();
+  if(!connectionString)throw new Error("BEP_AGENT_DATABASE_URL_REQUIRED");
+  const pool=new Pool({connectionString,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:10000,max:1});
+  try{
+   const identity=await pool.query("SELECT current_user AS role_name,current_database() AS database_name");
+   const row=identity.rows[0];
+   if(!row?.role_name||!row?.database_name)throw new Error("DOCUMENTARY_DATABASE_IDENTITY_UNAVAILABLE");
+   const result={
+    roleName:row.role_name,
+    databaseName:row.database_name,
+    expectedRole:"bep_agent_runner",
+    expectedDatabase:"bep_v2_db",
+    roleMatches:row.role_name==="bep_agent_runner",
+    databaseMatches:row.database_name==="bep_v2_db"
+   };
+   console.log("BEP_WORKFLOW_DATABASE_IDENTITY",JSON.stringify(result));
+   return result;
+  }finally{
+   await pool.end();
+  }
+ }
+);
