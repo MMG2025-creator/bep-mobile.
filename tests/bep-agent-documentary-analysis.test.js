@@ -46,3 +46,51 @@ test("unsupported external evidence is rejected before a candidate can be stored
  assert.equal(candidateWrites,0);
  assert.equal(result.proposals.length,0);
 });
+
+
+test("large documentary research is split into bounded one-source Groq requests",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const calls=[];
+ const client={generateJson:async(args)=>{calls.push(args);return{value:{findings:[],proposals:[]},usage:{total_tokens:20}}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Source "+i,url:"https://mesquestionsdargent.fr/source-"+i,domain:"mesquestionsdargent.fr",publishedAt:null,text:"Texte source ".repeat(1500),highlights:["Extrait ".repeat(150)]}));
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,maxOutputTokens:2600});
+ assert.equal(calls.length,4);
+ assert.equal(result.summary.batches,4);
+ assert.equal(result.usage.total_tokens,80);
+ for(const call of calls){
+  assert.ok(call.prompt.length<14000);
+  assert.ok(call.maxOutputTokens<=1600);
+  assert.equal(call.jsonSchema,ANALYSIS_SCHEMA);
+ }
+ assert.equal(result.automaticPublication,false);
+});
+
+
+test("documentary quota is reserved once per Groq batch and stops before an unreserved call",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const calls=[];let reservations=0;
+ const client={generateJson:async(args)=>{calls.push(args);return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Source "+i,url:"https://mesquestionsdargent.fr/quota-"+i,domain:"mesquestionsdargent.fr",text:"Contenu source",highlights:["Extrait"]}));
+ await assert.rejects(()=>analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,beforeGroqCall:async()=>++reservations<=2}),/DAILY_AGENT_QUOTA_REACHED/);
+ assert.equal(reservations,3,"the third batch checks quota before sending a request");
+ assert.equal(calls.length,2,"no Groq request is sent without a reserved call");
+});
+
+
+test("documentary analysis resumes after the last durably completed source batch",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Resume source "+i,url:"https://mesquestionsdargent.fr/resume-"+i,domain:"mesquestionsdargent.fr",text:"Texte source "+i,highlights:["Extrait "+i]}));
+ const sourcePayload=sources.map(x=>({title:x.title,url:x.url,domain:x.domain,publishedAt:x.publishedAt,text:String(x.text||"").slice(0,3500),highlights:x.highlights.slice(0,2).map(h=>String(h||"").slice(0,700))}));
+ const hash=value=>require("node:crypto").createHash("sha256").update(value).digest("hex");
+ const sourceDigest=hash(JSON.stringify(sourcePayload));
+ const inputDigest=hash(JSON.stringify({query:"budget",sources:sourcePayload,library:[]}));
+ const checkpoints=[];
+ const calls=[];
+ const client={generateJson:async()=>{calls.push(1);return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}};
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,resumeState:{sourceDigest,inputDigest,nextBatchIndex:2,findingsRaw:[],proposalsRaw:[],usageParts:[{total_tokens:20}]},onBatchComplete:async state=>checkpoints.push(state)});
+ assert.equal(calls.length,2,"only batches 3 and 4 should call Groq");
+ assert.equal(checkpoints.length,2);
+ assert.equal(checkpoints[0].nextBatchIndex,3);
+ assert.equal(checkpoints[1].nextBatchIndex,4);
+ assert.equal(result.usage.total_tokens,40,"usage from earlier batches is retained");
+});
