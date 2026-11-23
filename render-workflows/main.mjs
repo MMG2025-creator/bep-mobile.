@@ -21,7 +21,7 @@ task(
   const connectionString=String(process.env.BEP_AGENT_DATABASE_URL||"").trim();
   if(!connectionString)throw new Error("BEP_AGENT_DATABASE_URL_REQUIRED");
   const id=String(jobId||"").trim();
-  if(!/^[1-9]\\d{0,18}$/.test(id))throw new Error("DOCUMENTARY_JOB_ID_INVALID");
+  if(!/^[1-9]\d{0,18}$/.test(id))throw new Error("DOCUMENTARY_JOB_ID_INVALID");
   const pool=new Pool({connectionString,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:10000,max:1});
   try{
    // Temporary, allowlisted diagnostic: never log connection strings or environment values.
