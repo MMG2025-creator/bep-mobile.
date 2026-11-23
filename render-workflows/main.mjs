@@ -29,12 +29,12 @@ task(
    if(identity.rows[0]?.database_name!=="bep_v2_db")throw new Error("DOCUMENTARY_DATABASE_TARGET_MISMATCH");
    await assertDocumentarySchema(pool);
    const client=new GroqClient({apiKey:config.apiKey,model:config.model,timeoutMs:20000});
-   const processed=await processOne({pool,client,model:config.model,workerId:"bep-render-"+crypto.randomUUID(),maxCallsPerDay:config.maxCallsPerDay,maxOutputTokens:config.maxOutputTokens,env:process.env,jobTypes:["documentary_research"],jobId:id,deferOnQuotaExhausted:false,retryOnFailure:false});
+   const processed=await processOne({pool,client,model:config.model,workerId:"bep-render-"+crypto.randomUUID(),maxCallsPerDay:config.maxCallsPerDay,maxOutputTokens:config.maxOutputTokens,env:process.env,jobTypes:["documentary_research"],jobId:id,deferOnQuotaExhausted:true,retryOnFailure:false});
    if(!processed)throw new Error("DOCUMENTARY_JOB_NOT_CLAIMED");
    const result=await pool.query("SELECT status FROM bep_agent_jobs WHERE id::text=$1",[id]);
    const status=result.rows[0]?.status;
-   if(status!=="completed")throw new Error("DOCUMENTARY_JOB_NOT_COMPLETED");
-   return{jobId:id,status:"completed",provider:"groq",sourceProvider:"exa",automaticPublication:false};
+   if(status!=="completed"&&status!=="queued")throw new Error("DOCUMENTARY_JOB_NOT_COMPLETED");
+   return{jobId:id,status:status==="queued"?"deferred":"completed",provider:"groq",sourceProvider:"exa",automaticPublication:false};
   }finally{
    await pool.end();
   }

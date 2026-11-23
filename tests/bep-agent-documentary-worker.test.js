@@ -63,3 +63,56 @@ test("PostgreSQL claim applies the explicit worker job-type allowlist",async()=>
  const select=calls.find(x=>x.sql.includes("job_type=ANY"));
  assert.deepEqual(select.params,[["documentary_research"]]);
 });
+
+
+test("worker defers a documentary job when quota runs out between Groq batches",async()=>{
+ const {processOne}=require("../lib/bep-agent/worker");
+ const originalFetch=global.fetch;
+ let groqCalls=0,quotaReservations=0,deferred=false;const persisted=[];const runRecords=[];
+ const job={id:"481",job_type:"documentary_research",payload:{query:"épargne de précaution"},attempts:0,max_attempts:3};
+ const clientConnection={
+  query:async(sql,params)=>{
+   if(sql==="BEGIN"||sql==="COMMIT"||sql==="ROLLBACK")return{rowCount:0,rows:[]};
+   if(sql.includes("SELECT id,job_type,payload,attempts,max_attempts"))return{rowCount:1,rows:[job]};
+   return{rowCount:0,rows:[]};
+  },
+  release(){}
+ };
+ const pool={
+  connect:async()=>clientConnection,
+  query:async(sql,params)=>{
+   if(sql.includes("jsonb_set(payload,'{documentaryProgress}'")){persisted.push(JSON.parse(params[1]));return{rowCount:1,rows:[]}}
+   if(sql.includes("INSERT INTO bep_agent_runs")){runRecords.push({sql,params});return{rowCount:1,rows:[]}}
+   if(sql.includes("UPDATE bep_agent_daily_usage SET tokens="))return{rowCount:1,rows:[]};
+   if(sql.includes("INSERT INTO bep_agent_metrics"))return{rowCount:1,rows:[]};
+   if(sql.includes("INSERT INTO bep_agent_daily_usage")){
+    quotaReservations++;
+    return quotaReservations===1?{rowCount:1,rows:[{calls:1}]}:{rowCount:0,rows:[]};
+   }
+   if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};
+   if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};
+   if(sql.includes("SET status='queued',run_after=date_trunc('day',NOW())+INTERVAL '1 day'")){
+    deferred=true;
+    return{rowCount:1,rows:[]};
+   }
+   throw new Error("Unexpected SQL in worker quota test: "+sql);
+  }
+ };
+ global.fetch=async()=>({ok:true,status:200,json:async()=>({requestId:"exa-test",results:[
+  {title:"Source institutionnelle A",url:"https://www.mesquestionsdargent.fr/epargne-a",highlights:["Informations institutionnelles sur l'épargne de précaution."]},
+  {title:"Source institutionnelle B",url:"https://www.mesquestionsdargent.fr/epargne-b",highlights:["Autres informations institutionnelles sur l'épargne de précaution."]}
+ ]})});
+ try{
+  const processed=await processOne({pool,client:{generateJson:async()=>{groqCalls++;return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}},model:"openai/gpt-oss-20b",workerId:"quota-test",maxCallsPerDay:1,env:{BEP_AGENT_SOURCE_SEARCH_ENABLED:"true",BEP_AGENT_EXA_API_KEY:"exa-test-key"}});
+  assert.equal(processed,true);
+  assert.equal(quotaReservations,2,"reserve one quota unit for each Groq batch");
+  assert.equal(groqCalls,1,"do not send the second Groq request after quota exhaustion");
+  assert.equal(deferred,true,"return the job to the queue for tomorrow");
+  assert.equal(persisted.length,2,"persist the Exa source snapshot and the completed batch checkpoint");
+  assert.equal(persisted[1].analysis.nextBatchIndex,1,"the completed first Groq batch is checkpointed");
+  assert.equal(runRecords.length,1,"the deferred attempt is recorded for audit");
+  assert.equal(runRecords[0].params[2],"deferred","the run history distinguishes quota deferral from success");
+ }finally{
+  global.fetch=originalFetch;
+ }
+});
