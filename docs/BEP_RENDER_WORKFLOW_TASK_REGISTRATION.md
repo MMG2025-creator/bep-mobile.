@@ -104,7 +104,7 @@ La fonction `claim()` de `lib/bep-agent/repository.js` verrouille la file dans u
 
 Le worker n'est pas un processus permanent dans ce parcours Render : un Task traite un seul job et se termine. Le type autorisé est limité à `documentary_research`.
 
-Les propositions générées restent des candidats à validation humaine. La réponse du Task expose `automaticPublication:false). Aucune publication automatique dans la bibliothèque active n'est prévue.
+Les propositions générées restent des candidats à validation humaine. La réponse du Task expose `automaticPublication:false`. Aucune publication automatique dans la bibliothèque active n'est prévue.
 
 ## 6. État opérationnel constaté
 
@@ -123,5 +123,5 @@ Aucune clé API, URL de connexion PostgreSQL, valeur de secret ou donnée utilis
 - Ne pas modifier le Workflow Render existant ni ses paramètres sans décision distincte.
 - Ne pas fusionner ni déployer avant validation explicite.
 - Ne pas déclencher de Task réel pendant les contrôles statiques.
-- Vérifier séparément : déclaration SDK, version Render prête, inscription du Task, création du job PostgreSQL, dispatch HTTP 202, exécution du Task, transition du job, trace `bep_agent_runs), création de candidats `pending` et absence de publication automatique.
+- Vérifier séparément : déclaration SDK, version Render prête, inscription du Task, création du job PostgreSQL, dispatch HTTP 202, exécution du Task, transition du job, trace `bep_agent_runs`, création de candidats `pending` et absence de publication automatique.
 - Toute évolution du mécanisme d'enregistrement ou de dispatch doit être développée sur une branche dédiée et couverte par des tests simulés ; les tests réels doivent utiliser un job de test non sensible et un rôle PostgreSQL dédié.
