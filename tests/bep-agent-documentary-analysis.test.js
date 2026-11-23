@@ -46,3 +46,21 @@ test("unsupported external evidence is rejected before a candidate can be stored
  assert.equal(candidateWrites,0);
  assert.equal(result.proposals.length,0);
 });
+
+
+test("large documentary research is split into bounded one-source Groq requests",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const calls=[];
+ const client={generateJson:async(args)=>{calls.push(args);return{value:{findings:[],proposals:[]},usage:{total_tokens:20}}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Source "+i,url:"https://mesquestionsdargent.fr/source-"+i,domain:"mesquestionsdargent.fr",publishedAt:null,text:"Texte source ".repeat(1500),highlights:["Extrait ".repeat(150)]}));
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,maxOutputTokens:2600});
+ assert.equal(calls.length,4);
+ assert.equal(result.summary.batches,4);
+ assert.equal(result.usage.total_tokens,80);
+ for(const call of calls){
+  assert.ok(call.prompt.length<14000);
+  assert.ok(call.maxOutputTokens<=1600);
+  assert.equal(call.jsonSchema,ANALYSIS_SCHEMA);
+ }
+ assert.equal(result.automaticPublication,false);
+});
