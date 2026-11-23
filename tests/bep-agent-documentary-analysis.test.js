@@ -64,3 +64,14 @@ test("large documentary research is split into bounded one-source Groq requests"
  }
  assert.equal(result.automaticPublication,false);
 });
+
+
+test("documentary quota is reserved once per Groq batch and stops before an unreserved call",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const calls=[];let reservations=0;
+ const client={generateJson:async(args)=>{calls.push(args);return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Source "+i,url:"https://mesquestionsdargent.fr/quota-"+i,domain:"mesquestionsdargent.fr",text:"Contenu source",highlights:["Extrait"]}));
+ await assert.rejects(()=>analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,beforeGroqCall:async()=>++reservations<=2}),/DAILY_AGENT_QUOTA_REACHED/);
+ assert.equal(reservations,3,"the third batch checks quota before sending a request");
+ assert.equal(calls.length,2,"no Groq request is sent without a reserved call");
+});
