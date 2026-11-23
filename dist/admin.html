@@ -34,6 +34,12 @@ body.auth-pending main{visibility:hidden}#adminAuthLoader{position:fixed;inset:0
 </div>
 <div class="muted" id="groqDocumentaryNotice" role="status" aria-live="polite"></div>
 <div id="groqDocumentarySources" class="panel" aria-live="polite">Aucune recherche exécutée.</div>
+<div class="panel" id="groqSchemaDiagnosticPanel">
+ <h3>Compatibilité réelle Groq — test isolé</h3>
+ <p class="muted">Appel réel au modèle Groq avec le schéma JSON strict de l'analyse documentaire. Aucun job, accès base de données, candidat ou changement de bibliothèque n'est créé.</p>
+ <div class="bar"><button type="button" class="primary" id="groqSchemaDiagnosticButton">Tester la compatibilité réelle Groq</button><span class="status" id="groqSchemaDiagnosticState" role="status" aria-live="polite">Aucun test exécuté.</span></div>
+ <pre id="groqSchemaDiagnosticResult">Le résultat du test apparaîtra ici.</pre>
+</div>
 <div class="panel">
  <h3>Évaluation d'une version candidate</h3>
  <p class="muted">Saisir les identifiants des propositions en attente, séparés par des virgules. Le banc mesure la couverture du moteur de récupération, pas encore la qualité complète des réponses.</p>
@@ -156,6 +162,20 @@ function initGroqDocumentaryPanel(){
  const analyze=async()=>{if(!query())return note("Saisir un sujet de recherche.",true);const b=$("groqDocumentaryAnalyzeButton");b.disabled=true;note("Mise en file de l'analyse Groq…");try{const data=await request("/api/admin/bep-agent/documentary-analyze",{method:"POST",body:JSON.stringify({query:query()})});const dispatch=data.workflowDispatched===true?"dispatch Render Workflow confirmé":data.workflowDispatched===false?"dispatch Render Workflow non confirmé":"état du dispatch non communiqué";const run=data.taskRunId?" · Task Run : "+data.taskRunId+(data.taskRunStatus?" ("+data.taskRunStatus+")":""):" · identifiant de Task Run non communiqué";note("Tâche "+data.jobId+" créée · "+dispatch+run+". Exa recherche les sources et Groq les analyse. Les propositions restent en attente de validation humaine.",data.workflowDispatched!==true);await loadRuns();}catch(e){note("Analyse non lancée : "+e.message,true)}finally{b.disabled=false}};
  const loadRuns=async()=>{try{const data=await request("/api/admin/bep-agent/overview");const runs=(data.runs||[]).filter(x=>["documentary_research","library_benchmark"].includes(x.job_type));$("groqDocumentaryRuns").textContent=JSON.stringify(runs,null,2)}catch(e){$("groqDocumentaryRuns").textContent="Historique indisponible : "+e.message}};
  const benchmark=async()=>{const ids=$("groqBenchmarkCandidateIds").value.split(",").map(x=>Number(x.trim())).filter(Number.isSafeInteger);if(!ids.length)return note("Saisir au moins un identifiant de proposition.",true);const b=$("groqBenchmarkButton");b.disabled=true;try{const data=await request("/api/admin/bep-agent/library-benchmark",{method:"POST",body:JSON.stringify({candidateIds:ids})});$("groqBenchmarkResult").textContent=JSON.stringify({baseline:data.baseline,candidate:data.candidate,regressions:data.regressions,improvements:data.improvements,gatePassed:data.gatePassed,metricScope:data.metricScope,answerQualityMeasured:data.answerQualityMeasured},null,2);note(data.gatePassed?"Benchmark de récupération validé.":"Benchmark en échec : régression ou métriques insuffisantes.",!data.gatePassed)}catch(e){note("Benchmark impossible : "+e.message,true)}finally{b.disabled=false}};
+ const runSchemaDiagnostic=async()=>{
+  const button=$("groqSchemaDiagnosticButton"),state=$("groqSchemaDiagnosticState"),output=$("groqSchemaDiagnosticResult");
+  button.disabled=true;state.textContent="Appel réel à Groq en cours…";output.textContent="Requête envoyée avec le schéma strict de l'analyse documentaire.";
+  try{
+   const result=await request("/api/admin/bep-agent/groq-schema-diagnostic",{method:"POST",body:JSON.stringify({})});
+   output.textContent=JSON.stringify(result,null,2);
+   state.textContent=result.success?"Compatibilité confirmée — HTTP 200 · JSON conforme":"Échec du diagnostic — "+(result.code||"erreur");
+   state.style.color=result.success?"#205c38":"#9a3412";
+  }catch(error){
+   output.textContent=JSON.stringify({success:false,error:error.message},null,2);
+   state.textContent="Test non concluant";state.style.color="#9a3412";
+  }finally{button.disabled=false}
+ };
+ $("groqSchemaDiagnosticButton").addEventListener("click",runSchemaDiagnostic);
  $("groqSourceSearchButton").addEventListener("click",search);
  $("groqDocumentaryAnalyzeButton").addEventListener("click",analyze);
  $("groqDocumentaryRefreshButton").addEventListener("click",()=>{void loadStatus();void loadRuns()});
