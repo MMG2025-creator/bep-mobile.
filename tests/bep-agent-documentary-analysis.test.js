@@ -81,11 +81,13 @@ test("documentary analysis resumes after the last durably completed source batch
  const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
  const sources=Array.from({length:4},(_,i)=>({title:"Resume source "+i,url:"https://mesquestionsdargent.fr/resume-"+i,domain:"mesquestionsdargent.fr",text:"Texte source "+i,highlights:["Extrait "+i]}));
  const sourcePayload=sources.map(x=>({title:x.title,url:x.url,domain:x.domain,publishedAt:x.publishedAt,text:String(x.text||"").slice(0,3500),highlights:x.highlights.slice(0,2).map(h=>String(h||"").slice(0,700))}));
- const sourceDigest=require("node:crypto").createHash("sha256").update(JSON.stringify(sourcePayload)).digest("hex");
+ const hash=value=>require("node:crypto").createHash("sha256").update(value).digest("hex");
+ const sourceDigest=hash(JSON.stringify(sourcePayload));
+ const inputDigest=hash(JSON.stringify({query:"budget",sources:sourcePayload,library:[]}));
  const checkpoints=[];
  const calls=[];
  const client={generateJson:async()=>{calls.push(1);return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}};
- const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,resumeState:{sourceDigest,nextBatchIndex:2,findingsRaw:[],proposalsRaw:[],usageParts:[{total_tokens:20}]},onBatchComplete:async state=>checkpoints.push(state)});
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,resumeState:{sourceDigest,inputDigest,nextBatchIndex:2,findingsRaw:[],proposalsRaw:[],usageParts:[{total_tokens:20}]},onBatchComplete:async state=>checkpoints.push(state)});
  assert.equal(calls.length,2,"only batches 3 and 4 should call Groq");
  assert.equal(checkpoints.length,2);
  assert.equal(checkpoints[0].nextBatchIndex,3);
