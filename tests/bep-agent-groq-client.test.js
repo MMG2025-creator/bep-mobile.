@@ -3,6 +3,7 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {GroqClient}=require("../lib/bep-agent/groq-client");
 const {ANALYSIS_SCHEMA}=require("../lib/bep-agent/documentary-analysis");
+const {failureInputDigest}=require("../lib/bep-agent/worker");
 
 test("Groq client sends strict JSON Schema structured output for the documentary model",async()=>{
  const original=global.fetch;let request;
@@ -49,4 +50,12 @@ test("Groq HTTP 400 preserves sanitized provider diagnostics without exposing cr
    return true;
   });
  }finally{global.fetch=original}
+});
+
+
+test("failed documentary run records the full analysis inputDigest, not sourceDigest",()=>{
+ const checkpoint={analysis:{sourceDigest:"source-only-digest",inputDigest:"query-sources-library-digest"}};
+ assert.equal(failureInputDigest(checkpoint),"query-sources-library-digest");
+ assert.equal(failureInputDigest({analysis:{sourceDigest:"source-only-digest"}}),"");
+ assert.equal(failureInputDigest(null),"");
 });
