@@ -21,7 +21,7 @@ const {readRenderDispatchConfig,dispatchDocumentaryWorkflow}=require("./lib/bep-
 const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
-const {ensureSchema:ensureBepAgentSchema}=require("./lib/bep-agent/repository");
+const {ensureSchema:ensureBepAgentSchema,recoverOrphanedQueuedJob}=require("./lib/bep-agent/repository");
 const {readDocumentaryDispatchConfig,inspectDocumentarySchema}=require("./lib/bep-agent/documentary-schema");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
 const {mergeOfflinePayload}=require("./lib/bep-offline-merge");
@@ -521,6 +521,32 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
  }catch(error){
   console.error("BEP documentary job enqueue failed",String(error?.message||error).slice(0,120));
   return res.status(503).json({error:"DOCUMENTARY_JOB_QUEUE_UNAVAILABLE"});
+ }
+});
+app.post("/api/admin/bep-agent/documentary-recover",auth,requireBepAgentAdmin,async(req,res)=>{
+ const jobId=String(req.body?.jobId||"").trim();
+ if(!/^[1-9]\\d{0,18}$/.test(jobId))return res.status(400).json({error:"DOCUMENTARY_RECOVERY_JOB_ID_INVALID"});
+ if(!readDocumentaryDispatchConfig().enabled)return res.status(409).json({error:"DOCUMENTARY_PIPELINE_DISABLED"});
+ if(!documentarySchemaReady)return res.status(409).json({error:"BEP_DOCUMENTARY_SCHEMA_NOT_READY"});
+ const dispatchConfig=readRenderDispatchConfig();
+ if(!dispatchConfig.enabled)return res.status(409).json({error:"DOCUMENTARY_RUNNER_NOT_CONFIGURED"});
+ try{
+  const recovered=await recoverOrphanedQueuedJob(pool,jobId);
+  let dispatch;
+  try{dispatch=await dispatchDocumentaryWorkflow({jobId:recovered.jobId});}
+  catch(dispatchError){
+   await pool.query("UPDATE bep_agent_jobs SET status='failed',locked_at=NULL,locked_by=NULL,last_error='Render Workflow dispatch failed',updated_at=NOW() WHERE id=$1 AND status='queued'",[recovered.jobId]).catch(()=>{});
+   console.error("BEP documentary recovery dispatch failed",String(dispatchError?.code||"DISPATCH_FAILED").slice(0,80));
+   return res.status(503).json({error:"DOCUMENTARY_RECOVERY_DISPATCH_FAILED",previousJobId:recovered.previousJobId,replacementJobId:recovered.jobId});
+  }
+  res.setHeader("Cache-Control","no-store");
+  return res.status(202).json({recovered:true,previousJobId:recovered.previousJobId,jobId:recovered.jobId,jobType:"documentary_research",workflowDispatched:dispatch.dispatched,taskRunId:dispatch.taskRunId,taskRunStatus:dispatch.status,automaticPublication:false});
+ }catch(error){
+  const code=String(error?.code||"");
+  const conflicts=["DOCUMENTARY_RECOVERY_JOB_NOT_FOUND","DOCUMENTARY_RECOVERY_JOB_NOT_ELIGIBLE","DOCUMENTARY_RECOVERY_JOB_NOT_STALE","DOCUMENTARY_RECOVERY_JOB_HAS_RUN_HISTORY","DOCUMENTARY_RECOVERY_JOB_STATE_CHANGED"];
+  if(conflicts.includes(code))return res.status(409).json({error:code});
+  console.error("BEP documentary orphan recovery failed",code||"RECOVERY_FAILED");
+  return res.status(503).json({error:"DOCUMENTARY_RECOVERY_UNAVAILABLE"});
  }
 });
 app.get("/api/admin/bep-agent/library-benchmark/cases",auth,requireBepAgentAdmin,async(req,res)=>{
