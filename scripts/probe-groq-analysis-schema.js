@@ -33,7 +33,7 @@ async function main(){
   }:null,
   databaseAccess:false,
   libraryWrites:false
- })+"\\n");
+ })+"\n");
 }
 main().catch(error=>{
  const safe={
@@ -46,6 +46,6 @@ main().catch(error=>{
   databaseAccess:false,
   libraryWrites:false
  };
- process.stderr.write(JSON.stringify(safe)+"\\n");
+ process.stderr.write(JSON.stringify(safe)+"\n");
  process.exitCode=1;
 });
