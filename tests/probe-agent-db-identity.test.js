@@ -82,5 +82,5 @@ test("connection errors are suppressed and pool is closed", async () => {
   assert.equal(code, 5);
   assert.equal(ended, true);
   assert.match(lines[0], /"reason":"DATABASE_CONNECTION_FAILED"/);
-  assert.doesNotMatch(lines[0], /password|PRIVATE_DSN|postgres:///);
+  assert.doesNotMatch(lines[0], /password|PRIVATE_DSN|postgres:\/\//);
 });
