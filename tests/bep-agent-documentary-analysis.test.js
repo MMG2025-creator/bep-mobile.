@@ -75,3 +75,20 @@ test("documentary quota is reserved once per Groq batch and stops before an unre
  assert.equal(reservations,3,"the third batch checks quota before sending a request");
  assert.equal(calls.length,2,"no Groq request is sent without a reserved call");
 });
+
+
+test("documentary analysis resumes after the last durably completed source batch",async()=>{
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};return{rowCount:0,rows:[]}}};
+ const sources=Array.from({length:4},(_,i)=>({title:"Resume source "+i,url:"https://mesquestionsdargent.fr/resume-"+i,domain:"mesquestionsdargent.fr",text:"Texte source "+i,highlights:["Extrait "+i]}));
+ const sourcePayload=sources.map(x=>({title:x.title,url:x.url,domain:x.domain,publishedAt:x.publishedAt,text:String(x.text||"").slice(0,3500),highlights:x.highlights.slice(0,2).map(h=>String(h||"").slice(0,700))}));
+ const sourceDigest=require("node:crypto").createHash("sha256").update(JSON.stringify(sourcePayload)).digest("hex");
+ const checkpoints=[];
+ const calls=[];
+ const client={generateJson:async()=>{calls.push(1);return{value:{findings:[],proposals:[]},usage:{total_tokens:10}}}};
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:sources,resumeState:{sourceDigest,nextBatchIndex:2,findingsRaw:[],proposalsRaw:[],usageParts:[{total_tokens:20}]},onBatchComplete:async state=>checkpoints.push(state)});
+ assert.equal(calls.length,2,"only batches 3 and 4 should call Groq");
+ assert.equal(checkpoints.length,2);
+ assert.equal(checkpoints[0].nextBatchIndex,3);
+ assert.equal(checkpoints[1].nextBatchIndex,4);
+ assert.equal(result.usage.total_tokens,40,"usage from earlier batches is retained");
+});
