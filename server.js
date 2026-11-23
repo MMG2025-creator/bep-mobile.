@@ -21,6 +21,7 @@ const {readRenderDispatchConfig,dispatchDocumentaryWorkflow}=require("./lib/bep-
 const {loadPublishedLibrary}=require("./lib/bep-agent/documentary-analysis");
 const {runLibraryBenchmark,REFERENCE_CASES}=require("./lib/bep-agent/library-benchmark");
 const {GeminiClient}=require("./lib/bep-agent/gemini-client");
+const {createGroqSchemaDiagnosticHandler}=require("./lib/bep-agent/groq-schema-diagnostic");
 const {ensureSchema:ensureBepAgentSchema,recoverOrphanedQueuedJob}=require("./lib/bep-agent/repository");
 const {readDocumentaryDispatchConfig,inspectDocumentarySchema}=require("./lib/bep-agent/documentary-schema");
 const {sourceFingerprint}=require("./lib/bep-agent/source-fingerprint");
@@ -611,6 +612,7 @@ app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
   res.status(202).json({queued:true,scope,jobTypes,queuedJobs,processingScheduled:execution.scheduled,busy:execution.busy===true});
  }catch(e){console.error("BEP admin agent enqueue failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"AGENT_QUEUE_UNAVAILABLE"})}
 });
+app.post("/api/admin/bep-agent/groq-schema-diagnostic",auth,requireBepAgentAdmin,createGroqSchemaDiagnosticHandler());
 app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>{
  const config=adminAgentStatus();
  const status={ready:agentEnabled,configured:config.enabled,documentarySchemaReady,documentaryRunnerEnabled:readRenderDispatchConfig().enabled,documentaryExecution:"render_workflows_on_demand",mode:config.onDemandMode?"admin_on_demand":"disabled",provider:config.provider,model:config.model,maxCallsPerDay:config.maxCallsPerDay,freeTierAcknowledged:config.freeTierAcknowledged,reason:config.enabled?(agentEnabled?null:"Schéma PostgreSQL du robot non disponible."):config.disabledReason};
