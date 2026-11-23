@@ -525,7 +525,7 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
 });
 app.post("/api/admin/bep-agent/documentary-recover",auth,requireBepAgentAdmin,async(req,res)=>{
  const jobId=String(req.body?.jobId||"").trim();
- if(!/^[1-9]\\d{0,18}$/.test(jobId))return res.status(400).json({error:"DOCUMENTARY_RECOVERY_JOB_ID_INVALID"});
+ if(!/^[1-9]\d{0,18}$/.test(jobId))return res.status(400).json({error:"DOCUMENTARY_RECOVERY_JOB_ID_INVALID"});
  if(!readDocumentaryDispatchConfig().enabled)return res.status(409).json({error:"DOCUMENTARY_PIPELINE_DISABLED"});
  if(!documentarySchemaReady)return res.status(409).json({error:"BEP_DOCUMENTARY_SCHEMA_NOT_READY"});
  const dispatchConfig=readRenderDispatchConfig();
