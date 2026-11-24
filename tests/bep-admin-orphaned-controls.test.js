@@ -37,7 +37,7 @@ test("orphan recovery UI requires explicit confirmation and reports the replacem
  for(const id of ["bepRecoveryJobId","bepRecoveryConfirm","bepRecoveryButton","bepRecoveryStatus"])assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/confirmOrphaned:true/);
  assert.match(server,/DOCUMENTARY_RECOVERY_CONFIRMATION_REQUIRED/);
- assert.match(html,/replacementJobId/);
+ assert.match(html,/result.jobId/);
  assert.match(html,/workflowDispatched/);
 });
 
