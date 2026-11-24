@@ -11,7 +11,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,digestWebCandidate,createCoachProposalsDocumentHandler}=require("./lib/bep-coach-services");
+const {readCoachLibrary,digestWebCandidate,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
 const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require("./lib/bep-coach-knowledge-admin");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
