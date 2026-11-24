@@ -44,20 +44,14 @@ test("isolated provider check preserves actionable Groq HTTP 400 diagnostics",as
  class FakeGroq{
   async generateJson(){
    throw Object.assign(new Error("Groq HTTP 400 | code=invalid_request_error | type=invalid_request_error | param=response_format | detail=Unsupported response format"),{
-    diagnosticCode:"GROQ_HTTP_ERROR",
-    httpStatus:400,
-    providerCode:"invalid_request_error",
-    providerStatus:"invalid_request_error",
-    providerMessage:"Unsupported response format",
-    providerParam:"response_format",
-    retryable:false
+    diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"invalid_request_error",
+    providerStatus:"invalid_request_error",providerMessage:"Unsupported response format",
+    providerParam:"response_format",retryable:false
    });
   }
  }
  await assert.rejects(()=>runProviderConnectivityCheck({
-  env,
-  search:async()=>({resultsCount:1}),
-  Groq:FakeGroq
+  env,search:async()=>({resultsCount:1}),Groq:FakeGroq
  }),error=>{
   assert.equal(error.message,"PROVIDER_CHECK_GROQ_FAILED: GROQ_HTTP_ERROR | HTTP 400 | code=invalid_request_error | type=invalid_request_error | param=response_format | detail=Unsupported response format");
   assert.equal(error.stage,"groq");
@@ -68,6 +62,25 @@ test("isolated provider check preserves actionable Groq HTTP 400 diagnostics",as
   assert.equal(error.providerParam,"response_format");
   assert.equal(error.httpStatus,400);
   assert.equal(error.retryable,false);
+  assert.equal(error.message.includes(env.BEP_AGENT_GROQ_API_KEY),false);
+  return true;
+ });
+});
+
+test("isolated provider check preserves sanitized failed_generation",async()=>{
+ class FakeGroq{
+  async generateJson(){
+   throw Object.assign(new Error("Groq validation failed"),{
+    diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"json_validate_failed",
+    providerMessage:"Failed to validate JSON.",providerFailedGeneration:'{"ok": true, "secret": "[REDACTED]"}',retryable:false
+   });
+  }
+ }
+ await assert.rejects(()=>runProviderConnectivityCheck({
+  env,search:async()=>({resultsCount:1}),Groq:FakeGroq
+ }),error=>{
+  assert.match(error.message,/failed_generation=\{"ok": true, "secret": "\[REDACTED\]"\}/);
+  assert.equal(error.providerFailedGeneration,'{"ok": true, "secret": "[REDACTED]"}');
   assert.equal(error.message.includes(env.BEP_AGENT_GROQ_API_KEY),false);
   return true;
  });
