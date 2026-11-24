@@ -10,6 +10,7 @@ const {readSourceSearchConfig}=require("../lib/bep-agent/source-search.js");
 const {processOne}=require("../lib/bep-agent/worker.js");
 const {GroqClient}=require("../lib/bep-agent/groq-client.js");
 const {assertDocumentarySchema}=require("../lib/bep-agent/documentary-schema.js");
+const {runProviderConnectivityCheck}=require("../lib/bep-agent/provider-connectivity.js");
 
 task(
  {name:"documentaryAnalyze",retry:{maxRetries:0},timeoutSeconds:900},
@@ -45,5 +46,15 @@ task(
   }finally{
    await pool.end();
   }
+ }
+);
+
+
+task(
+ {name:"providerConnectivityCheck",retry:{maxRetries:0},timeoutSeconds:60},
+ async ()=>{
+  const result=await runProviderConnectivityCheck({env:process.env});
+  console.info("[BEP_PROVIDER_CONNECTIVITY] "+JSON.stringify(result));
+  return result;
  }
 );
