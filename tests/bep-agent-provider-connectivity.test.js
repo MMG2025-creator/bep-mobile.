@@ -112,3 +112,35 @@ test("isolated provider check reports missing Groq key without exposing secrets"
  const noGroq={...env,BEP_AGENT_GROQ_API_KEY:""};
  await assert.rejects(()=>runProviderConnectivityCheck({env:noGroq,search:async()=>({resultsCount:1})}),error=>error.message==="PROVIDER_CHECK_GROQ_NOT_CONFIGURED");
 });
+
+
+test("diagnostic matrix isolates prompt syntax and token ceiling in four sequential calls",async()=>{
+ const calls=[];
+ class FakeGroq{
+  async generateJson(args){
+   calls.push({prompt:args.prompt,maxOutputTokens:args.maxOutputTokens});
+   if(calls.length===1||calls.length===3){
+    throw Object.assign(new Error("validation"),{
+     diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"json_validate_failed",
+     providerFailedGeneration:"",providerMessage:"Failed to validate JSON."
+    });
+   }
+   return{value:{ok:true},usage:{total_tokens:6}};
+  }
+ }
+ const result=await runProviderConnectivityCheck({
+  env,search:async()=>({resultsCount:1}),Groq:FakeGroq,diagnosticMatrix:true
+ });
+ assert.deepEqual(calls,[
+  {prompt:"Return {ok:true}.",maxOutputTokens:32},
+  {prompt:'Return {"ok":true}.',maxOutputTokens:32},
+  {prompt:"Return {ok:true}.",maxOutputTokens:256},
+  {prompt:'Return {"ok":true}.',maxOutputTokens:256}
+ ]);
+ assert.equal(result.mode,"diagnostic_prompt_token_matrix");
+ assert.equal(result.groq.cases.length,4);
+ assert.deepEqual(result.groq.cases.map(item=>item.status),["failed","passed","failed","passed"]);
+ assert.equal(result.groq.cases[0].providerFailedGeneration,"");
+ assert.equal(result.groq.cases[0].providerCode,"json_validate_failed");
+ assert.equal(JSON.stringify(result).includes(env.BEP_AGENT_GROQ_API_KEY),false);
+});
