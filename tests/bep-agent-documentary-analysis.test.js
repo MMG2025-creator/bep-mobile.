@@ -131,3 +131,14 @@ test("sensitive fact coverage requires the source quotation to contain the exact
  assert.ok(result.missing.some(x=>x.type==="number"));
  assert.ok(result.missing.some(x=>x.type==="date"));
 });
+
+
+test("live semantic benchmark corpus contains positive and adversarial official-source cases",()=>{
+ const corpus=require("./fixtures/bep-documentary-semantic-corpus.json");
+ assert.equal(corpus.source.domain,"www.economie.gouv.fr");
+ assert.match(corpus.source.url,/^https:\/\/www\.economie\.gouv\.fr\//);
+ assert.ok(corpus.cases.length>=6);
+ assert.ok(corpus.cases.some(x=>x.expectedAccepted===true));
+ assert.ok(corpus.cases.some(x=>x.expectedAccepted===false));
+ assert.ok(corpus.cases.every(x=>typeof x.content==="string"&&x.content.length>=20));
+});
