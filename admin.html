@@ -105,7 +105,7 @@ main{max-width:1480px}
  <div class="admin-empty"><strong>Annuaire nominatif non activé</strong><span>La consultation des noms et e-mails sera réservée au SUPER_ADMIN, auditée et servie par une route dédiée. Aucun export massif.</span></div>
  <p class="muted">Aucun revenu, paiement, budget, solde, transaction, donnée bancaire, contenu privé ou payload financier n'est exposé dans cet espace.</p>
 </section><section id="groqDocumentaryPanel" class="panel admin-page" data-admin-view-panel="intelligence" hidden aria-labelledby="groqDocumentaryTitle">
-<h2 id="groqDocumentaryTitle">Intelligence documentaire — Groq</h2>
+<h2 id="groqDocumentaryTitle">Optimisation de la bibliothèque — Groq</h2>
 <p class="muted">Espace administratif uniquement. Exa recherche les sources ; Groq les analyse et propose des corrections. Le Coach reste local, sans appel Groq. Aucune proposition n'est publiée automatiquement.</p>
 <div class="panel">
  <div class="status" id="groqPipelineStatus">Vérification de la configuration…</div>
@@ -340,7 +340,7 @@ checkAdmin();
   if(target)target.scrollIntoView({block:"start",behavior:"auto"});
  }
  buttons.forEach(button=>button.addEventListener("click",()=>activate(button.dataset.adminView)));
- const initial=location.hash==="#coach-research"?"documents":location.hash==="#groq-documentary"?"intelligence":location.hash==="#gemini-diagnostic"?"system":"dashboard";
+ const initial=location.hash==="#coach-research"?"documents":location.hash==="#groq-documentary"?"intelligence":["#gemini-diagnostic","#accounts","#annotations","#snapshots","#audit"].includes(location.hash)?"system":"dashboard";
  activate(initial);
 })();
 </script>
