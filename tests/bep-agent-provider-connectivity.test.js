@@ -59,7 +59,7 @@ test("isolated provider check preserves actionable Groq HTTP 400 diagnostics",as
   search:async()=>({resultsCount:1}),
   Groq:FakeGroq
  }),error=>{
-  assert.equal(error.message,"PROVIDER_CHECK_GROQ_FAILED: HTTP 400 | code=invalid_request_error | type=invalid_request_error | param=response_format | detail=Unsupported response format");
+  assert.equal(error.message,"PROVIDER_CHECK_GROQ_FAILED: GROQ_HTTP_ERROR | HTTP 400 | code=invalid_request_error | type=invalid_request_error | param=response_format | detail=Unsupported response format");
   assert.equal(error.stage,"groq");
   assert.equal(error.diagnosticCode,"GROQ_HTTP_ERROR");
   assert.equal(error.providerCode,"invalid_request_error");
