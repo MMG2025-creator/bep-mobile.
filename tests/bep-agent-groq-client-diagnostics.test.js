@@ -41,7 +41,7 @@ test("Groq HTTP errors retain sanitized raw response when failed_generation is n
     assert.equal(error.providerCode,"json_validate_failed");
     assert.equal(error.providerFailedGeneration,null);
     assert.match(error.providerResponseBody,/"failed_generation"/);
-    assert.match(error.providerResponseBody,/"Bearer \\[REDACTED\\]"/);
+    assert.match(error.providerResponseBody,/"Bearer \[REDACTED\]"/);
     assert.deepEqual(error.providerResponseKeys,["error","diagnostics"]);
     assert.equal(error.providerResponseBody.includes("gsk_live_abcdefghijklmnop"),false);
     return true;
