@@ -11,7 +11,7 @@ const server=fs.readFileSync(path.join(root,"server.js"),"utf8");
 
 test("admin source and deployed dist are synchronized and every inline script parses",()=>{
  assert.equal(dist,html);
- const scripts=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
+ const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
  assert.ok(scripts.length>=3);
  scripts.forEach((match,index)=>assert.doesNotThrow(()=>new vm.Script(match[1]),"inline script "+index));
 });
