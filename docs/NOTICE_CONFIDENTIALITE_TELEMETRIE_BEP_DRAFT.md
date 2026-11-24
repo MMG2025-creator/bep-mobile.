@@ -48,11 +48,11 @@ La base légale de ce traitement n'est pas encore formellement arrêtée. Le res
 
 À compléter après vérification contractuelle : entité Render contractante, rôle de sous-traitant, liste des autres sous-traitants éventuels, lieux d'hébergement et éventuels transferts hors Espace économique européen, garanties applicables et accord de traitement des données (DPA).
 
-## 6. Durée de conservation — CORRECTION TECHNIQUE REQUISE
+## 6. Durée de conservation — MÉCANISME TECHNIQUE AJOUTÉ, VALIDATION PRODUCTION REQUISE
 
-Le code actuel déclenche une purge des lignes dont la date d'activité est antérieure au seuil de 35 jours, mais seulement de façon opportuniste avec une probabilité de 1 % lors d'une écriture d'activité. **Il ne garantit donc pas une suppression effective à 35 jours.**
+La branche de travail ajoute une purge planifiée : suppression des lignes dont `last_activity_at` dépasse 35 jours, lancement au démarrage puis toutes les six heures, verrou consultatif PostgreSQL pour éviter les exécutions concurrentes entre instances et index sur l'horodatage. Des tests unitaires couvrent le seuil, le verrou et le planificateur.
 
-Avant publication, mettre en place et tester une purge planifiée garantissant la durée annoncée, puis confirmer la durée retenue. Ne pas annoncer « 35 jours maximum » tant que ce mécanisme n'est pas effectif. La suppression du compte entraîne par ailleurs la suppression en cascade des lignes d'activité associées.
+Cette durée ne pourra être annoncée comme durée effective qu'après fusion, déploiement autorisé et vérification de la purge réelle en base en production. La suppression du compte entraîne par ailleurs la suppression en cascade des lignes d'activité associées.
 
 ## 7. Droits des personnes et réclamation
 
