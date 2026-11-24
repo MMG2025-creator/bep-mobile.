@@ -131,7 +131,7 @@ async function recordUserActivity(userId){
  if(!pool||!userId)return;
  try{
   await pool.query("INSERT INTO bep_user_activity_days(user_id,activity_day,last_activity_at) VALUES($1,(NOW() AT TIME ZONE 'UTC')::date,NOW()) ON CONFLICT(user_id,activity_day) DO UPDATE SET last_activity_at=GREATEST(bep_user_activity_days.last_activity_at,EXCLUDED.last_activity_at)",[String(userId)]);
-  if(Math.random()<0.01)await pool.query("DELETE FROM bep_user_activity_days WHERE activity_day < (NOW() AT TIME ZONE 'UTC')::date - 400").catch(()=>{});
+  if(Math.random()<0.01)await pool.query("DELETE FROM bep_user_activity_days WHERE activity_day < (NOW() AT TIME ZONE 'UTC')::date - 35").catch(()=>{});
  }catch(error){console.warn("BEP activity telemetry write skipped",String(error?.message||error).slice(0,120))}
 }
 const requireBepAgentAdmin=requireIndependentBepAdmin;
