@@ -63,7 +63,7 @@ test("Groq HTTP errors preserve sanitized failed_generation diagnostics",async()
    ()=>client.generateJson({system:"system",prompt:"prompt",jsonSchema:{name:"test",schema:{type:"object"}}}),
    error=>{
     assert.equal(error.providerCode,"json_validate_failed");
-    assert.equal(error.providerFailedGeneration,'{"ok": true, "debug": "Bearer [REDACTED]"}');
+    assert.equal(error.providerFailedGeneration,'{"ok": true, "debug": "Bearer [TOKEN_REMOVED]"}');
     assert.match(error.message,/failed_generation=/);
     assert.equal(error.message.includes("gsk_live_abcdefghijklmnop"),false);
     return true;
