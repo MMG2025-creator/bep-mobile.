@@ -229,6 +229,19 @@ test("admin redesign keeps source and dist synchronized and all inline scripts p
     assert.doesNotThrow(() => new vm.Script(match[1]), "inline script " + (index + 1) + " parses");
   }
   assert.match(built, /id="dashboardPanel"/);
+  assert.match(built, /quickLinks\.forEach\(button=>button\.addEventListener\("click",\(\)=>activate\(button\.dataset\.adminView\)\)\)/);
+  assert.match(built, /id="dashboardRecentActivity"/);
+  assert.match(built, /api\/admin\/dashboard\/recent-activity/);
+  assert.match(built, /Groq · /);
+  assert.match(built, /Exa · /);
+  assert.doesNotMatch(built, /crResearchForm|crResearchButton|Google Search Grounding|Gemini \+ Google Search|Lancer la recherche/);
+  assert.match(built, /Collecte documentaire sans IA/);
+  const server = fs.readFileSync(path.join(__dirname, "../server.js"), "utf8");
+  assert.match(server, /app\.get\("\/api\/admin\/dashboard\/recent-activity",auth,requireBepAgentAdmin/);
+  assert.match(server, /SELECT job_type,status,model,error_code,started_at,finished_at FROM bep_agent_runs/);
+  assert.doesNotMatch(server, /app\.post\("\/api\/admin\/bep-coach\/research"/);
+  assert.doesNotMatch(server, /app\.get\("\/api\/admin\/bep-coach\/research\/status"/);
+
   assert.match(built, /data-admin-view="documents"/);
   assert.match(built, /data-admin-view="intelligence"/);
   assert.match(built, /id="usersPanel"/);

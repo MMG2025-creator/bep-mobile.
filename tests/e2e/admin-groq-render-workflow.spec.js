@@ -41,7 +41,7 @@ test('le panneau documentaire admin annonce Render Workflows et confirme le disp
   await expect(page.locator('#groqDocumentaryPanel')).toBeVisible();
   await expect(page.locator('#groqDocumentaryTitle')).toHaveText('Optimisation de la bibliothèque — Groq');
   await expect(page.locator('#groqDocumentaryPanel')).not.toContainText('GitHub Actions');
-  await expect(page.locator('#groqPipelineStatus')).toContainText('Agent Groq : prêt');
+  await expect(page.locator('#groqPipelineStatus')).toContainText('Groq · prêt');
   await expect(page.locator('#groqPipelineStatusDetail')).toContainText('Render Workflows à la demande');
 
   await page.locator('#groqDocumentaryQuery').fill('Règles officielles du surendettement');
