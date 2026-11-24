@@ -16,7 +16,7 @@ test("Groq documentary candidates expose explicit human review actions", () => {
   assert.match(admin, /id="groqDocumentaryCandidates"/);
   assert.match(admin, /\[\["approve","Approuver et intégrer"\],\["reject","Rejeter la proposition"\]\]/);
   assert.match(admin, /window\.confirm\(question\)/);
-  assert.match(admin, /\/api\/admin\/bep-agent\/candidates\/\+encodeURIComponent\(item\\.id\)\+"\/review"/);
+  assert.match(admin, /\/api\/admin\/bep-agent\/candidates\/\+encodeURIComponent\(item\.id\)\+"\/review"/);
   assert.match(admin, /body:JSON\.stringify\(\{decision\}\)/);
   assert.match(admin, /await loadRuns\(\)/);
 });
