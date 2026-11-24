@@ -196,7 +196,7 @@ function initGroqDocumentaryPanel(){
     const item=document.createElement("article");item.className="cr-item";
     const title=document.createElement("strong");title.textContent="#"+candidate.id+" · "+candidate.title;
     const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=(candidate.proposal_type||"proposition")+" · "+(candidate.source_name||"Source non précisée")+" · Confiance : "+(candidate.confidence||"non précisée");
-    const link=document.createElement("a");link.href=candidate.source_url||"#";link.target="_blank";link.rel="noopener noreferrer";link.textContent=candidate.source_url||"URL source non renseignée";
+    const link=document.createElement("a");if(/^https:\/\//i.test(candidate.source_url||"")){link.href=candidate.source_url;link.target="_blank";link.rel="noopener noreferrer"}link.textContent=candidate.source_url||"URL source non renseignée";
     const body=document.createElement("p");body.textContent=candidate.rationale||"Justification non renseignée.";
     item.append(title,meta,link,body);candidatesBox.append(item);
    }
