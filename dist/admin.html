@@ -380,10 +380,10 @@ function initGroqDocumentaryPanel(){
   finally{button.disabled=false}
  });
  $("bepBatchIngestButton").addEventListener("click",async()=>{
-  const urls=$("bepBatchUrls").value.split(/\\r?\\n/).map(value=>value.trim()).filter(Boolean);
+  const urls=$("bepBatchUrls").value.split(/\r?\n/).map(value=>value.trim()).filter(Boolean);
   const status=$("bepBatchIngestStatus"),button=$("bepBatchIngestButton");
   if(!urls.length||urls.length>10){status.textContent="Saisir entre 1 et 10 URL, une par ligne.";return}
-  if(!urls.every(value=>/^https:\\/\\//i.test(value))){status.textContent="Chaque ligne doit être une URL HTTPS.";return}
+  if(!urls.every(value=>/^https:\/\//i.test(value))){status.textContent="Chaque ligne doit être une URL HTTPS.";return}
   if(!window.confirm("Collecter "+urls.length+" source(s) ? Les contenus seront proposés à validation et ne seront pas publiés."))return;
   button.disabled=true;status.textContent="Collecte en cours…";
   try{const result=await request("/api/admin/bep-coach/ingest-batch",{method:"POST",body:JSON.stringify({sources:urls.map(url=>({url,category:$("bepBatchCategory").value}))})});status.textContent="Collecte terminée · "+JSON.stringify(result)+" · Publication automatique : non";$("bepBatchUrls").value="";await loadRuns()}
@@ -392,7 +392,7 @@ function initGroqDocumentaryPanel(){
  });
  $("bepRecoveryButton").addEventListener("click",async()=>{
   const id=$("bepRecoveryJobId").value.trim(),status=$("bepRecoveryStatus"),button=$("bepRecoveryButton");
-  if(!/^[1-9]\\d{0,18}$/.test(id)){status.textContent="Identifiant de job invalide.";return}
+  if(!/^[1-9]\d{0,18}$/.test(id)){status.textContent="Identifiant de job invalide.";return}
   if(!$("bepRecoveryConfirm").checked){status.textContent="La confirmation de vérification du job est obligatoire.";return}
   if(!window.confirm("Demander la récupération du job #"+id+" ? Le serveur doit confirmer qu’il est réellement orphelin."))return;
   button.disabled=true;status.textContent="Vérification et récupération côté serveur…";
