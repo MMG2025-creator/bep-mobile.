@@ -11,7 +11,7 @@ A user is counted once per UTC calendar day when an authenticated request succes
 - The table stores only the internal user ID, activity date, and latest activity timestamp.
 - No email, IP address, user-agent, financial payload, endpoint history, or event body is stored.
 - Account deletion cascades to activity rows.
-- The code attempts an opportunistic purge of rows older than the 35-day threshold on 1% of activity writes. This is not a guaranteed maximum retention period: rows may remain longer until a sampled cleanup runs. A scheduled, tested purge is required before stating that retention is capped at 35 days.
+- A scheduled cleanup deletes rows whose `last_activity_at` is older than 35 days. It runs at backend startup and every six hours, using a PostgreSQL advisory lock to avoid concurrent cleanup across API instances. A timestamp index supports the deletion query.
 
 ## Metrics
 The admin-only `GET /api/admin/dashboard/activity` endpoint returns:
@@ -24,5 +24,6 @@ The endpoint is independently protected by the BEP admin authentication middlewa
 ## Limitations and release gates
 - No historical backfill: metrics begin when this code is deployed and the activity table exists.
 - A successful data load or save is the defined proxy for meaningful use; this does not claim to measure every navigation or every interaction.
-- Before production, review the user-facing privacy notice, lawful basis, hosting/subprocessor details and retention wording. The current 35-day threshold is only opportunistic and does not guarantee deletion at 35 days; implement and test scheduled cleanup before announcing a 35-day maximum. The controller must document and validate the applicable lawful basis and user-facing notice before production.
+- The scheduled retention cleanup is implemented and covered by unit tests; verify actual deletion in the production database after an explicitly authorized deployment.
+- Before production, review the user-facing privacy notice, lawful basis, hosting/subprocessor details and retention wording. The controller must document and validate the applicable lawful basis and user-facing notice before production.
 - Production remains blocked until unit/regression/security/browser checks, code review, merge approval, and explicit Render deployment verification are complete.
