@@ -82,3 +82,31 @@ test("Groq connectivity wrapper preserves sanitized provider diagnostics",async(
   return true;
  });
 });
+
+
+test("Groq schema diagnostic returns code, provider message and rejected parameter",async()=>{
+ const {runGroqSchemaDiagnostic}=require("../lib/bep-agent/groq-schema-diagnostic");
+ const diagnostic={
+  diagnosticCode:"GROQ_HTTP_ERROR",
+  httpStatus:400,
+  providerCode:"json_validate_failed",
+  providerStatus:"invalid_request_error",
+  providerMessage:"Invalid JSON schema supplied",
+  providerParam:"response_format",
+  retryable:false
+ };
+ const result=await runGroqSchemaDiagnostic({
+  apiKey:"groq_secret_key_123456789",
+  clientFactory:()=>({generateJson:async()=>{throw Object.assign(new Error("Groq rejected request"),diagnostic)}})
+ });
+ assert.equal(result.success,false);
+ assert.equal(result.code,"GROQ_HTTP_ERROR");
+ assert.equal(result.httpStatus,400);
+ assert.equal(result.providerCode,"json_validate_failed");
+ assert.equal(result.providerStatus,"invalid_request_error");
+ assert.equal(result.providerMessage,"Invalid JSON schema supplied");
+ assert.equal(result.providerParam,"response_format");
+ assert.equal(result.databaseAccess,false);
+ assert.equal(result.libraryWrites,false);
+ assert.doesNotMatch(JSON.stringify(result),/groq_secret_key_123456789/);
+});
