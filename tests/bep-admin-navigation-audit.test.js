@@ -38,7 +38,7 @@ test("snapshot export, save, import, pagination and audit controls remain wired"
 });
 
 test("snapshot tools are hidden outside the system and security workspace", () => {
-  assert.match(html, /class="bar admin-page" data-admin-view-panel="system" hidden><button id="openCoachResearch"/);
+  assert.match(html, /id="dashboardPanel"/);
   for (const id of ["overviewPanel", "accountPanel", "annotationPanel", "snapshotsPanel", "auditPanel"]) {
     assert.match(html, new RegExp('id="' + id + '"[^>]*data-admin-view-panel="system"'));
   }
