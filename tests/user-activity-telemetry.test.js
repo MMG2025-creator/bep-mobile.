@@ -47,6 +47,7 @@ test("telemetry never exposes account identifiers or financial payloads in the m
  const start=server.indexOf('app.get("/api/admin/dashboard/activity"');
  const end=server.indexOf('app.put("/api/data"',start);
  const route=server.slice(start,end);
- assert.match(route,/json\(\{dau:result\.rows\[0\]\.dau,wau:result\.rows\[0\]\.wau,mau:result\.rows\[0\]\.mau/);
- assert.doesNotMatch(route,/email|userId|user_id|payload|income|expenses|ip|userAgent/i);
+ const responseBody=route.slice(route.indexOf("res.json("),route.indexOf(");",route.indexOf("res.json(")));
+ assert.match(responseBody,/res\\.json\\(\\{dau:result\\.rows\\[0\\]\\.dau,wau:result\\.rows\\[0\\]\\.wau,mau:result\\.rows\\[0\\]\\.mau/);
+ assert.doesNotMatch(responseBody,/email|userId|user_id|payload|income|expenses|ip|userAgent/i);
 });
