@@ -46,3 +46,17 @@ test("unsupported external evidence is rejected before a candidate can be stored
  assert.equal(candidateWrites,0);
  assert.equal(result.proposals.length,0);
 });
+
+ 
+test("documentary analysis stays within a conservative Groq TPM request budget",async()=>{
+ const {MAX_ANALYSIS_PROMPT_CHARS,MAX_OUTPUT_TOKENS,MAX_ANALYSIS_SOURCES}=require("../lib/bep-agent/documentary-analysis");
+ const rows=Array.from({length:20},(_,i)=>({slug:"budget-"+i,category:"budget",title:"Budget épargne et dépenses "+i,content:"budget dépenses épargne ".repeat(100),source_name:"Source institutionnelle",source_url:"https://mesquestionsdargent.fr/budget-"+i,evidence_level:"institutional_reference",version:1}));
+ const pool={query:async(sql)=>sql.includes("FROM bep_financial_knowledge")?{rows}:sql.includes("FROM bep_agent_approved_knowledge")?{rows:[]}:{rowCount:1,rows:[]}};
+ const sources=Array.from({length:5},(_,i)=>({title:"Source budget "+i,url:"https://mesquestionsdargent.fr/source-"+i,domain:"mesquestionsdargent.fr",text:"budget ".repeat(5000),highlights:["budget ".repeat(500),"épargne ".repeat(500),"dépenses ".repeat(500)]}));
+ let request;
+ const client={generateJson:async(args)=>{request=args;return{value:{findings:[],proposals:[]},usage:{total_tokens:100}}}};
+ await analyzeDocumentaryLibrary({pool,client,query:"budget épargne dépenses",searchResults:sources,maxOutputTokens:4096});
+ assert.ok(request.prompt.length<=MAX_ANALYSIS_PROMPT_CHARS);
+ assert.equal(request.maxOutputTokens,MAX_OUTPUT_TOKENS);
+ assert.equal(MAX_ANALYSIS_SOURCES,4);
+});
