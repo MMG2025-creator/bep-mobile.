@@ -19,7 +19,7 @@ body.auth-pending main{visibility:hidden}#adminAuthLoader{position:fixed;inset:0
 /* BEP administration redesign */
 body{padding:20px;background:#f4f7fb;color:#18263a}
 main{max-width:1480px}
-#console{display:grid;grid-template-columns:238px minmax(0,1fr);gap:18px;align-items:start}
+#console[hidden]{display:none!important}#console{display:grid;grid-template-columns:238px minmax(0,1fr);gap:18px;align-items:start}
 .admin-nav{position:sticky;top:16px;display:flex;flex-direction:column;align-items:stretch;gap:7px;width:238px;min-height:calc(100vh - 32px);height:calc(100vh - 32px);overflow:auto;padding:17px 13px;margin:0;background:#14263d;border:1px solid #233a55;border-radius:15px;box-shadow:0 8px 28px rgba(20,38,61,.12)}
 .admin-nav-heading{display:flex;flex-direction:column;gap:3px;min-width:0;margin:0 0 15px;padding:5px 9px 14px;border-bottom:1px solid #30445d}
 .admin-nav-heading strong{font-size:15px;color:#f5f8fc}.admin-nav-heading span{font-size:11px;color:#9fb2c9}
@@ -73,7 +73,7 @@ main{max-width:1480px}
  <div class="admin-nav-spacer"></div>
  <button type="button" id="adminClearCache" class="admin-nav-utility" title="Vider le cache local de cette application">Supprimer le cache</button>
  <button type="button" id="adminLogout" class="admin-nav-utility danger" title="Fermer la session administrateur">Déconnexion</button>
-</nav><section id="dashboardPanel" class="admin-page panel" data-admin-view-panel="dashboard" aria-labelledby="dashboardTitle">
+</nav><div class="admin-content"><section id="dashboardPanel" class="admin-page panel" data-admin-view-panel="dashboard" aria-labelledby="dashboardTitle">
  <div class="admin-page-head"><div><h2 id="dashboardTitle">Vue d'ensemble</h2><p class="muted">Le pilotage de BEP, en un seul endroit.</p></div><span class="admin-sync-state"><i></i> Synchronisation à connecter</span></div>
  <div class="admin-metric-grid">
   <article class="admin-metric"><span>Documents publiés</span><strong>—</strong><small>Bibliothèque BEP · API à connecter</small></article>
@@ -321,6 +321,7 @@ $("requestReset").addEventListener("click",async()=>{try{const r=await authApi("
 $("completeReset").addEventListener("click",async()=>{try{const r=await authApi("/complete-reset",{email:$("adminEmail").value,code:$("resetCode").value,password:$("resetPassword").value});$("authMessage").textContent=r.message}catch(e){$("authMessage").textContent=e.message}});
 const logoutButton=$("adminLogout");if(logoutButton)logoutButton.addEventListener("click",async()=>{if(!confirm("Fermer la session administrateur ?"))return;logoutButton.disabled=true;try{await authApi("/logout");location.reload()}catch(e){showError(e);logoutButton.disabled=false}});const clearCacheButton=$("adminClearCache");if(clearCacheButton)clearCacheButton.addEventListener("click",async()=>{if(!confirm("Supprimer les fichiers du cache local de BEP sur ce navigateur ? La session et les données du compte seront conservées."))return;clearCacheButton.disabled=true;try{if(!("caches" in window)){throw new Error("Le vidage du cache local n’est pas pris en charge par ce navigateur.")}const keys=await caches.keys();const results=await Promise.all(keys.map(key=>caches.delete(key)));const deleted=results.filter(Boolean).length;$( "statusDetail").textContent=deleted+" cache(s) local(aux) supprimé(s). Rechargement…";location.reload()}catch(e){showError(e);clearCacheButton.disabled=false}});
 document.querySelectorAll(".admin-nav [data-admin-target]").forEach(link=>link.addEventListener("click",event=>{event.preventDefault();const targetId=link.dataset.adminTarget;const target=$(targetId);if(!target)return;if(targetId==="coachResearchPanel"){target.hidden=false;initCoachResearchPanel()}if(targetId==="groqDocumentaryPanel"){target.hidden=false;initGroqDocumentaryPanel()}if(targetId==="geminiDiagnosticPanel"){target.hidden=false;initGeminiDiagnosticPanel()}document.querySelectorAll(".admin-nav a").forEach(item=>item.removeAttribute("aria-current"));link.setAttribute("aria-current","page");history.replaceState(null,"",link.getAttribute("href"));target.scrollIntoView({behavior:"smooth",block:"start"})}));
+window.__bepAdminViews={documents:initCoachResearchPanel,intelligence:initGroqDocumentaryPanel,system:initGeminiDiagnosticPanel};
 checkAdmin();
 })();
 </script>
@@ -333,14 +334,11 @@ checkAdmin();
  function activate(view){
   panels.forEach(panel=>{panel.hidden=panel.dataset.adminViewPanel!==view;});
   buttons.forEach(button=>{if(button.dataset.adminView===view)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");});
-  if(view==="documents"&&typeof initCoachResearchPanel==="function")initCoachResearchPanel();
-  if(view==="intelligence"&&typeof initGroqDocumentaryPanel==="function")initGroqDocumentaryPanel();
-  if(view==="system"&&typeof initGeminiDiagnosticPanel==="function")initGeminiDiagnosticPanel();
+  if(window.__bepAdminViews&&typeof window.__bepAdminViews[view]==="function")window.__bepAdminViews[view]();
   const target=document.querySelector('[data-admin-view-panel="'+view+'"]');
-  if(target)target.scrollIntoView({block:"start",behavior:"instant"});
+  if(target)target.scrollIntoView({block:"start",behavior:"auto"});
  }
  buttons.forEach(button=>button.addEventListener("click",()=>activate(button.dataset.adminView)));
- document.querySelectorAll("[data-admin-view]").forEach(button=>button.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();activate(button.dataset.adminView);}}));
  const initial=location.hash==="#coach-research"?"documents":location.hash==="#groq-documentary"?"intelligence":location.hash==="#gemini-diagnostic"?"system":"dashboard";
  activate(initial);
 })();
