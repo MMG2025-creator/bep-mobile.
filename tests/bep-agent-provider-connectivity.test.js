@@ -44,3 +44,32 @@ test("isolated provider check reports missing Groq key without exposing secrets"
  const noGroq={...env,BEP_AGENT_GROQ_API_KEY:""};
  await assert.rejects(()=>runProviderConnectivityCheck({env:noGroq,search:async()=>({resultsCount:1})}),error=>error.message==="PROVIDER_CHECK_GROQ_NOT_CONFIGURED");
 });
+
+test("isolated provider check preserves sanitized Groq provider diagnostics",async()=>{
+ const secret="groq_secret_key_123456";
+ class DiagnosticGroq{
+  constructor(){}
+  async generateJson(){
+   throw Object.assign(new Error("generic"),{
+    diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,
+    providerCode:"invalid_parameter",providerStatus:"invalid_request_error",
+    providerMessage:"Unsupported response format using groq_secret_key_123456",
+    providerParam:"response_format"
+   });
+  }
+ }
+ await assert.rejects(()=>runProviderConnectivityCheck({
+  env:{...env,BEP_AGENT_GROQ_API_KEY:secret},
+  search:async()=>({resultsCount:1}),
+  Groq:DiagnosticGroq
+ }),error=>{
+  assert.equal(error.diagnosticCode,"GROQ_HTTP_ERROR");
+  assert.equal(error.providerCode,"invalid_parameter");
+  assert.equal(error.providerStatus,"invalid_request_error");
+  assert.equal(error.providerMessage,"Unsupported response format using [REDACTED]");
+  assert.equal(error.providerParam,"response_format");
+  assert.equal(error.httpStatus,400);
+  assert.doesNotMatch(error.providerMessage,/groq_secret_key/);
+  return true;
+ });
+});
