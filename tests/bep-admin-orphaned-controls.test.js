@@ -36,7 +36,7 @@ test("batch ingestion UI validates a maximum of ten HTTPS URLs and requires conf
 test("orphan recovery UI requires explicit confirmation and reports the replacement job",()=>{
  for(const id of ["bepRecoveryJobId","bepRecoveryConfirm","bepRecoveryButton","bepRecoveryStatus"])assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/confirmOrphaned:true/);
- assert.match(html,/DOCUMENTARY_RECOVERY_CONFIRMATION_REQUIRED/);
+ assert.match(server,/DOCUMENTARY_RECOVERY_CONFIRMATION_REQUIRED/);
  assert.match(html,/replacementJobId/);
  assert.match(html,/workflowDispatched/);
 });
