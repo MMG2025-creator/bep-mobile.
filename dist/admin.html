@@ -58,6 +58,17 @@ main{max-width:1480px}
 @media(max-width:900px){#console{grid-template-columns:190px minmax(0,1fr);gap:12px}.admin-nav{width:190px}.admin-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-quick-grid{grid-template-columns:1fr}}
 @media(max-width:680px){body{padding:10px}main{max-width:none}#console{grid-template-columns:minmax(0,1fr);gap:10px}.admin-nav{position:relative;top:auto;width:auto;height:auto;min-height:0;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:10px;margin:0 0 8px;border-radius:12px}.admin-nav-heading{display:none}.admin-nav-label,.admin-nav-spacer{display:none}.admin-nav-item,.admin-nav-utility{flex:0 0 auto;width:auto;white-space:nowrap;min-height:37px;padding:8px 10px}.admin-nav-utility{display:none}.admin-page-head{flex-direction:column}.admin-user-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#dashboardPanel{padding:12px 2px}.admin-quick-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.admin-metric-grid,.admin-user-metrics{grid-template-columns:1fr 1fr}.admin-metric{padding:13px}.admin-metric strong{font-size:23px}.admin-quick-grid{grid-template-columns:1fr}}
+
+/* Feedback interactif commun aux actions de la console */
+button{transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .08s ease}
+button:hover:not(:disabled){border-color:#6886a8;box-shadow:0 2px 8px rgba(24,59,99,.10)}
+button:active:not(:disabled){transform:translateY(1px)}
+button:focus-visible{outline:3px solid #e3ad43;outline-offset:2px}
+button[data-bep-loading="true"]{display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:progress;opacity:.88}
+.bep-button-spinner{display:inline-block;width:13px;height:13px;flex:0 0 13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:bep-button-spin .7s linear infinite}
+.bep-button-loading-label{display:inline-block}
+@keyframes bep-button-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){button{transition:none}.bep-button-spinner{animation:none;border-right-color:currentColor}}
 </style></head>
 <body class="auth-pending"><div id="adminAuthLoader" role="status" aria-live="polite"><div class="admin-loader-card"><span class="admin-loader-spinner" aria-hidden="true"></span><p class="admin-loader-text">Vérification de la session administrateur…</p></div></div><main><h1>BEP — Administration</h1><p>Console technique minimale. Vue agrégée pseudonymisée en lecture seule. Aucun détail financier individuel, libellé libre, commerçant, reçu ou profil personnel n’est exposé. Les modifications clients, corrections financières, suppressions et synchronisation production sont désactivées.</p>
 <div class="panel"><div class="status" id="status">Vérification de l'accès…</div><div class="muted" id="statusDetail"></div></div><div class="panel" id="authPanel"><h2 style="font-size:16px">Accès administrateur indépendant</h2><p class="muted">Adresse autorisée : mmsignenoir@gmail.com · Mot de passe administrateur distinct du compte BEP.</p><label>Adresse e-mail <input id="adminEmail" type="email" autocomplete="username" value="mmsignenoir@gmail.com" readonly></label><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur"><button class="primary" id="adminLogin">Se connecter</button></div><div class="muted" id="authMessage" aria-live="polite"></div><hr><h3 style="font-size:14px">Première activation</h3><p class="muted">Un code à usage unique sera envoyé à l'adresse autorisée. Le mot de passe doit contenir au moins 12 caractères.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button id="requestEnroll">Recevoir le code d'activation</button><input id="enrollCode" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres"><input id="enrollPassword" type="password" autocomplete="new-password" placeholder="Créer un mot de passe"><button id="completeEnroll">Créer le compte administrateur</button></div><hr><h3 style="font-size:14px">Réinitialisation du mot de passe</h3><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button id="requestReset">Recevoir un code de réinitialisation</button><input id="resetCode" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres"><input id="resetPassword" type="password" autocomplete="new-password" placeholder="Nouveau mot de passe"><button id="completeReset">Réinitialiser</button></div></div>
@@ -216,7 +227,80 @@ main{max-width:1480px}
 <div class="panel admin-page" id="annotationPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Annotation administrative</h2><div class="muted" id="selected">Aucun compte sélectionné.</div><textarea id="note" rows="3" maxlength="2000" style="width:100%;box-sizing:border-box;margin:8px 0" placeholder="Note interne, sans données directement identifiantes"></textarea><button id="annotate" disabled>Enregistrer l'annotation</button></div>
 <div class="panel admin-page" id="snapshotsPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Snapshots enregistrés</h2><div id="documents" class="muted">Chargement…</div></div><div class="panel admin-page" id="auditPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Journal d'audit</h2><pre id="audit">Chargement…</pre></div>
 <p class="muted danger">Synchronisation production : INACTIVE · Modifications clients : INTERDITES · Corrections financières : DÉSACTIVÉES · Suppression de compte : DÉSACTIVÉE</p></div></section></main>
-<script>(function(){
+<script>
+/* Feedback immédiat des actions : le bouton reste en chargement pendant les appels API. */
+(function(){
+  if(window.__bepButtonFeedbackInstalled)return;
+  window.__bepButtonFeedbackInstalled=true;
+  let activeButton=null, pendingFetches=0, quietTimer=null, fallbackTimer=null, hardStopTimer=null;
+  function restore(){
+    if(!activeButton)return;
+    const button=activeButton;
+    activeButton=null;
+    clearTimeout(quietTimer);clearTimeout(fallbackTimer);clearTimeout(hardStopTimer);
+    if(button.isConnected){
+      button.replaceChildren(...button.__bepOriginalNodes);
+      button.disabled=button.__bepWasDisabled;
+      button.removeAttribute("data-bep-loading");
+      button.removeAttribute("aria-busy");
+      if(button.__bepWasLabel===null)button.removeAttribute("aria-label");
+      else button.setAttribute("aria-label",button.__bepWasLabel);
+    }
+    delete button.__bepOriginalNodes;
+    delete button.__bepWasDisabled;
+    delete button.__bepWasLabel;
+  }
+  function finishWhenQuiet(){
+    clearTimeout(quietTimer);
+    if(pendingFetches===0)quietTimer=setTimeout(restore,650);
+  }
+  function begin(button){
+    if(!button||button.disabled||button.dataset.bepLoading==="true")return;
+    if(activeButton)restore();
+    activeButton=button;
+    button.__bepOriginalNodes=Array.from(button.childNodes).map(node=>node.cloneNode(true));
+    button.__bepWasDisabled=button.disabled;
+    button.__bepWasLabel=button.getAttribute("aria-label");
+    const label=(button.textContent||"").trim()||"Action en cours";
+    const spinner=document.createElement("span");
+    spinner.className="bep-button-spinner";spinner.setAttribute("aria-hidden","true");
+    const text=document.createElement("span");
+    text.className="bep-button-loading-label";text.textContent="Traitement…";
+    button.replaceChildren(spinner,text);
+    button.disabled=true;
+    button.dataset.bepLoading="true";
+    button.setAttribute("aria-busy","true");
+    button.setAttribute("aria-label",label+" — traitement en cours");
+    pendingFetches=0;
+    fallbackTimer=setTimeout(()=>{if(pendingFetches===0)restore()},900);
+    hardStopTimer=setTimeout(restore,60000);
+  }
+  document.addEventListener("click",event=>{
+    const button=event.target.closest&&event.target.closest("button");
+    if(!button)return;
+    if(button.matches(".admin-nav-item,.admin-quick-card,[data-bep-no-loader],#keClose"))return;
+    begin(button);
+  },true);
+  document.addEventListener("submit",event=>{
+    const button=event.submitter||event.target.querySelector('button[type="submit"],button:not([type])');
+    if(button)begin(button);
+  },true);
+  const originalFetch=window.fetch.bind(window);
+  window.fetch=function(){
+    const owner=activeButton;
+    if(owner){pendingFetches++;clearTimeout(fallbackTimer);clearTimeout(quietTimer);}
+    let request;
+    try{request=originalFetch.apply(this,arguments)}catch(error){
+      if(owner&&activeButton===owner){pendingFetches=Math.max(0,pendingFetches-1);finishWhenQuiet()}
+      throw error;
+    }
+    if(!owner)return request;
+    return request.finally(()=>{
+      if(activeButton===owner){pendingFetches=Math.max(0,pendingFetches-1);finishWhenQuiet()}
+    });
+  };
+})();
+</script>\n<script>(function(){
 const editor=document.createElement("dialog");
 editor.id="crKnowledgeEditor";
 editor.innerHTML='<form id="crKnowledgeEditorForm"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h2>Modifier la fiche documentaire</h2><p class="cr-muted" id="keSlug"></p></div><button type="button" id="keClose">Fermer</button></div><div class="ke-grid"><div><label for="keTitle">Titre</label><input id="keTitle" maxlength="180" required></div><div><label for="keCategory">Catégorie</label><select id="keCategory"><option>budget</option><option>spending</option><option>savings</option><option>debt</option><option>behavior</option><option>income</option><option>planning</option><option>general</option><option>data_quality</option></select></div></div><label for="keContent">Contenu</label><textarea id="keContent" maxlength="12000" required></textarea><div class="ke-grid"><div><label for="keKeywords">Mots-clés</label><textarea id="keKeywords" style="min-height:78px"></textarea></div><div><label for="keTags">Balises sémantiques</label><textarea id="keTags" style="min-height:78px" placeholder="budget_mensuel, charges_fixes"></textarea></div></div><div class="ke-grid"><div><label for="keSourceName">Nom de la source</label><input id="keSourceName" maxlength="180" required></div><div><label for="keSourceUrl">URL HTTPS de la source</label><input id="keSourceUrl" type="url" maxlength="2048"></div></div><label for="keEvidence">Niveau de preuve</label><select id="keEvidence"><option value="institutional_guidance">Recommandation institutionnelle</option><option value="official_legal_information">Information juridique officielle</option><option value="behavioral_practice">Pratique comportementale</option><option value="bep_accounting_rule">Règle comptable BEP</option><option value="bep_data_integrity_rule">Règle qualité BEP</option><option value="web_research_pending">Recherche web en attente</option><option value="unspecified">Non précisé</option></select><h3>Aperçu du contenu transmis au Coach</h3><div id="kePreview" class="ke-preview"></div><div id="keWarnings" class="cr-notice" role="status" aria-live="polite"></div><div class="cr-actions"><button class="primary" id="keSave" type="submit">Enregistrer une nouvelle version</button><button type="button" id="keHistoryToggle">Afficher l’historique</button></div><div id="keHistory" class="ke-history" hidden></div></form>';
