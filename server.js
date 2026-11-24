@@ -649,8 +649,9 @@ app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)
    pool.query("SELECT id,source_slug,proposal_type,title,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status='pending' ORDER BY created_at DESC LIMIT 100")
   ]);
   const safeJobs=documentaryJobs.rows.map(job=>({...job,last_error:sanitizeAdminDiagnostic(job.last_error),run_error_code:sanitizeAdminDiagnostic(job.run_error_code)}));
+  const safeRuns=runs.rows.map(run=>({...run,error_code:sanitizeAdminDiagnostic(run.error_code)}));
   res.setHeader("Cache-Control","no-store");
-  res.json({runs:runs.rows,agentMetrics:metrics.rows,coachMetrics:coach.rows,documentaryJobs:safeJobs,pendingCandidates:pendingCandidates.rows});
+  res.json({runs:safeRuns,agentMetrics:metrics.rows,coachMetrics:coach.rows,documentaryJobs:safeJobs,pendingCandidates:pendingCandidates.rows});
  }catch(e){console.error("BEP agent overview failed",String(e?.code||"AGENT_OVERVIEW_UNAVAILABLE").slice(0,80));res.status(503).json({error:"AGENT_OVERVIEW_UNAVAILABLE"})}
 });
 app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,async(req,res)=>{
