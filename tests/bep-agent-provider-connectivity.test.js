@@ -86,6 +86,28 @@ test("isolated provider check preserves sanitized failed_generation",async()=>{
  });
 });
 
+test("isolated provider check propagates sanitized raw Groq response diagnostics",async()=>{
+ const raw='{"error":{"code":"json_validate_failed"},"debug":"Bearer gsk_live_abcdefghijklmnop"}';
+ class FakeGroq{
+  async generateJson(){
+   throw Object.assign(new Error("Groq validation failed"),{
+    diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"json_validate_failed",
+    providerResponseBody:'{"error":{"code":"json_validate_failed"},"debug":"Bearer [REDACTED]"}',
+    providerResponseKeys:["error","debug"],providerErrorKeys:["code"],retryable:false
+   });
+  }
+ }
+ await assert.rejects(()=>runProviderConnectivityCheck({
+  env,search:async()=>({resultsCount:1}),Groq:FakeGroq
+ }),error=>{
+  assert.equal(error.providerResponseBody,'{"error":{"code":"json_validate_failed"},"debug":"Bearer [REDACTED]"}');
+  assert.deepEqual(error.providerResponseKeys,["error","debug"]);
+  assert.deepEqual(error.providerErrorKeys,["code"]);
+  assert.equal(error.message.includes("gsk_live_abcdefghijklmnop"),false);
+  return true;
+ });
+});
+
 test("isolated provider check reports missing Groq key without exposing secrets",async()=>{
  const noGroq={...env,BEP_AGENT_GROQ_API_KEY:""};
  await assert.rejects(()=>runProviderConnectivityCheck({env:noGroq,search:async()=>({resultsCount:1})}),error=>error.message==="PROVIDER_CHECK_GROQ_NOT_CONFIGURED");
