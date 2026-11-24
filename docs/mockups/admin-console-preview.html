@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEP — Aperçu administration V2</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#18263a;background:#f4f7fb;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}
+.shell{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
+.sidebar{background:#14263d;color:#eaf0f7;padding:22px 14px;display:flex;flex-direction:column;gap:24px}
+.brand{display:flex;align-items:center;gap:11px;padding:0 10px}.brand-mark{width:38px;height:38px;border-radius:12px;background:#e8f1ff;color:#17375d;display:grid;place-items:center;font-weight:850}.brand strong{display:block;font-size:15px}.brand small{color:#9fb2c9;font-size:11px}
+.nav-label{padding:0 12px;color:#8298b3;text-transform:uppercase;letter-spacing:.09em;font-size:10px;font-weight:800}
+nav{display:grid;gap:5px}.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border:0;border-radius:10px;color:#c3d0df;background:transparent;text-align:left;font-size:13px}.nav-item:hover{background:#203852;color:#fff}.nav-item[aria-current=page]{background:#eaf2ff;color:#183b63;font-weight:750}.nav-icon{width:19px;text-align:center;font-size:16px}.sidebar-foot{margin-top:auto;padding:13px 12px;border:1px solid #30465f;border-radius:12px;color:#b8c7d8;font-size:11px;line-height:1.55}
+.main{min-width:0;padding:28px clamp(18px,3vw,42px) 50px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}.crumb{color:#718198;font-size:12px}.top-actions{display:flex;align-items:center;gap:10px}.sync{display:flex;align-items:center;gap:7px;color:#65758b;font-size:11px}.dot{width:8px;height:8px;border-radius:50%;background:#d39a36}.avatar{width:34px;height:34px;border-radius:50%;background:#dce9fb;color:#214c7a;display:grid;place-items:center;font-weight:800;font-size:12px}
+h1{font-size:27px;letter-spacing:-.04em;margin:0 0 7px}h2{font-size:17px;margin:0}h3{font-size:14px;margin:0}.sub{margin:0;color:#6d7d91;font-size:13px;line-height:1.5}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}.btn{border:1px solid #d8e1ec;background:white;color:#34465d;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:650}.btn.primary{background:#1d4b7a;color:white;border-color:#1d4b7a}.btn:disabled{opacity:.55;cursor:not-allowed}
+.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:17px;box-shadow:0 2px 8px #152b4607;min-width:0}.stat-top{display:flex;justify-content:space-between;align-items:center;color:#74849a;font-size:11px}.stat-icon{width:30px;height:30px;display:grid;place-items:center;background:#edf4fc;color:#285886;border-radius:9px}.stat-value{font-size:27px;font-weight:800;letter-spacing:-.04em;margin:14px 0 3px;color:#1a2d45}.stat-note{font-size:10px;color:#8290a2}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 12px}.section-head p{margin:4px 0 0;color:#8390a1;font-size:11px}.cols{grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr)}.activity{display:grid;gap:0}.activity-row{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #edf1f5}.activity-row:last-child{border:0}.activity-mark{width:30px;height:30px;border-radius:9px;background:#f0f5fb;display:grid;place-items:center;color:#426b95;flex:none}.activity-row strong{display:block;font-size:12px}.activity-row small{color:#8190a2;font-size:10px}.pill{display:inline-flex;align-items:center;border-radius:30px;padding:4px 8px;font-size:10px;font-weight:700;background:#f0f3f7;color:#68788e}.pill.green{background:#e9f7ef;color:#237449}.pill.amber{background:#fff5df;color:#9a6b15}.pill.blue{background:#edf4ff;color:#2d5f9a}
+.page{display:none}.page.active{display:block}.notice{padding:11px 13px;border:1px solid #f0dfb7;background:#fff9ec;border-radius:10px;color:#80601d;font-size:11px;line-height:1.5;margin-bottom:15px}.toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:13px}.search{flex:1;min-width:210px;border:1px solid #dce4ed;border-radius:9px;background:white;padding:10px 12px;font-size:12px;color:#33445a}.table-wrap{overflow:auto;border:1px solid #e4eaf1;border-radius:12px;background:#fff}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #edf1f5;font-size:11px}th{font-size:10px;color:#77879b;text-transform:uppercase;letter-spacing:.06em;background:#fafbfd}td{color:#35465c}tr:last-child td{border-bottom:0}.empty{padding:28px;text-align:center;color:#8492a4;font-size:12px}.empty b{display:block;color:#40536b;margin-bottom:5px;font-size:13px}
+.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.quick-card{padding:15px;border:1px solid #e2e8f0;background:#fff;border-radius:12px;text-align:left}.quick-card:hover{border-color:#9eb9d8;box-shadow:0 5px 18px #193b5e0c}.quick-card span{font-size:18px}.quick-card strong{display:block;margin:9px 0 4px;font-size:12px}.quick-card small{color:#8290a2;font-size:10px;line-height:1.45}
+.workflow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.step{padding:15px;border:1px solid #e2e8f0;background:white;border-radius:12px}.step b{display:block;font-size:12px;margin:8px 0 4px}.step small{font-size:10px;color:#8290a2;line-height:1.5}.step .num{width:25px;height:25px;display:grid;place-items:center;background:#edf4ff;color:#285886;border-radius:8px;font-size:11px;font-weight:800}
+.user-cards{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px}.metric{padding:16px}.metric small{color:#77879b;font-size:11px}.metric strong{display:block;font-size:24px;margin:8px 0 2px}.metric em{font-size:10px;color:#8794a5;font-style:normal}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}.workflow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.shell{grid-template-columns:1fr}.sidebar{padding:13px;gap:12px}.brand{padding:0 4px}.nav-label,.sidebar-foot{display:none}nav{display:flex;overflow:auto;padding-bottom:3px}.nav-item{white-space:nowrap;flex:none;padding:9px 11px}.main{padding:18px 14px 36px}.topbar{margin-bottom:18px}.page-head{flex-direction:column}.quick{grid-template-columns:1fr 1fr}.user-cards{grid-template-columns:1fr 1fr}.stats{gap:9px}.card{padding:13px}.stat-value{font-size:23px}}
+@media(max-width:430px){.stats,.user-cards{grid-template-columns:1fr 1fr}.quick{grid-template-columns:1fr}.workflow{grid-template-columns:1fr}.sync{display:none}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark">B</div><div><strong>BEP Administration</strong><small>Centre de pilotage</small></div></div>
+ <div class="nav-label">Espace de travail</div>
+ <nav aria-label="Navigation principale">
+  <button class="nav-item" data-page="overview" aria-current="page"><span class="nav-icon">▦</span>Vue d'ensemble</button>
+  <button class="nav-item" data-page="documents"><span class="nav-icon">▤</span>Documents</button>
+  <button class="nav-item" data-page="library"><span class="nav-icon">▥</span>Bibliothèque BEP</button>
+  <button class="nav-item" data-page="intelligence"><span class="nav-icon">✳</span>Intelligence documentaire</button>
+  <button class="nav-item" data-page="validation"><span class="nav-icon">☑</span>Validation & qualité</button>
+  <button class="nav-item" data-page="users"><span class="nav-icon">♙</span>Utilisateurs & activité</button>
+ </nav>
+ <div class="nav-label">Configuration</div>
+ <nav><button class="nav-item" data-page="system"><span class="nav-icon">⚙</span>Système & sécurité</button></nav>
+ <div class="sidebar-foot">Aperçu d'interface — données de production non connectées.<br>Les opérations réelles restent dans la console actuelle jusqu'à validation de l'intégration.</div>
+</aside>
+<main class="main">
+ <div class="topbar"><div class="crumb">BEP <span style="color:#b6c0cd">/</span> Administration</div><div class="top-actions"><div class="sync"><span class="dot"></span> Aperçu non synchronisé</div><div class="avatar">AD</div></div></div>
+
+<section class="page active" id="page-overview">
+ <div class="page-head"><div><h1>Vue d'ensemble</h1><p class="sub">Le pilotage de BEP, en un seul endroit.</p></div><button class="btn">Dernière actualisation : non connectée</button></div>
+ <div class="notice">Maquette fonctionnelle : les chiffres et listes de production ne sont pas chargés. Aucun compteur n'est simulé.</div>
+ <div class="grid stats">
+  <div class="card"><div class="stat-top">Documents publiés <span class="stat-icon">▤</span></div><div class="stat-value">—</div><div class="stat-note">Source : bibliothèque BEP</div></div>
+  <div class="card"><div class="stat-top">À vérifier <span class="stat-icon">◷</span></div><div class="stat-value">—</div><div class="stat-note">Documents nécessitant une revue</div></div>
+  <div class="card"><div class="stat-top">Propositions en attente <span class="stat-icon">☑</span></div><div class="stat-value">—</div><div class="stat-note">Validation humaine requise</div></div>
+  <div class="card"><div class="stat-top">Utilisateurs inscrits <span class="stat-icon">♙</span></div><div class="stat-value">—</div><div class="stat-note">Synchronisation à connecter</div></div>
+ </div>
+ <div class="section-head"><div><h2>Accès rapides</h2><p>Les tâches les plus fréquentes</p></div></div>
+ <div class="quick">
+  <button class="quick-card" data-go="documents"><span>＋</span><strong>Ajouter un document</strong><small>Importer, classer et vérifier une ressource.</small></button>
+  <button class="quick-card" data-go="library"><span>▥</span><strong>Parcourir la bibliothèque</strong><small>Retrouver les fiches publiées et leurs versions.</small></button>
+  <button class="quick-card" data-go="validation"><span>☑</span><strong>Examiner les propositions</strong><small>Consulter les preuves et décider de la publication.</small></button>
+ </div>
+ <div class="section-head"><div><h2>Activité récente</h2><p>Historique des traitements et décisions</p></div></div>
+ <div class="card empty"><b>Aucune activité chargée</b>La connexion aux journaux sera réalisée lors de l'intégration.</div>
+</section>
+
+<section class="page" id="page-documents">
+ <div class="page-head"><div><h1>Documents</h1><p class="sub">Retrouver, créer, organiser et mettre à jour les ressources documentaires.</p></div><button class="btn primary">＋ Ajouter un document</button></div>
+ <div class="toolbar"><input class="search" placeholder="Rechercher par titre ou mot-clé" aria-label="Rechercher un document"><select class="btn"><option>Toutes les catégories</option></select><select class="btn"><option>Tous les statuts</option><option>Brouillon</option><option>À vérifier</option><option>Publié</option><option>Archivé</option></select><button class="btn">Filtres</button></div>
+ <div class="card" style="padding:12px 15px;margin-bottom:12px"><strong style="font-size:12px">Une seule porte d'entrée pour les documents</strong><p class="sub" style="margin-top:5px">La fiche documentaire regroupe le contenu, la catégorie, les sources, la fraîcheur, les versions et le statut de publication.</p></div>
+ <div class="table-wrap"><table><thead><tr><th>Document</th><th>Catégorie</th><th>Statut</th><th>Source</th><th>Vérification</th><th>Version</th><th></th></tr></thead><tbody><tr><td colspan="7"><div class="empty"><b>Liste non connectée</b>Les documents réels apparaîtront ici après raccordement à l'API documentaire.</div></td></tr></tbody></table></div>
+</section>
+
+<section class="page" id="page-library">
+ <div class="page-head"><div><h1>Bibliothèque BEP</h1><p class="sub">Les connaissances validées et utilisées par le Coach.</p></div><span class="pill green">Publication contrôlée</span></div>
+ <div class="notice">Les propositions Groq restent séparées de la bibliothèque active. Seule une validation humaine explicite autorise leur publication.</div>
+ <div class="grid stats"><div class="card"><div class="stat-top">Fiches publiées</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Catégories</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Sources à actualiser</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Versions récentes</div><div class="stat-value">—</div></div></div>
+ <div class="card empty"><b>Bibliothèque non chargée</b>Le contenu et les métadonnées seront reliés aux routes existantes, sans migration de contenu.</div>
+</section>
+
+<section class="page" id="page-intelligence">
+ <div class="page-head"><div><h1>Intelligence documentaire</h1><p class="sub">Recherche de sources, analyse et optimisation interne.</p></div><span class="pill blue">Exa + Groq + Render</span></div>
+ <div class="notice">Groq est un moteur interne de recherche et d'analyse documentaire. Il ne répond pas directement aux utilisateurs du Coach.</div>
+ <div class="workflow">
+  <div class="step"><span class="num">1</span><b>Rechercher les sources</b><small>Exa identifie les sources publiques pertinentes.</small></div>
+  <div class="step"><span class="num">2</span><b>Analyser</b><small>Groq examine le contexte, la couverture et la cohérence.</small></div>
+  <div class="step"><span class="num">3</span><b>Contrôler la qualité</b><small>Sources, pertinence, fraîcheur et qualité rédactionnelle.</small></div>
+  <div class="step"><span class="num">4</span><b>Soumettre à validation</b><small>Les candidats attendent une décision humaine.</small></div>
+ </div>
+ <div class="section-head"><div><h2>Exécutions récentes</h2><p>État des workflows et détails d'exécution</p></div><button class="btn">Historique complet</button></div>
+ <div class="card empty"><b>Aucune exécution chargée</b>Les workflows Render et les diagnostics seront raccordés sans déclenchement automatique.</div>
+</section>
+
+<section class="page" id="page-validation">
+ <div class="page-head"><div><h1>Validation & qualité</h1><p class="sub">Chaque proposition est examinée avant d'entrer dans la bibliothèque.</p></div><span class="pill amber">Décision humaine</span></div>
+ <div class="grid stats"><div class="card"><div class="stat-top">À examiner</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Contrôles échoués</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Sources à confirmer</div><div class="stat-value">—</div></div><div class="card"><div class="stat-top">Décisions récentes</div><div class="stat-value">—</div></div></div>
+ <div class="card"><h3>Contrôles avant validation</h3><p class="sub" style="margin-top:8px">Correspondance sémantique affirmation/source · contexte comparable · détection des doublons · pertinence · lisibilité · absence de liens HTML dans le texte Coach · fraîcheur de la source.</p></div>
+ <div class="card empty"><b>Aucune proposition chargée</b>La file de validation sera reliée au registre documentaire existant.</div>
+</section>
+
+<section class="page" id="page-users">
+ <div class="page-head"><div><h1>Utilisateurs & activité</h1><p class="sub">Comprendre l'adoption de BEP et consulter les comptes selon les permissions.</p></div><span class="pill">Sans données financières</span></div>
+ <div class="notice">Les valeurs restent vides tant que les endpoints de statistiques et de présence ne sont pas implémentés. Une session encore valide n'est pas considérée comme une présence en temps réel.</div>
+ <div class="grid user-cards">
+  <div class="card metric"><small>Comptes inscrits</small><strong>—</strong><em>Total de la table des utilisateurs</em></div>
+  <div class="card metric"><small>Comptes vérifiés</small><strong>—</strong><em>Adresse vérifiée</em></div>
+  <div class="card metric"><small>Nouveaux comptes · 30 jours</small><strong>—</strong><em>Selon la date d'inscription</em></div>
+  <div class="card metric"><small>Actifs · 24 heures</small><strong>—</strong><em>Selon le dernier signal d'activité</em></div>
+  <div class="card metric"><small>Actifs · 7 jours</small><strong>—</strong><em>Selon le dernier signal d'activité</em></div>
+  <div class="card metric"><small>En ligne maintenant</small><strong>—</strong><em>Présence récente, fenêtre 5 min</em></div>
+ </div>
+ <div class="card" style="margin-bottom:13px"><div class="stat-top"><strong style="color:#263b55;font-size:12px">Synchronisation des données</strong><span class="pill amber">À connecter</span></div><p class="sub" style="margin-top:8px">Rafraîchissement cible : 30 secondes · horodatage de dernière synchronisation · indicateur de retard ou d'indisponibilité.</p></div>
+ <div class="section-head"><div><h2>Annuaire des utilisateurs</h2><p>Nom, e-mail, inscription, vérification, dernière activité et statut — SUPER_ADMIN uniquement.</p></div></div>
+ <div class="toolbar"><input class="search" placeholder="Rechercher un utilisateur (accès SUPER_ADMIN)" aria-label="Rechercher un utilisateur" disabled><button class="btn" disabled>Exporter</button></div>
+ <div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>Inscription</th><th>Vérification</th><th>Dernière activité</th><th>Authentification</th><th>Statut</th></tr></thead><tbody><tr><td colspan="6"><div class="empty"><b>Annuaire non connecté</b>Aucun nom ni e-mail n'est chargé dans cette maquette.</div></td></tr></tbody></table></div>
+ <p class="sub" style="margin-top:12px">Aucun revenu, paiement, budget, solde, transaction, donnée bancaire, contenu privé ou payload financier n'est exposé dans cet espace.</p>
+</section>
+
+<section class="page" id="page-system">
+ <div class="page-head"><div><h1>Système & sécurité</h1><p class="sub">Surveillance technique et contrôle des accès.</p></div><span class="pill green">Accès administrateur requis</span></div>
+ <div class="quick">
+  <div class="quick-card"><span>⌁</span><strong>État des services</strong><small>API, base de données et disponibilité des workflows.</small></div>
+  <div class="quick-card"><span>▧</span><strong>Journaux techniques</strong><small>Erreurs, diagnostics fournisseurs et incidents.</small></div>
+  <div class="quick-card"><span>◈</span><strong>Journal d'audit</strong><small>Consultations sensibles, validations et actions admin.</small></div>
+ </div>
+ <div class="notice" style="margin-top:15px">Les secrets, jetons, clés API et hashes de mots de passe ne doivent jamais être affichés dans la console.</div>
+</section>
+</main></div>
+<script>
+(function(){
+ const pages=[...document.querySelectorAll(".page")],links=[...document.querySelectorAll("[data-page]")];
+ function show(name){pages.forEach(p=>p.classList.toggle("active",p.id==="page-"+name));links.forEach(a=>{if(a.dataset.page===name)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});}
+ links.forEach(a=>a.addEventListener("click",()=>show(a.dataset.page)));
+ document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",()=>show(a.dataset.go)));
+})();
+</script>
+</body>
+</html>
