@@ -121,4 +121,6 @@ test("documentary provider errors retain sanitized Exa and Groq diagnostic metad
  const groq=documentaryErrorDetail({code:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"invalid_request",providerStatus:"error",providerParam:"response_format",providerMessage:"bad schema",stage:"groq"});
  for(const value of ["GROQ_HTTP_ERROR","HTTP 400","invalid_request","response_format","bad schema"])assert.ok(groq.includes(value));
  assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",message:"Bearer secret-token"}),/secret-token/);
+ const secret="gsk_private_test_key_123456";
+ assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",providerMessage:"rejected "+secret},{BEP_AGENT_GROQ_API_KEY:secret}),/gsk_private_test_key/);
 });
