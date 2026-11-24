@@ -38,7 +38,7 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
  assert.equal(candidate.params[5],"https://mesquestionsdargent.fr/epargne");
  assert.match(candidate.sql,/'pending'/);
  assert.equal(result.automaticPublication,false);
- assert.match(candidate.params[10],/semantic_evidence_audit/);
+ assert.match(candidate.params[8],/semantic_evidence_audit/);
 });
 
 test("unsupported external evidence is rejected before a candidate can be stored",async()=>{
