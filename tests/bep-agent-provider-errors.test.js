@@ -71,7 +71,7 @@ test("Groq connectivity wrapper preserves sanitized provider diagnostics",async(
   retryable:false
  };
  await assert.rejects(()=>runProviderConnectivityCheck({
-  env:{BEP_AGENT_SOURCE_SEARCH_ENABLED:"true",BEP_AGENT_EXA_API_KEY:"exa_secret_key_123456789",BEP_AGENT_ADMIN_PROVIDER:"groq",BEP_AGENT_GROQ_API_KEY:apiKey},
+  env:{BEP_AGENT_SOURCE_SEARCH_ENABLED:"true",BEP_AGENT_EXA_API_KEY:"exa_secret_key_123456789",BEP_AGENT_AI_PROVIDER:"groq",BEP_AGENT_GROQ_API_KEY:apiKey},
   search:async()=>({resultsCount:1}),
   Groq:class{constructor(){} async generateJson(){throw Object.assign(new Error("PROVIDER_CHECK_GROQ_FAILED"),expected)}}
  }),error=>{
