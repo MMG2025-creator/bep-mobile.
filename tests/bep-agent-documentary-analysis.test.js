@@ -61,10 +61,20 @@ test("contradiction requires matching product, institution, holder, operation an
 
 test("Coach content quality rejects links, publication dates and oversized text",()=>{
  const {contentQuality,MAX_COACH_CONTENT_CHARS}=require("../lib/bep-agent/documentary-analysis");
- const base={title:"Taux du Livret A",query:"taux Livret A"};
+ const base={title:"Taux du Livret A",query:"taux Livret A",evidenceSources:[{url:"https://mesquestionsdargent.fr/livret-a"}]};
  assert.ok(contentQuality({...base,content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).accepted);
- assert.ok(contentQuality({...base,content:"Publié le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"));
+ assert.equal(contentQuality({...base,content:"Publié le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"),true);
+ assert.equal(contentQuality({...base,content:"Actualisée le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"),true);
+ assert.equal(contentQuality({...base,content:"Le taux de 1,7 % s'applique depuis le 1er août 2026."}).issues.includes("publication_date_in_content"),false);
  assert.ok(contentQuality({...base,content:"Consultez <a href='https://example.org'>la source officielle</a>."}).issues.includes("html_or_link_in_content"));
  assert.ok(contentQuality({...base,content:"Voir [la source](https://example.org) pour le taux."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Consultez la source officielle pour les détails."}).issues.includes("html_or_link_in_content"));
  assert.ok(contentQuality({...base,content:"Livret A ".repeat(MAX_COACH_CONTENT_CHARS)}).issues.includes("content_too_long"));
+ const scored=contentQuality({...base,content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."});
+ assert.equal(typeof scored.documentation,"number");
+ assert.ok(scored.documentation>=70);
+ assert.ok(scored.overall>=75);
+ assert.equal(contentQuality({title:"Taux du Livret A",query:"taux Livret A",content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).issues.includes("insufficient_documentary_evidence"),true);
+ assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).chars>1200,true);
+ assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).issues.includes("content_too_long"),false);
 });
