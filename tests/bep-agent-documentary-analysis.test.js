@@ -22,10 +22,10 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
   if(sql.includes("INSERT INTO bep_knowledge_candidates"))return{rowCount:1,rows:[{id:17}]};
   return{rowCount:1,rows:[]};
  }};
- const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/epargne",domain:"mesquestionsdargent.fr",publishedAt:"2026-10-01T00:00:00.000Z",text:"Texte complet institutionnel sur l’épargne de précaution.",highlights:["Constituer une épargne de précaution permet de faire face aux dépenses imprévues."]};
+ const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/epargne",domain:"mesquestionsdargent.fr",publishedAt:"2026-10-01T00:00:00.000Z",text:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",highlights:["Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit.","Elle doit être adaptée aux charges et à la stabilité des revenus.","Le montant cible dépend de la situation et doit être réévalué régulièrement."]};
  let schemaSeen;
  let callCount=0;
- const client={generateJson:async(args)=>{callCount++;if(callCount===2)return{value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Une épargne de précaution permet de faire face aux dépenses imprévues.",verdict:"supported",evidence:[{url:source.url,quote:"Constituer une épargne de précaution permet de faire face aux dépenses imprévues."}],explanation:"La source formule directement cette affirmation."}]}};schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
+ const client={generateJson:async(args)=>{callCount++;if(callCount===2)return{value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit.",verdict:"supported",evidence:[{url:source.url,quote:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit."}],explanation:"La source formule directement cette affirmation."},{claim:"Elle doit être adaptée aux charges et à la stabilité des revenus.",verdict:"supported",evidence:[{url:source.url,quote:"Elle doit être adaptée aux charges et à la stabilité des revenus."}],explanation:"La source formule directement cette affirmation."},{claim:"Le montant cible dépend de la situation et doit être réévalué régulièrement.",verdict:"supported",evidence:[{url:source.url,quote:"Le montant cible dépend de la situation et doit être réévalué régulièrement."}],explanation:"La source formule directement cette affirmation."}]}};schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
  const result=await analyzeDocumentaryLibrary({pool,client,query:"épargne de précaution",searchResults:[source],model:"openai/gpt-oss-20b"});
  assert.equal(schemaSeen,ANALYSIS_SCHEMA);
  assert.equal(result.provider,"groq");
@@ -109,4 +109,25 @@ test("Coach content quality rejects links, publication dates and oversized text"
  assert.equal(contentQuality({title:"Taux du Livret A",query:"taux Livret A",content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).issues.includes("insufficient_documentary_evidence"),true);
  assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).chars>1200,true);
  assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).issues.includes("content_too_long"),false);
+});
+
+
+test("sensitive fact coverage rejects omitted amounts, dates and eligibility conditions",()=>{
+ const {verifySensitiveAnchorCoverage}=require("../lib/bep-agent/documentary-analysis");
+ const content="Le plafond est de 22 950 euros pour les particuliers depuis le 1er août 2026, sauf exception.";
+ const claims=[{claim:"Le plafond est de 22 950 euros pour les particuliers.",evidence:[{quote:"Le plafond est de 22 950 euros pour les particuliers."}]}];
+ const result=verifySensitiveAnchorCoverage(content,claims);
+ assert.equal(result.complete,false);
+ assert.ok(result.missing.some(x=>x.type==="date"));
+ assert.ok(result.missing.some(x=>x.value==="sauf"));
+});
+
+test("sensitive fact coverage requires the source quotation to contain the exact material figure",()=>{
+ const {verifySensitiveAnchorCoverage}=require("../lib/bep-agent/documentary-analysis");
+ const content="Le taux est de 1,7 % depuis le 1er août 2026.";
+ const claims=[{claim:content,evidence:[{quote:"Le taux est de 1,5 % depuis le 1er février 2026."}]}];
+ const result=verifySensitiveAnchorCoverage(content,claims);
+ assert.equal(result.complete,false);
+ assert.ok(result.missing.some(x=>x.type==="number"));
+ assert.ok(result.missing.some(x=>x.type==="date"));
 });
