@@ -11,7 +11,7 @@ A user is counted once per UTC calendar day when an authenticated request succes
 - The table stores only the internal user ID, activity date, and latest activity timestamp.
 - No email, IP address, user-agent, financial payload, endpoint history, or event body is stored.
 - Account deletion cascades to activity rows.
-- Rows older than 400 UTC calendar days are opportunistically pruned during activity writes.
+- Rows older than 35 UTC calendar days are opportunistically pruned during activity writes.
 
 ## Metrics
 The admin-only `GET /api/admin/dashboard/activity` endpoint returns:
@@ -24,5 +24,5 @@ The endpoint is independently protected by the BEP admin authentication middlewa
 ## Limitations and release gates
 - No historical backfill: metrics begin when this code is deployed and the activity table exists.
 - A successful data load or save is the defined proxy for meaningful use; this does not claim to measure every navigation or every interaction.
-- Before production, review the user-facing privacy notice and lawful basis/retention wording. The 400-day cleanup is a technical maximum, not a legal determination.
+- Before production, review the user-facing privacy notice and lawful basis/retention wording. The 35-day cleanup is the configured technical retention period; the controller must still document and validate the applicable lawful basis and user-facing notice before production.
 - Production remains blocked until unit/regression/security/browser checks, code review, merge approval, and explicit Render deployment verification are complete.
