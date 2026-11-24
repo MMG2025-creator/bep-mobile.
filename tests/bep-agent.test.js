@@ -35,7 +35,7 @@ test("disabled agent performs no schema or database writes",async()=>{
 test("agent requires a dedicated worker, key, explicit billing approval and monthly budget",()=>{
  const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_BILLING_APPROVED:"true",BEP_AGENT_MONTHLY_BUDGET_USD:"10",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
  const c=readConfig(base);
- assert.equal(c.enabled,true);assert.equal(c.keySource,"dedicated");assert.equal(c.model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,20);
+ assert.equal(c.enabled,true);assert.equal(c.keySource,"dedicated");assert.equal(c.model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
  assert.equal(readConfig({...base,BEP_AGENT_RUN_AS_WORKER:"false"}).enabled,false);
  assert.equal(readConfig({...base,BEP_AGENT_GEMINI_API_KEY:"",BEP_AI_API_KEY:"shared-key"}).enabled,false);
  assert.equal(readConfig({...base,BEP_AGENT_MONTHLY_BUDGET_USD:"0"}).enabled,false);
@@ -43,7 +43,7 @@ test("agent requires a dedicated worker, key, explicit billing approval and mont
 test("free-tier admin mode is on-demand, bounded to twenty calls and independent of worker billing config",()=>{
  const base={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_AI_PROVIDER:"gemini",BEP_AGENT_GEMINI_API_KEY:"dedicated-key"};
  const c=readAdminConfig(base);
- assert.equal(c.enabled,true);assert.equal(c.provider,"gemini");assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,8);
+ assert.equal(c.enabled,true);assert.equal(c.provider,"gemini");assert.equal(c.model,"gemini-3.8-flash");assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_MODEL:"gemini-pro"}).model,"gemini-3.8-flash");assert.equal(c.maxCallsPerDay,20);
  assert.equal(readAdminConfig({...base,BEP_AGENT_RUN_MODE:"worker"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"false"}).enabled,false);
  assert.equal(readAdminConfig({...base,BEP_AGENT_GEMINI_API_KEY:""}).enabled,false);
@@ -52,7 +52,8 @@ test("free-tier admin mode is on-demand, bounded to twenty calls and independent
 test("legacy shared Gemini key and legacy zero-billing flag never activate the supervisor",()=>{
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true",BEP_AI_API_KEY:"shared-key"}).enabled,false);
 });
-test("documentary worker and admin daily quotas are bounded at twenty calls",()=>{\n const workerBase={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GROQ_API_KEY:"groq-key"};\n assert.equal(readDocumentaryWorkerConfig(workerBase).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"50"}).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"5"}).maxCallsPerDay,5);\n});\ntest("daily Gemini call quota is bounded",()=>{
+test("documentary worker and admin daily quotas are bounded at twenty calls",()=>{
+ const workerBase={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GROQ_API_KEY:"groq-key"};\n assert.equal(readDocumentaryWorkerConfig(workerBase).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"50"}).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"5"}).maxCallsPerDay,5);\n});\ntest("daily Gemini call quota is bounded",()=>{
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"500"}).maxCallsPerDay,50);
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"0"}).maxCallsPerDay,8);
 });
