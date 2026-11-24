@@ -47,10 +47,10 @@ test("documentary analysis accepts only configured allowlisted HTTPS sources",()
 });
 
 test("documentary prompt payload limits stay bounded",()=>{
- assert.equal(MAX_SOURCE_TEXT_CHARS,2500);
+ assert.equal(MAX_SOURCE_TEXT_CHARS,2000);
  assert.equal(MAX_SOURCE_HIGHLIGHTS,3);
- assert.equal(MAX_SOURCE_HIGHLIGHT_CHARS,350);
- assert.equal(MAX_LIBRARY_DOCUMENTS,15);
- assert.equal(MAX_LIBRARY_CONTENT_CHARS,600);
+ assert.equal(MAX_SOURCE_HIGHLIGHT_CHARS,300);
+ assert.equal(MAX_LIBRARY_DOCUMENTS,12);
+ assert.equal(MAX_LIBRARY_CONTENT_CHARS,500);
  assert.equal(MAX_ANALYSIS_PROMPT_CHARS,30000);
 });
