@@ -24,8 +24,10 @@ test("documentary pipeline stays behind admin auth and dispatches an isolated Re
  assert.ok(server.includes("documentarySchemaReady"));
  assert.doesNotMatch(workflow,/process\\.env\\.DATABASE_URL/);
  execFileSync(process.execPath,["--check",path.join(root,"render-workflows/main.mjs")]);
- assert.ok(workflow.includes('role_name!=="bep_agent_runner"'));
- assert.ok(workflow.includes('database_name!=="bep_v2_db"'));
+ assert.ok(workflow.includes('dbIdentity.currentUser!=="bep_agent_runner"'));
+ assert.ok(workflow.includes('dbIdentity.sessionUser!=="bep_agent_runner"'));
+ assert.ok(workflow.includes('dbIdentity.database!=="bep_v2_db"'));
+ assert.ok(workflow.includes('[BEP_WORKER_DB_IDENTITY]'));
  assert.ok(workflow.includes('jobTypes:["documentary_research"],jobId:id'));
  assert.ok(workflow.includes("retry:{maxRetries:0}"));
  assert.ok(worker.includes('jobTypes=["knowledge_review","coach_quality_review"],jobId=null'));

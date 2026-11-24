@@ -24,9 +24,16 @@ task(
   if(!/^[1-9]\d{0,18}$/.test(id))throw new Error("DOCUMENTARY_JOB_ID_INVALID");
   const pool=new Pool({connectionString,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:10000,max:1});
   try{
-   const identity=await pool.query("SELECT current_user AS role_name,current_database() AS database_name");
-   if(identity.rows[0]?.role_name!=="bep_agent_runner")throw new Error("DOCUMENTARY_DATABASE_ROLE_MISMATCH");
-   if(identity.rows[0]?.database_name!=="bep_v2_db")throw new Error("DOCUMENTARY_DATABASE_TARGET_MISMATCH");
+   // Temporary, allowlisted diagnostic: never log connection strings or environment values.
+   const identity=await pool.query("SELECT current_user AS role_name,session_user AS session_role_name,current_database() AS database_name");
+   const dbIdentity={
+    currentUser:String(identity.rows[0]?.role_name||""),
+    sessionUser:String(identity.rows[0]?.session_role_name||""),
+    database:String(identity.rows[0]?.database_name||"")
+   };
+   console.info("[BEP_WORKER_DB_IDENTITY] "+JSON.stringify(dbIdentity));
+   if(dbIdentity.currentUser!=="bep_agent_runner"||dbIdentity.sessionUser!=="bep_agent_runner")throw new Error("DOCUMENTARY_DATABASE_ROLE_MISMATCH");
+   if(dbIdentity.database!=="bep_v2_db")throw new Error("DOCUMENTARY_DATABASE_TARGET_MISMATCH");
    await assertDocumentarySchema(pool);
    const client=new GroqClient({apiKey:config.apiKey,model:config.model,timeoutMs:20000});
    const processed=await processOne({pool,client,model:config.model,workerId:"bep-render-"+crypto.randomUUID(),maxCallsPerDay:config.maxCallsPerDay,maxOutputTokens:config.maxOutputTokens,env:process.env,jobTypes:["documentary_research"],jobId:id,deferOnQuotaExhausted:false,retryOnFailure:false});
