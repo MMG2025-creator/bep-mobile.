@@ -22,12 +22,14 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
   if(sql.includes("INSERT INTO bep_knowledge_candidates"))return{rowCount:1,rows:[{id:17}]};
   return{rowCount:1,rows:[]};
  }};
- const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/epargne",domain:"mesquestionsdargent.fr",publishedAt:"2026-10-01T00:00:00.000Z",text:"Texte complet institutionnel sur l’épargne de précaution.",highlights:["Constituer une épargne de précaution permet de faire face aux dépenses imprévues."]};
+ const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/epargne",domain:"mesquestionsdargent.fr",publishedAt:"2026-10-01T00:00:00.000Z",text:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",highlights:["Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit.","Elle doit être adaptée aux charges et à la stabilité des revenus.","Le montant cible dépend de la situation et doit être réévalué régulièrement."]};
  let schemaSeen;
- const client={generateJson:async(args)=>{schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
+ let callCount=0;
+ const client={generateJson:async(args)=>{callCount++;if(callCount===2)return{value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit.",verdict:"supported",evidence:[{url:source.url,quote:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit."}],explanation:"La source formule directement cette affirmation."},{claim:"Elle doit être adaptée aux charges et à la stabilité des revenus.",verdict:"supported",evidence:[{url:source.url,quote:"Elle doit être adaptée aux charges et à la stabilité des revenus."}],explanation:"La source formule directement cette affirmation."},{claim:"Le montant cible dépend de la situation et doit être réévalué régulièrement.",verdict:"supported",evidence:[{url:source.url,quote:"Le montant cible dépend de la situation et doit être réévalué régulièrement."}],explanation:"La source formule directement cette affirmation."}]}};schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
  const result=await analyzeDocumentaryLibrary({pool,client,query:"épargne de précaution",searchResults:[source],model:"openai/gpt-oss-20b"});
  assert.equal(schemaSeen,ANALYSIS_SCHEMA);
  assert.equal(result.provider,"groq");
+ assert.equal(callCount,2);
  assert.equal(result.proposals.length,1);
  assert.equal(result.proposals[0].status,"pending_review");
  assert.equal(inserts.filter(x=>x.sql.includes("INSERT INTO bep_knowledge_candidates")).length,1);
@@ -36,6 +38,7 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
  assert.equal(candidate.params[5],"https://mesquestionsdargent.fr/epargne");
  assert.match(candidate.sql,/'pending'/);
  assert.equal(result.automaticPublication,false);
+ assert.match(candidate.params[8],/semantic_evidence_audit/);
 });
 
 test("unsupported external evidence is rejected before a candidate can be stored",async()=>{
@@ -45,4 +48,97 @@ test("unsupported external evidence is rejected before a candidate can be stored
  const result=await analyzeDocumentaryLibrary({pool,client,query:"budget",searchResults:[{title:"Un site",url:"https://mesquestionsdargent.fr/source",domain:"mesquestionsdargent.fr",highlights:["Extrait"]}]});
  assert.equal(candidateWrites,0);
  assert.equal(result.proposals.length,0);
+});
+
+test("claim-level evidence audit rejects unsupported claims and fabricated quotations",async()=>{
+ const {auditClaimEvidence}=require("../lib/bep-agent/documentary-analysis");
+ const source={title:"Source institutionnelle",url:"https://mesquestionsdargent.fr/source",text:"Le versement initial minimum du livret est fixé à 10 euros.",highlights:["Le versement initial minimum du livret est fixé à 10 euros."]};
+ const sourceMap=new Map([[source.url,source]]);
+ const unsupportedClient={generateJson:async()=>({value:{coverage_complete:true,overall_verdict:"partial",claims:[{claim:"Le plafond est de 100 000 euros.",verdict:"unsupported",evidence:[],explanation:"Aucune preuve."}]}})};
+ const unsupported=await auditClaimEvidence({client:unsupportedClient,title:"Plafond",content:"Le plafond est de 100 000 euros.",evidenceUrls:[source.url],sourceMap});
+ assert.equal(unsupported.accepted,false);
+ const fabricatedClient={generateJson:async()=>({value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Le versement initial minimum est de 10 euros.",verdict:"supported",evidence:[{url:source.url,quote:"Le versement initial minimum est de 10 euros."}],explanation:"Citation prétendue."}]}})};
+ const fabricated=await auditClaimEvidence({client:fabricatedClient,title:"Versement minimum",content:"Le versement initial minimum est de 10 euros.",evidenceUrls:[source.url],sourceMap});
+ assert.equal(fabricated.accepted,false);
+});
+test("claim-level evidence audit fails closed when claim coverage is incomplete",async()=>{
+ const {auditClaimEvidence}=require("../lib/bep-agent/documentary-analysis");
+ const url="https://mesquestionsdargent.fr/source";
+ const client={generateJson:async()=>({value:{coverage_complete:false,overall_verdict:"supported",claims:[{claim:"Une affirmation",verdict:"supported",evidence:[{url,quote:"Le versement initial minimum du livret est fixé à 10 euros."}],explanation:"Preuve."}]}})};
+ const result=await auditClaimEvidence({client,title:"Test",content:"Une affirmation",evidenceUrls:[url],sourceMap:new Map([[url,{url,text:"Le versement initial minimum du livret est fixé à 10 euros."}]])});
+ assert.equal(result.accepted,false);
+});
+
+test("documentary pipeline never stores a proposal with an unsupported factual claim",async()=>{
+ let calls=0,candidateWrites=0;
+ const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/livret-a",domain:"mesquestionsdargent.fr",text:"Le Livret A est un produit d'épargne réglementé. Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",highlights:["Le Livret A est un produit d'épargne réglementé."]};
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates"))candidateWrites++;return{rowCount:1,rows:[]};}};
+ const client={generateJson:async()=>{calls++;if(calls===1)return{value:{findings:[],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Comprendre le Livret A",content:"Le Livret A est un produit d'épargne réglementé. Son plafond est fixé à 100 000 euros pour tous les titulaires. Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",source_url:source.url,evidence_urls:[source.url],confidence:"high",rationale:"Synthèse documentaire.",keywords:["Livret A"]}]}};return{value:{coverage_complete:true,overall_verdict:"partial",claims:[{claim:"Le Livret A est un produit d'épargne réglementé.",verdict:"supported",evidence:[{url:source.url,quote:"Le Livret A est un produit d'épargne réglementé."}],explanation:"Preuve directe."},{claim:"Son plafond est fixé à 100 000 euros pour tous les titulaires.",verdict:"unsupported",evidence:[],explanation:"La source ne confirme pas ce plafond."},{claim:"Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",verdict:"supported",evidence:[{url:source.url,quote:"Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux."}],explanation:"Preuve directe."}]}};}};
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"Livret A épargne",searchResults:[source]});
+ assert.equal(calls,2);
+ assert.equal(candidateWrites,0);
+ assert.equal(result.proposals.length,0);
+});
+
+test("contradiction requires matching product, institution, holder, operation and period",()=>{
+ const {compareFindingContext}=require("../lib/bep-agent/documentary-analysis");
+ const left={product:"Livret A",institution:"La Banque Postale",holder:"particulier",operation:"versement minimum",period:"2026"};
+ const same={...left};
+ const differentBank={...left,institution:"Banque X"};
+ const missingPeriod={...left,period:""};
+ assert.equal(compareFindingContext(left,same).comparable,true);
+ assert.equal(compareFindingContext(left,differentBank).reason,"context_mismatch");
+ assert.equal(compareFindingContext(left,missingPeriod).reason,"context_incomplete");
+});
+
+test("Coach content quality rejects links, publication dates and oversized text",()=>{
+ const {contentQuality,MAX_COACH_CONTENT_CHARS}=require("../lib/bep-agent/documentary-analysis");
+ const base={title:"Taux du Livret A",query:"taux Livret A",evidenceSources:[{url:"https://mesquestionsdargent.fr/livret-a"}]};
+ assert.ok(contentQuality({...base,content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).accepted);
+ assert.equal(contentQuality({...base,content:"Publié le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"),true);
+ assert.equal(contentQuality({...base,content:"Actualisée le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"),true);
+ assert.equal(contentQuality({...base,content:"Le taux de 1,7 % s'applique depuis le 1er août 2026."}).issues.includes("publication_date_in_content"),false);
+ assert.ok(contentQuality({...base,content:"Consultez <a href='https://example.org'>la source officielle</a>."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Voir [la source](https://example.org) pour le taux."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Consultez la source officielle pour les détails."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Livret A ".repeat(MAX_COACH_CONTENT_CHARS)}).issues.includes("content_too_long"));
+ const scored=contentQuality({...base,content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."});
+ assert.equal(typeof scored.documentation,"number");
+ assert.ok(scored.documentation>=70);
+ assert.ok(scored.overall>=75);
+ assert.equal(contentQuality({title:"Taux du Livret A",query:"taux Livret A",content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).issues.includes("insufficient_documentary_evidence"),true);
+ assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).chars>1200,true);
+ assert.equal(contentQuality({...base,content:"Livret A ".repeat(135)}).issues.includes("content_too_long"),false);
+});
+
+
+test("sensitive fact coverage rejects omitted amounts, dates and eligibility conditions",()=>{
+ const {verifySensitiveAnchorCoverage}=require("../lib/bep-agent/documentary-analysis");
+ const content="Le plafond est de 22 950 euros pour les particuliers depuis le 1er août 2026, sauf exception.";
+ const claims=[{claim:"Le plafond est de 22 950 euros pour les particuliers.",evidence:[{quote:"Le plafond est de 22 950 euros pour les particuliers."}]}];
+ const result=verifySensitiveAnchorCoverage(content,claims);
+ assert.equal(result.complete,false);
+ assert.ok(result.missing.some(x=>x.type==="date"));
+ assert.ok(result.missing.some(x=>x.value==="sauf"));
+});
+
+test("sensitive fact coverage requires the source quotation to contain the exact material figure",()=>{
+ const {verifySensitiveAnchorCoverage}=require("../lib/bep-agent/documentary-analysis");
+ const content="Le taux est de 1,7 % depuis le 1er août 2026.";
+ const claims=[{claim:content,evidence:[{quote:"Le taux est de 1,5 % depuis le 1er février 2026."}]}];
+ const result=verifySensitiveAnchorCoverage(content,claims);
+ assert.equal(result.complete,false);
+ assert.ok(result.missing.some(x=>x.type==="number"));
+ assert.ok(result.missing.some(x=>x.type==="date"));
+});
+
+
+test("live semantic benchmark corpus contains positive and adversarial official-source cases",()=>{
+ const corpus=require("./fixtures/bep-documentary-semantic-corpus.json");
+ assert.equal(corpus.source.domain,"www.economie.gouv.fr");
+ assert.match(corpus.source.url,/^https:\/\/www\.economie\.gouv\.fr\//);
+ assert.ok(corpus.cases.length>=6);
+ assert.ok(corpus.cases.some(x=>x.expectedAccepted===true));
+ assert.ok(corpus.cases.some(x=>x.expectedAccepted===false));
+ assert.ok(corpus.cases.every(x=>typeof x.content==="string"&&x.content.length>=20));
 });
