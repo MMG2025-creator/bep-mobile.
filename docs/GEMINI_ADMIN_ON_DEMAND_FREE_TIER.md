@@ -11,14 +11,14 @@ Variables nécessaires sur le service API BEP :
 - `BEP_AGENT_AI_PROVIDER=groq` (valeur par défaut dans le code)
 - `BEP_AGENT_GROQ_API_KEY` : clé dédiée Groq, stockée comme secret
 - `BEP_AGENT_GROQ_MODEL=openai/gpt-oss-20b` (modèle par défaut)
-- `BEP_AGENT_MAX_CALLS_PER_DAY=8` (plafond applicatif strict : 8)
+- `BEP_AGENT_MAX_CALLS_PER_DAY=20` (plafond applicatif strict : 20, maximum autorisé par le code)
 
 Gemini reste disponible en sélection explicite avec `BEP_AGENT_AI_PROVIDER=gemini` et `BEP_AGENT_GEMINI_API_KEY`. Le modèle utilisé est `gemini-3.8-flash`.
 
 Les paramètres de l'ancien Worker (`BEP_AGENT_RUN_AS_WORKER`, `BEP_AGENT_BILLING_APPROVED`, `BEP_AGENT_MONTHLY_BUDGET_USD`) ne sont pas utilisés par ce mode.
 
 ## Quotas et gratuité
-Le plafond BEP limite les appels à huit par jour côté application. Groq publie des limites de débit et de volume qui dépendent du modèle et du compte. Ce plafond applicatif ne garantit donc pas à lui seul la gratuité ni l'absence de dépassement des limites fournisseur. Vérifier les quotas affichés dans la console Groq avant activation. Une erreur ou un dépassement de quota Groq ne déclenche aucun basculement automatique vers Gemini ou un fournisseur payant.
+Le plafond BEP limite les appels à vingt par jour côté application (maximum codé : 20). Groq publie des limites de débit et de volume qui dépendent du modèle et du compte. Ce plafond applicatif ne garantit donc pas à lui seul la gratuité ni l'absence de dépassement des limites fournisseur. Vérifier les quotas affichés dans la console Groq avant activation. Une erreur ou un dépassement de quota Groq ne déclenche aucun basculement automatique vers Gemini ou un fournisseur payant.
 
 ## Exécution
 - Le démarrage du serveur n'appelle aucun fournisseur IA et ne lance aucun ordonnanceur.
@@ -48,7 +48,7 @@ La migration est additive et idempotente ; elle ne modifie pas les tables métie
 - Migration additive validée sur une base de test.
 - Diagnostic de connexion réel déclenché manuellement par l'administrateur.
 - Vérification des journaux et des quotas dans la console fournisseur.
-- Contrôle que le compteur PostgreSQL n'excède jamais huit appels par jour.
+- Contrôle que le compteur PostgreSQL n'excède jamais vingt appels par jour.
 
 Aucune clé API ne doit être placée dans le dépôt ou dans les échanges de chat. Aucune variable Render n'est modifiée par cette PR.
 
