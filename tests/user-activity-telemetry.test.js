@@ -9,7 +9,8 @@ test("activity telemetry stores one pseudonymous user/day row and cascades on ac
  const server=read("server.js");
  assert.match(server,/CREATE TABLE IF NOT EXISTS bep_user_activity_days\(user_id TEXT NOT NULL REFERENCES bep_users\(id\) ON DELETE CASCADE,activity_day DATE NOT NULL,last_activity_at TIMESTAMPTZ NOT NULL DEFAULT NOW\(\),PRIMARY KEY\(user_id,activity_day\)\)/);
  assert.match(server,/ON CONFLICT\(user_id,activity_day\) DO UPDATE SET last_activity_at=GREATEST/);
- assert.match(server,/activity_day < \(NOW\(\) AT TIME ZONE 'UTC'\)::date - 35/);
+ assert.match(server,/startActivityRetentionScheduler\(pool\)/);
+ assert.doesNotMatch(server,/Math\.random\(\)<0\.01\)await pool\.query\("DELETE FROM bep_user_activity_days/);
 });
 
 test("only successful authenticated product data reads and writes record activity",()=>{
