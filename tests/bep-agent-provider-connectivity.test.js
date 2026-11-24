@@ -66,9 +66,10 @@ test("isolated provider check preserves sanitized Groq provider diagnostics",asy
   assert.equal(error.diagnosticCode,"GROQ_HTTP_ERROR");
   assert.equal(error.providerCode,"invalid_parameter");
   assert.equal(error.providerStatus,"invalid_request_error");
-  assert.equal(error.providerMessage,"Unsupported response format using groq_secret_key_123456");
+  assert.equal(error.providerMessage,"Unsupported response format using [REDACTED]");
   assert.equal(error.providerParam,"response_format");
   assert.equal(error.httpStatus,400);
+  assert.doesNotMatch(error.providerMessage,/groq_secret_key/);
   return true;
  });
 });
