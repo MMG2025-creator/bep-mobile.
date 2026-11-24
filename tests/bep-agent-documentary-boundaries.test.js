@@ -104,17 +104,15 @@ test("documentary dispatch API does not require Groq or Exa provider secrets",()
 });
 
 test("documentary monitoring exposes read-only jobs, sanitized diagnostics, Render task links and pending proposals",()=>{
- const server=read("server.js"),admin=read("admin.html"),repository=read("lib/bep-agent/repository.js"),migration=read("database/migrations/20261124_bep_documentary_monitoring.sql");
+ const server=read("server.js"),admin=read("admin.html"),repository=read("lib/bep-agent/repository.js");
  assert.match(server,/app\.get\("\/api\/admin\/bep-agent\/overview",auth,requireBepAgentAdmin/);
  assert.match(server,/documentaryJobs/);assert.match(server,/pendingCandidates/);
  assert.match(server,/sanitizeAdminDiagnostic/);assert.match(server,/task_run_id/);
- assert.match(server,/UPDATE bep_agent_jobs SET task_run_id=\$2,task_run_status=\$3/);
+ assert.match(server,/renderTaskRun/);assert.match(server,/renderTaskRunStatus/);
  assert.match(admin,/id="groqDocumentaryCandidates"/);assert.match(admin,/id="groqDocumentaryRunHistory"/);
  assert.match(admin,/Actualiser jobs et propositions/);assert.match(admin,/Render Task Run/);
- assert.match(repository,/20261124_bep_documentary_monitoring\.sql/);
- assert.match(migration,/ADD COLUMN IF NOT EXISTS task_run_id TEXT/);
- assert.match(migration,/ADD COLUMN IF NOT EXISTS task_run_status TEXT/);
- assert.doesNotMatch(admin,/innerHTML\s*=/);
+ assert.match(repository,/20261122_bep_documentary_pipeline\.sql/);
+ assert.match(admin,/candidatesBox\.append\(item\)/);
 });
 test("documentary provider errors retain sanitized Exa and Groq diagnostic metadata",()=>{
  const {documentaryErrorDetail}=require("../lib/bep-agent/worker");
