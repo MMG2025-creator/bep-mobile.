@@ -341,6 +341,73 @@ function initGroqDocumentaryPanel(){
   }catch(e){jobsBox.textContent="Jobs documentaires indisponibles : "+e.message;candidatesBox.textContent="Propositions indisponibles : "+e.message;historyBox.textContent="Historique indisponible : "+e.message}
  };
  const benchmark=async()=>{const ids=$("groqBenchmarkCandidateIds").value.split(",").map(x=>Number(x.trim())).filter(Number.isSafeInteger);if(!ids.length)return note("Saisir au moins un identifiant de proposition.",true);const b=$("groqBenchmarkButton");b.disabled=true;try{const data=await request("/api/admin/bep-agent/library-benchmark",{method:"POST",body:JSON.stringify({candidateIds:ids})});$("groqBenchmarkResult").textContent=JSON.stringify({baseline:data.baseline,candidate:data.candidate,regressions:data.regressions,improvements:data.improvements,gatePassed:data.gatePassed,metricScope:data.metricScope,answerQualityMeasured:data.answerQualityMeasured},null,2);note(data.gatePassed?"Benchmark de récupération validé.":"Benchmark en échec : régression ou métriques insuffisantes.",!data.gatePassed)}catch(e){note("Benchmark impossible : "+e.message,true)}finally{b.disabled=false}};
+
+ const registryStatus=$("bepRegistryStatus"),registryList=$("bepRegistryList");
+ const loadSourceRegistry=async()=>{
+  registryStatus.textContent="Chargement du registre…";registryList.replaceChildren();
+  try{
+   const data=await request("/api/admin/bep-coach/source-registry");
+   registryStatus.textContent="Sources : "+(data.counts?.total??data.sources?.length??0)+" · Non vérifiées : "+(data.counts?.unchecked??0)+" · Fraîches : "+(data.counts?.fresh??0)+" · Modifiées : "+(data.counts?.changed??0)+" · En erreur : "+(data.counts?.error??0)+" · Publication automatique : non";
+   for(const source of data.sources||[]){
+    const row=document.createElement("article");row.className="cr-item";
+    const check=document.createElement("input");check.type="checkbox";check.className="bep-registry-source-check";check.value=source.source_id;check.setAttribute("aria-label","Sélectionner "+source.source_id);
+    const title=document.createElement("strong");title.textContent=source.source_id+" · "+source.title;
+    const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=source.category+" · "+source.status+" · Fraîcheur : "+source.freshness_status+" · Dernier contrôle : "+(source.last_checked_at?new Date(source.last_checked_at).toLocaleString("fr-FR"):"jamais")+" · HTTP : "+(source.last_http_status??"—")+(source.last_error_code?" · Erreur : "+source.last_error_code:"");
+    const link=document.createElement("a");link.href=source.source_url;link.target="_blank";link.rel="noopener noreferrer";link.textContent=source.source_url;
+    row.append(check,title,meta,link);registryList.append(row);
+   }
+   if(!(data.sources||[]).length)registryList.textContent="Aucune source enregistrée.";
+  }catch(e){registryStatus.textContent="Registre indisponible : "+e.message}
+ };
+ $("bepSourceRegistryForm").addEventListener("submit",async event=>{
+  event.preventDefault();const button=$("bepRegistryRegister");button.disabled=true;registryStatus.textContent="Enregistrement…";
+  try{
+   const source={id:$("bepRegistrySourceId").value.trim(),title:$("bepRegistryTitle").value.trim(),category:$("bepRegistryCategory").value,url:$("bepRegistryUrl").value.trim()};
+   const result=await request("/api/admin/bep-coach/source-registry",{method:"POST",body:JSON.stringify({sources:[source]})});
+   registryStatus.textContent="Source enregistrée · "+result.status+" · Publication automatique : non";$("bepSourceRegistryForm").reset();await loadSourceRegistry();
+  }catch(e){registryStatus.textContent="Inscription refusée : "+e.message}
+  finally{button.disabled=false}
+ });
+ $("bepRegistryRefresh").addEventListener("click",loadSourceRegistry);
+ $("bepRegistryCheckSelected").addEventListener("click",async()=>{
+  const ids=Array.from(document.querySelectorAll(".bep-registry-source-check:checked")).map(input=>input.value);
+  if(!ids.length){registryStatus.textContent="Sélectionner au moins une source.";return}
+  if(ids.length>10){registryStatus.textContent="Dix sources maximum par contrôle.";return}
+  if(!window.confirm("Contrôler la fraîcheur de "+ids.length+" source(s) ? Aucun contenu ne sera publié."))return;
+  const button=$("bepRegistryCheckSelected");button.disabled=true;registryStatus.textContent="Contrôle de fraîcheur en cours…";
+  try{const result=await request("/api/admin/bep-coach/source-registry/refresh",{method:"POST",body:JSON.stringify({sourceIds:ids})});registryStatus.textContent="Contrôles terminés · "+result.checked+" vérifiée(s) · "+result.fresh+" fraîches · "+result.changed+" modifiées · "+result.errors+" erreur(s) · aucune publication.";await loadSourceRegistry()}
+  catch(e){registryStatus.textContent="Contrôle impossible : "+e.message}
+  finally{button.disabled=false}
+ });
+ $("bepBatchIngestButton").addEventListener("click",async()=>{
+  const urls=$("bepBatchUrls").value.split(/\\r?\\n/).map(value=>value.trim()).filter(Boolean);
+  const status=$("bepBatchIngestStatus"),button=$("bepBatchIngestButton");
+  if(!urls.length||urls.length>10){status.textContent="Saisir entre 1 et 10 URL, une par ligne.";return}
+  if(!urls.every(value=>/^https:\\/\\//i.test(value))){status.textContent="Chaque ligne doit être une URL HTTPS.";return}
+  if(!window.confirm("Collecter "+urls.length+" source(s) ? Les contenus seront proposés à validation et ne seront pas publiés."))return;
+  button.disabled=true;status.textContent="Collecte en cours…";
+  try{const result=await request("/api/admin/bep-coach/ingest-batch",{method:"POST",body:JSON.stringify({sources:urls.map(url=>({url,category:$("bepBatchCategory").value}))})});status.textContent="Collecte terminée · "+JSON.stringify(result)+" · Publication automatique : non";$("bepBatchUrls").value="";await loadRuns()}
+  catch(e){status.textContent="Collecte impossible : "+e.message}
+  finally{button.disabled=false}
+ });
+ $("bepRecoveryButton").addEventListener("click",async()=>{
+  const id=$("bepRecoveryJobId").value.trim(),status=$("bepRecoveryStatus"),button=$("bepRecoveryButton");
+  if(!/^[1-9]\\d{0,18}$/.test(id)){status.textContent="Identifiant de job invalide.";return}
+  if(!$("bepRecoveryConfirm").checked){status.textContent="La confirmation de vérification du job est obligatoire.";return}
+  if(!window.confirm("Demander la récupération du job #"+id+" ? Le serveur doit confirmer qu’il est réellement orphelin."))return;
+  button.disabled=true;status.textContent="Vérification et récupération côté serveur…";
+  try{const result=await request("/api/admin/bep-agent/documentary-recover",{method:"POST",body:JSON.stringify({jobId:id,confirmOrphaned:true})});status.textContent="Récupération acceptée · nouveau job #"+result.jobId+" · Render dispatch : "+(result.workflowDispatched?"confirmé":"non confirmé")+" · publication automatique : non";$("bepRecoveryConfirm").checked=false;await loadRuns()}
+  catch(e){status.textContent="Récupération refusée : "+e.message}
+  finally{button.disabled=false}
+ });
+ const loadBenchmarkCases=async()=>{
+  const status=$("bepBenchmarkCasesStatus"),list=$("bepBenchmarkCasesList");status.textContent="Chargement des cas…";list.replaceChildren();
+  try{const result=await request("/api/admin/bep-agent/library-benchmark/cases");status.textContent="Périmètre : "+result.metricScope+" · Qualité des réponses mesurée : "+(result.answerQualityMeasured?"oui":"non")+" · "+(result.cases||[]).length+" cas";
+   for(const item of result.cases||[]){const row=document.createElement("article");row.className="cr-item";const title=document.createElement("strong");title.textContent=item.id||item.name||"Cas de référence";const detail=document.createElement("p");detail.className="cr-meta";detail.textContent=JSON.stringify(item);row.append(title,detail);list.append(row)}
+   if(!(result.cases||[]).length)list.textContent="Aucun cas de référence fourni.";
+  }catch(e){status.textContent="Cas de référence indisponibles : "+e.message}
+ };
+ $("bepBenchmarkCasesRefresh").addEventListener("click",loadBenchmarkCases);
  const runSchemaDiagnostic=async()=>{
   const button=$("groqSchemaDiagnosticButton"),state=$("groqSchemaDiagnosticState"),output=$("groqSchemaDiagnosticResult");
   button.disabled=true;state.textContent="Appel réel à Groq en cours…";output.textContent="Requête envoyée avec le schéma strict de l'analyse documentaire.";
@@ -360,7 +427,7 @@ function initGroqDocumentaryPanel(){
  $("groqDocumentaryRefreshButton").addEventListener("click",()=>{void loadStatus();void loadRuns()});
  $("groqDocumentaryRunsButton").addEventListener("click",loadRuns);
  $("groqBenchmarkButton").addEventListener("click",benchmark);
- void loadStatus();void loadRuns();
+ void loadStatus();void loadRuns();void loadSourceRegistry();void loadBenchmarkCases();
 }
 async function checkAdmin(){const loader=$("adminAuthLoader");try{const r=await fetch(base+"/api/admin/auth/status",{credentials:"include",cache:"no-store"});if(!r.ok)throw new Error("Vérification de session impossible (HTTP "+r.status+").");const v=await r.json();$("console").hidden=!v.authenticated;$("authPanel").hidden=!!v.authenticated;if(v.authenticated){$("status").textContent="Session administrateur indépendante active";$("statusDetail").textContent="Connecté : "+v.email+" · Actions administratives sécurisées";await loadDocs();await loadAudit();if(location.hash==="#coach-research"){$("coachResearchPanel").hidden=false;initCoachResearchPanel();$("coachResearchPanel").scrollIntoView({block:"start"});}if(location.hash==="#groq-documentary"){$("groqDocumentaryPanel").hidden=false;initGroqDocumentaryPanel();$("groqDocumentaryPanel").scrollIntoView({block:"start"});}if(location.hash==="#gemini-diagnostic"){$("geminiDiagnosticPanel").hidden=false;initGeminiDiagnosticPanel();$("geminiDiagnosticPanel").scrollIntoView({block:"start"});}}else{$("status").textContent="Authentification administrateur requise";$("statusDetail").textContent="Aucune donnée administrative n'est chargée avant authentification."}}catch(e){$("console").hidden=true;$("authPanel").hidden=false;showError(e)}finally{document.body.classList.remove("auth-pending");if(loader)loader.hidden=true}}
 $("adminLogin").addEventListener("click",async()=>{try{await authApi("/login",{email:$("adminEmail").value,password:$("adminPassword").value});location.reload()}catch(e){$("authMessage").textContent="Connexion refusée : "+e.message}});
