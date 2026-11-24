@@ -25,7 +25,6 @@ task(
   if(!/^[1-9]\d{0,18}$/.test(id))throw new Error("DOCUMENTARY_JOB_ID_INVALID");
   const pool=new Pool({connectionString,ssl:{rejectUnauthorized:false},connectionTimeoutMillis:10000,idleTimeoutMillis:10000,max:1});
   try{
-   // Temporary, allowlisted diagnostic: never log connection strings or environment values.
    const identity=await pool.query("SELECT current_user AS role_name,session_user AS session_role_name,current_database() AS database_name");
    const dbIdentity={
     currentUser:String(identity.rows[0]?.role_name||""),
@@ -49,12 +48,11 @@ task(
  }
 );
 
-
 task(
- {name:"providerConnectivityCheck",retry:{maxRetries:0},timeoutSeconds:60},
+ {name:"providerConnectivityCheck",retry:{maxRetries:0},timeoutSeconds:180},
  async ()=>{
-  const result=await runProviderConnectivityCheck({env:process.env});
-  console.info("[BEP_PROVIDER_CONNECTIVITY] "+JSON.stringify(result));
+  const result=await runProviderConnectivityCheck({env:process.env,diagnosticMatrix:true});
+  console.info("[BEP_PROVIDER_CONNECTIVITY_MATRIX] "+JSON.stringify(result));
   return result;
  }
 );
