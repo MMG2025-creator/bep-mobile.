@@ -13,10 +13,10 @@ const env={
 };
 
 test("isolated provider check validates Exa and Groq without database or job access",async()=>{
- let exaCalls=0,groqCalls=0;
+ let exaCalls=0,groqCalls=0,groqRequest=null;
  class FakeGroq{
   constructor(){groqCalls++}
-  async generateJson(){return{value:{ok:true},usage:{total_tokens:5}}}
+  async generateJson(args){groqRequest=args;return{value:{ok:true},usage:{total_tokens:5}}}
  }
  const result=await runProviderConnectivityCheck({
   env,
@@ -25,6 +25,8 @@ test("isolated provider check validates Exa and Groq without database or job acc
  });
  assert.equal(exaCalls,1);
  assert.equal(groqCalls,1);
+ assert.equal(groqRequest.maxOutputTokens,256);
+ assert.equal(groqRequest.prompt,"Return {ok:true}.");
  assert.equal(result.status,"passed");
  assert.equal(result.exa.httpStatus,200);
  assert.equal(result.groq.status,"authenticated");
