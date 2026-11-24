@@ -214,3 +214,26 @@ test("admin API guard fails closed when the persisted session cannot be reloaded
  requireIndependentBepAdmin(req,res,()=>{passed=true});
  assert.equal(passed,false);assert.equal(status,401);assert.equal(body.error,"ADMIN_SESSION_UNAVAILABLE");
 });
+
+
+test("admin redesign keeps source and dist synchronized and all inline scripts parse", () => {
+  const fs = require("node:fs");
+  const vm = require("node:vm");
+  const path = require("node:path");
+  const source = fs.readFileSync(path.join(__dirname, "../admin.html"), "utf8");
+  const built = fs.readFileSync(path.join(__dirname, "../dist/admin.html"), "utf8");
+  assert.equal(built, source, "admin source and served dist page must remain identical");
+  const scripts = [...built.matchAll(/<script>\\s*([\\s\\S]*?)<\\/script>/g)];
+  assert.ok(scripts.length >= 2, "admin page contains application and navigation scripts");
+  for (const [index, match] of scripts.entries()) {
+    assert.doesNotThrow(() => new vm.Script(match[1]), "inline script " + (index + 1) + " parses");
+  }
+  assert.match(built, /id="dashboardPanel"/);
+  assert.match(built, /data-admin-view="documents"/);
+  assert.match(built, /data-admin-view="intelligence"/);
+  assert.match(built, /id="usersPanel"/);
+  assert.match(built, /Comptes inscrits/);
+  assert.match(built, /Annuaire nominatif non activé/);
+  assert.match(built, /Sans données financières/);
+  assert.match(built, /#console\\[hidden\\]\\{display:none!important\\}/);
+});
