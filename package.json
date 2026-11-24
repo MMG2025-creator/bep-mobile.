@@ -10,7 +10,8 @@
     "agent:worker": "node agent-worker.js",
     "agent:documentary-worker": "node agent-documentary-worker.js",
     "test:e2e": "playwright test",
-    "workflows:start": "node render-workflows/main.mjs"
+    "workflows:start": "node render-workflows/main.mjs",
+    "audit:documentary-semantic": "node scripts/bep-documentary-semantic-benchmark.js"
   },
   "engines": {
     "node": ">=20"
