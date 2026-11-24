@@ -24,10 +24,12 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
  }};
  const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/epargne",domain:"mesquestionsdargent.fr",publishedAt:"2026-10-01T00:00:00.000Z",text:"Texte complet institutionnel sur l’épargne de précaution.",highlights:["Constituer une épargne de précaution permet de faire face aux dépenses imprévues."]};
  let schemaSeen;
- const client={generateJson:async(args)=>{schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
+ let callCount=0;
+ const client={generateJson:async(args)=>{callCount++;if(callCount===2)return{value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Une épargne de précaution permet de faire face aux dépenses imprévues.",verdict:"supported",evidence:[{url:source.url,quote:"Constituer une épargne de précaution permet de faire face aux dépenses imprévues."}],explanation:"La source formule directement cette affirmation."}]}};schemaSeen=args.jsonSchema;return{value:{findings:[{kind:"coverage_gap",target_slug:"",summary:"L'épargne de précaution est peu couverte",reason:"La source apporte un point utile.",source_urls:[source.url],confidence:"high"}],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Constituer une épargne de précaution",content:"Une épargne de précaution permet de faire face aux dépenses imprévues sans recourir immédiatement au crédit. Elle doit être adaptée aux charges et à la stabilité des revenus. Le montant cible dépend de la situation et doit être réévalué régulièrement.",source_url:source.url,confidence:"high",rationale:"La source institutionnelle décrit les objectifs de cette réserve.",keywords:["épargne","précaution"],evidence_urls:[source.url]}]},usage:{total_tokens:90}}}};
  const result=await analyzeDocumentaryLibrary({pool,client,query:"épargne de précaution",searchResults:[source],model:"openai/gpt-oss-20b"});
  assert.equal(schemaSeen,ANALYSIS_SCHEMA);
  assert.equal(result.provider,"groq");
+ assert.equal(callCount,2);
  assert.equal(result.proposals.length,1);
  assert.equal(result.proposals[0].status,"pending_review");
  assert.equal(inserts.filter(x=>x.sql.includes("INSERT INTO bep_knowledge_candidates")).length,1);
@@ -36,6 +38,7 @@ test("Groq documentary analysis stores only cited, validated proposals as pendin
  assert.equal(candidate.params[5],"https://mesquestionsdargent.fr/epargne");
  assert.match(candidate.sql,/'pending'/);
  assert.equal(result.automaticPublication,false);
+ assert.match(candidate.params[10],/semantic_evidence_audit/);
 });
 
 test("unsupported external evidence is rejected before a candidate can be stored",async()=>{
@@ -47,6 +50,24 @@ test("unsupported external evidence is rejected before a candidate can be stored
  assert.equal(result.proposals.length,0);
 });
 
+test("claim-level evidence audit rejects unsupported claims and fabricated quotations",async()=>{
+ const {auditClaimEvidence}=require("../lib/bep-agent/documentary-analysis");
+ const source={title:"Source institutionnelle",url:"https://mesquestionsdargent.fr/source",text:"Le versement initial minimum du livret est fixé à 10 euros.",highlights:["Le versement initial minimum du livret est fixé à 10 euros."]};
+ const sourceMap=new Map([[source.url,source]]);
+ const unsupportedClient={generateJson:async()=>({value:{coverage_complete:true,overall_verdict:"partial",claims:[{claim:"Le plafond est de 100 000 euros.",verdict:"unsupported",evidence:[],explanation:"Aucune preuve."}]}})};
+ const unsupported=await auditClaimEvidence({client:unsupportedClient,title:"Plafond",content:"Le plafond est de 100 000 euros.",evidenceUrls:[source.url],sourceMap});
+ assert.equal(unsupported.accepted,false);
+ const fabricatedClient={generateJson:async()=>({value:{coverage_complete:true,overall_verdict:"supported",claims:[{claim:"Le versement initial minimum est de 10 euros.",verdict:"supported",evidence:[{url:source.url,quote:"Le versement initial minimum est de 10 euros."}],explanation:"Citation prétendue."}]}})};
+ const fabricated=await auditClaimEvidence({client:fabricatedClient,title:"Versement minimum",content:"Le versement initial minimum est de 10 euros.",evidenceUrls:[source.url],sourceMap});
+ assert.equal(fabricated.accepted,false);
+});
+test("claim-level evidence audit fails closed when claim coverage is incomplete",async()=>{
+ const {auditClaimEvidence}=require("../lib/bep-agent/documentary-analysis");
+ const url="https://mesquestionsdargent.fr/source";
+ const client={generateJson:async()=>({value:{coverage_complete:false,overall_verdict:"supported",claims:[{claim:"Une affirmation",verdict:"supported",evidence:[{url,quote:"Le versement initial minimum du livret est fixé à 10 euros."}],explanation:"Preuve."}]}})};
+ const result=await auditClaimEvidence({client,title:"Test",content:"Une affirmation",evidenceUrls:[url],sourceMap:new Map([[url,{url,text:"Le versement initial minimum du livret est fixé à 10 euros."}]])});
+ assert.equal(result.accepted,false);
+});
 
 test("contradiction requires matching product, institution, holder, operation and period",()=>{
  const {compareFindingContext}=require("../lib/bep-agent/documentary-analysis");
