@@ -53,7 +53,12 @@ test("legacy shared Gemini key and legacy zero-billing flag never activate the s
  assert.equal(readConfig({BEP_AGENT_ENABLED:"true",BEP_AGENT_ZERO_BILLING_CONFIRMED:"true",BEP_AI_API_KEY:"shared-key"}).enabled,false);
 });
 test("documentary worker and admin daily quotas are bounded at twenty calls",()=>{
- const workerBase={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GROQ_API_KEY:"groq-key"};\n assert.equal(readDocumentaryWorkerConfig(workerBase).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"50"}).maxCallsPerDay,20);\n assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"5"}).maxCallsPerDay,5);\n});\ntest("daily Gemini call quota is bounded",()=>{
+ const workerBase={BEP_AGENT_ENABLED:"true",BEP_AGENT_RUN_AS_WORKER:"true",BEP_AGENT_RUN_MODE:"admin_on_demand",BEP_AGENT_FREE_TIER_ACKNOWLEDGED:"true",BEP_AGENT_GROQ_API_KEY:"groq-key"};
+ assert.equal(readDocumentaryWorkerConfig(workerBase).maxCallsPerDay,20);
+ assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"50"}).maxCallsPerDay,20);
+ assert.equal(readDocumentaryWorkerConfig({...workerBase,BEP_AGENT_MAX_CALLS_PER_DAY:"5"}).maxCallsPerDay,5);
+});
+test("daily Gemini call quota is bounded",()=>{
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"500"}).maxCallsPerDay,50);
  assert.equal(readConfig({BEP_AGENT_MAX_CALLS_PER_DAY:"0"}).maxCallsPerDay,8);
 });
