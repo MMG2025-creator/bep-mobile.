@@ -183,7 +183,7 @@ main{max-width:1480px}
 <div class="panel admin-page" id="accountPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Détail du compte</h2><pre id="detail">Sélectionne un compte pour afficher ses données anonymisées.</pre></div>
 <div class="panel admin-page" id="annotationPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Annotation administrative</h2><div class="muted" id="selected">Aucun compte sélectionné.</div><textarea id="note" rows="3" maxlength="2000" style="width:100%;box-sizing:border-box;margin:8px 0" placeholder="Note interne, sans données directement identifiantes"></textarea><button id="annotate" disabled>Enregistrer l'annotation</button></div>
 <div class="panel admin-page" id="snapshotsPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Snapshots enregistrés</h2><div id="documents" class="muted">Chargement…</div></div><div class="panel admin-page" id="auditPanel" data-admin-view-panel="system" hidden><h2 style="font-size:16px">Journal d'audit</h2><pre id="audit">Chargement…</pre></div>
-<p class="muted danger">Synchronisation production : INACTIVE · Modifications clients : INTERDITES · Corrections financières : DÉSACTIVÉES · Suppression de compte : DÉSACTIVÉE</p></section></div></section></main>
+<p class="muted danger">Synchronisation production : INACTIVE · Modifications clients : INTERDITES · Corrections financières : DÉSACTIVÉES · Suppression de compte : DÉSACTIVÉE</p></div></section></main>
 <script>(function(){
 const editor=document.createElement("dialog");
 editor.id="crKnowledgeEditor";
@@ -328,7 +328,8 @@ checkAdmin();
 
 <script>
 (function(){
- const buttons=Array.from(document.querySelectorAll("[data-admin-view]"));
+ const buttons=Array.from(document.querySelectorAll(".admin-nav [data-admin-view]"));
+ const quickLinks=Array.from(document.querySelectorAll(".admin-quick-card[data-admin-view]"));
  const panels=Array.from(document.querySelectorAll("[data-admin-view-panel]"));
  if(!buttons.length||!panels.length)return;
  function activate(view){
