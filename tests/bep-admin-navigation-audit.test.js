@@ -13,7 +13,7 @@ const adminRouter = fs.readFileSync(path.join(root, "admin/bep-admin.js"), "utf8
 
 test("historical admin page and deployed dist remain byte-identical", () => {
   assert.equal(dist, html);
-  const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
   assert.ok(scripts.length >= 2);
   for (const [index, script] of scripts.entries()) {
     assert.doesNotThrow(() => new vm.Script(script[1]), "inline admin script " + index + " parses");
