@@ -46,3 +46,25 @@ test("unsupported external evidence is rejected before a candidate can be stored
  assert.equal(candidateWrites,0);
  assert.equal(result.proposals.length,0);
 });
+
+
+test("contradiction requires matching product, institution, holder, operation and period",()=>{
+ const {compareFindingContext}=require("../lib/bep-agent/documentary-analysis");
+ const left={product:"Livret A",institution:"La Banque Postale",holder:"particulier",operation:"versement minimum",period:"2026"};
+ const same={...left};
+ const differentBank={...left,institution:"Banque X"};
+ const missingPeriod={...left,period:""};
+ assert.equal(compareFindingContext(left,same).comparable,true);
+ assert.equal(compareFindingContext(left,differentBank).reason,"context_mismatch");
+ assert.equal(compareFindingContext(left,missingPeriod).reason,"context_incomplete");
+});
+
+test("Coach content quality rejects links, publication dates and oversized text",()=>{
+ const {contentQuality,MAX_COACH_CONTENT_CHARS}=require("../lib/bep-agent/documentary-analysis");
+ const base={title:"Taux du Livret A",query:"taux Livret A"};
+ assert.ok(contentQuality({...base,content:"Le taux du Livret A est de 1,7 % depuis le 1er août 2026."}).accepted);
+ assert.ok(contentQuality({...base,content:"Publié le 14 juillet 2026. Le taux du Livret A est de 1,7 %."}).issues.includes("publication_date_in_content"));
+ assert.ok(contentQuality({...base,content:"Consultez <a href='https://example.org'>la source officielle</a>."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Voir [la source](https://example.org) pour le taux."}).issues.includes("html_or_link_in_content"));
+ assert.ok(contentQuality({...base,content:"Livret A ".repeat(MAX_COACH_CONTENT_CHARS)}).issues.includes("content_too_long"));
+});
