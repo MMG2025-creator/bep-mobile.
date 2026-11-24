@@ -69,6 +69,17 @@ test("claim-level evidence audit fails closed when claim coverage is incomplete"
  assert.equal(result.accepted,false);
 });
 
+test("documentary pipeline never stores a proposal with an unsupported factual claim",async()=>{
+ let calls=0,candidateWrites=0;
+ const source={title:"Mes questions d'argent",url:"https://mesquestionsdargent.fr/livret-a",domain:"mesquestionsdargent.fr",text:"Le Livret A est un produit d'épargne réglementé. Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",highlights:["Le Livret A est un produit d'épargne réglementé."]};
+ const pool={query:async(sql)=>{if(sql.includes("FROM bep_financial_knowledge"))return{rows:[]};if(sql.includes("FROM bep_agent_approved_knowledge"))return{rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates"))candidateWrites++;return{rowCount:1,rows:[]};}};
+ const client={generateJson:async()=>{calls++;if(calls===1)return{value:{findings:[],proposals:[{proposal_type:"create",target_slug:"",category:"savings",title:"Comprendre le Livret A",content:"Le Livret A est un produit d'épargne réglementé. Son plafond est fixé à 100 000 euros pour tous les titulaires. Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",source_url:source.url,evidence_urls:[source.url],confidence:"high",rationale:"Synthèse documentaire.",keywords:["Livret A"]}]}};return{value:{coverage_complete:true,overall_verdict:"partial",claims:[{claim:"Le Livret A est un produit d'épargne réglementé.",verdict:"supported",evidence:[{url:source.url,quote:"Le Livret A est un produit d'épargne réglementé."}],explanation:"Preuve directe."},{claim:"Son plafond est fixé à 100 000 euros pour tous les titulaires.",verdict:"unsupported",evidence:[],explanation:"La source ne confirme pas ce plafond."},{claim:"Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux.",verdict:"supported",evidence:[{url:source.url,quote:"Les intérêts sont exonérés d'impôt sur le revenu et de prélèvements sociaux."}],explanation:"Preuve directe."}]}};}};
+ const result=await analyzeDocumentaryLibrary({pool,client,query:"Livret A épargne",searchResults:[source]});
+ assert.equal(calls,2);
+ assert.equal(candidateWrites,0);
+ assert.equal(result.proposals.length,0);
+});
+
 test("contradiction requires matching product, institution, holder, operation and period",()=>{
  const {compareFindingContext}=require("../lib/bep-agent/documentary-analysis");
  const left={product:"Livret A",institution:"La Banque Postale",holder:"particulier",operation:"versement minimum",period:"2026"};
