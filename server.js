@@ -517,6 +517,7 @@ app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,as
    console.error("BEP documentary Render Workflow dispatch failed",String(dispatchError?.code||"DISPATCH_FAILED").slice(0,80));
    return res.status(503).json({error:"DOCUMENTARY_RUNNER_DISPATCH_FAILED"});
   }
+  await pool.query("UPDATE bep_agent_jobs SET payload=jsonb_set(jsonb_set(COALESCE(payload,'{}'::jsonb),'{renderTaskRun}',to_jsonb($2::text),true),'{renderTaskRunStatus}',to_jsonb($3::text),true),updated_at=NOW() WHERE id=$1",[jobId,dispatch.taskRunId,dispatch.status]).catch(error=>console.error("BEP documentary task run link persistence failed",String(error?.code||"DB_WRITE_FAILED").slice(0,80)));
   res.setHeader("Cache-Control","no-store");
   return res.status(202).json({queued:true,jobId,jobType:"documentary_research",provider:"groq",searchProvider:"exa",execution:"render_workflows_on_demand",workflowDispatched:dispatch.dispatched,taskRunId:dispatch.taskRunId,taskRunStatus:dispatch.status,automaticPublication:false});
  }catch(error){
@@ -631,15 +632,27 @@ app.get("/api/admin/bep-agent/status",auth,requireBepAgentAdmin,async(req,res)=>
   res.json(status);
  }catch(e){console.error("BEP admin agent status failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"AGENT_STATUS_UNAVAILABLE"})}
 });
+function sanitizeAdminDiagnostic(value){
+ let message=String(value||"").replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim();
+ for(const key of ["BEP_AGENT_GROQ_API_KEY","BEP_AGENT_EXA_API_KEY","RENDER_API_KEY","DATABASE_URL","BEP_AGENT_DATABASE_URL","SESSION_SECRET"]){
+  const secret=String(process.env[key]||"");if(secret.length>=8)message=message.split(secret).join("[REDACTED]");
+ }
+ return message.replace(/\bBearer\s+\S+/gi,"Bearer [REDACTED]").replace(/\b(api[_-]?key|token|secret|password)\s*[:=]\s*[^\s,;]+/gi,"$1=[REDACTED]").replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gsk_[A-Za-z0-9_-]{12,})\b/g,"[REDACTED]").slice(0,600);
+}
 app.get("/api/admin/bep-agent/overview",auth,requireBepAgentAdmin,async(req,res)=>{
  try{
-  const [runs,metrics,coach]=await Promise.all([
+  const [runs,metrics,coach,documentaryJobs,pendingCandidates]=await Promise.all([
    pool.query("SELECT id,job_type,status,model,input_digest,output_digest,output_summary,usage,error_code,started_at,finished_at FROM bep_agent_runs ORDER BY finished_at DESC LIMIT 30"),
    pool.query("SELECT day_key,jobs_completed,jobs_failed,candidates_created,quality_findings FROM bep_agent_metrics ORDER BY day_key DESC LIMIT 30"),
-   pool.query("SELECT day_key,mode,status_code,calls,total_latency_ms,total_tokens FROM bep_agent_coach_metrics WHERE day_key>=CURRENT_DATE-INTERVAL '30 days' ORDER BY day_key DESC,mode LIMIT 120")
+   pool.query("SELECT day_key,mode,status_code,calls,total_latency_ms,total_tokens FROM bep_agent_coach_metrics WHERE day_key>=CURRENT_DATE-INTERVAL '30 days' ORDER BY day_key DESC,mode LIMIT 120"),
+   pool.query("SELECT j.id,j.job_type,j.status,j.attempts,j.max_attempts,j.run_after,j.created_at,j.updated_at,j.last_error,j.payload->>'renderTaskRun' AS task_run_id,j.payload->>'renderTaskRunStatus' AS task_run_status,r.error_code AS run_error_code,r.model AS run_model,r.started_at,r.finished_at,r.output_summary,r.usage FROM bep_agent_jobs j LEFT JOIN LATERAL (SELECT error_code,model,started_at,finished_at,output_summary,usage FROM bep_agent_runs WHERE job_id=j.id ORDER BY finished_at DESC LIMIT 1) r ON TRUE WHERE j.job_type='documentary_research' ORDER BY j.created_at DESC LIMIT 50"),
+   pool.query("SELECT id,source_slug,proposal_type,title,content,source_name,source_url,evidence_level,confidence,rationale,review_status,created_at FROM bep_knowledge_candidates WHERE review_status='pending' ORDER BY created_at DESC LIMIT 100")
   ]);
-  res.setHeader("Cache-Control","no-store");res.json({runs:runs.rows,agentMetrics:metrics.rows,coachMetrics:coach.rows});
- }catch(e){res.status(503).json({error:"AGENT_OVERVIEW_UNAVAILABLE"})}
+  const safeJobs=documentaryJobs.rows.map(job=>({...job,last_error:sanitizeAdminDiagnostic(job.last_error),run_error_code:sanitizeAdminDiagnostic(job.run_error_code)}));
+  const safeRuns=runs.rows.map(run=>({...run,error_code:sanitizeAdminDiagnostic(run.error_code)}));
+  res.setHeader("Cache-Control","no-store");
+  res.json({runs:safeRuns,agentMetrics:metrics.rows,coachMetrics:coach.rows,documentaryJobs:safeJobs,pendingCandidates:pendingCandidates.rows});
+ }catch(e){console.error("BEP agent overview failed",String(e?.code||"AGENT_OVERVIEW_UNAVAILABLE").slice(0,80));res.status(503).json({error:"AGENT_OVERVIEW_UNAVAILABLE"})}
 });
 app.post("/api/admin/bep-agent/candidates/:id/review",auth,requireBepAgentAdmin,async(req,res)=>{
  const id=Number(req.params.id),decision=String(req.body?.decision||"");

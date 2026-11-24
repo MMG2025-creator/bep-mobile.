@@ -49,9 +49,19 @@ body.auth-pending main{visibility:hidden}#adminAuthLoader{position:fixed;inset:0
  <pre id="groqBenchmarkResult">Aucun benchmark exécuté.</pre>
 </div>
 <div class="panel">
- <h3>Derniers traitements documentaires (historique API BEP)</h3>
- <button type="button" id="groqDocumentaryRunsButton">Charger l'historique</button>
- <pre id="groqDocumentaryRuns">Aucun traitement chargé.</pre>
+ <h3>Jobs documentaires</h3>
+ <p class="muted">File PostgreSQL, diagnostics fournisseur et correspondance Render. Consultation en lecture seule.</p>
+ <button type="button" id="groqDocumentaryRunsButton">Actualiser jobs et propositions</button>
+ <div id="groqDocumentaryRuns" aria-live="polite">Aucun traitement chargé.</div>
+</div>
+<div class="panel">
+ <h3>Propositions en attente de validation</h3>
+ <p class="muted">Ces propositions ne sont pas intégrées à la bibliothèque. Leur approbation reste une action humaine séparée.</p>
+ <div id="groqDocumentaryCandidates" aria-live="polite">Aucune proposition chargée.</div>
+</div>
+<div class="panel">
+ <h3>Historique des exécutions IA</h3>
+ <pre id="groqDocumentaryRunHistory">Aucun historique chargé.</pre>
 </div>
 </section><section id="geminiDiagnosticPanel" class="panel" hidden aria-labelledby="geminiDiagnosticTitle">
 <h2 id="geminiDiagnosticTitle">Diagnostic IA — connexion Gemini</h2>
@@ -160,7 +170,41 @@ function initGroqDocumentaryPanel(){
  const loadStatus=async()=>{try{const [agent,search]=await Promise.all([request("/api/admin/bep-agent/status"),request("/api/admin/bep-agent/source-search/status")]);$("groqPipelineStatus").textContent="Agent Groq : "+(agent.ready&&agent.provider==="groq"?"prêt":"non prêt")+" · Recherche Exa : "+(search.enabled?"activée":"désactivée");$("groqPipelineStatusDetail").textContent="Exécution : "+(agent.documentaryRunnerEnabled?"Render Workflows à la demande":"non configuré")+" · Domaines autorisés : "+(search.allowedDomains||[]).join(", ")+" · "+(search.reason||agent.reason||"");}catch(e){$("groqPipelineStatus").textContent="Configuration indisponible";$("groqPipelineStatusDetail").textContent=e.message}};
  const search=async()=>{if(!query())return note("Saisir un sujet de recherche.",true);const b=$("groqSourceSearchButton");b.disabled=true;note("Recherche des sources institutionnelles…");try{const data=await request("/api/admin/bep-agent/source-search",{method:"POST",body:JSON.stringify({query:query(),limit:5})});const root=$("groqDocumentarySources");root.replaceChildren();if(!data.results?.length){root.textContent="Aucune source recevable.";return}for(const source of data.results){const article=document.createElement("article");article.className="cr-item";const title=document.createElement("strong");title.textContent=source.title;const link=document.createElement("a");link.href=source.url;link.target="_blank";link.rel="noopener noreferrer";link.textContent=source.url;const meta=document.createElement("p");meta.className="cr-meta";meta.textContent="Domaine : "+source.domain+" · Publication : "+(source.publishedAt||"date non disponible");article.append(title,document.createElement("br"),link,meta);for(const h of source.highlights||[]){const p=document.createElement("p");p.textContent=h;article.append(p)}root.append(article)}note(data.resultsCount+" source(s) filtrée(s) par la liste de domaines autorisés.");}catch(e){note("Recherche impossible : "+e.message,true)}finally{b.disabled=false}};
  const analyze=async()=>{if(!query())return note("Saisir un sujet de recherche.",true);const b=$("groqDocumentaryAnalyzeButton");b.disabled=true;note("Mise en file de l'analyse Groq…");try{const data=await request("/api/admin/bep-agent/documentary-analyze",{method:"POST",body:JSON.stringify({query:query()})});const dispatch=data.workflowDispatched===true?"dispatch Render Workflow confirmé":data.workflowDispatched===false?"dispatch Render Workflow non confirmé":"état du dispatch non communiqué";const run=data.taskRunId?" · Task Run : "+data.taskRunId+(data.taskRunStatus?" ("+data.taskRunStatus+")":""):" · identifiant de Task Run non communiqué";note("Tâche "+data.jobId+" créée · "+dispatch+run+". Exa recherche les sources et Groq les analyse. Les propositions restent en attente de validation humaine.",data.workflowDispatched!==true);await loadRuns();}catch(e){note("Analyse non lancée : "+e.message,true)}finally{b.disabled=false}};
- const loadRuns=async()=>{try{const data=await request("/api/admin/bep-agent/overview");const runs=(data.runs||[]).filter(x=>["documentary_research","library_benchmark"].includes(x.job_type));$("groqDocumentaryRuns").textContent=JSON.stringify(runs,null,2)}catch(e){$("groqDocumentaryRuns").textContent="Historique indisponible : "+e.message}};
+ const loadRuns=async()=>{
+  const jobsBox=$("groqDocumentaryRuns"),candidatesBox=$("groqDocumentaryCandidates"),historyBox=$("groqDocumentaryRunHistory");
+  jobsBox.textContent="Chargement des jobs documentaires…";candidatesBox.textContent="Chargement des propositions…";historyBox.textContent="Chargement de l'historique…";
+  try{
+   const data=await request("/api/admin/bep-agent/overview");
+   const jobs=Array.isArray(data.documentaryJobs)?data.documentaryJobs:[];
+   jobsBox.replaceChildren();
+   if(!jobs.length)jobsBox.textContent="Aucun job documentaire enregistré.";
+   for(const job of jobs){
+    const item=document.createElement("article");item.className="cr-item";
+    const title=document.createElement("strong");title.textContent="Job #"+job.id+" · "+job.status;
+    const meta=document.createElement("p");meta.className="cr-meta";meta.textContent="Type : "+job.job_type+" · Tentatives : "+job.attempts+"/"+job.max_attempts+" · Créé : "+(job.created_at?new Date(job.created_at).toLocaleString("fr-FR"):"date inconnue");
+    const render=document.createElement("p");render.className="cr-meta";render.textContent="Render Task Run : "+(job.task_run_id||"non associé")+" · statut initial : "+(job.task_run_status||"non communiqué");
+    item.append(title,meta,render);
+    if(job.last_error||job.run_error_code){const error=document.createElement("p");error.className="cr-meta";error.textContent="Diagnostic : "+[job.last_error,job.run_error_code].filter(Boolean).join(" · ");item.append(error)}
+    if(job.run_model){const run=document.createElement("p");run.className="cr-meta";run.textContent="Modèle : "+job.run_model+" · Début : "+(job.started_at?new Date(job.started_at).toLocaleString("fr-FR"):"non démarré")+" · Fin : "+(job.finished_at?new Date(job.finished_at).toLocaleString("fr-FR"):"en cours");item.append(run)}
+    if(job.output_summary){const summary=document.createElement("pre");summary.textContent=JSON.stringify(job.output_summary,null,2);item.append(summary)}
+    jobsBox.append(item);
+   }
+   const candidates=Array.isArray(data.pendingCandidates)?data.pendingCandidates:[];
+   candidatesBox.replaceChildren();
+   if(!candidates.length)candidatesBox.textContent="Aucune proposition en attente.";
+   for(const candidate of candidates){
+    const item=document.createElement("article");item.className="cr-item";
+    const title=document.createElement("strong");title.textContent="#"+candidate.id+" · "+candidate.title;
+    const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=(candidate.proposal_type||"proposition")+" · "+(candidate.source_name||"Source non précisée")+" · Confiance : "+(candidate.confidence||"non précisée");
+    const link=document.createElement("a");if(/^https:\/\//i.test(candidate.source_url||"")){link.href=candidate.source_url;link.target="_blank";link.rel="noopener noreferrer"}link.textContent=candidate.source_url||"URL source non renseignée";
+    const content=document.createElement("p");content.textContent=candidate.content||"Contenu de la proposition non renseigné.";
+    const body=document.createElement("p");body.className="cr-meta";body.textContent="Justification : "+(candidate.rationale||"Non renseignée.");
+    item.append(title,meta,link,content,body);candidatesBox.append(item);
+   }
+   const runs=(data.runs||[]).filter(x=>["documentary_research","library_benchmark"].includes(x.job_type));
+   historyBox.textContent=JSON.stringify(runs,null,2);
+  }catch(e){jobsBox.textContent="Jobs documentaires indisponibles : "+e.message;candidatesBox.textContent="Propositions indisponibles : "+e.message;historyBox.textContent="Historique indisponible : "+e.message}
+ };
  const benchmark=async()=>{const ids=$("groqBenchmarkCandidateIds").value.split(",").map(x=>Number(x.trim())).filter(Number.isSafeInteger);if(!ids.length)return note("Saisir au moins un identifiant de proposition.",true);const b=$("groqBenchmarkButton");b.disabled=true;try{const data=await request("/api/admin/bep-agent/library-benchmark",{method:"POST",body:JSON.stringify({candidateIds:ids})});$("groqBenchmarkResult").textContent=JSON.stringify({baseline:data.baseline,candidate:data.candidate,regressions:data.regressions,improvements:data.improvements,gatePassed:data.gatePassed,metricScope:data.metricScope,answerQualityMeasured:data.answerQualityMeasured},null,2);note(data.gatePassed?"Benchmark de récupération validé.":"Benchmark en échec : régression ou métriques insuffisantes.",!data.gatePassed)}catch(e){note("Benchmark impossible : "+e.message,true)}finally{b.disabled=false}};
  const runSchemaDiagnostic=async()=>{
   const button=$("groqSchemaDiagnosticButton"),state=$("groqSchemaDiagnosticState"),output=$("groqSchemaDiagnosticResult");

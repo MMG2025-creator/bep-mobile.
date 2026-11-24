@@ -102,3 +102,25 @@ test("documentary dispatch API does not require Groq or Exa provider secrets",()
  assert.ok(route.includes("documentarySchemaReady"));
  assert.doesNotMatch(route,/adminAgentStatus\(\)|readSourceSearchConfig\(\)/);
 });
+
+test("documentary monitoring exposes read-only jobs, sanitized diagnostics, Render task links and pending proposals",()=>{
+ const server=read("server.js"),admin=read("admin.html"),repository=read("lib/bep-agent/repository.js");
+ assert.match(server,/app\.get\("\/api\/admin\/bep-agent\/overview",auth,requireBepAgentAdmin/);
+ assert.match(server,/documentaryJobs/);assert.match(server,/pendingCandidates/);
+ assert.match(server,/sanitizeAdminDiagnostic/);assert.match(server,/task_run_id/);
+ assert.match(server,/renderTaskRun/);assert.match(server,/renderTaskRunStatus/);
+ assert.match(admin,/id="groqDocumentaryCandidates"/);assert.match(admin,/id="groqDocumentaryRunHistory"/);
+ assert.match(admin,/Actualiser jobs et propositions/);assert.match(admin,/Render Task Run/);
+ assert.match(repository,/20261122_bep_documentary_pipeline\.sql/);
+ assert.match(admin,/candidatesBox\.append\(item\)/);
+});
+test("documentary provider errors retain sanitized Exa and Groq diagnostic metadata",()=>{
+ const {documentaryErrorDetail}=require("../lib/bep-agent/worker");
+ const exa=documentaryErrorDetail({code:"SOURCE_SEARCH_PROVIDER_ERROR",httpStatus:429,providerMessage:"Quota exceeded",stage:"exa"});
+ assert.match(exa,/EXA/);assert.match(exa,/SOURCE_SEARCH_PROVIDER_ERROR/);assert.match(exa,/HTTP 429/);assert.match(exa,/Quota exceeded/);
+ const groq=documentaryErrorDetail({code:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"invalid_request",providerStatus:"error",providerParam:"response_format",providerMessage:"bad schema",stage:"groq"});
+ for(const value of ["GROQ_HTTP_ERROR","HTTP 400","invalid_request","response_format","bad schema"])assert.ok(groq.includes(value));
+ assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",message:"Bearer secret-token"}),/secret-token/);
+ const secret="gsk_private_test_key_123456";
+ assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",providerMessage:"rejected "+secret},{BEP_AGENT_GROQ_API_KEY:secret}),/gsk_private_test_key/);
+});
