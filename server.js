@@ -11,7 +11,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
+const {readCoachLibrary,digestWebCandidate,createCoachProposalsDocumentHandler}=require("./lib/bep-coach-services");
 const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require("./lib/bep-coach-knowledge-admin");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
@@ -342,14 +342,6 @@ app.get("/api/coach/categories",auth,async(req,res)=>{try{
  const categories=[...grouped.entries()].map(([key,questions])=>{const meta=labels[key]||[key.replace(/[_-]+/g," ").replace(/\b\p{L}/gu,c=>c.toLocaleUpperCase("fr")), "Questions documentaires validées dans la base BEP","◇",key];return{key,label:meta[0],description:meta[1],icon:meta[2],profileKey:meta[3],questions:[...new Set(questions.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"))};}).filter(x=>x.questions.length).sort((a,b)=>a.label.localeCompare(b.label,"fr"));
  res.setHeader("Cache-Control","no-store");res.json({categories});
  }catch(e){console.error("Coach categories read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_CATEGORIES_UNAVAILABLE"})}});
-app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,createCoachResearchStatusHandler({pool,env:process.env,logger:console}));
-app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res)=>{try{
- const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
- if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
- const result=await researchWeb({pool,query,category});
- res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
- }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
-
 app.get("/api/admin/bep-coach/identified-sites",auth,requireBepAgentAdmin,async(req,res)=>{try{const result=await listIdentifiedSites(pool);res.setHeader("Cache-Control","no-store");res.json(result)}catch(e){console.error("Identified ingestion sites read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"IDENTIFIED_SITES_UNAVAILABLE"})}});
 app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const input=req.body?.sources;
@@ -731,6 +723,13 @@ app.get("/api/admin/dashboard/activity",auth,requireBepAgentAdmin,async(req,res)
   const result=await pool.query("SELECT COUNT(DISTINCT user_id) FILTER (WHERE activity_day=(NOW() AT TIME ZONE 'UTC')::date)::int AS dau,COUNT(DISTINCT user_id) FILTER (WHERE activity_day >= (NOW() AT TIME ZONE 'UTC')::date-6)::int AS wau,COUNT(DISTINCT user_id) FILTER (WHERE activity_day >= (NOW() AT TIME ZONE 'UTC')::date-29)::int AS mau FROM bep_user_activity_days");
   res.setHeader("Cache-Control","no-store");res.json({dau:result.rows[0].dau,wau:result.rows[0].wau,mau:result.rows[0].mau,window:"UTC calendar days",definitions:{dau:"Distinct authenticated users who loaded or saved their BEP data today",wau:"Distinct authenticated users active at least once in the last 7 UTC calendar days",mau:"Distinct authenticated users active at least once in the last 30 UTC calendar days"},updatedAt:new Date().toISOString()});
  }catch(e){console.error("BEP activity metrics unavailable",String(e?.message||e).slice(0,120));res.status(503).json({error:"ACTIVITY_METRICS_UNAVAILABLE"})}
+});
+app.get("/api/admin/dashboard/recent-activity",auth,requireBepAgentAdmin,async(req,res)=>{
+ try{
+  const result=await pool.query("SELECT job_type,status,model,error_code,started_at,finished_at FROM bep_agent_runs ORDER BY COALESCE(finished_at,started_at) DESC LIMIT 12");
+  res.setHeader("Cache-Control","no-store");
+  res.json({events:result.rows.map(row=>({jobType:row.job_type,status:row.status,model:row.model,errorCode:row.error_code?sanitizeAdminDiagnostic(row.error_code):null,startedAt:row.started_at,finishedAt:row.finished_at}))});
+ }catch(error){console.error("BEP dashboard recent activity unavailable",String(error?.code||"ACTIVITY_UNAVAILABLE").slice(0,80));res.status(503).json({error:"RECENT_ACTIVITY_UNAVAILABLE"})}
 });
 app.put("/api/data",auth,async(req,res)=>{
  const offlineSync=req.body?.__bepOfflineSync===true;
