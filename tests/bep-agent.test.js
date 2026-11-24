@@ -203,7 +203,8 @@ test("Gemini connectivity diagnostic is exposed only in the independent admin co
  assert.match(server,/requestId,provider:config\.provider,errorCode,httpStatus,latencyMs/);
  assert.match(server,/providerCode:error\?\.providerCode/);
  assert.match(server,/providerStatus:error\?\.providerStatus/);
- assert.match(server,/providerMessage:error\?\.providerMessage/);
+ assert.match(server,/providerMessage:typeof error\?\.providerMessage==="string"\?error\.providerMessage\.slice\(0,500\):null/);
+ assert.match(server,/providerParam:typeof error\?\.providerParam==="string"\?error\.providerParam\.slice\(0,100\):null/);
  assert.match(server,/errorDetail:detail,requestId,retryable:/);
  assert.match(admin,/id="geminiSmokeProviderCode"/);
  assert.match(admin,/id="geminiSmokeProviderStatus"/);
