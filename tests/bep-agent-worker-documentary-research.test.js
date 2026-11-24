@@ -43,7 +43,7 @@ test("documentary research reads the Exa allowlist and completes analysis",async
   assert.equal(result.summary.sourceSearch.provider,"exa");
   assert.equal(result.summary.sourceSearch.resultsCount,1);
   assert.equal(result.candidatesCreated,0);
-  assert.equal(result.summary.automaticPublication,undefined);
+  assert.equal(result.summary.automaticPublication,false);
   assert.equal(queries.length,2);
  }finally{
   global.fetch=originalFetch;
