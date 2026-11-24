@@ -607,6 +607,20 @@ app.get("/api/admin/bep-agent/candidates",auth,requireBepAgentAdmin,async(req,re
   res.setHeader("Cache-Control","no-store");res.json({items:r.rows});
  }catch(e){res.status(503).json({error:"AGENT_CANDIDATES_UNAVAILABLE"})}
 });
+app.get("/api/admin/dashboard/overview",auth,requireBepAgentAdmin,async(req,res)=>{
+ try{
+  const [docs,users,schema]=await Promise.all([
+   pool.query("SELECT COUNT(*)::int AS count FROM bep_financial_knowledge WHERE active=TRUE"),
+   pool.query("SELECT COUNT(*)::int AS total,COUNT(*) FILTER (WHERE email_verified=TRUE)::int AS verified,COUNT(*) FILTER (WHERE created_at>=NOW()-INTERVAL '30 days')::int AS new_30d FROM bep_users"),
+   pool.query("SELECT to_regclass('public.bep_knowledge_candidates') AS candidates,to_regclass('public.bep_agent_jobs') AS jobs")
+  ]);
+  const optional={pending:0,workflows:0,workflowRunning:0};
+  if(schema.rows[0]?.candidates){const r=await pool.query("SELECT COUNT(*)::int AS count FROM bep_knowledge_candidates WHERE review_status='pending'");optional.pending=r.rows[0].count}
+  if(schema.rows[0]?.jobs){const r=await pool.query("SELECT COUNT(*) FILTER (WHERE job_type='documentary_research')::int AS total,COUNT(*) FILTER (WHERE job_type='documentary_research' AND status IN ('queued','running'))::int AS running FROM bep_agent_jobs");optional.workflows=r.rows[0].total;optional.workflowRunning=r.rows[0].running}
+  res.setHeader("Cache-Control","no-store");
+  res.json({documentsPublished:docs.rows[0].count,pendingProposals:optional.pending,documentaryWorkflows:optional.workflows,workflowsRunning:optional.workflowRunning,users:users.rows[0].total,verifiedUsers:users.rows[0].verified,newUsers30d:users.rows[0].new_30d,updatedAt:new Date().toISOString(),activityMetricsAvailable:false});
+ }catch(e){console.error("BEP admin dashboard metrics failed",String(e?.code||"DASHBOARD_METRICS_UNAVAILABLE").slice(0,80));res.status(503).json({error:"DASHBOARD_METRICS_UNAVAILABLE"})}
+});
 app.post("/api/admin/bep-agent/run",auth,requireBepAgentAdmin,async(req,res)=>{
  if(!agentEnabled)return res.status(409).json({error:"AGENT_DISABLED"});
  const scope=String(req.body?.scope||"documentary_json");
