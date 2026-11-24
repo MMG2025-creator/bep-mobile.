@@ -65,8 +65,8 @@ main{max-width:1480px}
  <div class="admin-nav-heading"><strong>Administration BEP</strong><span>Centre de pilotage</span></div>
  <div class="admin-nav-label">Espace de travail</div>
  <button type="button" class="admin-nav-item" data-admin-view="dashboard" aria-current="page"><span>▦</span>Vue d'ensemble</button>
- <button type="button" class="admin-nav-item" data-admin-view="documents"><span>▤</span>Documents & bibliothèque</button>
- <button type="button" class="admin-nav-item" data-admin-view="intelligence"><span>✳</span>Intelligence documentaire</button>
+ <button type="button" class="admin-nav-item" data-admin-view="documents"><span>▤</span>Articles, propositions & bibliothèque</button>
+ <button type="button" class="admin-nav-item" data-admin-view="intelligence"><span>✳</span>Recherche, collecte & IA documentaire</button>
  <button type="button" class="admin-nav-item" data-admin-view="users"><span>♙</span>Utilisateurs & activité</button>
  <div class="admin-nav-label">Configuration</div>
  <button type="button" class="admin-nav-item" data-admin-view="system"><span>⚙</span>Système & sécurité</button>
@@ -280,12 +280,29 @@ function initGroqDocumentaryPanel(){
    if(!candidates.length)candidatesBox.textContent="Aucune proposition en attente.";
    for(const candidate of candidates){
     const item=document.createElement("article");item.className="cr-item";
-    const title=document.createElement("strong");title.textContent="#"+candidate.id+" · "+candidate.title;
-    const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=(candidate.proposal_type||"proposition")+" · "+(candidate.source_name||"Source non précisée")+" · Confiance : "+(candidate.confidence||"non précisée");
+    const title=document.createElement("strong");title.textContent="#"+candidate.id+" · "+(candidate.title||"Proposition sans titre");
+    const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=(candidate.proposal_type||"proposition")+" · "+(candidate.source_name||"Source non précisée")+" · "+(candidate.evidence_level||"Preuve non précisée")+" · Confiance : "+(candidate.confidence??"non précisée")+" · "+(candidate.created_at?new Date(candidate.created_at).toLocaleString("fr-FR"):"date non précisée");
     const link=document.createElement("a");if(/^https:\/\//i.test(candidate.source_url||"")){link.href=candidate.source_url;link.target="_blank";link.rel="noopener noreferrer"}link.textContent=candidate.source_url||"URL source non renseignée";
-    const content=document.createElement("p");content.textContent=candidate.content||"Contenu de la proposition non renseigné.";
+    const content=document.createElement("div");content.className="cr-document-content";content.textContent=candidate.content||"Contenu de la proposition non renseigné.";
     const body=document.createElement("p");body.className="cr-meta";body.textContent="Justification : "+(candidate.rationale||"Non renseignée.");
-    item.append(title,meta,link,content,body);candidatesBox.append(item);
+    const actions=document.createElement("div");actions.className="cr-actions";
+    for(const [decision,label] of [["approve","Approuver et intégrer"],["reject","Rejeter la proposition"]]){
+     const button=document.createElement("button");button.type="button";button.textContent=label;button.className=decision==="approve"?"primary":"secondary";
+     button.addEventListener("click",async()=>{
+      const question=decision==="approve"?"Confirmer l’intégration de cette proposition dans la bibliothèque active du Coach ?":"Confirmer le rejet de cette proposition ?";
+      if(!window.confirm(question))return;
+      button.disabled=true;
+      try{
+       await request("/api/admin/bep-agent/candidates/"+encodeURIComponent(candidate.id)+"/review",{method:"POST",body:JSON.stringify({decision})});
+       await loadRuns();
+      }catch(error){
+       const detail=error.message==="CANDIDATE_ALREADY_REVIEWED"?"Cette proposition a déjà été traitée.":error.message==="CREATE_CANDIDATE_CHANGED"?"La source ou son empreinte a changé : une nouvelle analyse est nécessaire.":"Action impossible : "+error.message;
+       window.alert(detail);button.disabled=false;
+      }
+     });
+     actions.append(button);
+    }
+    item.append(title,meta,link,content,body,actions);candidatesBox.append(item);
    }
    const runs=(data.runs||[]).filter(x=>["documentary_research","library_benchmark"].includes(x.job_type));
    historyBox.textContent=JSON.stringify(runs,null,2);
