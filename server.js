@@ -474,9 +474,9 @@ app.post("/api/admin/bep-agent/gemini-smoke-test",auth,requireBepAgentAdmin,asyn
   const latencyMs=Date.now()-startedAt,requestId=require("node:crypto").randomUUID();
   const errorCode=error?.diagnosticCode||config.provider.toUpperCase()+"_UNEXPECTED_ERROR",httpStatus=Number.isInteger(error?.httpStatus)?error.httpStatus:null;
   const detail=error?.diagnosticDetail||"Le diagnostic "+config.provider+" a échoué.";
-  console.error("BEP AI connectivity diagnostic failed",JSON.stringify({requestId,provider:config.provider,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,model:config.model,retryable:error?.retryable===true}));
+  console.error("BEP AI connectivity diagnostic failed",JSON.stringify({requestId,provider:config.provider,errorCode,httpStatus,latencyMs,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:typeof error?.providerMessage==="string"?error.providerMessage.slice(0,500):null,providerParam:typeof error?.providerParam==="string"?error.providerParam.slice(0,100):null,model:config.model,retryable:error?.retryable===true}));
   const status=errorCode.endsWith("_TIMEOUT")?504:errorCode.endsWith("_QUOTA_EXCEEDED")?429:502;
-  res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:error?.providerMessage||null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
+  res.status(status).json({ok:false,configured:true,provider:config.provider,model:config.model,keySource:config.keySource,apiCallMade:true,latencyMs,httpStatus,providerCode:error?.providerCode??null,providerStatus:error?.providerStatus??null,providerMessage:typeof error?.providerMessage==="string"?error.providerMessage.slice(0,500):null,providerParam:typeof error?.providerParam==="string"?error.providerParam.slice(0,100):null,errorCode,errorDetail:detail,requestId,retryable:error?.retryable===true,automaticPublication:false,syntheticOnly:true});
  }
 });
 app.get("/api/admin/bep-agent/source-search/status",auth,requireBepAgentAdmin,async(req,res)=>{
