@@ -23,6 +23,7 @@ test("only successful authenticated product data reads and writes record activit
  assert.ok(getRoute.indexOf("await pool.query")<getRoute.indexOf("await recordUserActivity"));
  assert.match(putRoute,/await client\.query\("COMMIT"\);\s*await recordUserActivity/);
  assert.match(server,/function auth\(req,res,next\).*AUTH_REQUIRED/);
+ assert.match(server,/async function recordUserActivity\(userId\)\{[\s\S]*?catch\(error\)\{console\.warn\("BEP activity telemetry write skipped"/);
  assert.doesNotMatch(server.slice(server.indexOf("async function recordUserActivity"),server.indexOf("const requireBepAgentAdmin")),/req\.ip|user-agent|email|payload/);
 });
 
