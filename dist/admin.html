@@ -139,6 +139,38 @@ main{max-width:1480px}
  <p class="muted">File PostgreSQL, diagnostics fournisseur et correspondance Render. Consultation en lecture seule.</p>
  <button type="button" id="groqDocumentaryRunsButton">Actualiser jobs et propositions</button>
  <div id="groqDocumentaryRuns" aria-live="polite">Aucun traitement chargé.</div>
+<div class="panel" id="bepSourceRegistryPanel">
+ <h3>Registre des sources institutionnelles</h3>
+ <p class="muted">Sources MQA enregistrées et suivi de fraîcheur. L’inscription crée une source en attente de validation ; le contrôle de fraîcheur ne modifie pas la bibliothèque du Coach.</p>
+ <form id="bepSourceRegistryForm">
+  <div class="bar"><input id="bepRegistrySourceId" required maxlength="6" placeholder="Identifiant mqa-01"><input id="bepRegistryTitle" required maxlength="180" placeholder="Titre de la source"></div>
+  <div class="bar"><select id="bepRegistryCategory"><option value="budget">Budget</option><option value="spending">Dépenses</option><option value="savings">Épargne</option><option value="debt">Endettement</option><option value="behavior">Comportements</option><option value="income">Revenus</option><option value="planning">Planification</option><option value="general">Général</option></select><input id="bepRegistryUrl" type="url" required maxlength="2048" placeholder="URL HTTPS mesquestionsdargent.fr"></div>
+  <button class="primary" id="bepRegistryRegister" type="submit">Enregistrer la source</button>
+ </form>
+ <div class="bar"><button type="button" id="bepRegistryRefresh">Actualiser le registre</button><button type="button" id="bepRegistryCheckSelected">Contrôler la fraîcheur des sources cochées</button></div>
+ <div id="bepRegistryStatus" class="muted" role="status" aria-live="polite">Registre non chargé.</div>
+ <div id="bepRegistryList"></div>
+</div>
+<div class="panel" id="bepBatchIngestionPanel">
+ <h3>Collecte documentaire par lots</h3>
+ <p class="muted">Une URL publique par ligne, maximum 10 sources. Toutes les entrées sont stockées comme propositions ; aucune connaissance n’est publiée.</p>
+ <label for="bepBatchUrls">URLs à collecter</label><textarea id="bepBatchUrls" rows="5" maxlength="12000" placeholder="https://www.mesquestionsdargent.fr/..."></textarea>
+ <div class="bar"><select id="bepBatchCategory"><option value="general">Général</option><option value="budget">Budget</option><option value="spending">Dépenses</option><option value="savings">Épargne</option><option value="debt">Endettement</option><option value="behavior">Comportements</option><option value="income">Revenus</option><option value="planning">Planification</option></select><button type="button" class="primary" id="bepBatchIngestButton">Lancer la collecte par lots</button></div>
+ <div id="bepBatchIngestStatus" class="muted" role="status" aria-live="polite">En attente.</div>
+</div>
+<div class="panel" id="bepRecoveryPanel">
+ <h3>Récupération d’un job documentaire orphelin</h3>
+ <p class="muted">Action exceptionnelle : le serveur vérifie l’état, l’ancienneté et l’absence d’historique d’exécution avant de créer un job de remplacement et de le dispatcher à Render. Le job initial n’est pas réécrit.</p>
+ <div class="bar"><input id="bepRecoveryJobId" inputmode="numeric" pattern="[1-9][0-9]*" maxlength="19" placeholder="Identifiant du job"><label><input id="bepRecoveryConfirm" type="checkbox"> Je confirme avoir vérifié que ce job est orphelin.</label><button type="button" id="bepRecoveryButton">Récupérer le job</button></div>
+ <div id="bepRecoveryStatus" class="muted" role="status" aria-live="polite">Aucune récupération demandée.</div>
+</div>
+<div class="panel" id="bepBenchmarkCasesPanel">
+ <h3>Cas de référence du benchmark</h3>
+ <p class="muted">Jeu de cas utilisé par le benchmark de couverture de récupération. Le serveur précise le périmètre des métriques ; ce résultat ne mesure pas la qualité complète des réponses du Coach.</p>
+ <button type="button" id="bepBenchmarkCasesRefresh">Charger les cas de référence</button>
+ <div id="bepBenchmarkCasesStatus" class="muted" role="status" aria-live="polite">Cas non chargés.</div>
+ <div id="bepBenchmarkCasesList"></div>
+</div>
 </div>
 <div class="panel">
  <h3>Propositions en attente de validation</h3>
