@@ -92,7 +92,7 @@ test("isolated provider check propagates sanitized raw Groq response diagnostics
   async generateJson(){
    throw Object.assign(new Error("Groq validation failed"),{
     diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"json_validate_failed",
-    providerResponseBody:'{"error":{"code":"json_validate_failed"},"debug":"Bearer [REDACTED]"}',
+    providerResponseBody:'{"error":{"code":"json_validate_failed"},"debug":"Bearer [TOKEN_REMOVED]"}',
     providerResponseKeys:["error","debug"],providerErrorKeys:["code"],retryable:false
    });
   }
@@ -100,7 +100,7 @@ test("isolated provider check propagates sanitized raw Groq response diagnostics
  await assert.rejects(()=>runProviderConnectivityCheck({
   env,search:async()=>({resultsCount:1}),Groq:FakeGroq
  }),error=>{
-  assert.equal(error.providerResponseBody,'{"error":{"code":"json_validate_failed"},"debug":"Bearer [REDACTED]"}');
+  assert.equal(error.providerResponseBody,'{"error":{"code":"json_validate_failed"},"debug":"Bearer [TOKEN_REMOVED]"}');
   assert.deepEqual(error.providerResponseKeys,["error","debug"]);
   assert.deepEqual(error.providerErrorKeys,["code"]);
   assert.equal(error.message.includes("gsk_live_abcdefghijklmnop"),false);
