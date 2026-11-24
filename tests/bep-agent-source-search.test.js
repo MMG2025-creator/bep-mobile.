@@ -47,3 +47,20 @@ test("source search fails closed on provider rate limits without exposing the AP
   fetchImpl:async()=>({ok:false,status:429,json:async()=>({error:"private-secret"})})
  }),error=>error.code==="SOURCE_SEARCH_RATE_LIMIT"&&!String(error.message).includes("private-secret"));
 });
+
+test("provider errors preserve sanitized HTTP and Exa diagnostics",async()=>{
+ await assert.rejects(()=>searchDocumentarySources({
+  query:"Livret A taux plafond",
+  env:{BEP_AGENT_SOURCE_SEARCH_ENABLED:"true",BEP_AGENT_EXA_API_KEY:"private-secret"},
+  fetchImpl:async()=>({ok:false,status:401,headers:{get:name=>name==="x-request-id"?"exa-request-123":null},json:async()=>({error:{message:"Invalid API key private-secret",code:"invalid_api_key",param:"x-api-key"}})})
+ }),error=>{
+  assert.equal(error.code,"SOURCE_SEARCH_AUTH_ERROR");
+  assert.equal(error.httpStatus,401);
+  assert.equal(error.providerMessage,"Invalid API key [REDACTED]");
+  assert.equal(error.providerCode,"invalid_api_key");
+  assert.equal(error.providerParam,"x-api-key");
+  assert.equal(error.requestId,"exa-request-123");
+  assert.doesNotMatch(JSON.stringify(error),/private-secret/);
+  return true;
+ });
+});
