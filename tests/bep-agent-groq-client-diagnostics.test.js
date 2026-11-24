@@ -29,6 +29,27 @@ test("Groq 413 TPM errors retain provider code, type, message and rejected param
  }finally{global.fetch=previousFetch}
 });
 
+test("Groq HTTP errors retain sanitized raw response when failed_generation is not at error root",async()=>{
+ const previousFetch=global.fetch;
+ const payload={error:{message:"Failed to validate JSON.",type:"invalid_request_error",code:"json_validate_failed"},diagnostics:{failed_generation:'{"ok": true, "debug": "Bearer gsk_live_abcdefghijklmnop"}'}};
+ global.fetch=async()=>new Response(JSON.stringify(payload),{status:400,headers:{"content-type":"application/json"}});
+ try{
+  const client=new GroqClient({apiKey:"gsk_test_key_123456789",model:"openai/gpt-oss-20b"});
+  await assert.rejects(
+   ()=>client.generateJson({system:"system",prompt:"prompt",jsonSchema:{name:"test",schema:{type:"object"}}}),
+   error=>{
+    assert.equal(error.providerCode,"json_validate_failed");
+    assert.equal(error.providerFailedGeneration,null);
+    assert.match(error.providerResponseBody,/"failed_generation"/);
+    assert.match(error.providerResponseBody,/"Bearer \\[REDACTED\\]"/);
+    assert.deepEqual(error.providerResponseKeys,["error","diagnostics"]);
+    assert.equal(error.providerResponseBody.includes("gsk_live_abcdefghijklmnop"),false);
+    return true;
+   }
+  );
+ }finally{global.fetch=previousFetch}
+});
+
 test("Groq HTTP errors preserve sanitized failed_generation diagnostics",async()=>{
  const previousFetch=global.fetch;
  const failedGeneration='{"ok": true, "debug": "Bearer gsk_live_abcdefghijklmnop"}';
