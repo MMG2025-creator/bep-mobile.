@@ -494,8 +494,18 @@ app.post("/api/admin/bep-agent/source-search",auth,requireBepAgentAdmin,async(re
   return res.json({...result,publication:"none",stored:false,groqAnalysis:"not_requested"});
  }catch(error){
   const code=String(error?.code||"SOURCE_SEARCH_FAILED").replace(/[^A-Z0-9_]/gi,"").slice(0,80);
-  console.error("BEP documentary source search failed",code);
-  return res.status(error?.httpStatus===429?429:502).json({error:code});
+  const diagnostic={
+   error:code,
+   httpStatus:Number(error?.httpStatus)||null,
+   provider:"exa",
+   providerMessage:String(error?.providerMessage||"").slice(0,400)||null,
+   providerCode:String(error?.providerCode||"").replace(/[^A-Z0-9_.-]/gi,"").slice(0,100)||null,
+   providerParam:String(error?.providerParam||"").replace(/[^A-Z0-9_.\[\]-]/gi,"").slice(0,100)||null,
+   requestId:String(error?.requestId||"").replace(/[^A-Z0-9_.:-]/gi,"").slice(0,100)||null
+  };
+  console.error("BEP documentary source search failed",JSON.stringify({error:diagnostic.error,httpStatus:diagnostic.httpStatus,providerCode:diagnostic.providerCode,providerParam:diagnostic.providerParam,requestId:diagnostic.requestId}));
+  res.setHeader("Cache-Control","no-store");
+  return res.status(error?.httpStatus===429?429:502).json(diagnostic);
  }
 });
 app.post("/api/admin/bep-agent/documentary-analyze",auth,requireBepAgentAdmin,async(req,res)=>{
