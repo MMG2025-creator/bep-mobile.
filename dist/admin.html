@@ -197,8 +197,9 @@ function initGroqDocumentaryPanel(){
     const title=document.createElement("strong");title.textContent="#"+candidate.id+" · "+candidate.title;
     const meta=document.createElement("p");meta.className="cr-meta";meta.textContent=(candidate.proposal_type||"proposition")+" · "+(candidate.source_name||"Source non précisée")+" · Confiance : "+(candidate.confidence||"non précisée");
     const link=document.createElement("a");if(/^https:\/\//i.test(candidate.source_url||"")){link.href=candidate.source_url;link.target="_blank";link.rel="noopener noreferrer"}link.textContent=candidate.source_url||"URL source non renseignée";
-    const body=document.createElement("p");body.textContent=candidate.rationale||"Justification non renseignée.";
-    item.append(title,meta,link,body);candidatesBox.append(item);
+    const content=document.createElement("p");content.textContent=candidate.content||"Contenu de la proposition non renseigné.";
+    const body=document.createElement("p");body.className="cr-meta";body.textContent="Justification : "+(candidate.rationale||"Non renseignée.");
+    item.append(title,meta,link,content,body);candidatesBox.append(item);
    }
    const runs=(data.runs||[]).filter(x=>["documentary_research","library_benchmark"].includes(x.job_type));
    historyBox.textContent=JSON.stringify(runs,null,2);
