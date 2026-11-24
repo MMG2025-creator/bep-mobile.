@@ -23,7 +23,7 @@ test("source search sends only a bounded query and the official-domain allowlist
  assert.ok(body.query.length<=1000);
  assert.ok(body.includeDomains.includes("mesquestionsdargent.fr"));
  assert.equal(body.contents.highlights,true);
- assert.deepEqual(body.contents.text,{maxCharacters:8000});
+ assert.deepEqual(body.contents.text,{maxCharacters:3500});
  assert.equal(result.resultsCount,1);
  assert.equal(result.results[0].domain,"www.mesquestionsdargent.fr");
  assert.equal(result.results[0].publishedAt,"2026-11-01T00:00:00.000Z");
