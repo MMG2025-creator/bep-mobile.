@@ -75,7 +75,7 @@ test("Groq connectivity wrapper preserves sanitized provider diagnostics",async(
   search:async()=>({resultsCount:1}),
   Groq:class{constructor(){} async generateJson(){throw Object.assign(new Error("PROVIDER_CHECK_GROQ_FAILED"),expected)}}
  }),error=>{
-  assert.equal(error.message,"PROVIDER_CHECK_GROQ_FAILED");
+  assert.equal(error.message,"PROVIDER_CHECK_GROQ_FAILED: GROQ_HTTP_ERROR | HTTP 400 | code=invalid_parameter | type=invalid_request_error | param=response_format | detail=Invalid request [REDACTED]");
   assert.equal(error.stage,"groq");
   for(const [key,value] of Object.entries(expected))assert.equal(error[key],value);
   assert.doesNotMatch(JSON.stringify(error),/groq_secret_key_123456789|exa_secret_key_123456789/);
