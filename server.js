@@ -11,7 +11,7 @@ const BEP_ADMIN_ENABLED=process.env.BEP_ADMIN_ENABLED==="true";
 const BEP_ADMIN_INDEPENDENT_AUTH_READY=process.env.BEP_ADMIN_INDEPENDENT_AUTH_READY==="true";
 const financialKnowledgeSeed=require("./lib/bep-financial-knowledge-seed");
 const {buildIntelligence,classifyCoachIntent,VERSION:FINANCIAL_INTELLIGENCE_VERSION}=require("./lib/bep-financial-intelligence");
-const {readCoachLibrary,researchWeb,digestWebCandidate,createCoachResearchStatusHandler,createCoachProposalsDocumentHandler,RESEARCH_CONFIG}=require("./lib/bep-coach-services");
+const {readCoachLibrary,digestWebCandidate,createCoachProposalsDocumentHandler}=require("./lib/bep-coach-services");
 const {ensureCoachKnowledgeEditorSchema,createCoachKnowledgeAdminRouter}=require("./lib/bep-coach-knowledge-admin");
 const {ingestDocumentUrl,ingestDocumentBatch,listIdentifiedSites}=require("./lib/bep-document-ingestion");
 const {registerCoachSources,listCoachSources,refreshCoachSources,ensureCoachSourceRegistrySchema}=require("./lib/bep-coach-source-registry");
@@ -342,14 +342,6 @@ app.get("/api/coach/categories",auth,async(req,res)=>{try{
  const categories=[...grouped.entries()].map(([key,questions])=>{const meta=labels[key]||[key.replace(/[_-]+/g," ").replace(/\b\p{L}/gu,c=>c.toLocaleUpperCase("fr")), "Questions documentaires validées dans la base BEP","◇",key];return{key,label:meta[0],description:meta[1],icon:meta[2],profileKey:meta[3],questions:[...new Set(questions.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"))};}).filter(x=>x.questions.length).sort((a,b)=>a.label.localeCompare(b.label,"fr"));
  res.setHeader("Cache-Control","no-store");res.json({categories});
  }catch(e){console.error("Coach categories read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"COACH_CATEGORIES_UNAVAILABLE"})}});
-app.get("/api/admin/bep-coach/research/status",auth,requireBepAgentAdmin,createCoachResearchStatusHandler({pool,env:process.env,logger:console}));
-app.post("/api/admin/bep-coach/research",auth,requireBepAgentAdmin,async(req,res)=>{try{
- const query=String(req.body?.query||"").trim(),category=String(req.body?.category||"general");
- if(!query||query.length>RESEARCH_CONFIG.limits.query_max_length)return res.status(400).json({error:"INVALID_RESEARCH_QUERY"});
- const result=await researchWeb({pool,query,category});
- res.setHeader("Cache-Control","no-store");res.status(result.enabled?201:409).json(result);
- }catch(e){const diagnostic=String(e?.message||"Erreur fournisseur inconnue").replace(/[\r\n\t]+/g," ").slice(0,280);console.error("Coach web research failed",diagnostic);res.status(502).json({error:"COACH_RESEARCH_FAILED",message:diagnostic+" · Aucune connaissance n'a été publiée."})}});
-
 app.get("/api/admin/bep-coach/identified-sites",auth,requireBepAgentAdmin,async(req,res)=>{try{const result=await listIdentifiedSites(pool);res.setHeader("Cache-Control","no-store");res.json(result)}catch(e){console.error("Identified ingestion sites read failed",String(e?.message||e).slice(0,160));res.status(503).json({error:"IDENTIFIED_SITES_UNAVAILABLE"})}});
 app.post("/api/admin/bep-coach/ingest-batch",auth,requireBepAgentAdmin,async(req,res)=>{try{
  const input=req.body?.sources;
