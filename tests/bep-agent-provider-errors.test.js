@@ -24,13 +24,15 @@ for(const status of [400,413]){
   const apiKey="groq_secret_key_123456789";
   const client=new GroqClient({apiKey});
   const original=global.fetch;
-  global.fetch=async()=>({ok:false,status,text:async()=>JSON.stringify({error:{message:"Invalid request groq_secret_key_123456789",type:"invalid_request_error",code:"invalid_parameter",param:"response_format"}})});
+  global.fetch=async()=>({ok:false,status,text:async()=>JSON.stringify({error:{message:"Invalid request groq_secret_key_123456789",type:"invalid_request_error",code:"invalid_parameter",param:"response_format",failed_generation:"{\"proposals\":[ invalid secret groq_secret_key_123456789 ]}"}})});
   try{
    await assert.rejects(()=>client.generateJson({system:"system",prompt:"prompt",jsonSchema:{name:"test",schema:{type:"object"}}}),error=>{
     assert.equal(error.httpStatus,status);
     assert.equal(error.providerCode,"invalid_parameter");
     assert.equal(error.providerParam,"response_format");
     assert.equal(error.providerMessage,"Invalid request [REDACTED]");
+    assert.match(error.providerFailedGeneration,/proposals/);
+    assert.doesNotMatch(error.providerFailedGeneration,/groq_secret_key/);
     assert.match(error.message,/Invalid request/);
     assert.doesNotMatch(error.message,/groq_secret_key/);
     return true;
