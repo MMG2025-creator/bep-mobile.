@@ -15,8 +15,14 @@ test("manual document ingestion stores extracted source without calling an AI pr
  assert.equal(result.candidates[0].id,"17");
  assert.equal(result.candidates[0].source.url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
  assert.equal(inserts.length,1);
- assert.equal(inserts[0][6],"web_research_pending");
- assert.match(inserts[0][8],/sans génération IA/);
+ assert.equal(inserts[0][1],1);
+ assert.equal(inserts[0][2],"create");
+ assert.equal(inserts[0][6],"institutional_reference");
+ const rationale=JSON.parse(inserts[0][8]);
+ assert.equal(rationale.category,"general");
+ assert.equal(rationale.origin,"manual_web_ingestion");
+ assert.equal(rationale.sources[0].url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
+ assert.equal(inserts[0][10].length,64);
 });
 
 test("duplicate document ingestion creates no second pending candidate",async()=>{
