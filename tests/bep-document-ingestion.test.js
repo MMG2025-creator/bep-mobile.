@@ -5,7 +5,7 @@ const {ingestDocumentUrl,ingestDocumentBatch,saveCollectedPage}=require("../lib/
 
 test("manual document ingestion stores extracted source without calling an AI provider",async()=>{
  const inserts=[];
- const pool={query:async(sql,params)=>{if(sql.includes("bep_document_ingestion_sites"))return{rowCount:1,rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates")){inserts.push(params);return{rowCount:1,rows:[{id:17}]}}return{rowCount:0,rows:[]}}};
+ const pool={query:async(sql,params)=>{if(sql.includes("bep_document_ingestion_sites"))return{rowCount:1,rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates")){inserts.push({sql,params});return{rowCount:1,rows:[{id:17}]}}return{rowCount:0,rows:[]}}};
  const fetchPage=async(url)=>({url,title:"Guide CNIL",text:"Contenu institutionnel documenté. ".repeat(20),links:[]});
  const result=await ingestDocumentUrl({pool,url:"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles",category:"general",fetchPage});
  assert.equal(result.enabled,true);
@@ -15,14 +15,13 @@ test("manual document ingestion stores extracted source without calling an AI pr
  assert.equal(result.candidates[0].id,"17");
  assert.equal(result.candidates[0].source.url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
  assert.equal(inserts.length,1);
- assert.equal(inserts[0][1],1);
- assert.equal(inserts[0][2],"create");
- assert.equal(inserts[0][6],"institutional_reference");
- const rationale=JSON.parse(inserts[0][8]);
+ assert.match(inserts[0].sql,/VALUES\(\$1,1,\$2,'create'/);
+ assert.equal(inserts[0].params[6],"institutional_reference");
+ const rationale=JSON.parse(inserts[0].params[8]);
  assert.equal(rationale.category,"general");
  assert.equal(rationale.origin,"manual_web_ingestion");
  assert.equal(rationale.sources[0].url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
- assert.equal(inserts[0][10].length,64);
+ assert.equal(inserts[0].params[9].length,64);
 });
 
 test("duplicate document ingestion creates no second pending candidate",async()=>{
