@@ -115,3 +115,75 @@ test('actualiser les résultats affiche le job documentaire 37 et ses propositio
   await expect(page.locator('#groqDocumentaryRuns')).toContainText('Job #37 · failed');
   expect(analyzeRequests).toBe(0);
 });
+
+
+test('les résultats Exa peuvent devenir des propositions manuelles sans lancer Groq', async ({ page }) => {
+  let ingestPayload = null;
+  let groqRequests = 0;
+  await page.route('**/api/admin/auth/status', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ authenticated: true, email: 'admin@example.invalid' })
+  }));
+  await page.route('**/api/admin/console/documents', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ documents: [] })
+  }));
+  await page.route('**/api/admin/console/audit', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ events: [] })
+  }));
+  await page.route('**/api/admin/bep-agent/status', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ ready: false, provider: 'groq', documentaryRunnerEnabled: false })
+  }));
+  await page.route('**/api/admin/bep-agent/source-search/status', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ enabled: true, allowedDomains: ['service-public.gouv.fr'] })
+  }));
+  await page.route('**/api/admin/bep-agent/source-search', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({
+      enabled: true, resultsCount: 1, stored: false, groqAnalysis: 'not_requested',
+      results: [{
+        title: 'Règles officielles', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/FXXXX',
+        domain: 'www.service-public.gouv.fr', publishedAt: null,
+        highlights: ['Extrait institutionnel']
+      }]
+    })
+  }));
+  await page.route('**/api/admin/bep-coach/ingest', async route => {
+    ingestPayload = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201, contentType: 'application/json',
+      body: JSON.stringify({ enabled: true, candidatesCreated: 1, publication: 'pending_human_approval' })
+    });
+  });
+  await page.route('**/api/admin/bep-agent/overview', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({
+      runs: [], documentaryJobs: [],
+      pendingCandidates: [{
+        id: 91, proposal_type: 'update', title: 'Règles officielles',
+        source_name: 'Règles officielles',
+        source_url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/FXXXX',
+        confidence: 'medium', rationale: 'Collecte manuelle, revue humaine requise.'
+      }]
+    })
+  }));
+  await page.route('**/api/admin/bep-agent/documentary-analyze', route => {
+    groqRequests += 1;
+    return route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'NOT_EXPECTED' }) });
+  });
+
+  await page.goto('/admin.html#groq-documentary', { waitUntil: 'load' });
+  await page.locator('#groqDocumentaryQuery').fill('Règles administratives');
+  await page.locator('#groqSourceSearchButton').click();
+  await expect(page.locator('#groqDocumentarySources')).toContainText('Règles officielles');
+  await page.locator('#groqDocumentarySources select').selectOption('savings');
+  await page.getByRole('button', { name: 'Importer comme proposition à valider' }).click();
+  await expect(page.locator('#groqDocumentaryNotice')).toContainText('1 proposition(s) créée(s)');
+  expect(ingestPayload).toEqual({
+    url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/FXXXX',
+    mode: 'page', category: 'savings'
+  });
+  await expect(page.locator('#groqDocumentaryCandidates')).toContainText('Règles officielles');
+  expect(groqRequests).toBe(0);
+});
