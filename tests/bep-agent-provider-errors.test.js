@@ -117,6 +117,25 @@ test("Groq schema diagnostic returns code, provider message and rejected paramet
 });
 
 
+test("Groq preserves root-level failed_generation with secret redaction",async()=>{
+ const apiKey="groq_secret_key_123456789";
+ const client=new GroqClient({apiKey});
+ const originalFetch=global.fetch;
+ global.fetch=async()=>({ok:false,status:400,text:async()=>JSON.stringify({
+  error:{message:"Failed to validate JSON",type:"invalid_request_error",code:"json_validate_failed",param:"response_format"},
+  failed_generation:'{"field":"invalid groq_secret_key_123456789"}'
+ })});
+ try{
+  await assert.rejects(()=>client.generateJson({system:"system",prompt:"prompt",jsonSchema:{name:"test",schema:{type:"object"}}}),error=>{
+   assert.equal(error.providerCode,"json_validate_failed");
+   assert.equal(error.providerParam,"response_format");
+   assert.match(error.providerFailedGeneration,/invalid/);
+   assert.doesNotMatch(error.providerFailedGeneration,/groq_secret_key/);
+   return true;
+  });
+ }finally{global.fetch=originalFetch;}
+});
+
 test("documentary Groq errors identify the failing structured-output stage",async()=>{
  for(const stage of ["documentary_analysis","claim_evidence_audit"]){
   const expected=Object.assign(new Error("Groq rejected JSON"),{
