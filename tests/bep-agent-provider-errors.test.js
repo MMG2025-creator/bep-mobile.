@@ -3,6 +3,8 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {searchDocumentarySources}=require("../lib/bep-agent/source-search");
 const {GroqClient}=require("../lib/bep-agent/groq-client");
+const {generateJsonAtStage}=require("../lib/bep-agent/documentary-analysis");
+const {documentaryErrorDetail}=require("../lib/bep-agent/worker");
 const {runProviderConnectivityCheck}=require("../lib/bep-agent/provider-connectivity");
 const {sourceMapFor,MAX_SOURCE_TEXT_CHARS,MAX_SOURCE_HIGHLIGHTS,MAX_SOURCE_HIGHLIGHT_CHARS,MAX_LIBRARY_DOCUMENTS,MAX_LIBRARY_CONTENT_CHARS,MAX_ANALYSIS_PROMPT_CHARS}=require("../lib/bep-agent/documentary-analysis");
 
@@ -32,6 +34,7 @@ for(const status of [400,413]){
     assert.equal(error.providerParam,"response_format");
     assert.equal(error.providerMessage,"Invalid request [REDACTED]");
     assert.match(error.providerFailedGeneration,/proposals/);
+    assert.match(error.providerFailedGeneration,/invalid secret/);
     assert.doesNotMatch(error.providerFailedGeneration,/groq_secret_key/);
     assert.match(error.message,/Invalid request/);
     assert.doesNotMatch(error.message,/groq_secret_key/);
@@ -111,4 +114,25 @@ test("Groq schema diagnostic returns code, provider message and rejected paramet
  assert.equal(result.databaseAccess,false);
  assert.equal(result.libraryWrites,false);
  assert.doesNotMatch(JSON.stringify(result),/groq_secret_key_123456789/);
+});
+
+
+test("documentary Groq errors identify the failing structured-output stage",async()=>{
+ for(const stage of ["documentary_analysis","claim_evidence_audit"]){
+  const expected=Object.assign(new Error("Groq rejected JSON"),{
+   diagnosticCode:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"json_validate_failed",
+   providerStatus:"invalid_request_error",providerParam:"response_format",
+   providerMessage:"Failed to validate JSON",providerFailedGeneration:"{ invalid JSON }"
+  });
+  await assert.rejects(()=>generateJsonAtStage({generateJson:async()=>{throw expected}},stage,{}),error=>{
+   assert.equal(error.stage,stage);
+   assert.equal(error.diagnosticStage,stage);
+   const detail=documentaryErrorDetail(error,{});
+   assert.match(detail,new RegExp(stage.toUpperCase()));
+   assert.match(detail,/json_validate_failed/);
+   assert.match(detail,/providerParam=response_format/);
+   assert.match(detail,/failedGeneration=/);
+   return true;
+  });
+ }
 });
