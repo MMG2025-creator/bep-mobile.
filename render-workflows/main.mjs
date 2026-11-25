@@ -41,13 +41,13 @@ task(
    if(!processed){
     const state=await pool.query("SELECT status,last_error FROM bep_agent_jobs WHERE id::text=$1",[id]);
     const job=state.rows[0];
-    const detail=String(job?.last_error||"no_worker_diagnostic").replace(/[\\u0000-\\u001f\\u007f]/g," ").replace(/\\s+/g," ").slice(0,500);
+    const detail=String(job?.last_error||"no_worker_diagnostic").replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").slice(0,500);
     throw new Error("DOCUMENTARY_JOB_NOT_CLAIMED:status="+String(job?.status||"missing")+";detail="+detail);
    }
    const result=await pool.query("SELECT status,last_error FROM bep_agent_jobs WHERE id::text=$1",[id]);
    const job=result.rows[0],status=job?.status;
    if(status!=="completed"){
-    const detail=String(job?.last_error||"no_worker_diagnostic").replace(/[\\u0000-\\u001f\\u007f]/g," ").replace(/\\s+/g," ").slice(0,500);
+    const detail=String(job?.last_error||"no_worker_diagnostic").replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").slice(0,500);
     throw new Error("DOCUMENTARY_JOB_NOT_COMPLETED:status="+String(status||"missing")+";detail="+detail);
    }
    return{jobId:id,status:"completed",provider:"groq",sourceProvider:"exa",automaticPublication:false};
