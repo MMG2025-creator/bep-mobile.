@@ -7,27 +7,27 @@ test("manual document ingestion stores extracted source without calling an AI pr
  const inserts=[];
  const pool={query:async(sql,params)=>{if(sql.includes("bep_document_ingestion_sites"))return{rowCount:1,rows:[]};if(sql.includes("INSERT INTO bep_knowledge_candidates")){inserts.push({sql,params});return{rowCount:1,rows:[{id:17}]}}return{rowCount:0,rows:[]}}};
  const fetchPage=async(url)=>({url,title:"Guide CNIL",text:"Contenu institutionnel documenté. ".repeat(20),links:[]});
- const result=await ingestDocumentUrl({pool,url:"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles",category:"general",fetchPage});
+ const result=await ingestDocumentUrl({pool,url:"https://www.mesquestionsdargent.fr/particuliers/livret-a",category:"savings",fetchPage});
  assert.equal(result.enabled,true);
  assert.equal(result.provider,"bep-native-http-extractor");
  assert.equal(result.aiUsed,false);
  assert.equal(result.candidatesCreated,1);
  assert.equal(result.candidates[0].id,"17");
- assert.equal(result.candidates[0].source.url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
+ assert.equal(result.candidates[0].source.url,"https://www.mesquestionsdargent.fr/particuliers/livret-a");
  assert.equal(inserts.length,1);
  assert.match(inserts[0].sql,/VALUES\(\$1,1,\$2,'create'/);
  assert.equal(inserts[0].params[6],"institutional_reference");
  const rationale=JSON.parse(inserts[0].params[8]);
- assert.equal(rationale.category,"general");
+ assert.equal(rationale.category,"savings");
  assert.equal(rationale.origin,"manual_web_ingestion");
- assert.equal(rationale.sources[0].url,"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles");
+ assert.equal(rationale.sources[0].url,"https://www.mesquestionsdargent.fr/particuliers/livret-a");
  assert.equal(inserts[0].params[9].length,64);
 });
 
 test("duplicate document ingestion creates no second pending candidate",async()=>{
  const pool={query:async(sql)=>sql.includes("bep_document_ingestion_sites")?{rowCount:1,rows:[]}:{rowCount:0,rows:[]}};
  const fetchPage=async(url)=>({url,title:"Guide CNIL",text:"Contenu institutionnel documenté. ".repeat(20),links:[]});
- const result=await ingestDocumentUrl({pool,url:"https://www.cnil.fr/fr/guide-de-la-securite-des-donnees-personnelles",fetchPage});
+ const result=await ingestDocumentUrl({pool,url:"https://www.mesquestionsdargent.fr/particuliers/livret-a",fetchPage});
  assert.equal(result.candidatesCreated,0);
  assert.equal(result.duplicateCount,1);
 });
@@ -44,7 +44,7 @@ test("unsafe URLs and unsupported categories are rejected before fetching",async
 test("batch ingestion isolates source failures and continues processing",async()=>{
  const pool={query:async()=>({rowCount:1,rows:[{id:21}]})};
  const fetchPage=async(url)=>{if(url.includes("bad"))throw new Error("SOURCE_HTTP_404");return{url,title:"Document",text:"Contenu de référence suffisamment long. ".repeat(10),links:[]}};
- const result=await ingestDocumentBatch({pool,sources:[{url:"https://example.org/good",category:"general"},{url:"https://example.org/bad",category:"general"}],fetchPage});
+ const result=await ingestDocumentBatch({pool,sources:[{url:"https://example.org/good",category:"savings"},{url:"https://example.org/bad",category:"savings"}],fetchPage});
  assert.equal(result.aiUsed,false);
  assert.equal(result.processed,1);
  assert.equal(result.failed,1);
