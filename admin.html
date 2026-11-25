@@ -117,7 +117,7 @@ button[data-bep-loading="true"]{display:inline-flex;align-items:center;justify-c
  <p class="muted">Aucun revenu, paiement, budget, solde, transaction, donnée bancaire, contenu privé ou payload financier n'est exposé dans cet espace.</p>
 </section><section id="groqDocumentaryPanel" class="panel admin-page" data-admin-view-panel="intelligence" hidden aria-labelledby="groqDocumentaryTitle">
 <h2 id="groqDocumentaryTitle">Optimisation de la bibliothèque — Groq</h2>
-<p class="muted">Espace administratif uniquement. Exa recherche les sources ; Groq les analyse et propose des corrections. Le Coach reste local, sans appel Groq. Aucune proposition n'est publiée automatiquement.</p>
+<p class="muted">Espace administratif uniquement. Exa recherche les sources. Groq est un outil facultatif d’optimisation et de détection d’améliorations ; son indisponibilité ne bloque jamais l’import, la revue ni la validation manuelle. Le Coach reste local. Aucune proposition n'est publiée automatiquement.</p>
 <div class="panel">
  <div class="status" id="groqPipelineStatus">Vérification de la configuration…</div>
  <div class="muted" id="groqPipelineStatusDetail">La recherche Exa alimente le traitement documentaire exécuté ponctuellement par le Render Workflow ; Groq analyse les sources.</div>
@@ -126,7 +126,7 @@ button[data-bep-loading="true"]{display:inline-flex;align-items:center;justify-c
 <input id="groqDocumentaryQuery" type="text" maxlength="1000" placeholder="Ex. évolution des règles sur le surendettement">
 <div class="bar">
  <button type="button" id="groqSourceSearchButton">Rechercher les sources (Exa)</button>
- <button type="button" class="primary" id="groqDocumentaryAnalyzeButton">Mettre l'analyse Groq en file</button>
+ <button type="button" class="primary" id="groqDocumentaryAnalyzeButton">Optimiser avec Groq (facultatif)</button>
  <button type="button" id="groqDocumentaryRefreshButton">Actualiser les résultats</button>
 </div>
 <div class="muted" id="groqDocumentaryNotice" role="status" aria-live="polite"></div>
