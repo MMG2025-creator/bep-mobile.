@@ -118,8 +118,8 @@ test("documentary provider errors retain sanitized Exa and Groq diagnostic metad
  const {documentaryErrorDetail}=require("../lib/bep-agent/worker");
  const exa=documentaryErrorDetail({code:"SOURCE_SEARCH_PROVIDER_ERROR",httpStatus:429,providerMessage:"Quota exceeded",stage:"exa"});
  assert.match(exa,/EXA/);assert.match(exa,/SOURCE_SEARCH_PROVIDER_ERROR/);assert.match(exa,/HTTP 429/);assert.match(exa,/Quota exceeded/);
- const groq=documentaryErrorDetail({code:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"invalid_request",providerStatus:"error",providerParam:"response_format",providerMessage:"bad schema",stage:"groq"});
- for(const value of ["GROQ_HTTP_ERROR","HTTP 400","invalid_request","response_format","bad schema"])assert.ok(groq.includes(value));
+ const groq=documentaryErrorDetail({code:"GROQ_HTTP_ERROR",httpStatus:400,providerCode:"invalid_request",providerStatus:"error",providerParam:"response_format",providerMessage:"bad schema",providerFailedGeneration:"{ proposals: [invalid] }",stage:"groq"});
+ for(const value of ["GROQ_HTTP_ERROR","HTTP 400","invalid_request","response_format","bad schema","failedGeneration="])assert.ok(groq.includes(value));
  assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",message:"Bearer secret-token"}),/secret-token/);
  const secret="gsk_private_test_key_123456";
  assert.doesNotMatch(documentaryErrorDetail({code:"GROQ_HTTP_ERROR",providerMessage:"rejected "+secret},{BEP_AGENT_GROQ_API_KEY:secret}),/gsk_private_test_key/);
