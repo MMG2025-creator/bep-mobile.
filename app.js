@@ -310,7 +310,43 @@ let settingsReturnTab="home";const VALID_PANEL_IDS=new Set(["home","budget","sav
  panel.querySelectorAll(".chart-data-point:not(svg .chart-data-point)").forEach((el,i)=>{el.style.animation="none";if(!reduce){void el.offsetWidth;el.style.animation="bep-chart-enter 420ms ease both "+(i*45)+"ms"}});
 }
 function setHomeRobotState(state,message){const robot=document.querySelector('.welcome-mascot[data-goto="coach"]');if(!robot)return;robot.dataset.state=["idle","thinking","advice","attention"].includes(state)?state:"idle";const label=$( "homeMascotStatus");if(label&&message)label.textContent=String(message).slice(0,64)}
-function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"){ensureCoachWelcome();renderCoachProfile();if(window.bepSignedIn)loadAiConnection();}}
+function tab(id){if(!VALID_PANEL_IDS.has(id)||!document.getElementById(id)?.classList.contains("panel"))id="home";if(id!=="coach"&&id!=="settings"){coachSourcePage=id;try{localStorage.setItem(COACH_SOURCE_TAB_KEY,id)}catch{}}if(id!=="settings")settingsReturnTab=id;try{localStorage.setItem(ACTIVE_TAB_KEY,id)}catch{}document.querySelectorAll(".panel").forEach(x=>{const isActive=x.id===id;x.classList.toggle("active",isActive);x.hidden=!isActive;});document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));const settingsButton=document.getElementById("settingsBtn"),settingsOpen=id==="settings";if(settingsButton){settingsButton.setAttribute("aria-expanded",String(settingsOpen));settingsButton.setAttribute("aria-label",settingsOpen?"Fermer les paramètres":"Ouvrir les paramètres");settingsButton.title=settingsOpen?"Fermer les paramètres":"Paramètres"}document.querySelector(".app")?.classList.toggle("settings-open",settingsOpen);document.querySelector(".welcome")?.classList.toggle("hidden",id!=="home");requestAnimationFrame(()=>{const panel=document.getElementById(id);replayPanelChartAnimations(panel)});window.scrollTo(0,0);if(id==="coach"){ensureCoachWelcome();renderCoachProfile();if(window.bepSignedIn)loadAiConnection();}syncMobileTabNavigation(id);}
+
+function syncMobileTabNavigation(activeId){
+ const nav=document.getElementById("bepMobileTabNavigation");
+ if(!nav)return;
+ const ids=["home","budget","savings","purchases","coach"];
+ const index=Math.max(0,ids.indexOf(activeId));
+ const labels={home:"Accueil",budget:"Budget",savings:"Épargne",purchases:"Dépenses",coach:"Coach BEP"};
+ const previous=ids[(index-1+ids.length)%ids.length],next=ids[(index+1)%ids.length];
+ const prev=nav.querySelector("[data-mobile-tab-direction=previous]");
+ const forward=nav.querySelector("[data-mobile-tab-direction=next]");
+ prev.setAttribute("aria-label","Onglet précédent : "+labels[previous]);
+ forward.setAttribute("aria-label","Onglet suivant : "+labels[next]);
+ nav.querySelector("[data-mobile-tab-current]").textContent=labels[activeId]||"Navigation";
+}
+function ensureMobileTabNavigation(){
+ if(document.getElementById("bepMobileTabNavigation"))return;
+ const nav=document.createElement("div");
+ nav.id="bepMobileTabNavigation";
+ nav.setAttribute("role","group");
+ nav.setAttribute("aria-label","Navigation entre les onglets");
+ nav.innerHTML='<button type="button" data-mobile-tab-direction="previous" aria-label="Onglet précédent">‹</button><span data-mobile-tab-current aria-live="polite">Accueil</span><button type="button" data-mobile-tab-direction="next" aria-label="Onglet suivant">›</button>';
+ const ids=["home","budget","savings","purchases","coach"];
+ nav.addEventListener("click",event=>{
+  const button=event.target.closest("button[data-mobile-tab-direction]");
+  if(!button)return;
+  const current=document.querySelector(".panel.active")?.id||"home";
+  const index=Math.max(0,ids.indexOf(current));
+  const offset=button.dataset.mobileTabDirection==="previous"?-1:1;
+  tab(ids[(index+offset+ids.length)%ids.length]);
+ });
+ document.body.appendChild(nav);
+ syncMobileTabNavigation(document.querySelector(".panel.active")?.id||"home");
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ensureMobileTabNavigation,{once:true});
+else ensureMobileTabNavigation();
+
 let activeBudgetModule="income";
 function setBudgetModule(name){if(!["income","charges","monthly"].includes(name))return;activeBudgetModule=name;try{localStorage.setItem(ACTIVE_BUDGET_MODULE_KEY,name)}catch{}document.querySelectorAll("[data-budget-module]").forEach(button=>{const active=button.dataset.budgetModule===name;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active))});document.querySelectorAll(".budget-module").forEach(panel=>{panel.hidden=panel.id!=="budgetModule"+name.charAt(0).toUpperCase()+name.slice(1)});requestAnimationFrame(()=>replayPanelChartAnimations(document.getElementById("budgetModule"+name.charAt(0).toUpperCase()+name.slice(1))));document.querySelectorAll("[data-budget-advice]").forEach(advice=>{advice.hidden=advice.dataset.budgetAdvice!==name});}
 // Event delegation in capture phase: keeps budget tabs functional even when

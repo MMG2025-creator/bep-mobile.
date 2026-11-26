@@ -2132,3 +2132,72 @@ details.coach-info-panel[open] .coach-info-plus{transform:rotate(45deg)}
 
 /* Avoid stacking the homepage welcome banner above the dedicated Coach hero. */
 .app:has(.tab[data-tab="coach"].active) .welcome-playful{display:none!important}
+
+
+/* Mobile fallback navigation and reliable touch targets for BEP panels. */
+#bepMobileTabNavigation{
+  display:none;
+  position:fixed;
+  z-index:1200;
+  top:50%;
+  right:max(8px,env(safe-area-inset-right));
+  transform:translateY(-50%);
+  grid-template-columns:44px;
+  justify-items:center;
+  gap:7px;
+  padding:7px;
+  border:1px solid #dce9e1;
+  border-radius:18px;
+  background:#ffffffed;
+  box-shadow:0 5px 20px #173c2926;
+  pointer-events:none;
+}
+#bepMobileTabNavigation button{
+  display:grid;
+  place-items:center;
+  width:44px;
+  min-width:44px;
+  height:44px;
+  min-height:44px;
+  padding:0;
+  border:0;
+  border-radius:12px;
+  background:#176b50;
+  color:#fff;
+  font:700 27px/1 Arial,sans-serif;
+  cursor:pointer;
+  touch-action:manipulation;
+  pointer-events:auto;
+  -webkit-tap-highlight-color:transparent;
+}
+#bepMobileTabNavigation button:focus-visible{
+  outline:3px solid #8fc9a5;
+  outline-offset:2px;
+}
+#bepMobileTabNavigation [data-mobile-tab-current]{
+  max-width:54px;
+  color:#315b48;
+  font:700 9px/1.2 "DM Sans",sans-serif;
+  text-align:center;
+  overflow-wrap:anywhere;
+  pointer-events:none;
+}
+@media(max-width:700px){
+  #bepMobileTabNavigation{display:grid}
+  #purchases.bep-expenses-page button,
+  #purchases.bep-expenses-page a,
+  #purchases.bep-expenses-page summary,
+  #purchases.bep-expenses-page input,
+  #purchases.bep-expenses-page select,
+  #purchases.bep-expenses-page textarea{
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #purchases.bep-expenses-page button,
+  #purchases.bep-expenses-page summary{
+    min-height:44px;
+  }
+}
+@media(min-width:701px){
+  #bepMobileTabNavigation{display:none!important}
+}
